@@ -1,0 +1,8 @@
+agent: "QAE"
+phase: "Quality Assurance"
+essential_checks:
+  - "Estratégia de testes documentada"
+  - "Integration tests cobrem APIs principais"
+  - "E2E tests cobrem user journeys críticas"
+  - "Testes integrados em CI/CD"
+  - "Coverage mínimo atingido"

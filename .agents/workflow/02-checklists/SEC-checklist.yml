@@ -1,0 +1,519 @@
+# Security Specialist (SEC) Checklist
+
+agent: SEC
+role: Security Specialist
+checklist_version: 1.0
+
+# ========================================
+# THREAT MODELING
+# ========================================
+
+threat_modeling:
+  - id: SEC-TM-01
+    category: Threat Modeling
+    check: STRIDE analysis completo para TODOS Bounded Contexts
+    required: true
+    evidence:
+      - SEC-01-Threat-Model.md com tabela STRIDE por BC
+      - Ameaças prioritárias identificadas (Impacto × Probabilidade)
+
+  - id: SEC-TM-02
+    category: Threat Modeling
+    check: Data flow diagrams com security annotations
+    required: false  # MVP: STRIDE analysis (SEC-TM-01) é mais importante
+    note: "DFD útil mas não bloqueante. Pode ser criado conforme sistema evolui."
+    evidence:
+      - DFD mostrando: User → Load Balancer → API Gateway → Services → Database
+      - Security boundaries marcadas (TLS, VPC, private subnet)
+
+  - id: SEC-TM-03
+    category: Threat Modeling
+    check: Attack trees para funcionalidades críticas
+    required: false  # MVP: STRIDE analysis (SEC-TM-01) já cobre ameaças principais
+    note: "Attack trees são úteis para funcionalidades muito críticas. Pode ser feito após MVP."
+    evidence:
+      - Attack tree: "Steal User Credentials"
+      - Attack tree: "Unauthorized Data Access"
+
+  - id: SEC-TM-04
+    category: Threat Modeling
+    check: Mitigation strategies documentadas (por ameaça)
+    required: false  # MVP: Mitigações implementadas, documentação pode ser incremental
+    note: "Implementar mitigações é crítico. Documentação detalhada pode ser progressiva."
+    evidence:
+      - Para cada ameaça: mitigação específica (ex: Spoofing → JWT validation)
+
+  - id: SEC-TM-05
+    category: Threat Modeling
+    check: Assets críticos identificados (credentials, PII, business data)
+    required: false  # MVP: Identificação básica suficiente
+    note: "Identificar assets críticos principais (credentials, PII). Classificação completa pode ser progressiva."
+    evidence:
+      - Lista de assets por BC
+      - Classificação de dados (public, internal, confidential, secret)
+
+# ========================================
+# SECURITY ARCHITECTURE
+# ========================================
+
+security_architecture:
+  - id: SEC-ARCH-01
+    category: Security Architecture
+    check: Zero-Trust architecture documentado (verify explicitly, least privilege)
+    required: false  # MVP: Implementar princípios básicos, documentação completa progressiva
+    note: "MVP: Aplicar least privilege + authentication. Documentação Zero-Trust completa pode evoluir."
+    evidence:
+      - SEC-02-Security-Architecture.md
+      - Princípios Zero-Trust aplicados
+
+  - id: SEC-ARCH-02
+    category: Security Architecture
+    check: Defense in Depth em 7 camadas implementado
+    required: false  # MVP: Implementar camadas progressivamente (começar com 3-4 camadas críticas)
+    note: "Camadas essenciais MVP: Identity (Layer 2), Network (Layer 4), Application (Layer 7)"
+    evidence:
+      - Layer 1: Physical (cloud provider)
+      - Layer 2: Identity & Access (IAM, RBAC)
+      - Layer 3: Compute (hardened OS)
+      - Layer 4: Network (VPC, Security Groups)
+      - Layer 5: Runtime (WAF, rate limiting)
+      - Layer 6: Data (encryption, masking)
+      - Layer 7: Application (input validation, authz)
+
+  - id: SEC-ARCH-03
+    category: Security Architecture
+    check: Security boundaries entre BCs definidas
+    required: false  # MVP: Boundaries básicos suficientes
+    note: "MVP: BCs separados com APIs. Isolamento completo de DB pode ser progressivo."
+    evidence:
+      - Cada BC tem seu próprio banco (ou schemas isolados)
+      - APIs comunicam via eventos (não direct DB access)
+
+  - id: SEC-ARCH-04
+    category: Security Architecture
+    check: Network security configurado (VPC, Security Groups, WAF)
+    required: false  # MVP: WAF pode ser adicionado após lançamento inicial
+    note: "Essencial MVP: Security Groups configurados. WAF adicionar quando tiver tráfego real."
+    evidence:
+      - VPC com public + private subnets
+      - Security Groups com least privilege
+      - WAF com OWASP Top 10 rules
+
+  - id: SEC-ARCH-05
+    category: Security Architecture
+    check: Authentication & Authorization implementados
+    required: true  # ESSENCIAL MVP
+    note: "JWT + Authorization são críticos. MFA pode ser opcional inicialmente."
+    evidence:
+      - JWT tokens (RS256 asymmetric)
+      - Domain-level authorization (Aggregates validam permissões)
+      - MFA habilitado (TOTP) [opcional para MVP]
+
+  - id: SEC-ARCH-06
+    category: Security Architecture
+    check: Secrets management configurado (Vault/Secrets Manager)
+    required: false  # MVP: Environment variables são suficientes
+    note: "MVP: .env com secrets (NUNCA em código). Vault/Secrets Manager quando escalar para produção."
+    evidence:
+      - Database passwords em Vault/Secrets Manager
+      - API keys NUNCA em código
+      - Secrets rotation agendada (90 dias DB, 30 dias JWT key)
+
+  - id: SEC-ARCH-07
+    category: Security Architecture
+    check: Encryption at rest e in transit habilitado
+    required: true  # ESSENCIAL MVP (pelo menos TLS)
+    note: "TLS 1.3 é obrigatório. Database TDE pode ser habilitado progressivamente."
+    evidence:
+      - TLS 1.3+ para todas conexões HTTPS [obrigatório]
+      - Database TDE (Transparent Data Encryption) [opcional para MVP]
+      - S3/Blob Storage encrypted [opcional para MVP]
+
+# ========================================
+# COMPLIANCE
+# ========================================
+
+compliance_lgpd:
+  - id: SEC-COMP-LGPD-01
+    category: Compliance (LGPD)
+    check: Data mapping completo (dados pessoais identificados)
+    required: true
+    evidence:
+      - Tabela com: Data Type, Location, Purpose, Legal Basis, Retention
+
+  - id: SEC-COMP-LGPD-02
+    category: Compliance (LGPD)
+    check: Consent management implementado (opt-in, revogável)
+    required: false  # MVP: Implementar se coletar dados sensíveis que requerem consentimento explícito
+    note: "Obrigatório se processar dados sensíveis (art. 11 LGPD). Avalie se seu MVP precisa."
+    evidence:
+      - API /api/v1/consent (grant, revoke)
+      - Consent log (userId, purpose, grantedAt, revokedAt)
+
+  - id: SEC-COMP-LGPD-03
+    category: Compliance (LGPD)
+    check: Data Subject Rights implementados (acesso, correção, exclusão, portabilidade)
+    required: false  # MVP: Implementar direitos principais, portabilidade pode ser manual inicialmente
+    note: "MVP essencial: exclusão/anonimização. Portabilidade pode ser manual até automatizar."
+    evidence:
+      - GET /api/v1/users/{id}/data-export (portabilidade)
+      - DELETE /api/v1/users/{id} (exclusão/anonimização)
+
+  - id: SEC-COMP-LGPD-04
+    category: Compliance (LGPD)
+    check: Data breach notification procedure documentado (72h ANPD)
+    required: false  # MVP: Ter Incident Response Plan (SEC-IR-01), templates podem ser criados se/quando necessário
+    note: "Ter plano de resposta é essencial. Templates específicos de notificação podem ser criados em caso real."
+    evidence:
+      - Incident Response Plan com procedimento de notificação
+      - Templates: breach-notification-anpd.md, breach-notification-users.md
+
+  - id: SEC-COMP-LGPD-05
+    category: Compliance (LGPD)
+    check: DPO nomeado e Privacy Policy publicada
+    required: true  # ESSENCIAL MVP (LGPD obrigatório no Brasil)
+    note: "DPO pode ser terceirizado. Privacy Policy é obrigatória antes de coletar dados."
+    evidence:
+      - DPO: [NOME], email: dpo@[DOMAIN]
+      - Privacy Policy publicada (website footer)
+
+compliance_soc2:
+  - id: SEC-COMP-SOC2-01
+    category: Compliance (SOC2)
+    check: SOC2 controls implementados (CC1-CC4)
+    required: false  # MVP: Obrigatório apenas para SaaS B2B com clientes enterprise
+    note: "SOC2 Type II necessário para vender para grandes corporações que exigem auditoria"
+    evidence:
+      - CC1 (Security): IAM policies, audit logs
+      - CC2 (Availability): SLA 99.9%, DR plan
+      - CC3 (Confidentiality): Encryption at rest/transit
+      - CC4 (Privacy): Consent management, data retention
+
+  - id: SEC-COMP-SOC2-02
+    category: Compliance (SOC2)
+    check: Audit evidence coletada e organizada
+    required: false  # MVP: Implementar quando tiver demanda de clientes enterprise
+    note: "Começar coleta de evidências 6 meses antes de SOC2 audit"
+    evidence:
+      - evidence/access-logs/
+      - evidence/backup-recovery/
+      - evidence/encryption/
+
+compliance_pci:
+  - id: SEC-COMP-PCI-01
+    category: Compliance (PCI-DSS)
+    check: PCI-DSS compliant (se aplicável) ou gateway terceiro
+    required: false
+    evidence:
+      - Stripe/PayPal integration (card data nunca armazenada)
+      - Ou: PCI-DSS SAQ preenchido (Level 4)
+
+compliance_financial:
+  - id: SEC-COMP-FIN-01
+    category: Compliance (CVM/SEC)
+    check: CVM/SEC compliant (se aplicável - trading/investment)
+    required: false
+    evidence:
+      - Audit trail imutável para trades (CVM 505)
+      - Record retention: 6 anos (SEC Rule 17a-4)
+
+# ========================================
+# PENETRATION TESTING
+# ========================================
+
+penetration_testing:
+  - id: SEC-PT-01
+    category: Penetration Testing
+    check: Penetration test executado (OWASP Top 10)
+    required: true
+    evidence:
+      - SEC-04-Pentest-Report.md
+      - OWASP ZAP scan report
+
+  - id: SEC-PT-02
+    category: Penetration Testing
+    check: Vulnerabilidades documentadas (severity, POC, remediation)
+    required: false  # MVP: Documentar em SEC-04-Pentest-Report.md, tabela formal pode ser incremental
+    note: "Documentar vulnerabilidades encontradas. Formato formal pode ser simplificado para MVP."
+    evidence:
+      - Tabela com: Finding ID, Severity (CVSS), Description, POC, Remediation
+
+  - id: SEC-PT-03
+    category: Penetration Testing
+    check: Critical/High vulnerabilities corrigidas
+    required: true
+    evidence:
+      - Zero vulnerabilidades CRITICAL/HIGH abertas
+      - Medium/Low vulnerabilities com deadline para correção
+
+  - id: SEC-PT-04
+    category: Penetration Testing
+    check: Retest executado (validar correções)
+    required: false  # MVP: Pode fazer retest após primeiro lançamento
+    note: "Obrigatório executar retest no primeiro ciclo de security patch após produção"
+    evidence:
+      - Retest report: vulnerabilidades CRITICAL/HIGH corrigidas
+      - Regression test (OWASP ZAP) sem novos findings
+
+  - id: SEC-PT-05
+    category: Penetration Testing
+    check: SAST (Static Application Security Testing) integrado no CI/CD
+    required: false  # MVP: Pode integrar SAST progressivamente
+    note: "MVP: Começar com Semgrep (grátis). SonarQube quando escalar."
+    evidence:
+      - Semgrep, SonarQube, ou CodeQL rodando em CI
+      - Pipeline bloqueia se vulnerabilidades CRITICAL/HIGH
+
+  - id: SEC-PT-06
+    category: Penetration Testing
+    check: Dependency scanning habilitado (vulnerabilidades em bibliotecas)
+    required: false  # MVP: Habilitar Dependabot, scanning manual aceitável inicialmente
+    note: "MVP: Habilitar Dependabot no GitHub (grátis). Automatizar scanning quando escalar."
+    evidence:
+      - Dependabot alerts habilitado (GitHub)
+      - npm audit, dotnet list package --vulnerable
+
+# ========================================
+# INCIDENT RESPONSE
+# ========================================
+
+incident_response:
+  - id: SEC-IR-01
+    category: Incident Response
+    check: Incident Response Plan documentado (5 fases)
+    required: true
+    evidence:
+      - SEC-05-Incident-Response-Plan.md
+      - Fases: Detection → Containment → Eradication → Recovery → Post-Mortem
+
+  - id: SEC-IR-02
+    category: Incident Response
+    check: Incident Response Team definido (roles + contacts)
+    required: false  # MVP: Definir responsáveis básicos, estrutura formal pode ser simples
+    note: "MVP: Identificar quem lidera resposta. Estrutura completa quando time crescer."
+    evidence:
+      - Incident Commander: [NOME]
+      - Security Lead: [NOME]
+      - DPO: [NOME]
+
+  - id: SEC-IR-03
+    category: Incident Response
+    check: Playbooks criados (database breach, DDoS, ransomware)
+    required: false  # MVP: Criar playbooks após primeiro drill
+    note: "MVP: Ter Incident Response Plan (SEC-IR-01). Playbooks detalhados após drill inicial."
+    evidence:
+      - playbooks/database-breach.md
+      - playbooks/ddos-attack.md
+      - playbooks/ransomware.md
+
+  - id: SEC-IR-04
+    category: Incident Response
+    check: Automated alerts configurados (SIEM integration)
+    required: true  # ESSENCIAL MVP (AlertManager suficiente)
+    note: "MVP: AlertManager + Grafana. SIEM enterprise (Splunk/Sumo) quando escalar."
+    evidence:
+      - AlertManager rules: HighFailedLoginRate, UnauthorizedDatabaseAccess
+      - SIEM integration (Splunk, Sumo Logic, CloudWatch Insights) [opcional para MVP]
+
+  - id: SEC-IR-05
+    category: Incident Response
+    check: Quarterly drills agendados (Q1-Q4)
+    required: false  # MVP: Implementar drills trimestrais após estabilização
+    note: "Obrigatório iniciar drills quando tiver base de usuários ativa (>100 users)"
+    evidence:
+      - Calendar entries para incident drills
+      - Drill reports (last execution date, lessons learned)
+
+  - id: SEC-IR-06
+    category: Incident Response
+    check: Post-mortem template criado
+    required: false  # MVP: Criar template quando ocorrer primeiro incidente
+    note: "Ter conceito de post-mortem é essencial. Template formal pode ser criado quando necessário."
+    evidence:
+      - Template com: Timeline, Root Cause, Impact, Action Items
+
+# ========================================
+# SECURE DEVELOPMENT
+# ========================================
+
+secure_development:
+  - id: SEC-DEV-01
+    category: Secure Development
+    check: Input validation em todas APIs (Value Objects, FluentValidation)
+    required: true
+    evidence:
+      - Value Objects validam domínio (Email, CPF, etc)
+      - API controllers usam FluentValidation
+
+  - id: SEC-DEV-02
+    category: Secure Development
+    check: Output encoding habilitado (XSS prevention)
+    required: false  # MVP: Vue auto-escape habilitado por padrão, CSP pode ser adicionado progressivamente
+    note: "MVP: Vue 3 escapa automaticamente. CSP headers adicionar quando refinar política."
+    evidence:
+      - React auto-escape habilitado
+      - CSP headers configurados
+
+  - id: SEC-DEV-03
+    category: Secure Development
+    check: SQL parametrizado (EF Core, sem raw SQL)
+    required: true
+    evidence:
+      - grep -r "FromSqlRaw" (zero matches ou todos parametrizados)
+      - EF Core LINQ queries
+
+  - id: SEC-DEV-04
+    category: Secure Development
+    check: Password hashing com bcrypt/Argon2 (NUNCA plaintext)
+    required: true
+    evidence:
+      - PasswordHasher<User> (ASP.NET Identity)
+      - Ou bcrypt.hash() manual
+
+  - id: SEC-DEV-05
+    category: Secure Development
+    check: Rate limiting configurado (DDoS prevention)
+    required: false  # MVP: Rate limiting básico suficiente, WAF pode ser adicionado
+    note: "MVP: Implementar rate limiting básico na API. WAF adicionar quando tiver tráfego real."
+    evidence:
+      - API rate limit: 100 req/min por user
+      - WAF rate limit: 2000 req/5min por IP
+
+  - id: SEC-DEV-06
+    category: Secure Development
+    check: Audit logging habilitado (quem, o quê, quando)
+    required: false  # MVP: Logging básico suficiente, audit logs formais podem ser progressivos
+    note: "MVP: Logs de eventos críticos. Audit trail completo quando compliance exigir."
+    evidence:
+      - Domain Events geram audit logs
+      - Logs imutáveis (append-only)
+
+# ========================================
+# MONITORING & ALERTING
+# ========================================
+
+monitoring:
+  - id: SEC-MON-01
+    category: Security Monitoring
+    check: Security alerts configurados (failed logins, privilege escalation, data export)
+    required: true
+    evidence:
+      - Alert: HighFailedLoginRate (5+ failures in 5 min)
+      - Alert: PrivilegeEscalation (user role → admin)
+      - Alert: SuspiciousDataExport (>10k rows)
+
+  - id: SEC-MON-02
+    category: Security Monitoring
+    check: SIEM integration funcionando (logs centralizados para security analysis)
+    required: false  # MVP: SIEM enterprise pode ser implementado gradualmente
+    note: "Para MVP, usar Grafana Loki + AlertManager. SIEM enterprise (Splunk/Sumo) quando escalar."
+    evidence:
+      - Splunk/Sumo Logic recebendo security events
+      - Dashboards: failed logins, WAF blocks, unauthorized access
+
+  - id: SEC-MON-03
+    category: Security Monitoring
+    check: WAF logs monitorados (blocked requests analisados)
+    required: false  # MVP: WAF pode ser adicionado progressivamente
+    note: "Adicionar WAF quando tiver tráfego real e ataques identificados."
+    evidence:
+      - WAF metrics no Grafana
+      - Alert: WAFBlockSpike (>100 blocks in 5 min)
+
+# ========================================
+# DOCUMENTATION
+# ========================================
+
+documentation:
+  - id: SEC-DOC-01
+    category: Documentation
+    check: SEC-01-Threat-Model.md completo
+    required: true  # ESSENCIAL MVP
+    evidence:
+      - 00-doc-ddd/security/SEC-01-Threat-Model.md
+
+  - id: SEC-DOC-02
+    category: Documentation
+    check: SEC-02-Security-Architecture.md completo
+    required: true  # ESSENCIAL MVP
+    evidence:
+      - 00-doc-ddd/security/SEC-02-Security-Architecture.md
+
+  - id: SEC-DOC-03
+    category: Documentation
+    check: SEC-03-Compliance-Report.md completo
+    required: false  # MVP: Documentar compliance progressivamente
+    note: "Essencial documentar LGPD. SOC2/PCI/CVM quando aplicável."
+    evidence:
+      - 00-doc-ddd/security/SEC-03-Compliance-Report.md
+
+  - id: SEC-DOC-04
+    category: Documentation
+    check: SEC-04-Pentest-Report.md completo
+    required: true  # ESSENCIAL MVP
+    evidence:
+      - 00-doc-ddd/security/SEC-04-Pentest-Report.md
+
+  - id: SEC-DOC-05
+    category: Documentation
+    check: SEC-05-Incident-Response-Plan.md completo
+    required: true  # ESSENCIAL MVP
+    evidence:
+      - 00-doc-ddd/security/SEC-05-Incident-Response-Plan.md
+
+# ========================================
+# VALIDATION
+# ========================================
+
+validation:
+  - id: SEC-VAL-01
+    category: Validation
+    check: Penetration test passou (zero vulnerabilidades CRITICAL/HIGH)
+    required: true
+    evidence:
+      - SEC-04 report: 0 CRITICAL, 0 HIGH findings
+
+  - id: SEC-VAL-02
+    category: Validation
+    check: Compliance audit aprovado (LGPD, SOC2)
+    required: false  # MVP: LGPD é obrigatório, SOC2 apenas se vender para enterprise
+    note: "LGPD compliance checklist 100% é obrigatório. SOC2 audit apenas quando necessário."
+    evidence:
+      - SOC2 Type II report (se aplicável)
+      - LGPD compliance checklist 100%
+
+  - id: SEC-VAL-03
+    category: Validation
+    check: Incident drill executado com sucesso
+    required: false  # MVP: Executar primeiro drill após lançamento
+    note: "Executar primeiro drill dentro de 30 dias após lançamento em produção"
+    evidence:
+      - Drill report: team respondeu em <15 min (P0)
+      - Playbooks funcionaram sem erros
+
+  - id: SEC-VAL-04
+    category: Validation
+    check: Platform Engineer validou segurança da infra (PE-02)
+    required: true
+    evidence:
+      - PE-02-Observability-Strategy.md com security alerts
+
+# ========================================
+# EXIT CRITERIA
+# ========================================
+
+exit_criteria:
+  description: >
+    Security production-ready quando:
+    Threat model completo E pentest passou E compliance OK E incident response pronto
+
+  required_checks:
+    - SEC-TM-01  # STRIDE analysis completo
+    - SEC-ARCH-01  # Zero-Trust documentado
+    - SEC-COMP-LGPD-01  # Data mapping (LGPD)
+    - SEC-PT-03  # Vulnerabilidades CRITICAL/HIGH corrigidas
+    - SEC-IR-01  # Incident Response Plan
+
+  optional_checks:
+    - SEC-COMP-PCI-01  # PCI-DSS (se aplicável)
+    - SEC-COMP-FIN-01  # CVM/SEC (se aplicável)

@@ -1,0 +1,27 @@
+# UXD Guidelines - UX Designer
+
+agent: "UXD"
+phase: "UX Design"
+type: "guidelines"  # Não é checklist obrigatório, são diretrizes para qualidade
+
+note: |
+  UX é ITERATIVO - validação com usuários reais é mais importante que checklists.
+  Os checks abaixo são RECOMENDAÇÕES para garantir qualidade mínima.
+  Para MVP: foco em user flows principais, wireframes podem ser low-fidelity.
+
+deliverables:
+  - "UXD-01-User-Flows.md"
+  - "UXD-02-Wireframes.md"
+  - "UXD-03-Component-Library.md"
+
+recommended_practices:
+  - "User flows cobrem jornadas principais"
+  - "Wireframes de telas críticas completos (low-fi OK para MVP)"
+  - "Component library documentado (pode ser incremental)"
+  - "Navegação entre contextos definida"
+  - "Acessibilidade considerada (WCAG básico para MVP)"
+
+success_criteria:
+  - "FE pode implementar telas baseado nos wireframes"
+  - "User flows estão claros para implementação"
+  - "Design system básico definido (cores, tipografia, componentes principais)"

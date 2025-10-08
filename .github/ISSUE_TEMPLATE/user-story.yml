@@ -1,0 +1,124 @@
+name: 📖 User Story
+description: Criar uma nova user story
+title: "[US-XXX] "
+labels: ["user-story", "needs-triage"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 📖 Template para User Stories DDD
+        Use este template seguindo os padrões DDD: "Como [usuário brasileiro], eu quero [funcionalidade em português] para que [benefício em português]".
+        
+  - type: input
+    id: story-id
+    attributes:
+      label: ID da Story
+      description: Número sequencial da user story (ex. US-005)
+      placeholder: US-XXX
+    validations:
+      required: true
+      
+  - type: input
+    id: epic-link
+    attributes:
+      label: Épico Relacionado
+      description: Link ou número da issue do épico pai
+      placeholder: "#123" ou "link para o épico"
+    validations:
+      required: false
+      
+  - type: input
+    id: bounded-context
+    attributes:
+      label: Bounded Context
+      description: Em qual Contexto Delimitado esta story se enquadra?
+      placeholder: ex. Contexto de Gestão de Pedidos
+    validations:
+      required: true
+      
+  - type: input
+    id: subdomain
+    attributes:
+      label: Subdomínio
+      description: Qual subdomínio esta story pertence?
+      placeholder: ex. Processamento de Pedidos
+    validations:
+      required: true
+      
+  - type: textarea
+    id: user-story
+    attributes:
+      label: User Story
+      description: Escreva a user story em português claro para stakeholders brasileiros
+      placeholder: |
+        **Como** um [usuário brasileiro]
+        **Eu quero** [funcionalidade em português]  
+        **Para que** [benefício em português]
+    validations:
+      required: true
+      
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Critérios de Aceitação
+      description: Lista detalhada dos critérios que devem ser atendidos
+      placeholder: |
+        - [ ] Critério 1
+        - [ ] Critério 2
+        - [ ] Critério 3
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: story-points
+    attributes:
+      label: Story Points
+      description: Estimativa de complexidade (Fibonacci)
+      options:
+        - "1"
+        - "2" 
+        - "3"
+        - "5"
+        - "8"
+        - "13"
+        - "Needs Estimation"
+      default: 4
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Prioridade
+      description: Qual a prioridade desta story?
+      options:
+        - "🔴 High"
+        - "🟡 Medium"
+        - "🟢 Low"
+      default: 1
+    validations:
+      required: true
+      
+  - type: textarea
+    id: technical-notes
+    attributes:
+      label: Notas Técnicas
+      description: Qualquer consideração técnica importante
+      placeholder: APIs necessárias, dependências, etc.
+    validations:
+      required: false
+      
+  - type: textarea
+    id: definition-of-done
+    attributes:
+      label: Definition of Done
+      description: Checklist técnico para conclusão
+      placeholder: |
+        - [ ] Código implementado
+        - [ ] Testes unitários
+        - [ ] Testes de integração
+        - [ ] Code review aprovado
+        - [ ] Deploy em staging
+    validations:
+      required: false

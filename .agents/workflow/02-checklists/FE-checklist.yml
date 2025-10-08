@@ -1,0 +1,8 @@
+agent: "FE"
+phase: "Frontend Implementation"
+essential_checks:
+  - "Componentes seguem specs UXD"
+  - "Integração com APIs DE funcional"
+  - "Responsivo em mobile/tablet/desktop"
+  - "Acessibilidade básica (WCAG)"
+  - "Testes unitários básicos criados"

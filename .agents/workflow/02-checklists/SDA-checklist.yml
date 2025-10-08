@@ -1,0 +1,28 @@
+# SDA Guidelines - Strategic Domain Analyst
+
+agent: "SDA"
+phase: "Strategic Design"
+type: "guidelines"  # Não é checklist obrigatório, são diretrizes para qualidade
+
+note: |
+  Este agente foca na fase de DISCOVERY estratégica.
+  Os checks abaixo são RECOMENDAÇÕES, não gates obrigatórios.
+  Para MVP com 1-2 devs: use bom senso, adapte conforme necessário.
+
+deliverables:
+  - "SDA-01-Event-Storming.md"
+  - "SDA-02-Context-Map.md"
+  - "SDA-03-Ubiquitous-Language.md"
+
+recommended_practices:
+  - "Bounded Contexts claramente definidos"
+  - "Épicos por funcionalidade (não por BC)"
+  - "Linguagem Ubíqua em português"
+  - "Context Map com relacionamentos"
+  - "Priorização de épicos documentada"
+  - "Nomenclatura conforme 02-Nomenclature-Standards.md"
+
+success_criteria:
+  - "DE pode começar modelagem tática"
+  - "UXD tem contexto para user flows"
+  - "GM pode criar issues por épico"

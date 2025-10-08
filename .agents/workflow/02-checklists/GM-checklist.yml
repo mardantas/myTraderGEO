@@ -1,0 +1,51 @@
+# GM Guidelines - Git Manager
+
+agent: "GM"
+phase: "GitHub Management + CI/CD"
+type: "guidelines"  # Não é checklist obrigatório, são diretrizes para qualidade
+
+note: |
+  Git e CI/CD são FUNDAMENTAIS mas devem ser pragmáticos.
+  Os checks abaixo são RECOMENDAÇÕES de boas práticas.
+  Para MVP com 1-2 devs: implemente progressivamente, não tudo de uma vez.
+
+essential_practices:
+  - "GitHub configurado com labels e milestones"
+  - "Issues criadas por épico"
+  - "Templates de issue e PR funcionais"
+  - "Rastreabilidade épico → issues clara"
+
+cicd_pipeline_recommended:
+  - "CI Backend: .github/workflows/ci-backend.yml (build + test .NET)"
+  - "CI Frontend: .github/workflows/ci-frontend.yml (lint + test + build Vue)"
+  - "Security Scan: .github/workflows/security.yml (CodeQL weekly) [opcional MVP]"
+  - "Dependabot: .github/dependabot.yml (NuGet + npm vulnerabilities)"
+  - "Workflows rodando em PRs (status checks antes de merge)"
+
+branch_workflow:
+  - "Branch naming convention documentado (feature/epic-X, bugfix/Y)"
+  - "Code review obrigatório (nunca merge direto em main) [recomendado]"
+  - "GitHub Actions como gatekeeper (testes devem passar)"
+  - "Git hooks locais opcionais (bloquear push para main)"
+  - "⚠️ Branch protection rules: disponível só em GitHub Pro/Enterprise"
+
+versioning_recommended:
+  - "Semantic versioning definido (vMAJOR.MINOR.PATCH)"
+  - "Git tags para releases (v1.0.0, v1.1.0)"
+  - "GitHub Releases com changelog [opcional MVP]"
+
+deployment_practices:
+  - "CD Staging pipeline (opcional, .github/workflows/cd-staging.yml)"
+  - "Deployment process documentado"
+  - "Secrets management via GitHub Secrets"
+
+security_recommended:
+  - "Dependabot habilitado (auto-PRs para vulnerabilities)"
+  - "CodeQL analysis semanal [opcional MVP, implementar progressivamente]"
+  - "Secret scanning configurado (prevenir commit de tokens)"
+  - "Consultar .agents/03-Security-And-Platform-Strategy.md (seção GM)"
+
+success_criteria:
+  - "CI rodando em PRs e bloqueando merges com testes falhando"
+  - "Dependabot alertando sobre vulnerabilidades"
+  - "Issues organizadas por épicos/milestones"

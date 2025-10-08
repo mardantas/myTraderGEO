@@ -1,0 +1,34 @@
+agent: "DE"
+phase: "Tactical Design + Implementation"
+essential_checks:
+  - "Aggregates com invariantes bem definidos"
+  - "Domain Events para integração entre BCs"
+  - "Use Cases implementados"
+  - "APIs funcionais e documentadas (OpenAPI/Swagger)"
+  - "Migrations EF Core criadas"
+  - "Repositories implementados"
+
+security_checks:
+  - "Input validation em Value Objects (dados inválidos rejeitados)"
+  - "Authorization em Aggregates (somente owner pode modificar)"
+  - "APIs idempotentes (operações críticas usam X-Idempotency-Key)"
+  - "Secrets em environment variables (NUNCA em appsettings.json)"
+  - "SQL parametrizado (EF Core, sem raw SQL vulnerável)"
+
+performance_checks:
+  - "Async/await correto (sem .Result ou .Wait())"
+  - "N+1 queries prevenido (usar Include() quando necessário)"
+  - "Circuit breaker para integrações externas (Polly)"
+  - "Consultar .agents/03-Security-And-Platform-Strategy.md"
+
+api_standards:
+  - "RESTful: verbos HTTP corretos (GET, POST, PUT, DELETE)"
+  - "Versionamento: /v1/resource"
+  - "Status codes apropriados (200, 201, 400, 404, 422)"
+  - "Idempotency Key em POST/PUT críticos"
+  - "Consultar .agents/05-API-Standards.md"
+
+advanced_patterns:
+  - "Considerar Saga se operação multi-BC (consultar .agents/04-Advanced-DDD-Patterns.md)"
+  - "Considerar Outbox se eventos críticos (garantia de entrega)"
+  - "Considerar Specification se queries complexas reutilizadas"

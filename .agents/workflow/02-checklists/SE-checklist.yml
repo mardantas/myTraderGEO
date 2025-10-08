@@ -1,0 +1,339 @@
+# SE (Software Engineer) - Quality Checklist
+# Complete backend implementation validation
+
+version: "1.0"
+agent: "SE (Software Engineer)"
+phase: "epic-iteration"
+
+# ========================================
+# OBJECTIVE CRITERIA (Must-Have)
+# ========================================
+objective:
+  - id: SE-OBJ-01
+    check: "All aggregates from DE-01 implemented with validated invariants"
+    validation: "Code review: verify all invariants from DE-01 are implemented"
+    blocking: true
+
+  - id: SE-OBJ-02
+    check: "Domain Events identified and implemented (minimum 2 per critical aggregate)"
+    validation: "Search for classes implementing IDomainEvent"
+    blocking: true
+
+  - id: SE-OBJ-03
+    check: "All Use Cases from DE-01 implemented (commands + queries)"
+    validation: "Verify handlers for all use cases in DE-01"
+    blocking: true
+
+  - id: SE-OBJ-04
+    check: "Functional REST APIs with correct status codes (200/201/400/404/422)"
+    validation: "Manual testing or integration tests for all endpoints"
+    blocking: true
+
+  - id: SE-OBJ-05
+    check: "EF Core migrations created and applied in dev environment"
+    validation: "dotnet ef migrations list shows all migrations"
+    blocking: true
+
+  - id: SE-OBJ-06
+    check: "Repositories implemented and functional (complete CRUD)"
+    validation: "Test all repository methods (GetById, Add, Update, Delete)"
+    blocking: true
+
+  - id: SE-OBJ-07
+    check: "Basic unit tests ≥70% coverage in domain layer"
+    validation: "dotnet test --collect:\"XPlat Code Coverage\" | check report"
+    blocking: true
+
+  - id: SE-OBJ-08
+    check: "OpenAPI/Swagger updated and accessible (endpoint /swagger)"
+    validation: "Navigate to /swagger and verify all endpoints documented"
+    blocking: true
+
+# ========================================
+# SECURITY CRITERIA (Critical)
+# ========================================
+security:
+  - id: SE-SEC-01
+    check: "Input validation in 100% of created Value Objects"
+    validation: "Code review: all Value Objects throw exceptions on invalid input"
+    severity: critical
+    blocking: true
+
+  - id: SE-SEC-02
+    check: "Authorization implemented in critical Aggregate methods"
+    validation: "Check authorization in methods like Order.Confirm(), Payment.Process()"
+    severity: high
+    blocking: true
+
+  - id: SE-SEC-03
+    check: "Critical POST/PUT APIs are idempotent (header X-Idempotency-Key)"
+    validation: "Verify IdempotencyKey handling in CreateOrder, ProcessPayment handlers"
+    severity: high
+    blocking: true
+
+  - id: SE-SEC-04
+    check: "Zero secrets in code (environment variables or vault)"
+    validation: "grep -r 'password\\|apikey\\|secret' src/ (should find zero hardcoded)"
+    severity: critical
+    blocking: true
+
+  - id: SE-SEC-05
+    check: "Parameterized SQL (EF Core, no vulnerable raw SQL)"
+    validation: "Search for FromSqlRaw/ExecuteSqlRaw with string interpolation (should be zero)"
+    severity: critical
+    blocking: true
+
+  - id: SE-SEC-06
+    check: "HTTPS enforced (no HTTP in production)"
+    validation: "Verify app.UseHttpsRedirection() in Program.cs"
+    severity: high
+    blocking: true
+
+  - id: SE-SEC-07
+    check: "CORS configured correctly (not Allow *)"
+    validation: "Check CORS policy allows only specific origins"
+    severity: medium
+    blocking: false
+
+# ========================================
+# PERFORMANCE CRITERIA
+# ========================================
+performance:
+  - id: SE-PERF-01
+    check: "Async/await used correctly (zero use of .Result or .Wait)"
+    validation: "Code search: .Result or .Wait() should be zero"
+    severity: high
+    blocking: true
+
+  - id: SE-PERF-02
+    check: "N+1 queries identified and eliminated (use Include when necessary)"
+    validation: "Enable EF logging, check for multiple SELECT queries in loops"
+    severity: high
+    blocking: true
+
+  - id: SE-PERF-03
+    check: "Main queries execute in less than 100ms (verify logs or profiler)"
+    validation: "Use MiniProfiler or Application Insights to measure query times"
+    severity: medium
+    blocking: false
+
+  - id: SE-PERF-04
+    check: "Caching implemented for frequent and immutable data"
+    validation: "Check for IMemoryCache usage in repositories for reference data"
+    severity: low
+    blocking: false
+
+  - id: SE-PERF-05
+    check: "Database connection pooling enabled"
+    validation: "Verify connection string has Pooling=true (default)"
+    severity: medium
+    blocking: false
+
+# ========================================
+# API STANDARDS CRITERIA
+# ========================================
+api-standards:
+  - id: SE-API-01
+    check: "APIs follow versioning pattern (/v1/resource)"
+    validation: "All routes start with /v1/"
+    severity: high
+    blocking: true
+
+  - id: SE-API-02
+    check: "Correct HTTP status codes (200, 201, 400, 404, 422)"
+    validation: "Verify controllers return appropriate status codes"
+    severity: high
+    blocking: true
+
+  - id: SE-API-03
+    check: "Error responses consistent (ErrorResponse DTO)"
+    validation: "All error responses use standardized ErrorResponse format"
+    severity: medium
+    blocking: true
+
+  - id: SE-API-04
+    check: "Idempotency headers validated (X-Idempotency-Key)"
+    validation: "POST/PUT endpoints validate idempotency key presence"
+    severity: high
+    blocking: true
+
+  - id: SE-API-05
+    check: "Pagination implemented for list endpoints"
+    validation: "GET /v1/orders supports limit and cursor parameters"
+    severity: medium
+    blocking: false
+
+  - id: SE-API-06
+    check: "Rate limiting configured"
+    validation: "Check for [EnableRateLimiting] attribute on critical endpoints"
+    severity: low
+    blocking: false
+
+# ========================================
+# DDD PATTERNS CRITERIA
+# ========================================
+ddd-patterns:
+  - id: SE-DDD-01
+    check: "DDD patterns applied according to 04-DDD-Patterns-Reference.md"
+    validation: "Verify patterns match recommendations in reference doc"
+    severity: high
+    blocking: true
+
+  - id: SE-DDD-02
+    check: "Idempotency Pattern implemented in critical operations"
+    validation: "Check IdempotencyRecords table and handler logic"
+    severity: high
+    blocking: true
+
+  - id: SE-DDD-03
+    check: "Domain Services vs Application Services correctly distinguished"
+    validation: "Domain services are stateless and in Domain layer; App services orchestrate"
+    severity: medium
+    blocking: false
+
+  - id: SE-DDD-04
+    check: "Aggregates enforce invariants in all state changes"
+    validation: "Public methods validate invariants before changing state"
+    severity: high
+    blocking: true
+
+  - id: SE-DDD-05
+    check: "Repository pattern correct (only Aggregate Roots have repositories)"
+    validation: "Verify no repositories for child entities (OrderItem should not have repository)"
+    severity: medium
+    blocking: false
+
+# ========================================
+# TESTING CRITERIA
+# ========================================
+testing:
+  - id: SE-TEST-01
+    check: "Unit tests cover critical domain logic (≥70% coverage)"
+    validation: "dotnet test --collect coverage | verify domain layer ≥70%"
+    severity: high
+    blocking: true
+
+  - id: SE-TEST-02
+    check: "Tests follow AAA pattern (Arrange, Act, Assert)"
+    validation: "Code review: verify test structure"
+    severity: low
+    blocking: false
+
+  - id: SE-TEST-03
+    check: "Tests are isolated (no shared state between tests)"
+    validation: "Each test creates its own fixtures"
+    severity: medium
+    blocking: false
+
+  - id: SE-TEST-04
+    check: "Critical business rules have explicit tests"
+    validation: "Verify tests for each invariant in DE-01"
+    severity: high
+    blocking: true
+
+# ========================================
+# CODE QUALITY CRITERIA
+# ========================================
+code-quality:
+  - id: SE-CODE-01
+    check: "No compiler warnings"
+    validation: "dotnet build produces zero warnings"
+    severity: medium
+    blocking: false
+
+  - id: SE-CODE-02
+    check: "XML documentation on public APIs"
+    validation: "All public controllers and methods have /// <summary> tags"
+    severity: low
+    blocking: false
+
+  - id: SE-CODE-03
+    check: "Consistent naming conventions (PascalCase for classes, camelCase for parameters)"
+    validation: "Code review for naming consistency"
+    severity: low
+    blocking: false
+
+  - id: SE-CODE-04
+    check: "SOLID principles followed"
+    validation: "Classes have single responsibility, dependencies injected"
+    severity: medium
+    blocking: false
+
+  - id: SE-CODE-05
+    check: "No magic numbers or strings (use constants or enums)"
+    validation: "Search for hardcoded values in business logic"
+    severity: low
+    blocking: false
+
+# ========================================
+# DOCUMENTATION CRITERIA
+# ========================================
+documentation:
+  - id: SE-DOC-01
+    check: "SE-01-[EpicName]-Implementation-Report.md created (if complex epic)"
+    validation: "Check 00-doc-ddd/04-tactical-design/ for SE-01 file"
+    severity: low
+    blocking: false
+
+  - id: SE-DOC-02
+    check: "README.md updated with setup instructions"
+    validation: "Verify backend README has latest setup steps"
+    severity: low
+    blocking: false
+
+  - id: SE-DOC-03
+    check: "Architectural decisions documented (if deviations from DE-01)"
+    validation: "Check SE-01 report section 5 (Deviations)"
+    severity: medium
+    blocking: false
+
+# ========================================
+# INTEGRATION CRITERIA
+# ========================================
+integration:
+  - id: SE-INT-01
+    check: "Database migrations run successfully"
+    validation: "dotnet ef database update executes without errors"
+    severity: critical
+    blocking: true
+
+  - id: SE-INT-02
+    check: "Application starts without errors"
+    validation: "dotnet run succeeds and /health endpoint returns 200"
+    severity: critical
+    blocking: true
+
+  - id: SE-INT-03
+    check: "Integration with other BCs functional (HTTP clients configured)"
+    validation: "Test calls to Customer BC, Inventory BC (using mocks if necessary)"
+    severity: high
+    blocking: true
+
+  - id: SE-INT-04
+    check: "Dependency Injection configuration correct"
+    validation: "No runtime DI exceptions when starting application"
+    severity: critical
+    blocking: true
+
+# ========================================
+# EXIT CRITERIA
+# ========================================
+exit-criteria:
+  description: "Backend functional for epic when all blocking criteria are met"
+  conditions:
+    - "All blocking checks (blocking: true) are complete"
+    - "DBA approved schema (DBA-01 completed)"
+    - "FE can integrate APIs without blockers"
+    - "QAE can start integration and E2E tests"
+
+  validation-command: |
+    # Run all checks
+    dotnet build --no-incremental
+    dotnet test --collect:"XPlat Code Coverage"
+    dotnet ef database update
+    curl http://localhost:5000/swagger (verify 200)
+
+  approvers:
+    - "DBA (schema review)"
+    - "FE (API contracts validation)"
+    - "QAE (testability validation)"

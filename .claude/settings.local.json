@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mv:*)",
+      "Bash(rmdir:*)",
+      "WebSearch",
+      "Bash(sed:*)",
+      "Bash(move:*)",
+      "Bash(grep:*)",
+      "Bash(mkdir:*)",
+      "Bash(tree:*)",
+      "Bash(for:*)",
+      "Bash(tail:*)",
+      "Bash(done)",
+      "Bash(powershell:*)",
+      "Bash(copy:*)",
+      "Bash(find:*)",
+      "Bash(xargs:*)",
+      "Bash(do)",
+      "Bash(cat:*)",
+      "Bash(dir:*)",
+      "Bash(cp:*)",
+      "Bash(rm:*)",
+      "Bash(do echo \"=== $file ===\")",
+      "Bash(head:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

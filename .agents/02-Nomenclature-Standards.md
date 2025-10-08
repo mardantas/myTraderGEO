@@ -1,0 +1,325 @@
+# Padrões de Nomenclatura DDD
+
+**Objetivo:** Definir convenções de nomenclatura consistentes para documentação e código em projetos DDD.
+
+---
+
+## 🎯 Princípio Fundamental
+
+### Português para NEGÓCIO, Inglês para TÉCNICO
+
+- **Documentação DDD:** Português brasileiro
+- **Código fonte:** Inglês (padrão indústria)
+- **Mapeamento:** Termos de negócio ↔ classes/namespaces
+
+---
+
+## 📋 Terminologia DDD
+
+### Subdomínios (Subdomains)
+**Divisões lógicas do domínio de negócio**
+
+**Tipos:**
+- **Core:** Funcionalidade central, diferencial competitivo
+- **Supporting:** Suporte necessário ao core
+- **Generic:** Funcionalidade comum (pode usar solução pronta)
+
+**Nomenclatura:**
+- Documentação: "Gestão de Estratégias" (português)
+- Namespace: `StrategyManagement` (inglês)
+
+---
+
+### Bounded Contexts (Contextos Delimitados)
+**Limites explícitos onde modelos de domínio se aplicam**
+
+**Nomenclatura:**
+```
+Documentação: "Contexto de Gestão de Estratégias"
+Namespace: StrategyManagement
+Pasta: 02-backend/src/StrategyManagement/
+```
+
+**Exemplo genérico (e-commerce):**
+| Bounded Context (PT) | Namespace (EN) | Tipo |
+|----------------------|----------------|------|
+| Gestão de Pedidos | OrderManagement | Core |
+| Gestão de Estoque | InventoryManagement | Supporting |
+| Gestão de Pagamentos | PaymentManagement | Supporting |
+| Gestão de Clientes | CustomerManagement | Supporting |
+
+---
+
+## 🔤 Linguagem Ubíqua
+
+### Template de Termos
+
+| Termo Negócio (PT) | Código (EN) | Tipo DDD | Contexto |
+|--------------------|-------------|----------|----------|
+| Pedido | `Order` | Aggregate Root | Order Management |
+| Item do Pedido | `OrderItem` | Entity | Order Management |
+| Endereço de Entrega | `ShippingAddress` | Value Object | Order Management |
+| Valor Monetário | `Money` | Value Object | Order Management |
+| Produto | `Product` | Entity | Inventory Management |
+| Pedido Criado | `OrderCreated` | Domain Event | Order Management |
+
+### Diretrizes
+
+✅ **Use português natural** para stakeholders
+✅ **Seja específico** ao contexto
+✅ **Mantenha consistência** em todo projeto
+❌ **Evite traduções literais** forçadas
+❌ **Evite anglicismos** desnecessários
+
+---
+
+## 📁 Nomenclatura de Arquivos
+
+### Deliverables de Agentes
+
+**Formato:** `[AGENTE]-[NN]-[Titulo-Descritivo].md`
+
+**Exemplos:**
+```
+SDA-01-Event-Storming.md
+SDA-02-Context-Map.md
+UXD-01-User-Flows.md
+DE-01-CreateOrder-Tactical-Model.md
+DBA-01-CreateOrder-Schema-Review.md
+QAE-01-Test-Strategy.md
+GM-01-GitHub-Setup.md
+```
+
+---
+
+### Feedbacks
+
+**Formato:** `FEEDBACK-[NNN]-[FROM]-[TO]-[titulo-curto].md`
+
+**Exemplos:**
+```
+FEEDBACK-001-DE-SDA-adicionar-evento-order-fulfilled.md
+FEEDBACK-002-FE-UXD-corrigir-wireframe-dashboard.md
+FEEDBACK-003-QAE-DBA-performance-query-orders.md
+```
+
+---
+
+## 🏗️ Nomenclatura de Código
+
+### Namespaces (C# / .NET)
+
+**Estrutura:**
+```
+[ProjectName].OrderManagement.Domain
+[ProjectName].OrderManagement.Application
+[ProjectName].OrderManagement.Infrastructure
+[ProjectName].PaymentManagement.Domain
+```
+
+**Padrão:** `[ProjectName].[BoundedContext].[Layer]`
+
+---
+
+### Classes DDD
+
+**Aggregates:**
+```csharp
+public class Strategy { }  // Aggregate Root
+public class StrategyLeg { }  // Entity dentro do aggregate
+```
+
+**Value Objects:**
+```csharp
+public record Greeks(decimal Delta, decimal Gamma, decimal Theta, decimal Vega);
+public record StrikePrice(decimal Value, string Currency);
+```
+
+**Domain Events:**
+```csharp
+public record StrategyCreated(Guid StrategyId, DateTime CreatedAt);
+public record StrategyAdjusted(Guid StrategyId, string Reason);
+```
+
+**Repositories:**
+```csharp
+public interface IStrategyRepository { }
+public class StrategyRepository : IStrategyRepository { }
+```
+
+---
+
+### Pastas de Código
+
+**Backend:**
+```
+02-backend/
+├── src/
+│   ├── Domain/
+│   │   ├── StrategyManagement/
+│   │   │   ├── Aggregates/
+│   │   │   ├── ValueObjects/
+│   │   │   ├── DomainEvents/
+│   │   │   └── Interfaces/
+│   │   └── RiskManagement/
+│   ├── Application/
+│   │   ├── StrategyManagement/
+│   │   │   ├── Commands/
+│   │   │   ├── Queries/
+│   │   │   └── UseCases/
+│   └── Infrastructure/
+│       ├── Persistence/
+│       └── Integrations/
+```
+
+**Frontend:**
+```
+01-frontend/
+├── src/
+│   ├── components/
+│   │   ├── strategy/
+│   │   ├── risk/
+│   │   └── shared/
+│   ├── pages/
+│   └── services/
+```
+
+---
+
+## 📊 Nomenclatura de Épicos e Issues
+
+### Épicos (GitHub)
+
+**Formato:** `[EPIC-NN] Nome Descritivo da Funcionalidade`
+
+**Exemplos:**
+```
+[EPIC-01] Criar e Visualizar Estratégia Bull Call Spread
+[EPIC-02] Calcular Greeks e P&L em Tempo Real
+[EPIC-03] Alertas de Risco Automáticos
+```
+
+**Características:**
+- Nome em português (negócio)
+- Descreve funcionalidade, não BC
+- Transversal aos bounded contexts
+
+---
+
+### Issues (GitHub)
+
+**Formato:** `[AGENTE-BC] Descrição da tarefa`
+
+**Exemplos:**
+```
+[DE-Strategy] Implementar aggregate Strategy com validações
+[FE-Dashboard] Criar componente de visualização de Greeks
+[QAE-Integration] Testes de integração Strategy + Market Data
+[DBA-Performance] Otimizar query de cálculo de Greeks
+```
+
+---
+
+## 🔢 Numeração de Agents
+
+**Formato:** Múltiplos de 10 para permitir inserções futuras
+
+```
+10 - SDA (Strategic Domain Analyst)
+20 - UXD (User Experience Designer)
+30 - DE (Domain Engineer)
+40 - DBA (Database Administrator)
+50 - FE (Frontend Engineer)
+60 - QAE (Quality Assurance Engineer)
+70 - GM (GitHub Manager)
+
+[Espaço para futuros agents]
+15 - SEC (Security Specialist) - quando necessário
+45 - PE (Platform Engineer) - quando necessário
+```
+
+---
+
+## 📂 Estrutura de Pastas de Documentação
+
+```
+00-doc-ddd/
+├── 00-feedback/                    # Feedbacks entre agents
+├── 01-inputs-raw/                  # Requisitos originais
+├── 02-strategic-design/            # SDA deliverables
+├── 03-ux-design/                   # UXD deliverables
+├── 04-tactical-design/             # DE deliverables
+├── 05-database-design/             # DBA deliverables
+├── 06-quality-assurance/           # QAE deliverables
+└── 07-github-management/           # GM deliverables
+```
+
+**Numeração:** Múltiplos de 1, sequencial por fase do processo
+
+---
+
+## ✅ Checklist de Nomenclatura
+
+Antes de criar qualquer deliverable, verifique:
+
+- [ ] Nome do arquivo segue padrão `[AGENTE]-[NN]-[Titulo].md`
+- [ ] Termos de negócio em português na documentação
+- [ ] Código em inglês seguindo convenções
+- [ ] Mapeamento claro entre termos PT ↔ código EN
+- [ ] Bounded Contexts nomeados consistentemente
+- [ ] Épicos descrevem funcionalidade (não BC)
+- [ ] Feedbacks seguem formato `FEEDBACK-[NNN]-[FROM]-[TO]-[titulo].md`
+
+---
+
+## 📚 Exemplos Práticos
+
+### Exemplo 1: Termo de Negócio → Código
+
+**Linguagem Ubíqua:**
+```
+Termo: "Estratégia com Opções"
+Definição: Combinação de posições em opções que formam uma estratégia
+           de trading (ex: Bull Call Spread, Iron Condor)
+```
+
+**Código:**
+```csharp
+// Aggregate Root
+public class Strategy
+{
+    public StrategyId Id { get; private set; }
+    public string Name { get; private set; }
+    public List<StrategyLeg> Legs { get; private set; }
+    public Greeks Greeks { get; private set; }
+
+    public void AddLeg(StrategyLeg leg) { }
+    public void CalculateGreeks() { }
+}
+```
+
+---
+
+### Exemplo 2: Documentação → Namespace
+
+**SDA-02-Context-Map.md:**
+```markdown
+## Bounded Contexts
+
+### Contexto de Gestão de Pedidos
+Responsabilidade: Criação, processamento e acompanhamento de pedidos
+```
+
+**Código:**
+```
+Namespace: [ProjectName].OrderManagement
+Pasta: 02-backend/src/Domain/OrderManagement/
+```
+
+---
+
+---
+
+**Versão:** 1.0
+**Data:** 2025-10-02
+**Status:** Ativo
