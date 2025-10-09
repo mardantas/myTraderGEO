@@ -590,8 +590,8 @@ echo "Next feedback number: $next"
 ## 🔗 Referências
 
 - **Template de Feedback:** `.agents/templates/07-feedback/FEEDBACK.template.md`
-- **Workflow Guide:** `.agents/00-Workflow-Guide.md`
-- **Agents Overview:** `.agents/01-Agents-Overview.md`
+- **Workflow Guide:** `.agents/docs/00-Workflow-Guide.md`
+- **Agents Overview:** `.agents/docs/01-Agents-Overview.md`
 
 ---
 

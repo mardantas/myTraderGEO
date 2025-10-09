@@ -46,9 +46,9 @@ Write-Host "`n📄 Validating configuration files..." -ForegroundColor Yellow
 
 $requiredFiles = @(
     ".ddd-workflow-config.json",
-    ".agents/00-Workflow-Guide.md",
-    ".agents/01-Agents-Overview.md",
-    ".agents/02-Nomenclature-Standards.md"
+    ".agents/docs/00-Workflow-Guide.md",
+    ".agents/docs/01-Agents-Overview.md",
+    ".agents/docs/02-Nomenclature-Standards.md"
 )
 
 foreach ($file in $requiredFiles) {

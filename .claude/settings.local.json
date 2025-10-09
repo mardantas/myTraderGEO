@@ -22,7 +22,8 @@
       "Bash(cp:*)",
       "Bash(rm:*)",
       "Bash(do echo \"=== $file ===\")",
-      "Bash(head:*)"
+      "Bash(head:*)",
+      "Bash(ren:*)"
     ],
     "deny": [],
     "ask": []

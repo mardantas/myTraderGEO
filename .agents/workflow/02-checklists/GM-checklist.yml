@@ -43,7 +43,7 @@ security_recommended:
   - "Dependabot habilitado (auto-PRs para vulnerabilities)"
   - "CodeQL analysis semanal [opcional MVP, implementar progressivamente]"
   - "Secret scanning configurado (prevenir commit de tokens)"
-  - "Consultar .agents/03-Security-And-Platform-Strategy.md (seção GM)"
+  - "Consultar .agents/docs/03-Security-And-Platform-Strategy.md (seção GM)"
 
 success_criteria:
   - "CI rodando em PRs e bloqueando merges com testes falhando"

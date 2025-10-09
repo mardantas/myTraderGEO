@@ -135,12 +135,12 @@
 
         <criteria type="api">
             <criterion>OpenAPI/Swagger updated and accessible (endpoint /swagger)</criterion>
-            <criterion>APIs implemented according to 05-API-Standards.md (versioning, status codes, idempotency)</criterion>
+            <criterion>APIs implemented according to docs/05-API-Standards.md (versioning, status codes, idempotency)</criterion>
             <criterion>Consistent error responses (ErrorResponse DTO)</criterion>
         </criteria>
 
         <criteria type="ddd-patterns">
-            <criterion>DDD patterns applied according to 04-DDD-Patterns-Reference.md (mandatory consultation)</criterion>
+            <criterion>DDD patterns applied according to docs/04-DDD-Patterns-Reference.md (mandatory consultation)</criterion>
             <criterion>Idempotency Pattern implemented in critical operations</criterion>
             <criterion>Domain Services vs Application Services applied correctly</criterion>
         </criteria>

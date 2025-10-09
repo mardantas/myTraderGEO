@@ -678,47 +678,107 @@ updates:
 
 ---
 
-## 🔒 Branch Protection (Adaptado para GitHub Free)
+## 🔒 Branch Protection (GitHub Free)
 
-**⚠️ GitHub Free não permite Branch Protection Rules automáticas.**
+**⚠️ GitHub Free NÃO permite Branch Protection Rules.**
 
-### Alternativas para Proteção de Branches:
+### Alternativas para Proteção de Branches (GitHub Free):
 
-#### 1. **Code Review Obrigatório (Manual)**
-- **Prática:** NUNCA fazer merge direto em `main`
-- **Regra:** Todo código passa por PR + review
-- **Checklist PR:** Template força validação
+#### 1. **Disciplina de Code Review (CRÍTICO)**
+- ✅ **Regra de Ouro:** NUNCA fazer merge ou push direto em `main`
+- ✅ **Fluxo obrigatório:** Sempre criar PR para `main` ou `develop`
+- ✅ **Checklist PR:** Template força validação manual
+- ⚠️ **Responsabilidade:** Desenvolvedor deve ter disciplina (sem proteção automática)
+
+**Best Practice:**
+```bash
+# ❌ NUNCA fazer:
+git checkout main
+git merge feature/xyz
+git push origin main
+
+# ✅ SEMPRE fazer:
+git checkout feature/xyz
+git push origin feature/xyz
+# Depois criar PR via GitHub UI ou gh CLI
+gh pr create --base main --head feature/xyz
+```
 
 #### 2. **GitHub Actions como Gatekeeper**
 ```yaml
-# Status checks obrigatórios via Actions
-- name: Block if tests fail
-  if: failure()
-  run: exit 1
+# .github/workflows/ci.yml
+# Actions rodam em PRs e mostram status (✅ ou ❌)
+# Developer deve verificar antes de merge
+
+name: CI
+on:
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run tests
+        run: npm test
+      - name: Block if tests fail
+        if: failure()
+        run: exit 1
 ```
 
-#### 3. **Git Hooks Locais (Opcional)**
+**Importante:** GitHub Free não bloqueia merge automaticamente se CI falhar, mas mostra status ❌ no PR.
+
+#### 3. **Git Hooks Locais (Opcional - Prevenção Local)**
 ```bash
-# .git/hooks/pre-push
+# .git/hooks/pre-push (criar e dar chmod +x)
 #!/bin/bash
-if [ "$(git rev-parse --abbrev-ref HEAD)" == "main" ]; then
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+if [ "$CURRENT_BRANCH" == "main" ]; then
   echo "❌ ERRO: Push direto para main não permitido!"
-  echo "   Use PR: git checkout -b feature/... && git push origin feature/..."
+  echo "   Crie um PR: git checkout -b feature/... && git push origin feature/..."
   exit 1
+fi
+
+if [ "$CURRENT_BRANCH" == "develop" ]; then
+  echo "⚠️  AVISO: Push para develop. Tem certeza? (Ctrl+C para cancelar)"
+  sleep 3
 fi
 ```
 
-#### 4. **Branch Naming Convention (Força Organização)**
-```bash
-# Apenas branches válidos:
-- feature/epic-X-nome
-- bugfix/issue-Y-nome
-- hotfix/critical-Z
+**Limitação:** Git hooks são locais (não são commitados no repo). Cada desenvolvedor precisa configurar.
 
-# Proibido:
-- main (somente via PR)
-- develop (somente via PR de feature)
+#### 4. **Branch Naming Convention (Organização)**
+```bash
+# ✅ Branches permitidos:
+feature/epic-X-nome      # Nova funcionalidade
+bugfix/issue-Y-nome      # Correção de bug
+hotfix/critical-Z        # Hotfix de produção
+refactor/component-name  # Refatoração
+
+# ❌ Evitar push direto:
+main       # Somente via PR (disciplina manual)
+develop    # Somente via PR de feature/* (disciplina manual)
 ```
+
+### ⚠️ Considerações para GitHub Free
+
+**O que NÃO temos (GitHub Free):**
+- ❌ Branch protection rules (não bloqueia push direto)
+- ❌ Required reviewers (não força aprovação)
+- ❌ Required status checks (CI pode falhar e ainda fazer merge)
+- ❌ Restrict push (qualquer membro pode push para main)
+
+**O que temos como alternativa:**
+- ✅ Pull Request workflow (processo manual)
+- ✅ GitHub Actions status (mostra ✅/❌ mas não bloqueia)
+- ✅ Code review solicitação (mas não obrigatório)
+- ✅ Git hooks locais (prevenção individual)
+
+**Recomendação:**
+- Para projetos solo ou pequenos: **Disciplina + PR workflow + Git hooks**
+- Para times >3 pessoas: **Considerar GitHub Pro** ($4/user/month para branch protection)
 
 ### Semantic Versioning Strategy
 

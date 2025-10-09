@@ -19,16 +19,16 @@ performance_checks:
   - "Async/await correto (sem .Result ou .Wait())"
   - "N+1 queries prevenido (usar Include() quando necessário)"
   - "Circuit breaker para integrações externas (Polly)"
-  - "Consultar .agents/03-Security-And-Platform-Strategy.md"
+  - "Consultar .agents/docs/03-Security-And-Platform-Strategy.md"
 
 api_standards:
   - "RESTful: verbos HTTP corretos (GET, POST, PUT, DELETE)"
   - "Versionamento: /v1/resource"
   - "Status codes apropriados (200, 201, 400, 404, 422)"
   - "Idempotency Key em POST/PUT críticos"
-  - "Consultar .agents/05-API-Standards.md"
+  - "Consultar .agents/docs/05-API-Standards.md"
 
 advanced_patterns:
-  - "Considerar Saga se operação multi-BC (consultar .agents/04-Advanced-DDD-Patterns.md)"
+  - "Considerar Saga se operação multi-BC (consultar .agents/docs/04-DDD-Patterns-Reference.md)"
   - "Considerar Outbox se eventos críticos (garantia de entrega)"
   - "Considerar Specification se queries complexas reutilizadas"

@@ -27,4 +27,4 @@ security_checks:
   - "Sensitive columns identificadas (encryption at rest)"
   - "Access control: application user com least privilege"
   - "Audit logging configurado (tabela AuditLog)"
-  - "Consultar .agents/03-Security-And-Platform-Strategy.md (seção DBA)"
+  - "Consultar .agents/docs/03-Security-And-Platform-Strategy.md (seção DBA)"

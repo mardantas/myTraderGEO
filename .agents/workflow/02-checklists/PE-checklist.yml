@@ -1,362 +1,120 @@
-# Platform Engineering (PE) Checklist
+# Platform Engineering (PE) Checklist - v3.0 SIMPLIFIED
 
 agent: PE
 role: Platform Engineer
-checklist_version: 1.0
+checklist_version: 3.0
+scope: "Discovery ONLY - Basic environments with SCRIPTS (NOT full IaC)"
 
 # ========================================
-# INFRASTRUCTURE AS CODE
+# v3.0 CHANGES:
+# - Removed full IaC (Terraform/Bicep) - using Docker Compose + scripts instead
+# - Removed full observability stack (Prometheus, Grafana, Jaeger, Loki)
+# - Removed DR Plan, Blue-Green deployment
+# - Focus: Basic environments (dev/stage/prod) with deploy scripts
 # ========================================
 
-infrastructure:
-  - id: PE-IaC-01
-    category: Infrastructure as Code
-    check: IaC completo (Terraform/Bicep) versionado no git
+# ========================================
+# ENVIRONMENTS SETUP
+# ========================================
+
+environments:
+  - id: PE-ENV-01
+    category: Environments
+    check: Docker Compose criado para ambientes (dev, staging, production)
     required: true
     evidence:
-      - .terraform/ directory com módulos
-      - terraform.tfstate.d/ para múltiplos ambientes
-      - Git history com commits de infra
+      - docker-compose.dev.yml
+      - docker-compose.staging.yml
+      - docker-compose.prod.yml
 
-  - id: PE-IaC-02
-    category: Infrastructure as Code
-    check: Terraform modules organizados (VPC, compute, database, monitoring)
-    required: false  # MVP: IaC monolítico aceitável, modularização quando escalar
-    note: "MVP: Terraform funcional é suficiente. Modularizar quando ter múltiplos ambientes complexos."
-    evidence:
-      - modules/vpc/
-      - modules/swarm-cluster/
-      - modules/database/
-      - modules/observability/
-
-  - id: PE-IaC-03
-    category: Infrastructure as Code
-    check: Ambientes criados (dev, staging, production)
-    required: false  # MVP: Começar com prod, adicionar staging quando necessário
-    note: "MVP: Ambiente de produção é essencial. Staging pode ser adicionado após primeiros usuários."
-    evidence:
-      - terraform workspace list (dev, staging, prod)
-      - Ou terraform.tfvars.dev, terraform.tfvars.prod
-
-  - id: PE-IaC-04
-    category: Infrastructure as Code
-    check: Terraform state em backend remoto (S3, Azure Storage, Terraform Cloud)
-    required: false  # MVP: State local aceitável para 1-2 devs, backend remoto quando time crescer
-    note: "MVP mono-dev: state local. Multi-dev: migrar para S3/Azure Storage/Terraform Cloud."
-    evidence:
-      - backend.tf com configuração remota
-      - State lock habilitado (DynamoDB ou equivalente)
-
-# ========================================
-# NETWORKING & SECURITY
-# ========================================
-
-networking:
-  - id: PE-NET-01
-    category: Networking
-    check: VPC/VNet configurado (public + private subnets)
-    required: false  # MVP: 1 servidor Contabo não precisa VPC complexa
-    note: "MVP (Contabo VPS): Network básico. VPC/VNet quando migrar para cloud pública (AWS/Azure)."
-    evidence:
-      - VPC com CIDR 10.0.0.0/16
-      - Public subnet (NAT Gateway, Load Balancer)
-      - Private subnets (app, database)
-
-  - id: PE-NET-02
-    category: Networking
-    check: Security Groups/NSG configurados (least privilege)
+  - id: PE-ENV-02
+    category: Environments
+    check: Variáveis de ambiente configuradas (.env.example)
     required: true
     evidence:
-      - ALB SG: 443 from 0.0.0.0/0
-      - App SG: 8080 only from ALB
-      - DB SG: 5432 only from App
+      - .env.example no repositório
+      - .env adicionado ao .gitignore
+      - Documentação de variáveis necessárias
 
-  - id: PE-NET-03
-    category: Networking
-    check: NAT Gateway para private subnets (egress internet)
-    required: false  # MVP: Não aplicável para 1 servidor Contabo
-    note: "MVP (1 servidor): Não aplicável. Implementar quando migrar para cloud ou escalar (multi-server)."
-    evidence:
-      - NAT Gateway em public subnet
-      - Route table de private subnet aponta para NAT
-
-  - id: PE-NET-04
-    category: Networking
-    check: Load Balancer configurado (ALB/NLB, target groups)
-    required: false  # MVP: Traefik (reverse proxy) suficiente para 1 servidor
-    note: "MVP: Traefik como reverse proxy. ALB/NLB quando escalar para multi-server cluster."
-    evidence:
-      - ALB com HTTPS listener (certificado SSL)
-      - Target groups para backend services
-
-# ========================================
-# COMPUTE & ORCHESTRATION
-# ========================================
-
-compute:
-  - id: PE-COMP-01
-    category: Compute
-    check: Docker Swarm cluster criado (1 manager + 3+ workers)
-    required: false  # MVP: 1 servidor single-node Swarm suficiente
-    note: "MVP: docker swarm init em 1 servidor. Adicionar workers quando escalar para 2+ servidores."
-    evidence:
-      - docker node ls (4+ nodes: 1 manager, 3+ workers)
-      - Swarm mode active
-
-  - id: PE-COMP-02
-    category: Compute
-    check: Swarm services configurados (replicas, resources, health checks)
+  - id: PE-ENV-03
+    category: Environments
+    check: Scripts de deploy criados (deploy.sh)
     required: true
     evidence:
-      - docker-stack.yml com deploy config
-      - Health checks definidos por service
-      - Resource limits configurados
+      - deploy.sh com deploy para staging/production
+      - Permissões de execução (chmod +x deploy.sh)
 
-  - id: PE-COMP-03
-    category: Compute
-    check: Docker stack versionado (docker-stack.yml no git)
+# ========================================
+# DOCKER & CONTAINERS
+# ========================================
+
+docker:
+  - id: PE-DOCKER-01
+    category: Docker
+    check: Docker instalado nos ambientes (dev, staging, production)
     required: true
     evidence:
-      - docker-stack.yml commitado
-      - docker stack deploy funcional
+      - docker --version funcional
+      - docker-compose --version funcional
 
-  - id: PE-COMP-04
-    category: Compute
-    check: Overlay networks configuradas (isolation, service discovery)
-    required: false  # MVP: Network padrão suficiente para single-node
-    note: "MVP: Default bridge/overlay network. Segmentar networks quando multi-node cluster."
-    evidence:
-      - docker network ls --filter driver=overlay
-      - app-network, monitoring-network criadas
-
-# ========================================
-# OBSERVABILITY (3 Pillars)
-# ========================================
-
-observability_metrics:
-  - id: PE-OBS-01
-    category: Metrics
-    check: Prometheus instalado e coletando métricas
+  - id: PE-DOCKER-02
+    category: Docker
+    check: Containers configurados com health checks
     required: true
     evidence:
-      - Prometheus stack running (via docker stack ou docker-compose)
-      - Targets configurados (swarm nodes, apps, cAdvisor)
+      - HEALTHCHECK em Dockerfile ou docker-compose
+      - Health checks testados (docker ps mostra "healthy")
 
-  - id: PE-OBS-02
-    category: Metrics
-    check: Grafana instalado com dashboards
-    required: false  # MVP: Dashboards podem ser criados progressivamente
-    note: "MVP: Grafana instalado. Dashboards criar conforme necessidade (começar com 1-2 principais)."
+  - id: PE-DOCKER-03
+    category: Docker
+    check: Docker networks configurados (isolamento de serviços)
+    required: false  # v3.0: Network padrão suficiente para small/medium
+    note: "Opcional para small/medium projects. Implementar quando escalar."
     evidence:
-      - Grafana dashboard: Docker Swarm Cluster
-      - Grafana dashboard: Application Metrics (latency, errors, requests)
-
-  - id: PE-OBS-03
-    category: Metrics
-    check: Golden Signals monitorados (Latency, Traffic, Errors, Saturation)
-    required: false  # MVP: Monitorar métricas básicas, Golden Signals formalizados progressivamente
-    note: "MVP: Monitorar errors + latency básicos. Golden Signals completos quando afinar observability."
-    evidence:
-      - Prometheus queries para p95 latency
-      - Request rate (req/sec)
-      - Error rate (5xx/total)
-
-observability_logs:
-  - id: PE-OBS-04
-    category: Logs
-    check: Logging centralizado (ELK Stack, CloudWatch, Azure Monitor)
-    required: false  # MVP: Grafana Loki suficiente (mais leve que ELK)
-    note: "MVP: Grafana Loki + Promtail. ELK Stack quando tiver volume alto de logs."
-    evidence:
-      - Logs de todos containers centralizados
-      - Retention policy: 30 dias (staging), 90 dias (production)
-
-  - id: PE-OBS-05
-    category: Logs
-    check: Log aggregation configurado (Fluent Bit, Fluentd)
-    required: false  # MVP: Docker logs + Loki suficiente
-    note: "MVP: Promtail para Loki. Fluent Bit quando tiver multi-node cluster complexo."
-    evidence:
-      - DaemonSet rodando em todos nodes
-      - Logs enviados para Elasticsearch/CloudWatch
-
-observability_tracing:
-  - id: PE-OBS-06
-    category: Tracing
-    check: Distributed tracing configurado (Jaeger, OpenTelemetry)
-    required: false  # MVP: Tracing pode ser adicionado após lançamento
-    note: "MVP: Metrics + Logs suficientes. Tracing adicionar quando debugar problemas de latência complexos."
-    evidence:
-      - Jaeger UI acessível
-      - Traces de requisições end-to-end
-
-  - id: PE-OBS-07
-    category: Tracing
-    check: Tracing integrado em APIs (OpenTelemetry SDK)
-    required: false  # MVP: Não necessário se PE-OBS-06 opcional
-    note: "Implementar junto com PE-OBS-06 quando necessário."
-    evidence:
-      - API gera trace spans
-      - Traces aparecem no Jaeger
-
-observability_alerting:
-  - id: PE-OBS-08
-    category: Alerting
-    check: AlertManager configurado (Prometheus alerts)
-    required: false  # MVP: Alertas básicos suficientes, PagerDuty quando escalar
-    note: "MVP: Alertas críticos (HighErrorRate, ServiceDown) para Slack/email. PagerDuty quando on-call 24/7."
-    evidence:
-      - AlertManager rules: HighErrorRate, HighLatency, PodCrashLooping
-      - Integração com PagerDuty/Opsgenie/Slack
-
-  - id: PE-OBS-09
-    category: Alerting
-    check: SLOs definidos (p95 latency, error rate, availability)
-    required: false  # MVP: SLOs podem ser definidos após coletar baseline de métricas reais
-    note: "MVP: Coletar métricas primeiro. Definir SLOs formais após 1-2 meses de tráfego real."
-    evidence:
-      - SLO: p95 latency < 500ms
-      - SLO: Error rate < 1%
-      - SLO: Availability > 99.9%
+      - docker network ls com networks customizadas
 
 # ========================================
-# DISASTER RECOVERY
+# LOGGING (BASIC)
 # ========================================
 
-disaster_recovery:
-  - id: PE-DR-01
-    category: Disaster Recovery
-    check: Backup automatizado (daily full + incremental)
-    required: false  # MVP: Backup manual ou simples suficiente, automatização progressiva
-    note: "MVP: Backup diário (pg_dump/mysqldump). Incremental adicionar quando DB crescer >100GB."
+logging:
+  - id: PE-LOG-01
+    category: Logging
+    check: Docker logs configurados (stdout/stderr capture)
+    required: true
     evidence:
-      - Database backup schedule (daily 2 AM UTC)
-      - S3/Blob Storage backup retention (30 dias)
+      - docker-compose com logging driver configurado
+      - docker logs [container_name] funcional
 
-  - id: PE-DR-02
-    category: Disaster Recovery
-    check: RTO documentado e testado (Recovery Time Objective)
-    required: false  # MVP: Pode documentar RTO sem teste inicial
-    note: "Obrigatório apenas para produção com SLA formal"
+  - id: PE-LOG-02
+    category: Logging
+    check: Log rotation configurado (evitar disco cheio)
+    required: true
     evidence:
-      - RTO target: 1 hora
-      - DR drill report (last execution date)
-
-  - id: PE-DR-03
-    category: Disaster Recovery
-    check: RPO documentado e testado (Recovery Point Objective)
-    required: false  # MVP: Pode documentar RPO sem teste inicial
-    note: "Obrigatório apenas para produção com dados críticos"
-    evidence:
-      - RPO target: 15 minutos
-      - Backup frequency: 15 min incremental
-
-  - id: PE-DR-04
-    category: Disaster Recovery
-    check: Restore testado com sucesso (DR drill)
-    required: false  # MVP: Teste de restore pode ser feito após lançamento
-    note: "Crítico para produção - fazer drill trimestral quando estabilizar"
-    evidence:
-      - Restore executado em ambiente de teste
-      - Restore time < RTO (1 hora)
-
-  - id: PE-DR-05
-    category: Disaster Recovery
-    check: DR drill agendado (mensal ou trimestral)
-    required: false  # MVP: Agendar após estabilização
-    note: "Implementar quando houver base de usuários ativa"
-    evidence:
-      - Calendar entry para DR drills
-      - Checklist de validação
+      - docker-compose com max-size e max-file configurados
+      - Exemplo: max-size: "10m", max-file: "3"
 
 # ========================================
-# SECRETS MANAGEMENT
+# SECRETS MANAGEMENT (BASIC)
 # ========================================
 
 secrets:
   - id: PE-SEC-01
     category: Secrets Management
-    check: Secrets management configurado (Vault, AWS Secrets Manager, Azure Key Vault)
+    check: Secrets em environment variables (NUNCA em código)
     required: true
     evidence:
-      - Vault instalado OU AWS Secrets Manager habilitado
-      - Application recupera secrets dinamicamente (não hardcoded)
+      - .env.example documentado
+      - grep -r "password" codebase (zero hardcoded passwords)
+      - Secrets carregados via environment variables
 
   - id: PE-SEC-02
     category: Secrets Management
-    check: Database credentials em secrets manager (nunca em código)
+    check: .env adicionado ao .gitignore
     required: true
     evidence:
-      - grep -r "password" codebase (zero matches)
-      - Connection string recuperada de Vault/Secrets Manager
-
-  - id: PE-SEC-03
-    category: Secrets Management
-    check: API keys e tokens em secrets manager
-    required: true
-    evidence:
-      - Third-party API keys (Stripe, etc) em Vault
-      - JWT signing key em Secrets Manager
-
-  - id: PE-SEC-04
-    category: Secrets Management
-    check: Secrets rotation policy definida e testada
-    required: true
-    evidence:
-      - Database password: rotação 90 dias
-      - API keys: rotação 180 dias
-      - JWT signing key: rotação 30 dias
-
-# ========================================
-# CI/CD PRODUCTION
-# ========================================
-
-cicd_production:
-  - id: PE-CD-01
-    category: CI/CD Production
-    check: Blue-Green deployment configurado (zero downtime)
-    required: true
-    evidence:
-      - Kubernetes deployment-blue.yaml, deployment-green.yaml
-      - Service selector switch (blue ↔ green)
-
-  - id: PE-CD-02
-    category: CI/CD Production
-    check: CD pipeline produção criado (.github/workflows/cd-production.yml)
-    required: true
-    evidence:
-      - Workflow executa: build → push image → deploy green → smoke tests → switch traffic
-
-  - id: PE-CD-03
-    category: CI/CD Production
-    check: Rollback procedure testado (consegue voltar versão anterior)
-    required: true
-    evidence:
-      - kubectl rollout undo funcional
-      - Service selector switch para BLUE (rollback)
-
-  - id: PE-CD-04
-    category: CI/CD Production
-    check: Health checks configurados (liveness, readiness)
-    required: true
-    evidence:
-      - livenessProbe: /health/live
-      - readinessProbe: /health/ready
-
-  - id: PE-CD-05
-    category: CI/CD Production
-    check: Smoke tests pós-deploy (automatizados)
-    required: true
-    evidence:
-      - scripts/smoke-tests.sh
-      - Testa: /health, /api/v1/orders, authentication
-
-  - id: PE-CD-06
-    category: CI/CD Production
-    check: Canary deployment opcional (gradual rollout)
-    required: false
-    evidence:
-      - Istio VirtualService com traffic split (10% canary)
+      - .env no .gitignore
+      - git ls-files não lista .env
 
 # ========================================
 # DOCUMENTATION
@@ -365,93 +123,40 @@ cicd_production:
 documentation:
   - id: PE-DOC-01
     category: Documentation
-    check: PE-01-Infrastructure-Design.md completo
+    check: PE-00-Environments-Setup.md completo
     required: true
     evidence:
-      - 00-doc-ddd/platform-engineering/PE-01-Infrastructure-Design.md
+      - 00-doc-ddd/platform-engineering/PE-00-Environments-Setup.md
+      - Documenta: ambientes (dev/stage/prod), scripts de deploy, variáveis de ambiente
 
   - id: PE-DOC-02
     category: Documentation
-    check: PE-02-Observability-Strategy.md completo
+    check: README com instruções de deploy
     required: true
     evidence:
-      - 00-doc-ddd/platform-engineering/PE-02-Observability-Strategy.md
-
-  - id: PE-DOC-03
-    category: Documentation
-    check: PE-03-DR-Plan.md completo
-    required: true
-    evidence:
-      - 00-doc-ddd/platform-engineering/PE-03-DR-Plan.md
-
-  - id: PE-DOC-04
-    category: Documentation
-    check: PE-04-Production-Deployment.md completo
-    required: true
-    evidence:
-      - 00-doc-ddd/platform-engineering/PE-04-Production-Deployment.md
-
-  - id: PE-DOC-05
-    category: Documentation
-    check: Runbooks de incidentes (how to debug, scale, rollback)
-    required: true
-    evidence:
-      - runbooks/scale-up.md
-      - runbooks/rollback.md
-      - runbooks/debug-high-latency.md
+      - README.md ou DEPLOY.md com instruções claras
+      - Como fazer deploy para staging/production
 
 # ========================================
-# VALIDATION
-# ========================================
-
-validation:
-  - id: PE-VAL-01
-    category: Validation
-    check: Infra testada com carga (load test passou)
-    required: true
-    evidence:
-      - k6/JMeter load test executado
-      - p95 latency < 500ms sob carga (100 req/sec)
-
-  - id: PE-VAL-02
-    category: Validation
-    check: DR drill executado com sucesso
-    required: true
-    evidence:
-      - Restore time < RTO (1 hora)
-      - Application funcional após restore
-
-  - id: PE-VAL-03
-    category: Validation
-    check: Zero problemas bloqueantes para produção
-    required: true
-    evidence:
-      - GitHub issues abertas: 0 com label "blocker"
-
-  - id: PE-VAL-04
-    category: Validation
-    check: Security Specialist validou segurança da infra (SEC-02)
-    required: true
-    evidence:
-      - SEC-02-Security-Architecture.md aprovado
-
-# ========================================
-# EXIT CRITERIA
+# EXIT CRITERIA v3.0
 # ========================================
 
 exit_criteria:
   description: >
-    Infraestrutura production-ready quando:
-    IaC completo E observability rodando E DR testado E deploy automatizado E SEC validou segurança
+    v3.0 SIMPLIFIED - PE completo quando:
+    Docker Compose configurado E deploy scripts criados E ambientes documentados E secrets protegidos
 
   required_checks:
-    - PE-IaC-01  # IaC versionado
-    - PE-OBS-01  # Prometheus rodando
-    - PE-OBS-04  # Logs centralizados
-    - PE-DR-04   # Restore testado
-    - PE-CD-01   # Blue-Green deployment
-    - PE-VAL-04  # SEC validou
+    - PE-ENV-01  # Docker Compose para ambientes
+    - PE-ENV-03  # Scripts de deploy
+    - PE-DOCKER-01  # Docker instalado
+    - PE-DOCKER-02  # Health checks configurados
+    - PE-LOG-01  # Docker logs funcionais
+    - PE-LOG-02  # Log rotation configurado
+    - PE-SEC-01  # Secrets em environment variables
+    - PE-SEC-02  # .env no gitignore
+    - PE-DOC-01  # PE-00 documentado
 
   optional_checks:
-    - PE-COMP-04  # Namespace strategy
-    - PE-CD-06    # Canary deployment
+    - PE-DOCKER-03  # Docker networks customizadas
+    - PE-ENV-02  # .env.example detalhado

@@ -127,11 +127,11 @@ Agente DE recebe tarefa → XML obriga consulta → Consulta 04-DDD-Patterns e 0
 **DE-checklist.yml:**
 ```yaml
 advanced_patterns:
-  - "Consultar .agents/04-DDD-Patterns-Reference.md (consulta obrigatória)"
+  - "Consultar .agents/docs/04-DDD-Patterns-Reference.md (consulta obrigatória)"
   - "Padrões aplicados: [listar quais]"
 
 api_standards:
-  - "Consultar .agents/05-API-Standards.md (consulta obrigatória)"
+  - "Consultar .agents/docs/05-API-Standards.md (consulta obrigatória)"
   - "APIs seguem versionamento /v1/"
   - "Status codes corretos usados"
 ```
