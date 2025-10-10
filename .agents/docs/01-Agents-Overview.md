@@ -58,7 +58,7 @@ Discover and map the complete business domain, defining bounded contexts and str
 ```
 
 ### Specification
-[.agents/10-SDA - Strategic Domain Analyst.xml](.agents/10-SDA - Strategic Domain Analyst.xml)
+[10-SDA - Strategic Domain Analyst.xml](../10-SDA%20-%20Strategic%20Domain%20Analyst.xml)
 
 ---
 
@@ -100,7 +100,7 @@ Design user experience: foundations in Discovery + specific wireframes per epic.
 ```
 
 ### Specification
-[.agents/20-UXD - User Experience Designer.xml](.agents/20-UXD - User Experience Designer.xml)
+[20-UXD - User Experience Designer.xml](../20-UXD%20-%20User%20Experience%20Designer.xml)
 
 ---
 
@@ -137,7 +137,7 @@ Model tactical domain PER EPIC (does NOT implement code).
 ```
 
 ### Specification
-[.agents/15-DE - Domain Engineer.xml](.agents/15-DE - Domain Engineer.xml)
+[15-DE - Domain Engineer.xml](../15-DE%20-%20Domain%20Engineer.xml)
 
 ---
 
@@ -183,7 +183,7 @@ Integrate DDD workflow with GitHub. **Issues created AFTER DE-01** (refined epic
 ```
 
 ### Specification
-[.agents/25-GM - GitHub Manager.xml](.agents/25-GM - GitHub Manager.xml)
+[25-GM - GitHub Manager.xml](../25-GM%20-%20GitHub%20Manager.xml)
 
 ---
 
@@ -201,22 +201,57 @@ Configure basic environments (dev/stage/prod) with **deploy scripts** - NO compl
 - Configured health checks
 
 ### When Executes
-- **Discovery ONLY:** PE-00-Environments-Setup (1x)
-- **❌ DOES NOT execute** per epic
+- **Discovery (1x):** PE-00-Environments-Setup
+- **Per Epic (OPTIONAL - Light Review):** Quick performance checkpoint (15-30 min)
 
 ### Scope
-**Basic setup** - pragmatic for small/medium projects
+- **Discovery:** Basic setup - pragmatic for small/medium projects
+- **Per Epic:** Light performance review (optional, only if needed)
 
 ### Deliverables
 ```
 00-doc-ddd/08-platform-engineering/
-└── PE-00-Environments-Setup.md  (ONLY this doc)
+├── PE-00-Environments-Setup.md  (Discovery - 1x)
+└── PE-EPIC-[N]-Performance-Checkpoint.md  (Per epic - OPTIONAL)
 
 docker-compose.dev.yml
 docker-compose.staging.yml
 docker-compose.prod.yml
 deploy.sh
 .env.example
+```
+
+### PE Light Review per Epic (OPTIONAL)
+
+**When to Execute:**
+- Epic introduces critical performance path (ex: real-time calculations)
+- Database queries becoming complex (>3 JOINs)
+- Epic 4+ (after MVP is stable)
+
+**What PE Reviews (15-30 min):**
+1. ✅ **Database Performance**
+   - N+1 queries identified? (use `.Include()`)
+   - Missing indexes on FK/query filters?
+   - Queries >100ms?
+
+2. ✅ **Async/Await Correctness**
+   - No `.Result` or `.Wait()` (deadlock risk)?
+   - I/O operations are async?
+
+3. ✅ **Caching Strategy**
+   - Frequently accessed data cached? (Redis/In-Memory)
+   - Cache invalidation clear?
+
+4. ✅ **Resource Management**
+   - Connections/streams disposed correctly?
+   - No memory leaks in loops?
+
+**Output:** Quick checklist (not full document), feedback to SE/DBA if issues found.
+
+**Example Invocation:**
+```
+"PE, do a quick performance checkpoint for Epic 3 (Calculate Greeks)"
+"PE, review database queries performance for Epic 5"
 ```
 
 ### Example Invocation
@@ -227,7 +262,7 @@ deploy.sh
 ```
 
 ### Specification
-[.agents/30-PE - Platform Engineer.xml](.agents/30-PE - Platform Engineer.xml)
+[30-PE - Platform Engineer.xml](../30-PE%20-%20Platform%20Engineer.xml)
 
 ---
 
@@ -247,16 +282,54 @@ Define **essential security baseline** - OWASP Top 3, LGPD minimum, auth strateg
 - Basic security monitoring (security events logging)
 
 ### When Executes
-- **Discovery ONLY:** SEC-00-Security-Baseline (1x)
-- **❌ DOES NOT execute** per epic
+- **Discovery (1x):** SEC-00-Security-Baseline
+- **Per Epic (OPTIONAL - Light Review):** Quick security checkpoint (15-30 min)
 
 ### Scope
-**Essential baseline** - pragmatic for small/medium projects
+- **Discovery:** Essential baseline - pragmatic for small/medium projects
+- **Per Epic:** Light security review (optional, only if needed)
 
 ### Deliverables
 ```
 00-doc-ddd/09-security/
-└── SEC-00-Security-Baseline.md  (ONLY this doc)
+├── SEC-00-Security-Baseline.md  (Discovery - 1x)
+└── SEC-EPIC-[N]-Security-Checkpoint.md  (Per epic - OPTIONAL)
+```
+
+### SEC Light Review per Epic (OPTIONAL)
+
+**When to Execute:**
+- Epic handles sensitive data (PII, credentials, financial)
+- Epic introduces authentication/authorization logic
+- Epic 4+ (after MVP is stable)
+
+**What SEC Reviews (15-30 min):**
+1. ✅ **OWASP Top 3 Compliance**
+   - **Broken Access Control:** Authorization checks in place?
+   - **Cryptographic Failures:** Sensitive data encrypted? (at rest/transit)
+   - **Injection:** Parameterized queries? Input validation?
+
+2. ✅ **Input Validation**
+   - Value Objects validate input?
+   - DTOs have [Required], [MaxLength]?
+   - XSS prevention? (React auto-escapes)
+
+3. ✅ **Authentication & Authorization**
+   - JWT token validated?
+   - Domain-level authorization? (only owner can modify)
+   - Sensitive operations require re-auth?
+
+4. ✅ **Secrets Management**
+   - No hardcoded secrets?
+   - Environment variables used?
+   - .env in .gitignore?
+
+**Output:** Quick checklist (not full document), feedback to SE/DE/FE if issues found.
+
+**Example Invocation:**
+```
+"SEC, do a quick security checkpoint for Epic 2 (User Authentication)"
+"SEC, review security for Epic 4 (Payment Processing)"
 ```
 
 ### Example Invocation
@@ -268,7 +341,7 @@ Define **essential security baseline** - OWASP Top 3, LGPD minimum, auth strateg
 ```
 
 ### Specification
-[.agents/35-SEC - Security Specialist.xml](.agents/35-SEC - Security Specialist.xml)
+[35-SEC - Security Specialist.xml](../35-SEC%20-%20Security%20Specialist.xml)
 
 ---
 
@@ -309,7 +382,7 @@ Implement complete backend based on DE domain model.
 ```
 
 ### Specification
-[.agents/45-SE - Software Engineer.xml](.agents/45-SE - Software Engineer.xml)
+[45-SE - Software Engineer.xml](../45-SE%20-%20Software%20Engineer.xml)
 
 ---
 
@@ -345,7 +418,7 @@ Validate and optimize database schema created by DE.
 ```
 
 ### Specification
-[.agents/50-DBA - Database Administrator.xml](.agents/50-DBA - Database Administrator.xml)
+[50-DBA - Database Administrator.xml](../50-DBA%20-%20Database%20Administrator.xml)
 
 ---
 
@@ -385,7 +458,7 @@ Implement user interfaces following UXD specs.
 ```
 
 ### Specification
-[.agents/55-FE - Frontend Engineer.xml](.agents/55-FE - Frontend Engineer.xml)
+[55-FE - Frontend Engineer.xml](../55-FE%20-%20Frontend%20Engineer.xml)
 
 ---
 
@@ -432,7 +505,7 @@ Ensure quality as **QUALITY GATE** at end of each epic.
 ```
 
 ### Specification
-[.agents/60-QAE - Quality Assurance Engineer.xml](.agents/60-QAE - Quality Assurance Engineer.xml)
+[60-QAE - Quality Assurance Engineer.xml](../60-QAE%20-%20Quality%20Assurance%20Engineer.xml)
 
 ---
 
@@ -541,11 +614,28 @@ Any agent can create FEEDBACK for another:
 
 ## 📚 References
 
+### Documentation
 - **Workflow Guide:** [00-Workflow-Guide.md](00-Workflow-Guide.md)
 - **Nomenclature:** [02-Nomenclature-Standards.md](02-Nomenclature-Standards.md)
-- **XML Specifications:** `.agents/10-SDA.xml` through `.agents/60-QAE.xml`
+- **DDD Patterns:** [04-DDD-Patterns-Reference.md](04-DDD-Patterns-Reference.md)
+- **API Standards:** [05-API-Standards.md](05-API-Standards.md)
+
+### Agent XML Specifications
+- [10-SDA - Strategic Domain Analyst.xml](../10-SDA%20-%20Strategic%20Domain%20Analyst.xml)
+- [15-DE - Domain Engineer.xml](../15-DE%20-%20Domain%20Engineer.xml)
+- [20-UXD - User Experience Designer.xml](../20-UXD%20-%20User%20Experience%20Designer.xml)
+- [25-GM - GitHub Manager.xml](../25-GM%20-%20GitHub%20Manager.xml)
+- [30-PE - Platform Engineer.xml](../30-PE%20-%20Platform%20Engineer.xml)
+- [35-SEC - Security Specialist.xml](../35-SEC%20-%20Security%20Specialist.xml)
+- [45-SE - Software Engineer.xml](../45-SE%20-%20Software%20Engineer.xml)
+- [50-DBA - Database Administrator.xml](../50-DBA%20-%20Database%20Administrator.xml)
+- [55-FE - Frontend Engineer.xml](../55-FE%20-%20Frontend%20Engineer.xml)
+- [60-QAE - Quality Assurance Engineer.xml](../60-QAE%20-%20Quality%20Assurance%20Engineer.xml)
+
+### Resources
 - **Templates:** `.agents/templates/`
 - **Checklists:** `.agents/workflow/02-checklists/`
+- **Workflow Config:** `workflow-config.json`
 
 ---
 

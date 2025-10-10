@@ -24,6 +24,235 @@ Estabelecer padrões de API para garantir consistência, versionamento adequado 
 
 ---
 
+## 🎯 API MVP Checklist - Priorização por Épico
+
+### **⚠️ IMPORTANTE: Evite Overengineering**
+
+Este documento contém TODAS as práticas de API para produção. **NÃO implemente tudo no Epic 1!**
+
+Use esta matriz de priorização para decidir o que implementar em cada fase:
+
+---
+
+### **🔴 EPIC 1-3: MVP Essencial (OBRIGATÓRIO)**
+
+Foco: **Funcionalidade básica funcionando**
+
+#### ✅ Implementar AGORA
+
+| Feature | Por quê? | Exemplo |
+|---------|----------|---------|
+| **REST básico** | CRUD funcional | GET, POST, PUT, DELETE |
+| **Status codes corretos** | Client precisa saber resultado | 200, 201, 400, 404 |
+| **DTO mapping** | Não expor domain entities | Request/Response DTOs |
+| **Validação básica** | Prevenir dados inválidos | FluentValidation em DTOs |
+| **OpenAPI/Swagger** | Frontend precisa de contrato | XML comments → Swagger UI |
+| **Error handling consistente** | Debug e troubleshooting | ErrorResponse padrão |
+
+#### ❌ NÃO Implementar Ainda
+
+- ❌ Idempotency Keys (adicionar em Epic 5+)
+- ❌ Rate Limiting (adicionar em Epic 5+)
+- ❌ Versionamento /v1, /v2 (apenas /v1 fixo)
+- ❌ Paginação complexa (cursor-based)
+- ❌ Contract Tests (Pact)
+- ❌ HATEOAS links
+
+**Exemplo de Controller MVP (Epic 1-3):**
+
+```csharp
+[ApiController]
+[Route("v1/orders")]
+public class OrdersController : ControllerBase
+{
+    private readonly IMediator _mediator;
+
+    /// <summary>
+    /// Create a new order
+    /// </summary>
+    [HttpPost]
+    [ProducesResponseType(typeof(OrderDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request)
+    {
+        try
+        {
+            var command = new CreateOrderCommand(request.CustomerId, request.Items);
+            var result = await _mediator.Send(command);
+
+            return CreatedAtAction(nameof(GetOrder), new { id = result.Id }, result);
+        }
+        catch (ValidationException ex)
+        {
+            return BadRequest(new ErrorResponse
+            {
+                Error = "VALIDATION_ERROR",
+                Message = ex.Message
+            });
+        }
+    }
+
+    /// <summary>
+    /// Get order by ID
+    /// </summary>
+    [HttpGet("{id:guid}")]
+    [ProducesResponseType(typeof(OrderDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetOrder(Guid id)
+    {
+        var query = new GetOrderQuery(id);
+        var result = await _mediator.Send(query);
+
+        return result != null ? Ok(result) : NotFound();
+    }
+}
+```
+
+**Checklist Epic 1-3:**
+- [ ] Endpoints RESTful básicos (GET, POST, PUT)
+- [ ] DTOs (não expor domain entities)
+- [ ] Validação de input (FluentValidation)
+- [ ] Error handling (try-catch → HTTP status codes)
+- [ ] OpenAPI docs (XML comments)
+- [ ] Response types corretos (200, 201, 400, 404)
+
+---
+
+### **🟡 EPIC 4-6: Produção Básica (RECOMENDADO)**
+
+Foco: **Robustez e escalabilidade inicial**
+
+#### ✅ Implementar Nesta Fase
+
+| Feature | Por quê? | Onde no Doc |
+|---------|----------|-------------|
+| **Idempotency (POST/PUT)** | Retry safety crítico | [Seção Idempotência](#-idempotência) |
+| **Paginação básica** | Listas grandes | [Seção Paginação](#-paginação-filtros-e-ordenação) |
+| **Filtros simples** | Query por status, data | [Seção Filtros](#-paginação-filtros-e-ordenação) |
+| **CORS configurado** | Frontend precisa de acesso | [Seção Segurança](#️-segurança) |
+| **HTTPS obrigatório** | Segurança básica | [Seção Segurança](#️-segurança) |
+| **Health check endpoint** | Monitoramento | `/health` |
+
+**Exemplo de Idempotency (Epic 4-6):**
+
+```csharp
+[HttpPost]
+public async Task<IActionResult> CreateOrder(
+    [FromBody] CreateOrderRequest request,
+    [FromHeader(Name = "X-Idempotency-Key")] Guid? idempotencyKey)
+{
+    // Agora SIM implementa idempotency
+    if (idempotencyKey.HasValue)
+    {
+        var existing = await _idempotencyService.GetResult(idempotencyKey.Value);
+        if (existing != null)
+            return StatusCode(existing.StatusCode, existing.Response);
+    }
+
+    var command = new CreateOrderCommand(request.CustomerId, request.Items);
+    var result = await _mediator.Send(command);
+
+    if (idempotencyKey.HasValue)
+    {
+        await _idempotencyService.SaveResult(
+            idempotencyKey.Value,
+            201,
+            result.Id,
+            result);
+    }
+
+    return CreatedAtAction(nameof(GetOrder), new { id = result.Id }, result);
+}
+```
+
+**Checklist Epic 4-6:**
+- [ ] Idempotency-Key header (POST/PUT críticos)
+- [ ] Paginação (page/pageSize ou cursor)
+- [ ] Filtros (status, date range)
+- [ ] CORS configurado (AllowOrigins específico)
+- [ ] HTTPS redirect obrigatório
+- [ ] Health check endpoint
+
+---
+
+### **🟢 EPIC 7+: Produção Avançada (OPCIONAL)**
+
+Foco: **Alta escala e contratos rígidos**
+
+#### ✅ Implementar Apenas se Necessário
+
+| Feature | Quando Implementar | Onde no Doc |
+|---------|-------------------|-------------|
+| **Rate Limiting** | >1000 req/min por user | [Seção Segurança](#️-segurança) |
+| **Versionamento /v2** | Breaking change necessário | [Seção Versionamento](#-versionamento-de-api) |
+| **Contract Tests (Pact)** | Múltiplos clients (mobile + web) | [Seção Testes](#-testes-de-api) |
+| **Cursor-based paging** | Listas com milhões de registros | [Seção Paginação](#-paginação-filtros-e-ordenação) |
+| **HATEOAS links** | APIs públicas/externas | [Seção Response](#-estrutura-de-requestresponse) |
+| **ETags (caching)** | Performance crítica | Não coberto neste doc |
+
+**Exemplo de Rate Limiting (Epic 7+):**
+
+```csharp
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("api", opt =>
+    {
+        opt.Window = TimeSpan.FromMinutes(1);
+        opt.PermitLimit = 100;
+    });
+});
+
+[EnableRateLimiting("api")]
+[HttpPost("/v1/orders")]
+public IActionResult CreateOrder(/* ... */) { }
+```
+
+**Checklist Epic 7+:**
+- [ ] Rate limiting (100 req/min)
+- [ ] Versionamento /v2 (se houver breaking changes)
+- [ ] Contract tests (Pact ou similar)
+- [ ] Cursor-based pagination (se listas >10k registros)
+- [ ] HATEOAS (se API pública)
+
+---
+
+### **📊 Matriz de Decisão Rápida**
+
+| Feature | Epic 1-3 | Epic 4-6 | Epic 7+ | Urgência |
+|---------|----------|----------|---------|----------|
+| REST básico (GET/POST/PUT) | ✅ | ✅ | ✅ | 🔴 CRÍTICO |
+| Status codes corretos | ✅ | ✅ | ✅ | 🔴 CRÍTICO |
+| DTOs (não expor domain) | ✅ | ✅ | ✅ | 🔴 CRÍTICO |
+| Validação input | ✅ | ✅ | ✅ | 🔴 CRÍTICO |
+| OpenAPI/Swagger | ✅ | ✅ | ✅ | 🔴 CRÍTICO |
+| Error handling | ✅ | ✅ | ✅ | 🔴 CRÍTICO |
+| Idempotency-Key | ❌ | ✅ | ✅ | 🟡 IMPORTANTE |
+| Paginação | ❌ | ✅ | ✅ | 🟡 IMPORTANTE |
+| CORS | ❌ | ✅ | ✅ | 🟡 IMPORTANTE |
+| HTTPS | ❌ | ✅ | ✅ | 🟡 IMPORTANTE |
+| Rate Limiting | ❌ | ❌ | ✅ | 🟢 NICE TO HAVE |
+| Versionamento /v2 | ❌ | ❌ | ✅ | 🟢 NICE TO HAVE |
+| Contract Tests | ❌ | ❌ | ✅ | �� NICE TO HAVE |
+| HATEOAS | ❌ | ❌ | ✅ | 🟢 NICE TO HAVE |
+
+---
+
+### **🚨 Sinais de Overengineering no Epic 1-3**
+
+Se você está fazendo isso **no Epic 1**, PARE:
+
+- ❌ Implementando Idempotency-Key (exceto se operação financeira)
+- ❌ Criando /v1 e /v2 (ainda não há v2!)
+- ❌ Rate limiting (ainda não tem carga)
+- ❌ Contract tests (ainda não tem clients múltiplos)
+- ❌ HATEOAS links (REST nível 3)
+- ❌ Cursor-based pagination (ainda não tem 10k+ registros)
+- ❌ ETags (ainda não tem problema de performance)
+
+**Lembre-se:** YAGNI (You Aren't Gonna Need It) - Implemente quando precisar, não "por precaução".
+
+---
+
 ## 🌐 Estrutura de URLs
 
 ### Padrão Base
@@ -543,6 +772,234 @@ public async Task GetOrder_ShouldReturnOrder()
 - [ ] Unit tests (business logic)
 - [ ] Integration tests (API)
 - [ ] Contract tests (se múltiplos clients)
+
+---
+
+## 🎮 Controller Implementation Examples
+
+### Complete REST Controller
+
+Exemplo completo implementando TODOS os padrões deste documento:
+
+```csharp
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+
+[ApiController]
+[Route("v1/orders")]
+[Produces("application/json")]
+public class OrdersController : ControllerBase
+{
+    private readonly IMediator _mediator;
+
+    public OrdersController(IMediator mediator) => _mediator = mediator;
+
+    /// <summary>
+    /// Create a new order (idempotent)
+    /// </summary>
+    /// <param name="request">Order creation request</param>
+    /// <param name="idempotencyKey">Idempotency key (GUID)</param>
+    /// <returns>Created order</returns>
+    [HttpPost]
+    [ProducesResponseType(typeof(OrderDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<IActionResult> CreateOrder(
+        [FromBody] CreateOrderRequest request,
+        [FromHeader(Name = "X-Idempotency-Key")] Guid idempotencyKey)
+    {
+        var command = new CreateOrderCommand(
+            request.CustomerId,
+            request.Items,
+            idempotencyKey
+        );
+
+        try
+        {
+            var result = await _mediator.Send(command);
+
+            return CreatedAtAction(
+                nameof(GetOrder),
+                new { id = result.Id },
+                result
+            );
+        }
+        catch (ValidationException ex)
+        {
+            return BadRequest(new ErrorResponse
+            {
+                Error = "VALIDATION_ERROR",
+                Message = ex.Message,
+                Details = ex.Errors
+            });
+        }
+        catch (DomainException ex)
+        {
+            return UnprocessableEntity(new ErrorResponse
+            {
+                Error = "BUSINESS_RULE_VIOLATION",
+                Message = ex.Message
+            });
+        }
+    }
+
+    /// <summary>
+    /// Get order by ID
+    /// </summary>
+    [HttpGet("{id:guid}")]
+    [ProducesResponseType(typeof(OrderDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetOrder(Guid id)
+    {
+        var query = new GetOrderQuery(id);
+        var result = await _mediator.Send(query);
+
+        return result != null
+            ? Ok(result)
+            : NotFound(new ErrorResponse
+            {
+                Error = "ORDER_NOT_FOUND",
+                Message = $"Order {id} not found"
+            });
+    }
+
+    /// <summary>
+    /// List orders with pagination
+    /// </summary>
+    [HttpGet]
+    [ProducesResponseType(typeof(PaginatedResponse<OrderDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ListOrders(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        [FromQuery] string? status = null)
+    {
+        var query = new ListOrdersQuery(page, pageSize, status);
+        var result = await _mediator.Send(query);
+
+        Response.Headers.Add("X-Total-Count", result.TotalCount.ToString());
+        Response.Headers.Add("X-Page", page.ToString());
+        Response.Headers.Add("X-Page-Size", pageSize.ToString());
+
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Confirm order (business action)
+    /// </summary>
+    [HttpPost("{id:guid}/confirm")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<IActionResult> ConfirmOrder(
+        Guid id,
+        [FromHeader(Name = "X-Idempotency-Key")] Guid idempotencyKey)
+    {
+        var command = new ConfirmOrderCommand(id, idempotencyKey);
+
+        try
+        {
+            await _mediator.Send(command);
+            return NoContent();
+        }
+        catch (NotFoundException)
+        {
+            return NotFound(new ErrorResponse
+            {
+                Error = "ORDER_NOT_FOUND",
+                Message = $"Order {id} not found"
+            });
+        }
+        catch (DomainException ex)
+        {
+            return UnprocessableEntity(new ErrorResponse
+            {
+                Error = "BUSINESS_RULE_VIOLATION",
+                Message = ex.Message
+            });
+        }
+    }
+}
+```
+
+### Key Implementation Points
+
+**1. Route & Versioning:**
+```csharp
+[Route("v1/orders")]  // Version in URL
+```
+
+**2. Idempotency:**
+```csharp
+[FromHeader(Name = "X-Idempotency-Key")] Guid idempotencyKey
+// Passar para Command, implementar check em Handler
+```
+
+**3. Status Codes:**
+- `201 Created` → Resource created + Location header
+- `200 OK` → Success with response body
+- `204 No Content` → Success without response body
+- `400 Bad Request` → Invalid input (validation)
+- `404 Not Found` → Resource not found
+- `422 Unprocessable Entity` → Business rule violation
+
+**4. OpenAPI Documentation:**
+```csharp
+/// <summary> XML comments → Swagger docs
+[ProducesResponseType] → Response types for OpenAPI
+```
+
+**5. Error Handling:**
+```csharp
+try-catch → Map domain exceptions to HTTP status codes
+ErrorResponse → Consistent error format
+```
+
+**6. Pagination Headers:**
+```csharp
+Response.Headers.Add("X-Total-Count", ...);
+Response.Headers.Add("X-Page", ...);
+```
+
+### Error Response Model
+
+```csharp
+public record ErrorResponse
+{
+    public string Error { get; init; }
+    public string Message { get; init; }
+    public object? Details { get; init; }
+}
+
+// Example response:
+// {
+//   "error": "BUSINESS_RULE_VIOLATION",
+//   "message": "Cannot confirm order in Cancelled status",
+//   "details": null
+// }
+```
+
+### Common Mistakes to Avoid
+
+**❌ Don't:**
+```csharp
+// Business logic in controller
+public IActionResult CreateOrder(...)
+{
+    var order = new Order();
+    order.Total = request.Items.Sum(i => i.Price); // ❌
+    _repository.Add(order);
+}
+```
+
+**✅ Do:**
+```csharp
+// Delegate to Command Handler
+public IActionResult CreateOrder(...)
+{
+    var command = new CreateOrderCommand(...);
+    return await _mediator.Send(command); // ✅
+}
+```
 
 ---
 

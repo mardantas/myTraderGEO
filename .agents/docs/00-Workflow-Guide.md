@@ -1,152 +1,165 @@
 # DDD Workflow Guide
 
-**Objective:** Practical guide for Domain-Driven Design (DDD) development process for **small and medium projects**.
-
-**Version:** 1.0
+**Objetivo:** Guia prático do processo de desenvolvimento Domain-Driven Design (DDD) para projetos pequenos e médios.
 
 ---
 
-## 🎯 Overview
+## 🎯 Visão Geral
 
-This workflow combines **strategic and tactical DDD** with **agile development** through **10 specialized agents** working iteratively to deliver incremental value in a **simple and pragmatic** way.
+Este workflow combina **DDD estratégico e tático** com **desenvolvimento ágil** através de **10 agentes especializados** trabalhando iterativamente para entregar valor incremental de forma simples e pragmática.
 
-### Principles
+### Princípios
 
-1. **Epics by Functionality** - not by Bounded Context
-2. **Fast iteration** - continuous feedback
-3. **Minimum viable documentation** - only the essential
-4. **Code as documentation** - clean code is the primary source
-5. **Incremental deploy** - per complete epic
-
----
-
-## 👥 Agents (10)
-
-| Code | Agent | When Executes | Scope |
-|------|-------|---------------|-------|
-| SDA | Strategic Domain Analyst | 1x Discovery | Complete system |
-| UXD | User Experience Designer | 1x Discovery + Per epic | Foundations + Epic wireframes |
-| GM | GitHub Manager | 1x Discovery + Per epic | Setup + Issue per epic |
-| PE | Platform Engineer | 1x Discovery | Basic environments (dev/stage/prod) |
-| SEC | Security Specialist | 1x Discovery | Security baseline |
-| QAE | Quality Assurance Engineer | 1x Discovery + Per epic | Test strategy + Quality gate |
-| DE | Domain Engineer | Per epic | Tactical modeling per epic |
-| DBA | Database Administrator | Per epic | Migrations and validation |
-| SE | Software Engineer | Per epic | Backend implementation |
-| FE | Frontend Engineer | Per epic | Frontend implementation |
-
-See details in [01-Agents-Overview.md](01-Agents-Overview.md)
+1. **Épicos por Funcionalidade** - não por Bounded Context
+2. **Iteração rápida** - feedback contínuo
+3. **Documentação mínima viável** - apenas o essencial
+4. **Código como documentação** - código limpo é a fonte primária
+5. **Deploy incremental** - por épico completo
 
 ---
 
-## 🏗️ Process Structure
+## 👥 Agentes (10)
 
-### **Phase 1: Discovery (1x per project)**
+| Sigla | Agente | Quando Executa | Escopo |
+|-------|--------|----------------|--------|
+| SDA | Strategic Domain Analyst | 1x Discovery | Sistema completo |
+| UXD | User Experience Designer | 1x Discovery + Por épico | Fundamentos + Wireframes por épico |
+| GM | GitHub Manager | 1x Discovery + Por épico | Setup + Issue por épico |
+| PE | Platform Engineer | 1x Discovery | Ambientes básicos (dev/stage/prod) |
+| SEC | Security Specialist | 1x Discovery | Baseline de segurança |
+| QAE | Quality Assurance Engineer | 1x Discovery + Por épico | Estratégia de testes + Quality gate |
+| DE | Domain Engineer | Por épico | Modelagem tática por épico |
+| DBA | Database Administrator | Por épico | Migrations e validação |
+| SE | Software Engineer | Por épico | Implementação backend |
+| FE | Frontend Engineer | Por épico | Implementação frontend |
 
-Executed once at the start to establish **minimum** strategic foundation.
+Ver detalhes em [01-Agents-Overview.md](01-Agents-Overview.md)
+
+---
+
+## 🏗️ Estrutura do Processo
+
+### **Fase 1: Discovery (1x por projeto)**
+
+Executada uma vez no início para estabelecer a fundação estratégica **mínima**.
 
 ```
-Day 1-2: SDA
+Dia 1-2: SDA
   - Event Storming
   - Context Map
-  - Ubiquitous Language
-  - Prioritized epics (high-level)
+  - Linguagem Ubíqua
+  - Épicos priorizados (alto nível)
 
-Day 2-4: [UXD + GM + PE + SEC + QAE] (PARALLEL)
+Dia 2-4: [UXD + GM + PE + SEC + QAE] (PARALELO)
 
   UXD:
-    - Design Foundations (colors, typography, base components)
+    - Fundamentos de Design (cores, tipografia, componentes base)
 
   GM:
-    - GitHub Setup (labels, PR template, branch protection)
-    - Basic CI/CD (build + test)
-    - GitHub Actions (staging/prod deploy)
-    - ❌ DOES NOT create issues (epics not refined yet)
+    - Setup GitHub (labels, template PR, proteção de branch)
+    - CI/CD básico (build + test)
+    - GitHub Actions (deploy staging/prod)
+    - ❌ NÃO cria issues (épicos ainda não refinados)
 
   PE:
-    - Environments Setup (dev/stage/prod with SCRIPTS)
+    - Setup de Ambientes (dev/stage/prod com SCRIPTS)
     - Docker Compose
-    - Database setup
-    - Deploy scripts (not IaC yet)
+    - Setup de banco de dados
+    - Scripts de deploy (ainda não IaC)
 
   SEC:
-    - Security Baseline (basic threat model)
-    - Essential security checklist
-    - LGPD/compliance minimum
+    - Baseline de Segurança (threat model básico)
+    - Checklist essencial de segurança
+    - LGPD/compliance mínimo
 
   QAE:
-    - Test Strategy (tools, minimum coverage, criteria)
+    - Estratégia de Testes (ferramentas, cobertura mínima, critérios)
 ```
 
-**Duration:** 3-4 days
-**Deliverables:** 7 documents (SDA: 3, UXD: 1, GM: 1, PE: 1, SEC: 1, QAE: 1)
+**Duração:** 3-4 dias
+**Deliverables:** 7 documentos (SDA: 3, UXD: 1, GM: 1, PE: 1, SEC: 1, QAE: 1)
 
 ---
 
-### **Phase 2: Iteration per Epic (N iterations)**
+### **Fase 2: Iteração por Épico (N iterações)**
 
-Executed for each priority epic, delivering complete end-to-end functionality.
+Executada para cada épico prioritário, entregando funcionalidade completa ponta-a-ponta.
 
 ```
 ┌──────────────────────────────────────────────────────┐
-│  EPIC: [Functionality Name]                          │
-│  Ex: "EPIC-01: Create and View Strategy"             │
+│  ÉPICO: [Nome da Funcionalidade]                     │
+│  Ex: "EPIC-01: Criar e Visualizar Estratégia"        │
 └──────────────────────────────────────────────────────┘
                         ↓
         ┌───────────────────────────────────────┐
-        │ Day 1-2: DE                           │
-        │ DE-01-[EpicName]-Domain-Model.md      │
-        │ - Detailed Aggregates                 │
+        │ Dia 1-2: DE                           │
+        │ DE-01-[NomeEpico]-Domain-Model.md     │
+        │ - Aggregates detalhados               │
         │ - Domain Events                       │
-        │ - Use Cases (complete specs)          │
-        │ - Repository interfaces               │
-        │ - Business rules (invariants)         │
+        │ - Use Cases (specs completas)         │
+        │ - Interfaces de repositório           │
+        │ - Regras de negócio (invariantes)     │
         └───────────────────────────────────────┘
                         ↓
         ┌───────────────────────────────────────┐
-        │ Day 2: GM                             │
-        │ - Reads DE-01                         │
-        │ - Creates detailed GitHub issue       │
-        │ - Issue: use cases + acceptance       │
-        │   criteria + tasks                    │
+        │ Dia 2: GM                             │
+        │ - Lê DE-01                            │
+        │ - Cria issue detalhada no GitHub      │
+        │ - Issue: use cases + critérios de     │
+        │   aceitação + tarefas                 │
         └───────────────────────────────────────┘
                         ↓
         ┌───────────────────────────────────────┐
-        │ Day 2-3: DBA                          │
-        │ DBA-01-[EpicName]-Migrations          │
-        │ - Validates DE-01 schema              │
-        │ - Creates migrations (EF Core)        │
-        │ - Indexing strategy                   │
+        │ Dia 2-3: DBA                          │
+        │ DBA-01-[NomeEpico]-Migrations         │
+        │ - Valida schema do DE-01              │
+        │ - Cria migrations (EF Core)           │
+        │ - Estratégia de indexação             │
         └───────────────────────────────────────┘
                         ↓
         ┌────────────────────────────────────────┐
-        │ Day 3-6: SE + UXD (PARALLEL)           │
+        │ Dia 3-6: SE + UXD (PARALELO)           │
         │                                        │
         │ SE:                      UXD:          │
-        │ - Domain layer           - UXD-01      │
-        │ - Application layer      - Wireframes  │
-        │ - Infrastructure         - Specific    │
-        │ - API layer              components    │
-        │ - Unit tests (≥70%)      per epic      │
+        │ - Camada de domínio      - UXD-01      │
+        │ - Camada de aplicação    - Wireframes  │
+        │ - Infraestrutura         - Componentes │
+        │ - Camada de API          específicos   │
+        │ - Testes unitários (≥70%) por épico   │
         └────────────────────────────────────────┘
                         ↓
         ┌───────────────────────────────────────┐
-        │ Day 7-9: FE                           │
-        │ - Implements UI (using UXD-01)        │
-        │ - Integrates with SE APIs             │
-        │ - Component tests                     │
-        │ - State management                    │
+        │ Dia 7-9: FE                           │
+        │ - Implementa UI (usando UXD-01)       │
+        │ - Integra com APIs do SE              │
+        │ - Testes de componentes               │
+        │ - Gerenciamento de estado             │
         └───────────────────────────────────────┘
                         ↓
         ┌───────────────────────────────────────┐
-        │ Day 10: QAE (QUALITY GATE)            │
-        │ - Integration tests (SE ↔ FE)         │
-        │ - E2E tests (user journeys)           │
-        │ - Regression tests (previous epics)   │
+        │ Dia 9 (OPCIONAL): PE + SEC Checkpoints│
+        │ - PE: Quick performance review (15min)│
+        │   • N+1 queries? Missing indexes?     │
+        │   • Async/await correct?              │
+        │ - SEC: Quick security review (15min)  │
+        │   • OWASP Top 3? Authorization?       │
+        │   • Input validation? Secrets safe?   │
+        │                                       │
+        │ ⚠️ QUANDO EXECUTAR:                   │
+        │ - Epic 4+ (pós-MVP)                   │
+        │ - Epic com dados sensíveis            │
+        │ - Epic com queries complexas          │
+        └───────────────────────────────────────┘
+                        ↓
+        ┌───────────────────────────────────────┐
+        │ Dia 10: QAE (QUALITY GATE)            │
+        │ - Testes de integração (SE ↔ FE)      │
+        │ - Testes E2E (jornadas do usuário)    │
+        │ - Testes de regressão (épicos antigos)│
         │ - Smoke test                          │
         │                                       │
-        │ ✅ Tests pass → RELEASE DEPLOY        │
-        │ ❌ Tests fail → RETURN SE/FE          │
+        │ ✅ Testes passam → DEPLOY RELEASE     │
+        │ ❌ Testes falham → RETORNA SE/FE      │
         └───────────────────────────────────────┘
                         ↓
         ┌───────────────────────────────────────┐
@@ -154,251 +167,250 @@ Executed for each priority epic, delivering complete end-to-end functionality.
         │ - PE: Deploy staging (GitHub Actions) │
         │ - QAE: Smoke test staging             │
         │ - PE: Deploy production               │
-        │ - Monitoring                          │
+        │ - Monitoramento                       │
         └───────────────────────────────────────┘
                         ↓
-              [USER FEEDBACK]
+              [FEEDBACK DO USUÁRIO]
                         ↓
-             [Next Epic]
+             [Próximo Épico]
 ```
 
-**Duration per epic:** 10 days (2 weeks)
-**Deliverables:** 3 documents (DE-01, DBA-01, UXD-01) + code + tests + 1 GitHub issue
+**Duração por épico:** 10 dias (2 semanas)
+**Deliverables:** 3 documentos (DE-01, DBA-01, UXD-01) + código + testes + 1 issue GitHub
 
 ---
 
-## 📐 Epics: By Functionality vs By BC
+## 📐 Épicos: Por Funcionalidade vs Por BC
 
-### ✅ CORRECT: Epics by Functionality (Cross-cutting)
+### ✅ CORRETO: Épicos por Funcionalidade (Transversal)
 
-**Example:**
+**Exemplo:**
 ```
-Epic 1: "Create and View Bull Call Spread Strategy"
-  → Crosses: Strategy Management BC + Market Data BC + Portfolio BC
+Épico 1: "Criar e Visualizar Estratégia Bull Call Spread"
+  → Atravessa: BC Gestão de Estratégias + BC Dados de Mercado + BC Portfólio
 
-Epic 2: "Calculate Greeks and P&L Real-Time"
-  → Crosses: Strategy BC + Risk BC + Market Data BC
+Épico 2: "Calcular Greeks e P&L em Tempo Real"
+  → Atravessa: BC Estratégia + BC Risco + BC Dados de Mercado
 
-Epic 3: "Automatic Risk Alerts"
-  → Crosses: Risk BC + Strategy BC
-```
-
-**Why?**
-- Delivers complete business value
-- User can test end-to-end functionality
-- Real and useful feedback
-- BC integration validated early
-
-### ❌ AVOID: Epics by Bounded Context
-
-```
-Epic 1: "Strategy Management BC"
-Epic 2: "Risk Management BC"
+Épico 3: "Alertas Automáticos de Risco"
+  → Atravessa: BC Risco + BC Estratégia
 ```
 
-**Problem:** User cannot use anything until all BCs are ready.
+**Por quê?**
+- Entrega valor de negócio completo
+- Usuário pode testar funcionalidade ponta-a-ponta
+- Feedback real e útil
+- Integração de BCs validada cedo
+
+### ❌ EVITAR: Épicos por Bounded Context
+
+```
+Épico 1: "BC Gestão de Estratégias"
+Épico 2: "BC Gestão de Risco"
+```
+
+**Problema:** Usuário não consegue usar nada até que todos os BCs estejam prontos.
 
 ---
 
-## 💬 Feedback System
+## 💬 Sistema de Feedback
 
-When an agent identifies a problem in another agent's deliverable, creates a formal FEEDBACK.
+Quando um agente identifica um problema no entregável de outro agente, cria um FEEDBACK formal.
 
-### Format
+### Formato
 
-`FEEDBACK-[NNN]-[FROM]-[TO]-[short-title].md`
+`FEEDBACK-[NNN]-[DE]-[PARA]-[titulo-curto].md`
 
-**Example:**
-`FEEDBACK-003-DE-SDA-add-event-strategy-adjusted.md`
+**Exemplo:**
+`FEEDBACK-003-DE-SDA-adicionar-evento-strategy-adjusted.md`
 
-### How It Works
+### Como Funciona
 
-**1. Create Feedback (User → Agent):**
+**1. Criar Feedback (Usuário → Agente):**
 ```
-User: "DE, create feedback for SDA about missing 'Strategy Adjusted' event"
+Usuário: "DE, crie feedback para SDA sobre evento 'Strategy Adjusted' faltante"
 
-DE: [creates FEEDBACK-003-DE-SDA-add-event-strategy-adjusted.md]
-    "✅ Feedback FEEDBACK-003 created for SDA"
-```
-
-**2. Process Feedback (User → Agent):**
-```
-User: "SDA, process FEEDBACK-003"
-
-SDA: [reads feedback]
-     [updates SDA-01-Event-Storming.md]
-     [documents resolution in FEEDBACK-003]
-     "✅ FEEDBACK-003 resolved. Event Storming updated."
+DE: [cria FEEDBACK-003-DE-SDA-adicionar-evento-strategy-adjusted.md]
+    "✅ Feedback FEEDBACK-003 criado para SDA"
 ```
 
-### Feedback Types
+**2. Processar Feedback (Usuário → Agente):**
+```
+Usuário: "SDA, processe FEEDBACK-003"
 
-- **Correction:** Deliverable has error requiring adjustment
-- **Improvement:** Enhancement suggestion
-- **Question:** Clarification needed
-- **New Requirement:** Scope change
+SDA: [lê feedback]
+     [atualiza SDA-01-Event-Storming.md]
+     [documenta resolução em FEEDBACK-003]
+     "✅ FEEDBACK-003 resolvido. Event Storming atualizado."
+```
 
-### Urgency
+### Tipos de Feedback
 
-- 🔴 **High:** Blocks another agent
-- 🟡 **Medium:** Important but doesn't block
-- 🟢 **Low:** Nice to have
+- **Correção:** Entregável tem erro que requer ajuste
+- **Melhoria:** Sugestão de aprimoramento
+- **Pergunta:** Esclarecimento necessário
+- **Novo Requisito:** Mudança de escopo
+
+### Urgência
+
+- 🔴 **Alta:** Bloqueia outro agente
+- 🟡 **Média:** Importante mas não bloqueia
+- 🟢 **Baixa:** Desejável
 
 ---
 
-## 🎭 Agent Execution Modes
+## 🎭 Modos de Execução dos Agentes
 
-Agents support execution in two modes:
+Agentes suportam execução em dois modos:
 
-### Natural Mode (Primary)
+### Modo Natural (Principal)
 ```
-"SDA, perform complete strategic modeling of the system"
-"DE, model epic 'Create Strategy' in Strategy + Market Data BCs"
-"SDA, update Context Map adding Notifications BC"
+"SDA, faça a modelagem estratégica completa do sistema"
+"DE, modele épico 'Criar Estratégia' nos BCs Strategy + Market Data"
+"SDA, atualize Context Map adicionando BC de Notificações"
 ```
 
-### Formal Mode (Optional, for automation)
+### Modo Formal (Opcional, para automação)
 ```
 @SDA: FULL_PROTOCOL
-@DE: MODEL_EPIC epic="Create Strategy" bcs="Strategy,MarketData"
+@DE: MODEL_EPIC epic="Criar Estratégia" bcs="Strategy,MarketData"
 @SDA: UPDATE deliverable=SDA-02 feedback=FEEDBACK-003
 ```
 
-**Recommendation:** Use natural mode day-to-day. Formal mode for scripts/automation.
+**Recomendação:** Use modo natural no dia a dia. Modo formal para scripts/automação.
 
 ---
 
-## 📂 Folder Structure
+## 📂 Estrutura de Pastas
 
 ```
-[PROJECT-ROOT]/
-├── .agents/                              # Agents and templates
-│   ├── docs/                             # Workflow documentation
-│   │   ├── 00-Workflow-Guide.md          # This document
-│   │   ├── 01-Agents-Overview.md         # Agent details
-│   │   ├── 02-Nomenclature-Standards.md  # Naming standards
+[RAIZ-PROJETO]/
+├── .agents/                              # Agentes e templates
+│   ├── docs/                             # Documentação do workflow
+│   │   ├── 00-Workflow-Guide.md          # Este documento
+│   │   ├── 01-Agents-Overview.md         # Detalhes dos agentes
+│   │   ├── 02-Nomenclature-Standards.md  # Padrões de nomenclatura
 │   │   ├── 03-Security-And-Platform-Strategy.md
 │   │   ├── 04-DDD-Patterns-Reference.md
 │   │   └── 05-API-Standards.md
-│   ├── 10-SDA.xml ... 60-QAE.xml         # Agent specifications
-│   ├── templates/                         # Templates for deliverables
-│   └── workflow/                          # Checklists and validations
+│   ├── 10-SDA.xml ... 60-QAE.xml         # Especificações dos agentes
+│   ├── templates/                         # Templates para deliverables
+│   └── workflow/                          # Checklists e validações
 │
-├── 00-doc-ddd/                            # DDD Documentation
-│   ├── 00-feedback/                       # Agent feedbacks
-│   ├── 01-inputs-raw/                     # Initial requirements
-│   ├── 02-strategic-design/               # SDA deliverables
-│   ├── 03-ux-design/                      # UXD deliverables
-│   ├── 04-tactical-design/                # DE deliverables
-│   ├── 05-database-design/                # DBA deliverables
-│   ├── 06-quality-assurance/              # QAE deliverables
-│   ├── 07-github-management/              # GM deliverables
-│   ├── 08-platform-engineering/           # PE deliverables
-│   └── 09-security/                       # SEC deliverables
+├── 00-doc-ddd/                            # Documentação DDD
+│   ├── 00-feedback/                       # Feedbacks entre agentes
+│   ├── 01-inputs-raw/                     # Requisitos iniciais
+│   ├── 02-strategic-design/               # Deliverables SDA
+│   ├── 03-ux-design/                      # Deliverables UXD
+│   ├── 04-tactical-design/                # Deliverables DE
+│   ├── 05-database-design/                # Deliverables DBA
+│   ├── 06-quality-assurance/              # Deliverables QAE
+│   ├── 07-github-management/              # Deliverables GM
+│   ├── 08-platform-engineering/           # Deliverables PE
+│   └── 09-security/                       # Deliverables SEC
 │
-├── 01-frontend/                           # Frontend code (FE)
-├── 02-backend/                            # Backend code (SE)
-├── 03-github-manager/                     # GM scripts (optional)
-├── 04-database/                           # Migrations and scripts
+├── 01-frontend/                           # Código frontend (FE)
+├── 02-backend/                            # Código backend (SE)
+├── 03-github-manager/                     # Scripts GM (opcional)
+├── 04-database/                           # Migrations e scripts
 │
-└── workflow-config.json                   # Workflow configuration
+└── workflow-config.json                   # Configuração do workflow
 ```
 
 ---
 
-## 🔄 Typical Workflow
+## 🔄 Workflow Típico
 
-### Project Start
-
-```
-1. SDA: Strategic modeling (BCs, Context Map, UL, Epics)
-2. [UXD + GM + PE + SEC + QAE] parallel: Foundations
-3. User: Prioritizes epics
-4. Start Epic 1
-```
-
-### Epic 1 Development
+### Início do Projeto
 
 ```
-5. DE: Model Epic 1 BCs (DE-01-Epic1-Domain-Model.md)
-6. GM: Create detailed GitHub issue
-7. DBA: Schema review (EF migrations), suggest indexes
-8. SE: Implement domain + application + infrastructure + APIs
-9. UXD: Create wireframes (parallel with SE)
-10. FE: Implement Epic 1 UI (consuming SE APIs)
-11. QAE: Test integration + E2E (QUALITY GATE)
+1. SDA: Modelagem estratégica (BCs, Context Map, UL, Épicos)
+2. [UXD + GM + PE + SEC + QAE] paralelo: Fundamentos
+3. Usuário: Prioriza épicos
+4. Iniciar Épico 1
+```
+
+### Desenvolvimento do Épico 1
+
+```
+5. DE: Modelar BCs do Épico 1 (DE-01-Epic1-Domain-Model.md)
+6. GM: Criar issue detalhada no GitHub
+7. DBA: Revisar schema (migrations EF), sugerir índices
+8. SE: Implementar domain + application + infrastructure + APIs
+9. UXD: Criar wireframes (paralelo com SE)
+10. FE: Implementar UI do Épico 1 (consumindo APIs do SE)
+11. QAE: Testar integração + E2E (QUALITY GATE)
 12. PE: Deploy staging → production
-13. User feedback
-14. Adjustments if needed
+13. Feedback do usuário
+14. Ajustes se necessário
 ```
 
-### Epic 2, 3, N...
+### Épicos 2, 3, N...
 
 ```
-15. Repeat steps 5-14 for each epic
-16. Feedback between agents when needed
-17. Incremental deployment
+15. Repetir passos 5-14 para cada épico
+16. Feedback entre agentes quando necessário
+17. Deploy incremental
 ```
 
 ---
 
-## 📊 Success Metrics
+## 📊 Métricas de Sucesso
 
 **Discovery:**
-- **Time:** 3-4 days
-- **Docs:** 7 documents
-- **Overhead:** ~25% of first epic
+- **Tempo:** 3-4 dias
+- **Docs:** 7 documentos
+- **Overhead:** ~25% do primeiro épico
 
-**Per Epic:**
-- **Time:** 10 business days (2 weeks)
-- **Docs:** 3 documents (DE-01, DBA-01, UXD-01)
-- **Deploy frequency:** Each epic (2 weeks)
-- **Feedback loop:** Immediate after deploy
-- **Documentation overhead:** <20% of time
+**Por Épico:**
+- **Tempo:** 10 dias úteis (2 semanas)
+- **Docs:** 3 documentos (DE-01, DBA-01, UXD-01)
+- **Frequência de deploy:** Cada épico (2 semanas)
+- **Loop de feedback:** Imediato após deploy
+- **Overhead de documentação:** <20% do tempo
 
 ---
 
-## 🗂️ Path Configuration
+## 🗂️ Configuração de Caminhos
 
-**IMPORTANT:** All workflow paths are defined in `workflow-config.json` (single source of truth).
+**IMPORTANTE:** Todos os caminhos do workflow são definidos em `workflow-config.json` (única fonte da verdade).
 
-### How It Works
+### Como Funciona
 
-**In agent XMLs:**
+**Nos XMLs dos agentes:**
 ```xml
 <deliverable path="SDA-01-Event-Storming.md" base-path="strategic-design">
 <template base-path="templates">01-strategic-design/SDA-01.template.md</template>
 <quality-checklist path="SDA-checklist.yml" base-path="checklists">
 ```
 
-**System resolves via config.json:**
+**Sistema resolve via config.json:**
 ```json
 "strategic-design": "00-doc-ddd/02-strategic-design/"
 "templates": ".agents/templates/"
 "checklists": ".agents/workflow/02-checklists/"
 ```
 
-**Final path:** `00-doc-ddd/02-strategic-design/SDA-01-Event-Storming.md`
+**Caminho final:** `00-doc-ddd/02-strategic-design/SDA-01-Event-Storming.md`
 
-### Advantage
-Change folder structure = update **only** `workflow-config.json` (zero changes in XMLs).
+### Vantagem
+Mudar estrutura de pastas = atualizar **apenas** `workflow-config.json` (zero mudanças nos XMLs).
 
 ---
 
-## 📚 References
+## 📚 Referências
 
-- **Agents:** [01-Agents-Overview.md](01-Agents-Overview.md)
-- **Nomenclature:** [02-Nomenclature-Standards.md](02-Nomenclature-Standards.md)
-- **Security:** [03-Security-And-Platform-Strategy.md](03-Security-And-Platform-Strategy.md)
-- **DDD Patterns:** [04-DDD-Patterns-Reference.md](04-DDD-Patterns-Reference.md)
-- **API Standards:** [05-API-Standards.md](05-API-Standards.md)
-- **Feedback Flow:** [../workflow/FEEDBACK-FLOW-GUIDE.md](../workflow/FEEDBACK-FLOW-GUIDE.md)
+- **Agentes:** [01-Agents-Overview.md](01-Agents-Overview.md)
+- **Nomenclatura:** [02-Nomenclature-Standards.md](02-Nomenclature-Standards.md)
+- **Segurança:** [03-Security-And-Platform-Strategy.md](03-Security-And-Platform-Strategy.md)
+- **Padrões DDD:** [04-DDD-Patterns-Reference.md](04-DDD-Patterns-Reference.md)
+- **Padrões de API:** [05-API-Standards.md](05-API-Standards.md)
+- **Fluxo de Feedback:** [../workflow/FEEDBACK-FLOW-GUIDE.md](../workflow/FEEDBACK-FLOW-GUIDE.md)
 - **Think Mode:** [../workflow/THINK-MODE-GUIDE.md](../workflow/THINK-MODE-GUIDE.md)
 - **Config Master:** `workflow-config.json`
 
 ---
 
-**Version:** 1.0
-**Date:** 2025-10-09
-**Process:** 10 Agents DDD Workflow (Small/Medium Projects)
-**Philosophy:** Simple, pragmatic, value-driven
+**Versão:** 1.0
+**Data:** 2025-10-09
+**Processo:** Workflow DDD com 10 Agentes (Projetos Pequenos/Médios)
