@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Discussões Gerais
+    url: https://github.com/mardantas/myTraderGEO/discussions
+    about: Para discussões gerais, ideias e feedback
+  - name: 📚 Documentação
+    url: https://github.com/mardantas/myTraderGEO/tree/main/00-doc-ddd
+    about: Documentação completa do projeto DDD

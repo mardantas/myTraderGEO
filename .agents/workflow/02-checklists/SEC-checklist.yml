@@ -1,0 +1,215 @@
+# Security Specialist (SEC) Checklist
+
+agent: SEC
+role: Security Specialist
+checklist_version: 1.0
+scope: "Discovery ONLY - Essential security baseline for small/medium projects"
+
+# ========================================
+# PHILOSOPHY:
+# - Pragmatic security: focus on OWASP Top 3, LGPD minimum, basic threat model
+# - Single deliverable: SEC-00-Security-Baseline.md (concise, actionable)
+# - Advanced features (full STRIDE, pentesting, SIEM, incident response) added when needed
+# - Security by design from day 1, not as afterthought
+# ========================================
+
+# ========================================
+# BASIC THREAT IDENTIFICATION
+# ========================================
+
+threat_identification:
+  - id: SEC-TI-01
+    category: Threat Identification
+    check: Main threats identified per Bounded Context
+    required: true
+    evidence:
+      - SEC-00-Security-Baseline.md with basic threat table
+      - Threats identified for each BC (ex: Auth BC → credential theft)
+
+  - id: SEC-TI-02
+    category: Threat Identification
+    check: Sensitive data identified per BC
+    required: true
+    evidence:
+      - List of sensitive data (passwords, PII, financial data)
+      - BCs handling sensitive data marked
+
+# ========================================
+# OWASP TOP 3 ESSENTIALS
+# ========================================
+
+owasp_top3:
+  - id: SEC-OWASP-01
+    category: OWASP
+    check: A01 - Broken Access Control mitigations defined
+    required: true
+    evidence:
+      - Authorization in Aggregates (domain-level authz)
+      - API endpoints require authentication
+      - Role-based access control (RBAC) basic strategy
+
+  - id: SEC-OWASP-02
+    category: OWASP
+    check: A02 - Cryptographic Failures mitigations defined
+    required: true
+    evidence:
+      - HTTPS/TLS 1.3 for all connections
+      - Passwords hashed (bcrypt/Argon2, NEVER plaintext)
+      - Secrets in environment variables (NEVER in code)
+
+  - id: SEC-OWASP-03
+    category: OWASP
+    check: A03 - Injection mitigations defined
+    required: true
+    evidence:
+      - SQL parametrizado (EF Core, no raw SQL vulnerável)
+      - Input validation in Value Objects
+      - NoSQL injection prevention (se aplicável)
+
+# ========================================
+# LGPD MINIMUM COMPLIANCE
+# ========================================
+
+lgpd_minimum:
+  - id: SEC-LGPD-01
+    category: LGPD
+    check: Personal data mapped (what, where, why)
+    required: true
+    evidence:
+      - Table with: Data Type, Location, Purpose, Legal Basis
+      - Example: CPF, Users table, User identification, Contract execution
+
+  - id: SEC-LGPD-02
+    category: LGPD
+    check: Data deletion/anonymization strategy defined
+    required: true
+    evidence:
+      - DELETE /api/v1/users/{id} strategy documented
+      - Hard delete vs soft delete vs anonymization defined
+
+  - id: SEC-LGPD-03
+    category: LGPD
+    check: Privacy Policy published
+    required: true
+    evidence:
+      - Privacy Policy URL accessible
+      - Minimum sections: data collected, purpose, retention, rights
+
+# ========================================
+# AUTHENTICATION & AUTHORIZATION
+# ========================================
+
+auth:
+  - id: SEC-AUTH-01
+    category: Authentication
+    check: JWT authentication strategy defined
+    required: true
+    evidence:
+      - JWT algorithm defined (RS256 recommended)
+      - Token expiration configured (15-60 min)
+      - Refresh token strategy (if applicable)
+
+  - id: SEC-AUTH-02
+    category: Authorization
+    check: Domain-level authorization strategy defined
+    required: true
+    evidence:
+      - Aggregates validate permissions
+      - Example: Order.ChangeStatus checks if user is order owner
+      - Authorization failures throw DomainException
+
+# ========================================
+# SECURE DEVELOPMENT BASICS
+# ========================================
+
+secure_development:
+  - id: SEC-DEV-01
+    category: Secure Development
+    check: Input validation strategy defined
+    required: true
+    evidence:
+      - Value Objects validate domain rules
+      - API controllers use FluentValidation (or equivalent)
+      - Invalid input returns 400 Bad Request
+
+  - id: SEC-DEV-02
+    category: Secure Development
+    check: Password hashing strategy defined (NEVER plaintext)
+    required: true
+    evidence:
+      - bcrypt, Argon2, or ASP.NET PasswordHasher
+      - Password complexity rules documented
+
+  - id: SEC-DEV-03
+    category: Secure Development
+    check: Secrets management strategy defined
+    required: true
+    evidence:
+      - Secrets in .env (NEVER in appsettings.json or code)
+      - .env in .gitignore
+      - Production secrets in environment variables
+
+# ========================================
+# BASIC SECURITY MONITORING
+# ========================================
+
+monitoring:
+  - id: SEC-MON-01
+    category: Monitoring
+    check: Critical security events identified for logging
+    required: true
+    evidence:
+      - Failed login attempts logged
+      - Unauthorized access attempts logged
+      - Data export events logged
+
+  - id: SEC-MON-02
+    category: Monitoring
+    check: Basic security alerts defined
+    required: false  # Optional for small/medium projects (recommended for production)
+    note: "Recommended: HighFailedLoginRate alert. Implement when deploying to production."
+    evidence:
+      - Alert: HighFailedLoginRate (5+ failures in 5 min)
+      - Alert: UnauthorizedAccess (403 responses spike)
+
+# ========================================
+# DOCUMENTATION
+# ========================================
+
+documentation:
+  - id: SEC-DOC-01
+    category: Documentation
+    check: SEC-00-Security-Baseline.md completo
+    required: true
+    evidence:
+      - 00-doc-ddd/security/SEC-00-Security-Baseline.md
+      - Sections: Threats, OWASP Top 3, LGPD, Auth/Authz, Secure Dev
+
+# ========================================
+# EXIT CRITERIA
+# ========================================
+
+exit_criteria:
+  description: >
+    SEC complete when:
+    Security baseline documented AND OWASP Top 3 mitigations defined AND LGPD minimum compliance AND auth strategy defined
+
+  required_checks:
+    - SEC-TI-01  # Main threats identified
+    - SEC-TI-02  # Sensitive data identified
+    - SEC-OWASP-01  # Broken Access Control
+    - SEC-OWASP-02  # Cryptographic Failures
+    - SEC-OWASP-03  # Injection
+    - SEC-LGPD-01  # Personal data mapped
+    - SEC-LGPD-02  # Data deletion strategy
+    - SEC-LGPD-03  # Privacy Policy
+    - SEC-AUTH-01  # JWT authentication
+    - SEC-AUTH-02  # Domain authorization
+    - SEC-DEV-01  # Input validation
+    - SEC-DEV-02  # Password hashing
+    - SEC-DEV-03  # Secrets management
+    - SEC-MON-01  # Security events logging
+    - SEC-DOC-01  # SEC-00 documented
+
+  optional_checks:
+    - SEC-MON-02  # Security alerts configured

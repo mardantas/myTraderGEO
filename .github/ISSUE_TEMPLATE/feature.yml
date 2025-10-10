@@ -1,0 +1,199 @@
+name: ⚙️ Feature Implementation
+description: Implementação técnica de uma User Story
+title: "[FEATURE] "
+labels: ["feature", "implementation", "needs-triage"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## ⚙️ Template para Feature Implementation
+        Issue para implementação técnica de uma User Story.
+        
+  - type: input
+    id: user-story-link
+    attributes:
+      label: User Story Relacionada
+      description: Link para a user story que originou esta feature
+      placeholder: "#145"
+    validations:
+      required: true
+      
+  - type: input
+    id: bounded-context
+    attributes:
+      label: Bounded Context
+      description: BC ao qual esta feature pertence
+      placeholder: ex. Sales, Inventory, Billing
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: implementation-type
+    attributes:
+      label: Tipo de Implementação
+      description: Qual aspecto da feature será implementado?
+      options:
+        - 🎨 Frontend UI/UX
+        - 🔧 Backend API/Logic
+        - 🔄 Full-Stack Feature
+        - 🗄️ Database Feature
+        - 🧪 Testing Feature
+    validations:
+      required: true
+      
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: Implementação Técnica
+      description: Como esta parte específica da User Story será implementada
+      placeholder: |
+        **Objetivo Técnico:**
+        Implementar [componente específico] da User Story #XXX
+        
+        **Escopo desta Issue:**
+        - [ ] Frontend: [componente específico]
+        - [ ] Backend: [API específica]
+        - [ ] Database: [mudança específica]
+    validations:
+      required: true
+      
+  - type: textarea
+    id: technical-requirements
+    attributes:
+      label: Requisitos Técnicos
+      description: Especificações técnicas baseadas nos artefatos do DE/DBA
+      placeholder: |
+        **Aggregate/Domain:**
+        - Utilizar [Aggregate] do modelo de domínio
+        - Aplicar regras de negócio: [lista]
+        
+        **API Endpoints:**
+        - POST /api/orders (CreateOrder)
+        - GET /api/orders/{id}
+        
+        **UI Components:**
+        - OrderForm component
+        - OrderList component
+    validations:
+      required: true
+      
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Critérios de Aceitação
+      description: Critérios funcionais extraídos da user story
+      placeholder: |
+        - [ ] Usuário consegue [ação] com sucesso
+        - [ ] Sistema valida [regra de negócio]
+        - [ ] Erro é tratado quando [situação]
+        - [ ] UI é responsiva em mobile/desktop
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: story-points
+    attributes:
+      label: Story Points
+      description: Complexidade estimada (baseada na US)
+      options:
+        - "1"
+        - "2"
+        - "3" 
+        - "5"
+        - "8"
+        - "13"
+      default: 2
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Prioridade
+      description: Prioridade da feature no sprint
+      options:
+        - "🔴 High - MVP/Core Feature"
+        - "🟡 Medium - Important Feature"
+        - "🟢 Low - Nice to Have"
+    validations:
+      required: true
+      
+  - type: textarea
+    id: ui-mockups
+    attributes:
+      label: Mockups/Wireframes (se Frontend)
+      description: Referência visual do UXD ou descrição da UI
+      placeholder: |
+        - Link para mockup: [URL]
+        - Componentes UI necessários
+        - Interações e estados
+    validations:
+      required: false
+      
+  - type: textarea
+    id: api-contracts
+    attributes:
+      label: Contratos de API (se Backend)
+      description: Especificação das APIs necessárias
+      placeholder: |
+        ```json
+        POST /api/orders
+        {
+          "customerId": "123",
+          "items": [...]
+        }
+        
+        Response: 201 Created
+        {
+          "orderId": "456",
+          "status": "created"
+        }
+        ```
+    validations:
+      required: false
+      
+  - type: textarea
+    id: testing-strategy
+    attributes:
+      label: Estratégia de Testes
+      description: Como esta feature será testada
+      placeholder: |
+        **Frontend:**
+        - Component tests (jest/testing-library)
+        - E2E tests (cypress/playwright)
+        
+        **Backend:**
+        - Unit tests (aggregates/services)
+        - Integration tests (API endpoints)
+        - Database tests (repositories)
+    validations:
+      required: true
+      
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependências Técnicas
+      description: Issues ou tarefas que devem ser concluídas primeiro
+      placeholder: |
+        - #123 (Order Aggregate implementado)
+        - #124 (Database schema criado)
+        - #125 (Authentication API pronto)
+    validations:
+      required: false
+      
+  - type: textarea
+    id: definition-of-done
+    attributes:
+      label: Definition of Done
+      description: Checklist técnico para conclusão
+      value: |
+        - [ ] Feature implementada conforme especificação
+        - [ ] Testes unitários escritos e passando
+        - [ ] Testes de integração/E2E passando
+        - [ ] Code review aprovado
+        - [ ] Documentação atualizada
+        - [ ] Deploy em staging realizado
+        - [ ] QA validation aprovada
+    validations:
+      required: false

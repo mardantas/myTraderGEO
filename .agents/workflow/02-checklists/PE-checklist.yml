@@ -1,0 +1,161 @@
+# Platform Engineering (PE) Checklist
+
+agent: PE
+role: Platform Engineer
+checklist_version: 1.0
+scope: "Discovery ONLY - Pragmatic infrastructure setup for small/medium projects"
+
+# ========================================
+# PHILOSOPHY:
+# - Lean approach: Docker Compose + deploy scripts (pragmatic, not over-engineered)
+# - Focuses on essentials: environments, deployment, logging, secrets management
+# - Advanced features (IaC, full observability, DR, Blue-Green) added when needed
+# ========================================
+
+# ========================================
+# ENVIRONMENTS SETUP
+# ========================================
+
+environments:
+  - id: PE-ENV-01
+    category: Environments
+    check: Docker Compose criado para ambientes (dev, staging, production)
+    required: true
+    evidence:
+      - docker-compose.dev.yml
+      - docker-compose.staging.yml
+      - docker-compose.prod.yml
+
+  - id: PE-ENV-02
+    category: Environments
+    check: Variáveis de ambiente configuradas (.env.example)
+    required: true
+    evidence:
+      - .env.example no repositório
+      - .env adicionado ao .gitignore
+      - Documentação de variáveis necessárias
+
+  - id: PE-ENV-03
+    category: Environments
+    check: Scripts de deploy criados (deploy.sh)
+    required: true
+    evidence:
+      - deploy.sh com deploy para staging/production
+      - Permissões de execução (chmod +x deploy.sh)
+
+# ========================================
+# DOCKER & CONTAINERS
+# ========================================
+
+docker:
+  - id: PE-DOCKER-01
+    category: Docker
+    check: Docker instalado nos ambientes (dev, staging, production)
+    required: true
+    evidence:
+      - docker --version funcional
+      - docker-compose --version funcional
+
+  - id: PE-DOCKER-02
+    category: Docker
+    check: Containers configurados com health checks
+    required: true
+    evidence:
+      - HEALTHCHECK em Dockerfile ou docker-compose
+      - Health checks testados (docker ps mostra "healthy")
+
+  - id: PE-DOCKER-03
+    category: Docker
+    check: Docker networks configurados (isolamento de serviços)
+    required: false  # Default network sufficient for small/medium projects
+    note: "Opcional para small/medium projects. Implementar quando escalar."
+    evidence:
+      - docker network ls com networks customizadas
+
+# ========================================
+# LOGGING (BASIC)
+# ========================================
+
+logging:
+  - id: PE-LOG-01
+    category: Logging
+    check: Docker logs configurados (stdout/stderr capture)
+    required: true
+    evidence:
+      - docker-compose com logging driver configurado
+      - docker logs [container_name] funcional
+
+  - id: PE-LOG-02
+    category: Logging
+    check: Log rotation configurado (evitar disco cheio)
+    required: true
+    evidence:
+      - docker-compose com max-size e max-file configurados
+      - Exemplo: max-size: "10m", max-file: "3"
+
+# ========================================
+# SECRETS MANAGEMENT (BASIC)
+# ========================================
+
+secrets:
+  - id: PE-SEC-01
+    category: Secrets Management
+    check: Secrets em environment variables (NUNCA em código)
+    required: true
+    evidence:
+      - .env.example documentado
+      - grep -r "password" codebase (zero hardcoded passwords)
+      - Secrets carregados via environment variables
+
+  - id: PE-SEC-02
+    category: Secrets Management
+    check: .env adicionado ao .gitignore
+    required: true
+    evidence:
+      - .env no .gitignore
+      - git ls-files não lista .env
+
+# ========================================
+# DOCUMENTATION
+# ========================================
+
+documentation:
+  - id: PE-DOC-01
+    category: Documentation
+    check: PE-00-Environments-Setup.md completo
+    required: true
+    evidence:
+      - 00-doc-ddd/platform-engineering/PE-00-Environments-Setup.md
+      - Documenta: ambientes (dev/stage/prod), scripts de deploy, variáveis de ambiente
+
+  - id: PE-DOC-02
+    category: Documentation
+    check: README com instruções de deploy
+    required: true
+    evidence:
+      - README.md ou DEPLOY.md com instruções claras
+      - Como fazer deploy para staging/production
+
+# ========================================
+# EXIT CRITERIA
+# ========================================
+
+exit_criteria:
+  description: >
+    PE complete when:
+    Docker Compose configured AND deploy scripts created AND environments documented AND secrets protected
+
+  required_checks:
+    - PE-ENV-01  # Docker Compose para ambientes
+    - PE-ENV-03  # Scripts de deploy
+    - PE-DOCKER-01  # Docker instalado
+    - PE-DOCKER-02  # Health checks configurados
+    - PE-LOG-01  # Docker logs funcionais
+    - PE-LOG-02  # Log rotation configurado
+    - PE-SEC-01  # Secrets em environment variables
+    - PE-SEC-02  # .env no gitignore
+    - PE-DOC-01  # PE-00 documentado
+
+  optional_checks:
+    - PE-DOCKER-03  # Docker networks customizadas
+    - PE-ENV-02  # .env.example detalhado

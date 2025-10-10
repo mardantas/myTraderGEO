@@ -1,0 +1,234 @@
+{
+  "version": "1.0",
+  "description": "DDD Workflow - Simplified 10 Agents Process (Small/Medium Projects)",
+  "updated": "2025-10-09",
+
+  "paths": {
+    "doc-root": "00-doc-ddd/",
+    "feedback": "00-doc-ddd/00-feedback/",
+    "inputs": "00-doc-ddd/01-inputs-raw/",
+    "strategic-design": "00-doc-ddd/02-strategic-design/",
+    "ux-design": "00-doc-ddd/03-ux-design/",
+    "tactical-design": "00-doc-ddd/04-tactical-design/",
+    "database-design": "00-doc-ddd/05-database-design/",
+    "quality-assurance": "00-doc-ddd/06-quality-assurance/",
+    "github-management": "00-doc-ddd/07-github-management/",
+    "platform-engineering": "00-doc-ddd/08-platform-engineering/",
+    "security": "00-doc-ddd/09-security/",
+
+    "frontend-code": "01-frontend/",
+    "backend-code": "02-backend/",
+    "github-scripts": "03-github-manager/",
+    "database-scripts": "04-database/",
+
+    "agents-config": ".agents/",
+    "agents-specs": ".agents/",
+    "templates": ".agents/templates/",
+    "workflow": ".agents/workflow/",
+    "checklists": ".agents/workflow/02-checklists/",
+    "validation-scripts": ".agents/workflow/01-validation-scripts/",
+
+    "standards": {
+      "nomenclature": ".agents/02-Nomenclature-Standards.md",
+      "security-platform": ".agents/03-Security-And-Platform-Strategy.md",
+      "ddd-patterns": ".agents/04-DDD-Patterns-Reference.md",
+      "api-standards": ".agents/05-API-Standards.md"
+    }
+  },
+
+  "agents": {
+    "10-SDA": {
+      "name": "Strategic Domain Analyst",
+      "spec": ".agents/10-SDA - Strategic Domain Analyst.xml",
+      "checklist": ".agents/workflow/02-checklists/SDA-checklist.yml",
+      "checklist-type": "guidelines",
+      "phase": "discovery",
+      "executes": "once"
+    },
+    "15-DE": {
+      "name": "Domain Engineer",
+      "spec": ".agents/15-DE - Domain Engineer.xml",
+      "checklist": ".agents/workflow/02-checklists/DE-checklist.yml",
+      "checklist-type": "required",
+      "phase": "iteration",
+      "executes": "per-epic",
+      "note": "DE-00 System Overview REMOVED - DE executes only per epic with DE-01"
+    },
+    "20-UXD": {
+      "name": "User Experience Designer",
+      "spec": ".agents/20-UXD - User Experience Designer.xml",
+      "checklist": ".agents/workflow/02-checklists/UXD-checklist.yml",
+      "checklist-type": "guidelines",
+      "phase": "discovery-and-iteration",
+      "executes": "discovery-foundations-plus-per-epic",
+      "note": "Discovery: UXD-00 Design Foundations only. Iteration: UXD-01 per epic (parallel with SE)"
+    },
+    "25-GM": {
+      "name": "GitHub Manager",
+      "spec": ".agents/25-GM - GitHub Manager.xml",
+      "checklist": ".agents/workflow/02-checklists/GM-checklist.yml",
+      "checklist-type": "guidelines",
+      "phase": "discovery-and-iteration",
+      "executes": "setup-plus-per-epic",
+      "note": "Discovery: GitHub setup only (NO issues - epics not refined). Iteration: Creates detailed issue AFTER DE-01 per epic"
+    },
+    "30-PE": {
+      "name": "Platform Engineer",
+      "spec": ".agents/30-PE - Platform Engineer.xml",
+      "checklist": ".agents/workflow/02-checklists/PE-checklist.yml",
+      "checklist-type": "required",
+      "phase": "discovery",
+      "executes": "once",
+      "note": "Discovery: PE-00 Environments Setup ONLY (dev/stage/prod with SCRIPTS, not IaC). Incremental improvements per epic if needed."
+    },
+    "35-SEC": {
+      "name": "Security Specialist",
+      "spec": ".agents/35-SEC - Security Specialist.xml",
+      "checklist": ".agents/workflow/02-checklists/SEC-checklist.yml",
+      "checklist-type": "required",
+      "phase": "discovery",
+      "executes": "once",
+      "note": "Discovery: SEC-00 Security Baseline ONLY (basic threat model, essential checklist, LGPD minimum). Reviews per epic if needed."
+    },
+    "45-SE": {
+      "name": "Software Engineer",
+      "spec": ".agents/45-SE - Software Engineer.xml",
+      "checklist": ".agents/workflow/02-checklists/SE-checklist.yml",
+      "checklist-type": "required",
+      "phase": "iteration",
+      "executes": "per-epic"
+    },
+    "50-DBA": {
+      "name": "Database Administrator",
+      "spec": ".agents/50-DBA - Database Administrator.xml",
+      "checklist": ".agents/workflow/02-checklists/DBA-checklist.yml",
+      "checklist-type": "required",
+      "phase": "iteration",
+      "executes": "per-epic"
+    },
+    "55-FE": {
+      "name": "Frontend Engineer",
+      "spec": ".agents/55-FE - Frontend Engineer.xml",
+      "checklist": ".agents/workflow/02-checklists/FE-checklist.yml",
+      "checklist-type": "required",
+      "phase": "iteration",
+      "executes": "per-epic"
+    },
+    "60-QAE": {
+      "name": "Quality Assurance Engineer",
+      "spec": ".agents/60-QAE - Quality Assurance Engineer.xml",
+      "checklist": ".agents/workflow/02-checklists/QAE-checklist.yml",
+      "checklist-type": "required",
+      "phase": "discovery-and-iteration",
+      "executes": "discovery-once-plus-per-epic",
+      "note": "Discovery: QAE-00 Test Strategy. Iteration: Tests at END of epic (integration + E2E + regression) - QUALITY GATE before deploy"
+    }
+  },
+
+  "workflow-phases": {
+    "phase-1-discovery": {
+      "description": "Strategic analysis, UX foundations, basic infrastructure/GitHub/security setup, test strategy (1x per project)",
+      "agents": ["10-SDA", "20-UXD", "25-GM", "30-PE", "35-SEC", "60-QAE"],
+      "sequence": "SDA (2 days) → [UXD + GM + PE + SEC + QAE in parallel] (1-2 days)",
+      "output": "BCs, Context Map, Ubiquitous Language, Prioritized Epics, Design Foundations, GitHub Setup, Environments (dev/stage/prod), Security Baseline, Test Strategy",
+      "duration": "3-4 days",
+      "deliverables": "7 documents (SDA: 3, UXD: 1, GM: 1, PE: 1, SEC: 1, QAE: 1)",
+      "note": "NO DE-00, NO issues per epic (epics not refined yet), NO full IaC (scripts only)"
+    },
+    "phase-2-iteration": {
+      "description": "Epic refinement and implementation - DE → GM → DBA → [SE + UXD parallel] → FE → QAE (quality gate) → Deploy",
+      "agents": ["15-DE", "25-GM", "50-DBA", "45-SE", "20-UXD", "55-FE", "60-QAE"],
+      "sequence": "DE (2d) → GM (creates issue) → DBA (1d) → [SE + UXD parallel] (3d) → FE (3d) → QAE (1d) → DEPLOY",
+      "output": "Detailed domain model + GitHub issue + Migrations + Backend code + Wireframes + Frontend + Integration/E2E/Regression tests",
+      "duration": "10 days (2 weeks) per epic",
+      "deliverables": "3 documents (DE-01, DBA-01, UXD-01) + code + tests + 1 GitHub issue",
+      "note": "QAE at END is QUALITY GATE - tests must pass before deploy"
+    }
+  },
+
+  "validation": {
+    "nomenclature_validation": true,
+    "template_compliance": true,
+    "min_quality_score": 70,
+    "definition_of_done": true,
+    "scripts": {
+      "nomenclature": ".agents/workflow/validate-nomenclature.ps1",
+      "structure": ".agents/workflow/validate-structure.ps1"
+    }
+  },
+
+  "checklist-strategy": {
+    "description": "Opção 2: Manter apenas checklists críticos para produção",
+    "required-checklists": ["DE", "SE", "DBA", "FE", "QAE", "PE", "SEC"],
+    "guideline-checklists": ["SDA", "UXD", "GM"],
+    "note": "Required checklists = gates de qualidade obrigatórios. Guidelines = boas práticas recomendadas mas não bloqueantes.",
+    "total-required-checks": 50,
+    "breakdown": {
+      "PE": "23 checks essenciais (infra, observability, DR)",
+      "SEC": "19 checks essenciais (LGPD, pentest, incident response)",
+      "DE-SE-DBA-FE-QAE": "checklists simplificados (~5-10 checks cada)"
+    }
+  },
+
+  "epic-strategy": "functionality-based",
+  "epic-strategy-note": "Epics by functionality (cross-BC), not by Bounded Context. Each epic delivers end-to-end value.",
+
+  "feedback-system": {
+    "enabled": true,
+    "format": "FEEDBACK-[NNN]-[FROM]-[TO]-[title].md",
+    "path": "00-doc-ddd/00-feedback/",
+    "unified": true,
+    "guide": ".agents/workflow/FEEDBACK-FLOW-GUIDE.md",
+    "template": ".agents/templates/07-feedback/FEEDBACK.template.md",
+    "note": "Single feedback mechanism (no separate change-request)"
+  },
+
+  "quality-metrics": {
+    "discovery-time": "3-4 days",
+    "discovery-docs": "7 documents",
+    "time-per-epic": "10 days (2 weeks)",
+    "docs-per-epic": "3 documents (DE-01, DBA-01, UXD-01)",
+    "deploy-frequency": "per epic (2 weeks)",
+    "documentation-overhead": "<20% of time",
+    "note": "Simplified from v2.1: Discovery reduced from 5-7 days to 3-4 days, docs from 13-16 to 7"
+  },
+
+  "think-mode-policy": {
+    "description": "Think mode (planning) garante transparência, previne erros e permite revisão antes da execução",
+    "mandatory-agents": ["SDA", "PE", "SEC"],
+    "recommended-agents": ["DE", "UXD"],
+    "optional-agents": ["DBA", "FE", "QAE", "GM"],
+    "triggers": {
+      "always-use-when": [
+        "Tarefa envolve >3 deliverables",
+        "Mudanças em infraestrutura (IaC, networking, observability)",
+        "Mudanças de segurança críticas (threat model, pentest, compliance)",
+        "Múltiplos arquivos afetados (>5)",
+        "Event Storming ou strategic design completo",
+        "Setup inicial de qualquer agente crítico"
+      ],
+      "optional-when": [
+        "Tarefa simples e bem definida (<3 arquivos)",
+        "Leitura apenas (sem modificações)",
+        "Correções triviais (typos, formatação)"
+      ]
+    },
+    "implementation": {
+      "tool": "TodoWrite",
+      "workflow": [
+        "1. Agente recebe tarefa complexa",
+        "2. Agente usa TodoWrite para criar plano (sub-tarefas, dependências, riscos)",
+        "3. Usuário revisa plano e aprova/ajusta",
+        "4. Agente executa marcando progresso (pending → in_progress → completed)"
+      ]
+    },
+    "benefits": [
+      "Transparência total do que será feito",
+      "Previne erros custosos em infra/segurança",
+      "Permite revisão e ajustes antes da execução",
+      "Rastreabilidade completa de tarefas",
+      "Facilita debugging quando algo falha"
+    ],
+    "guide": ".agents/workflow/THINK-MODE-GUIDE.md"
+  }
+}

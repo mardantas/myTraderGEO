@@ -1,0 +1,30 @@
+agent: "DBA"
+phase: "Database Review"
+essential_checks:
+  - "Schema suporta operações dos repositories DE"
+  - "Indexes CRÍTICOS em todas FKs (performance blocking)"
+  - "Indexes em colunas de filtro frequente (status, createdAt)"
+  - "Normalização adequada (3NF mínimo)"
+  - "Performance estimada aceitável (<100ms queries principais)"
+  - "Concurrency control (Version column para optimistic locking)"
+
+backup_and_recovery:
+  - "Backup strategy configurado (daily full + 30min incremental)"
+  - "RTO/RPO definido (2h / 30min para MVP)"
+  - "Restore testado em ambiente de teste"
+
+data_retention:
+  - "Data retention policy documentado (trade records: 5 anos CVM/SEC)"
+  - "Archival strategy definido (cold storage após período)"
+  - "User data deletion support (LGPD/GDPR compliance)"
+
+transaction_isolation:
+  - "Isolation levels definidos para operações críticas"
+  - "Deadlock prevention: locks sempre na mesma ordem"
+  - "Transações curtas (<100ms, sem chamadas externas)"
+
+security_checks:
+  - "Sensitive columns identificadas (encryption at rest)"
+  - "Access control: application user com least privilege"
+  - "Audit logging configurado (tabela AuditLog)"
+  - "Consultar .agents/docs/03-Security-And-Platform-Strategy.md (seção DBA)"
