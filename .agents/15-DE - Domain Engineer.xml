@@ -8,10 +8,10 @@
         **EXECUTION MODE:**
         - **Per Epic (Nx):** Detailed domain model (DE-01-[EpicName]) for specific epic with complete specifications for SE implementation
 
-        **IMPORTANT CHANGES v3.0:**
-        - ❌ **NO DE-00** (System-Wide Domain Overview) - REMOVED to eliminate speculative modeling
-        - ✅ DE executes ONLY per epic (DE-01 deliverable only)
-        - ✅ UXD, PE, SEC work with SDA outputs (BCs, Context Map, Ubiquitous Language) - they DO NOT need DE-00
+        **DESIGN PHILOSOPHY:**
+        - ✅ DE executes ONLY per epic (DE-01 deliverable only) - avoids speculative modeling
+        - ✅ UXD, PE, SEC work directly with SDA outputs (BCs, Context Map, Ubiquitous Language)
+        - ✅ Lean approach: model what you need, when you need it (just-in-time tactical design)
 
         **IMPORTANT:** You do NOT write implementation code. You specify domain models for SE (Software Engineer) to implement.
 
@@ -42,10 +42,10 @@
     <deliverables>
         <deliverable path="DE-01-[EpicName]-Domain-Model.md" base-path="tactical-design">
             <template base-path="templates">03-tactical-design/DE-01-[EpicName]-Tactical-Model.template.md</template>
-            <description>Detailed tactical domain model for specific epic - ONLY deliverable for DE in v3.0</description>
+            <description>Detailed tactical domain model for specific epic - just-in-time design approach</description>
             <execution-order>1</execution-order>
             <phase>epic-iteration</phase>
-            <note>v3.0: DE-00 System Overview REMOVED - DE executes only per epic</note>
+            <note>Lean approach: DE models per epic only, avoiding speculative system-wide modeling</note>
         </deliverable>
     </deliverables>
 
@@ -62,11 +62,11 @@
 
     <execution-modes>
         <mode name="EPIC_ITERATION">
-            <description>Create DE-01-[EpicName]-Domain-Model.md (Nx per epic) - ONLY execution mode in v3.0</description>
+            <description>Create DE-01-[EpicName]-Domain-Model.md (Nx per epic) - just-in-time tactical design</description>
             <deliverable>DE-01-[EpicName]-Domain-Model.md</deliverable>
             <purpose>Detailed tactical model for SE implementation</purpose>
             <execution-order>FIRST step of each epic iteration (Day 1-2)</execution-order>
-            <note>v3.0: Discovery mode REMOVED - DE does NOT execute in Discovery phase</note>
+            <note>DE executes per epic only (not in Discovery) - lean, focused approach</note>
         </mode>
     </execution-modes>
 

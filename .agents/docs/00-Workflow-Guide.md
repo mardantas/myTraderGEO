@@ -145,10 +145,15 @@ Executada para cada épico prioritário, entregando funcionalidade completa pont
         │   • OWASP Top 3? Authorization?       │
         │   • Input validation? Secrets safe?   │
         │                                       │
-        │ ⚠️ QUANDO EXECUTAR:                   │
-        │ - Epic 4+ (pós-MVP)                   │
-        │ - Epic com dados sensíveis            │
-        │ - Epic com queries complexas          │
+        │ ⚠️ QUANDO EXECUTAR (ver Decision      │
+        │    Matrix para critérios completos):  │
+        │ PE: Queries >3 JOINs, real-time       │
+        │     calculations, Epic 4+, API extern │
+        │ SEC: PII/financial data, auth logic,  │
+        │      Epic 4+, upload arquivos         │
+        │                                       │
+        │ 📋 Ref: 07-PE-SEC-Checkpoint-Decision-│
+        │         Matrix.md                     │
         └───────────────────────────────────────┘
                         ↓
         ┌───────────────────────────────────────┐
@@ -405,6 +410,7 @@ Mudar estrutura de pastas = atualizar **apenas** `workflow-config.json` (zero mu
 - **Segurança:** [03-Security-And-Platform-Strategy.md](03-Security-And-Platform-Strategy.md)
 - **Padrões DDD:** [04-DDD-Patterns-Reference.md](04-DDD-Patterns-Reference.md)
 - **Padrões de API:** [05-API-Standards.md](05-API-Standards.md)
+- **PE/SEC Checkpoints:** [07-PE-SEC-Checkpoint-Decision-Matrix.md](07-PE-SEC-Checkpoint-Decision-Matrix.md)
 - **Fluxo de Feedback:** [../workflow/FEEDBACK-FLOW-GUIDE.md](../workflow/FEEDBACK-FLOW-GUIDE.md)
 - **Think Mode:** [../workflow/THINK-MODE-GUIDE.md](../workflow/THINK-MODE-GUIDE.md)
 - **Config Master:** `workflow-config.json`

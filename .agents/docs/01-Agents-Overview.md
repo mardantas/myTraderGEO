@@ -223,10 +223,13 @@ deploy.sh
 
 ### PE Light Review per Epic (OPTIONAL)
 
-**When to Execute:**
+**When to Execute:** See [07-PE-SEC-Checkpoint-Decision-Matrix.md](07-PE-SEC-Checkpoint-Decision-Matrix.md) for complete criteria.
+
+**Summary:**
 - Epic introduces critical performance path (ex: real-time calculations)
 - Database queries becoming complex (>3 JOINs)
 - Epic 4+ (after MVP is stable)
+- Integration with external APIs
 
 **What PE Reviews (15-30 min):**
 1. ✅ **Database Performance**
@@ -298,10 +301,13 @@ Define **essential security baseline** - OWASP Top 3, LGPD minimum, auth strateg
 
 ### SEC Light Review per Epic (OPTIONAL)
 
-**When to Execute:**
+**When to Execute:** See [07-PE-SEC-Checkpoint-Decision-Matrix.md](07-PE-SEC-Checkpoint-Decision-Matrix.md) for complete criteria.
+
+**Summary:**
 - Epic handles sensitive data (PII, credentials, financial)
 - Epic introduces authentication/authorization logic
 - Epic 4+ (after MVP is stable)
+- Epic allows file uploads
 
 **What SEC Reviews (15-30 min):**
 1. ✅ **OWASP Top 3 Compliance**
@@ -603,12 +609,14 @@ Any agent can create FEEDBACK for another:
 | PE | 1 template (Environments-Setup) |
 | SEC | 1 template (Security-Baseline) |
 | QAE | 1 template (Test-Strategy) |
+| DBA | 1 template (Epic-Schema-Review) |
 | SE | 0 (code is documentation) |
-| DBA | 0 (migrations are documentation) |
 | FE | 0 (code is documentation) |
 | All | 1 shared template (FEEDBACK) |
 
-**Total:** 11 templates
+**Total:** 12 templates
+
+**Note:** Templates DE-00 and SE-01 archived (removed in v1.0 - code is primary documentation)
 
 ---
 

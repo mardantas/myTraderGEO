@@ -1,13 +1,13 @@
 # FEEDBACK-FLOW-GUIDE.md
 
-**Versão:** 2.0
-**Data:** 2025-10-01
+**Versão:** 1.0
+**Data:** 2025-10-10
 
 ---
 
 ## 🎯 Objetivo
 
-Documentar o fluxo completo de feedback entre agentes no DDD Workflow v2.0, com exemplos práticos e melhores práticas.
+Documentar o fluxo completo de feedback entre agentes no DDD Workflow v1.0, com exemplos práticos e melhores práticas.
 
 ---
 

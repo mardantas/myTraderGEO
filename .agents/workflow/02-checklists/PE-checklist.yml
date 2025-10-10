@@ -1,16 +1,15 @@
-# Platform Engineering (PE) Checklist - v3.0 SIMPLIFIED
+# Platform Engineering (PE) Checklist
 
 agent: PE
 role: Platform Engineer
-checklist_version: 3.0
-scope: "Discovery ONLY - Basic environments with SCRIPTS (NOT full IaC)"
+checklist_version: 1.0
+scope: "Discovery ONLY - Pragmatic infrastructure setup for small/medium projects"
 
 # ========================================
-# v3.0 CHANGES:
-# - Removed full IaC (Terraform/Bicep) - using Docker Compose + scripts instead
-# - Removed full observability stack (Prometheus, Grafana, Jaeger, Loki)
-# - Removed DR Plan, Blue-Green deployment
-# - Focus: Basic environments (dev/stage/prod) with deploy scripts
+# PHILOSOPHY:
+# - Lean approach: Docker Compose + deploy scripts (pragmatic, not over-engineered)
+# - Focuses on essentials: environments, deployment, logging, secrets management
+# - Advanced features (IaC, full observability, DR, Blue-Green) added when needed
 # ========================================
 
 # ========================================
@@ -68,7 +67,7 @@ docker:
   - id: PE-DOCKER-03
     category: Docker
     check: Docker networks configurados (isolamento de serviços)
-    required: false  # v3.0: Network padrão suficiente para small/medium
+    required: false  # Default network sufficient for small/medium projects
     note: "Opcional para small/medium projects. Implementar quando escalar."
     evidence:
       - docker network ls com networks customizadas
@@ -138,13 +137,13 @@ documentation:
       - Como fazer deploy para staging/production
 
 # ========================================
-# EXIT CRITERIA v3.0
+# EXIT CRITERIA
 # ========================================
 
 exit_criteria:
   description: >
-    v3.0 SIMPLIFIED - PE completo quando:
-    Docker Compose configurado E deploy scripts criados E ambientes documentados E secrets protegidos
+    PE complete when:
+    Docker Compose configured AND deploy scripts created AND environments documented AND secrets protected
 
   required_checks:
     - PE-ENV-01  # Docker Compose para ambientes

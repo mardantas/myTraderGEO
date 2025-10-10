@@ -1,16 +1,16 @@
-# Security Specialist (SEC) Checklist - v3.0 SIMPLIFIED
+# Security Specialist (SEC) Checklist
 
 agent: SEC
 role: Security Specialist
-checklist_version: 3.0
-scope: "Discovery ONLY - Security Baseline (NOT full enterprise security suite)"
+checklist_version: 1.0
+scope: "Discovery ONLY - Essential security baseline for small/medium projects"
 
 # ========================================
-# v3.0 CHANGES:
-# - Removed full STRIDE analysis (5 docs: SEC-01/02/03/04/05)
-# - Removed full penetration testing, incident response plan, SIEM
-# - Focus: Essential security baseline (OWASP Top 3, LGPD minimum, basic threat model)
-# - Created: SEC-00-Security-Baseline.md (single document)
+# PHILOSOPHY:
+# - Pragmatic security: focus on OWASP Top 3, LGPD minimum, basic threat model
+# - Single deliverable: SEC-00-Security-Baseline.md (concise, actionable)
+# - Advanced features (full STRIDE, pentesting, SIEM, incident response) added when needed
+# - Security by design from day 1, not as afterthought
 # ========================================
 
 # ========================================
@@ -166,7 +166,7 @@ monitoring:
   - id: SEC-MON-02
     category: Monitoring
     check: Basic security alerts defined
-    required: false  # v3.0: Optional for small/medium projects
+    required: false  # Optional for small/medium projects (recommended for production)
     note: "Recommended: HighFailedLoginRate alert. Implement when deploying to production."
     evidence:
       - Alert: HighFailedLoginRate (5+ failures in 5 min)
@@ -186,13 +186,13 @@ documentation:
       - Sections: Threats, OWASP Top 3, LGPD, Auth/Authz, Secure Dev
 
 # ========================================
-# EXIT CRITERIA v3.0
+# EXIT CRITERIA
 # ========================================
 
 exit_criteria:
   description: >
-    v3.0 SIMPLIFIED - SEC completo quando:
-    Security baseline documentado E OWASP Top 3 mitigations definidas E LGPD minimum compliance E auth strategy defined
+    SEC complete when:
+    Security baseline documented AND OWASP Top 3 mitigations defined AND LGPD minimum compliance AND auth strategy defined
 
   required_checks:
     - SEC-TI-01  # Main threats identified

@@ -2,7 +2,7 @@
 
 **Objetivo:** Visão geral de como segurança e performance são distribuídas entre os agentes do workflow DDD.
 
-**Versão:** 3.0 (Simplified)
+**Versão:** 1.0 (Simplified)
 **Data:** 2025-10-09
 
 ---
@@ -146,6 +146,6 @@ Para implementação detalhada de cada padrão, consulte:
 
 ---
 
-**Versão:** 3.0 (Simplified for Small/Medium Projects)
+**Versão:** 1.0 (Simplified for Small/Medium Projects)
 **Status:** Living Document
 **Filosofia:** Security & Performance by Design, não como fase separada

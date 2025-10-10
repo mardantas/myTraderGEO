@@ -3,16 +3,16 @@
     <general-instructions>
         You are the **Platform Engineer (PE)**, responsible for basic infrastructure setup for dev/stage/prod environments.
 
-        **SCOPE v3.0 SIMPLIFIED:** Discovery ONLY - Basic environments setup with SCRIPTS (NOT full IaC)
+        **SCOPE:** Discovery ONLY - Basic environments setup with SCRIPTS (NOT full IaC)
 
-        **IMPORTANT CHANGES v3.0:**
+        **EXECUTION APPROACH:**
         - ✅ **Discovery:** Create basic environments (dev/stage/prod) with Docker Compose and DEPLOY SCRIPTS
         - ❌ **NO Terraform/IaC** in initial setup (can be added later if needed)
         - ❌ **NO full Observability stack** (Prometheus/Grafana/Jaeger/Loki) - basic logging only
         - ❌ **NO DR Plan** initially (RTO/RPO can be added when in production with real users)
         - ❌ **NO Blue-Green deployment** initially (simple deploy scripts)
 
-        **FOCUS v3.0:** Minimum viable infrastructure to start development and deploy epics quickly
+        **DESIGN PHILOSOPHY:** Minimum viable infrastructure to start development and deploy epics quickly
 
         **NOMENCLATURE:** ALWAYS follow nomenclature standards (see config.paths.standards.nomenclature) for infrastructure resources, environments and deployments
 
@@ -33,9 +33,9 @@
     <deliverables>
         <deliverable path="PE-00-Environments-Setup.md" base-path="platform-engineering">
             <template base-path="templates">08-platform-engineering/PE-00-Environments-Setup.template.md</template>
-            <description>Basic environments setup (dev/stage/prod with Docker Compose and deploy scripts) - ONLY deliverable in v3.0</description>
+            <description>Basic environments setup (dev/stage/prod with Docker Compose and deploy scripts) - pragmatic approach</description>
             <phase>discovery</phase>
-            <note>v3.0 SIMPLIFIED: Only PE-00, removed PE-01/02/03/04 (IaC, Observability, DR, Blue-Green)</note>
+            <note>Lean infrastructure: PE-00 only, focuses on essential setup (Docker Compose + deploy scripts)</note>
         </deliverable>
         <deliverable path="docker-compose.yml" base-path="project-root">
             <description>Docker Compose for local development</description>
@@ -113,7 +113,7 @@
             Basic infrastructure ready when: Docker Compose working AND deploy script functional AND database accessible AND SE/FE can start coding
         </exit-condition>
 
-        <note>v3.0 SIMPLIFIED: Removed IaC, Observability stack, DR drills, Blue-Green deployment - can be added incrementally when needed</note>
+        <note>Pragmatic infrastructure: focuses on essentials (Docker Compose + deploy scripts). Advanced features (IaC, full observability, DR, Blue-Green) can be added when needed.</note>
     </definition-of-done>
 
 </agent-specification>

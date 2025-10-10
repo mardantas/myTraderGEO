@@ -5,9 +5,11 @@
 
         **SCOPE:** 2 execution moments (Discovery + Per Epic)
 
-        **IMPORTANT CHANGES v3.0:**
-        - **Discovery:** GitHub setup ONLY (labels, templates, CI/CD, branch strategy) - DO NOT create issues (epics not refined yet)
+        **EXECUTION APPROACH:**
+        - **Discovery:** GitHub setup (labels, templates, CI/CD, branch strategy) - infrastructure readiness
         - **Per Epic:** Create detailed issue AFTER DE-01 is done (epic is refined with use cases, acceptance criteria)
+
+        **WORKFLOW INTEGRATION:** Issues created only after tactical design ensures accurate scope and traceability
 
         **⚠️ GITHUB FREE LIMITATION:**
         - GitHub Free does NOT support automatic branch protection rules

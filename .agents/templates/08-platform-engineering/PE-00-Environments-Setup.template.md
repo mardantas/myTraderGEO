@@ -355,7 +355,7 @@ JWT_SECRET_PROD=CHANGE_ME_DIFFERENT_FOR_PRODUCTION
 STRIPE_API_KEY=
 SENDGRID_API_KEY=
 
-# Monitoring (optional for v3.0)
+# Monitoring (optional for v1.0)
 LOG_LEVEL=Information
 ```
 
@@ -565,9 +565,9 @@ jobs:
 
 ---
 
-## 🚫 O QUE NÃO FAZEMOS em v3.0
+## 🚫 O QUE NÃO FAZEMOS em v1.0
 
-Para manter a simplicidade em projetos small/medium, v3.0 **NÃO inclui**:
+Para manter a simplicidade em projetos small/medium, v1.0 **NÃO inclui**:
 
 - ❌ **IaC completo** (Terraform, Bicep, CloudFormation)
 - ❌ **Observability stack** (Prometheus, Grafana, Jaeger, Loki)

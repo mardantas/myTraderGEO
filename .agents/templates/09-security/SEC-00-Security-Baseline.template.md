@@ -306,7 +306,7 @@ Definir baseline de segurança essencial para projetos small/medium: OWASP Top 3
 
 **Token Expiration:**
 - **Access Token:** 15-60 minutes
-- **Refresh Token:** 7-30 days (optional for v3.0)
+- **Refresh Token:** 7-30 days (optional for v1.0)
 
 **Implementation Checklist:**
 - [ ] JWT library integrated (e.g., `System.IdentityModel.Tokens.Jwt`)
@@ -396,7 +396,7 @@ string hash = BCrypt.Net.BCrypt.HashPassword(password);
 
 ### Secrets Management
 
-**Approach:** Environment Variables (v3.0 Simplified)
+**Approach:** Environment Variables (v1.0 Simplified)
 
 **What goes in `.env`:**
 - Database connection strings
@@ -458,7 +458,7 @@ _logger.LogWarning("Unauthorized access attempt",
 - Development: Console + File
 - Staging/Production: Docker logs (JSON format)
 
-### Security Alerts (Optional for v3.0)
+### Security Alerts (Optional for v1.0)
 
 **Recommended Alerts:**
 - [ ] HighFailedLoginRate (5+ failures in 5 min) → Email/Slack
@@ -469,9 +469,9 @@ _logger.LogWarning("Unauthorized access attempt",
 
 ---
 
-## 🚫 Out of Scope for v3.0
+## 🚫 Out of Scope for v1.0
 
-To maintain simplicity for small/medium projects, v3.0 **DOES NOT include**:
+To maintain simplicity for small/medium projects, v1.0 **DOES NOT include**:
 
 - ❌ **Full STRIDE Analysis** (5 documents)
 - ❌ **Penetration Testing** (OWASP ZAP, manual pentest)
