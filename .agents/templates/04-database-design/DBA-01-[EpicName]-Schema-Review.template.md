@@ -303,6 +303,233 @@ public partial class Add[Epic]Indexes : Migration
 
 ---
 
+## 🔄 Migration Rollback Strategy
+
+### Princípio Fundamental
+
+**Toda migration deve ser rollback-safe** - o método `Down()` não pode falhar em produção.
+
+### Pattern: Expand/Contract (3-Step Migration)
+
+Para breaking changes (rename, change type, etc), use o padrão **Expand/Contract**:
+
+#### ❌ Problema: Breaking Change Direto
+
+```csharp
+// Migration 001: Rename column (QUEBRA apps antigas!)
+public override void Up(MigrationBuilder mb)
+{
+    mb.RenameColumn("OldName", "Users", "NewName");  // ❌ App antiga para
+}
+```
+
+**Consequência:** Aplicação antiga para (procura coluna `OldName` que não existe mais)
+
+---
+
+#### ✅ Solução: Expand/Contract (3 Deploys)
+
+**Step 1: EXPAND - Adicionar novo campo (nullable)**
+```csharp
+// Migration 001: Adiciona nova coluna
+public override void Up(MigrationBuilder mb)
+{
+    mb.AddColumn<string>("NewName", "Users", nullable: true);
+}
+
+public override void Down(MigrationBuilder mb)
+{
+    mb.DropColumn("NewName", "Users");  // ✅ Safe rollback
+}
+```
+**Deploy 1:** App antiga ainda funciona (ignora `NewName`)
+
+---
+
+**Step 2: MIGRATE - Copiar dados (backfill)**
+```csharp
+// Migration 002: Copia dados OldName → NewName
+public override void Up(MigrationBuilder mb)
+{
+    mb.Sql("UPDATE Users SET NewName = OldName WHERE NewName IS NULL");
+}
+
+public override void Down(MigrationBuilder mb)
+{
+    mb.Sql("UPDATE Users SET OldName = NewName WHERE OldName IS NULL");
+}
+```
+**Deploy 2:** App atualizada usa `NewName`, app antiga usa `OldName` (ambas funcionam)
+
+---
+
+**Step 3: CONTRACT - Remover campo antigo**
+```csharp
+// Migration 003: Remove coluna antiga (após 2 sprints)
+public override void Up(MigrationBuilder mb)
+{
+    mb.DropColumn("OldName", "Users");
+}
+
+public override void Down(MigrationBuilder mb)
+{
+    mb.AddColumn<string>("OldName", "Users", nullable: true);
+    mb.Sql("UPDATE Users SET OldName = NewName");  // ⚠️ Rollback possível mas dados podem estar desatualizados
+}
+```
+**Deploy 3:** App antiga não existe mais, seguro remover `OldName`
+
+---
+
+### Rollback-Safe Patterns
+
+#### 1. Adding Columns
+
+**✅ SAFE:**
+```csharp
+// Nullable ou com default value
+mb.AddColumn<string>("Email", "Users", nullable: true);
+// ou
+mb.AddColumn<string>("Email", "Users", nullable: false, defaultValue: "");
+```
+
+**❌ UNSAFE:**
+```csharp
+// NOT NULL sem default em tabela com dados
+mb.AddColumn<string>("Email", "Users", nullable: false);  // ❌ Falha se Users tem linhas!
+```
+
+**Rollback:** `DropColumn` sempre funciona (mas dados perdidos)
+
+---
+
+#### 2. Dropping Columns
+
+**⚠️ CUIDADO:** Não pode recuperar dados perdidos
+
+```csharp
+public override void Up(MigrationBuilder mb)
+{
+    mb.DropColumn("ObsoleteField", "Users");
+}
+
+public override void Down(MigrationBuilder mb)
+{
+    mb.AddColumn<string>("ObsoleteField", "Users", nullable: true);
+    // ⚠️ Coluna recriada, mas DADOS PERDIDOS!
+}
+```
+
+**Safe approach:**
+1. Deprecate código que usa a coluna (comentar/remover)
+2. Aguardar 2 sprints (garantir que app antiga não existe mais)
+3. Então drop coluna
+
+---
+
+#### 3. Renaming Columns
+
+**Use Expand/Contract** (3 steps acima)
+
+Nunca use `RenameColumn` diretamente em produção.
+
+---
+
+#### 4. Changing Column Types
+
+```csharp
+// Step 1: Adicionar nova coluna com novo tipo
+mb.AddColumn<int>("QuantityNew", "Orders", nullable: true);
+
+// Step 2: Migrar dados
+mb.Sql("UPDATE Orders SET QuantityNew = TRY_CAST(QuantityOld AS INT)");
+
+// Step 3 (migration separada): Drop coluna antiga
+mb.DropColumn("QuantityOld", "Orders");
+mb.RenameColumn("QuantityNew", "Orders", "Quantity");
+```
+
+---
+
+#### 5. Adding NOT NULL Constraints
+
+**❌ UNSAFE:**
+```csharp
+mb.AddColumn<string>("Email", "Users", nullable: false);  // Quebra!
+```
+
+**✅ SAFE (2 steps):**
+```csharp
+// Migration 1: Adicionar nullable
+mb.AddColumn<string>("Email", "Users", nullable: true, defaultValue: "");
+
+// Migration 2 (após backfill): Tornar NOT NULL
+mb.AlterColumn<string>("Email", "Users", nullable: false);
+```
+
+---
+
+### Checklist: Is This Migration Rollback-Safe?
+
+Antes de fazer merge do PR:
+
+- [ ] `Down()` migration testada localmente?
+- [ ] Colunas NOT NULL têm default value ou são nullable inicialmente?
+- [ ] Breaking changes usam Expand/Contract (3 deploys)?
+- [ ] Dados críticos não são perdidos em `Down()`?
+- [ ] Aplicação antiga continua funcionando após `Up()`?
+- [ ] Rollback testado: `update → rollback → update novamente`?
+
+---
+
+### Testing Rollback Locally
+
+```bash
+# Aplicar migration
+dotnet ef database update [MigrationName]
+
+# Testar rollback
+dotnet ef database update [PreviousMigration]
+
+# Re-aplicar (deve funcionar)
+dotnet ef database update [MigrationName]
+```
+
+**Se `Down()` falhar → Migration NÃO é production-ready!**
+
+---
+
+### Common Rollback Failures
+
+| Cenário | Por que falha | Solução |
+|---------|---------------|---------|
+| Add NOT NULL sem default | Tabela tem linhas existentes | Adicionar nullable primeiro, backfill, depois NOT NULL |
+| Drop column com dados | Rollback recria coluna vazia | Usar Expand/Contract (não dropar imediatamente) |
+| Rename column | App antiga procura nome antigo | Expand/Contract (ambos nomes existem temporariamente) |
+| Change type incompatível | Dados não podem ser convertidos de volta | Manter ambas colunas temporariamente |
+
+---
+
+### Emergency Rollback Procedure
+
+Se deploy falhou e precisa rollback urgente:
+
+```bash
+# 1. Rollback application (container/código)
+git revert [commit-hash]
+docker service update --rollback myapp
+
+# 2. Rollback database (EF Core)
+dotnet ef database update [PreviousMigration] --connection "[prod-connection]"
+
+# 3. Verificar aplicação funcionando
+curl https://api.prod/health
+
+# 4. Post-mortem: Por que Down() não estava safe?
+```
+
+---
+
 ## 🔄 Backup & Recovery (MVP Básico)
 
 ### RTO/RPO para MVP

@@ -23,7 +23,8 @@
       "Bash(rm:*)",
       "Bash(do echo \"=== $file ===\")",
       "Bash(head:*)",
-      "Bash(ren:*)"
+      "Bash(ren:*)",
+      "Read(//c/Users/Marco/Projetos/**)"
     ],
     "deny": [],
     "ask": []

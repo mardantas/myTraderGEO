@@ -114,6 +114,57 @@ public record [SomethingHappened](
 
 ---
 
+#### ⚠️ Anti-Pattern: Modelo Anêmico
+
+**EVITE:**
+```csharp
+// ❌ MODELO ANÊMICO (apenas getters/setters, sem comportamento)
+public class Order
+{
+    public OrderId Id { get; set; }  // setter público!
+    public decimal Total { get; set; }
+    public OrderStatus Status { get; set; }
+}
+
+// Lógica de negócio vazando para Application Layer
+public class OrderService
+{
+    public void ApproveOrder(Order order)
+    {
+        order.Status = OrderStatus.Approved;  // regra de negócio fora do domínio!
+        order.Total = order.Items.Sum(i => i.Price);
+    }
+}
+```
+
+**USE:**
+```csharp
+// ✅ MODELO RICO (comportamento + invariantes)
+public class Order
+{
+    public OrderId Id { get; private set; }  // setter privado!
+    public decimal Total { get; private set; }
+    public OrderStatus Status { get; private set; }
+
+    // Comportamento rico com validações
+    public void Approve(UserId approverId)
+    {
+        if (Status != OrderStatus.Pending)
+            throw new DomainException("Only pending orders can be approved");
+
+        if (Total <= 0)
+            throw new DomainException("Cannot approve order with zero total");
+
+        Status = OrderStatus.Approved;
+        _domainEvents.Add(new OrderApproved(Id, approverId));
+    }
+}
+```
+
+**Princípio:** Aggregate = Dados + Comportamento + Invariantes (não apenas DTOs)
+
+---
+
 #### Repository Interface
 
 ```csharp

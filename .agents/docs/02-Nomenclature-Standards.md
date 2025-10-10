@@ -65,11 +65,14 @@ Pasta: 02-backend/src/StrategyManagement/
 
 ### Diretrizes
 
-✅ **Use português natural** para stakeholders
-✅ **Seja específico** ao contexto
-✅ **Mantenha consistência** em todo projeto
-❌ **Evite traduções literais** forçadas
-❌ **Evite anglicismos** desnecessários
+**Boas Práticas:**
+- ✅ Use português natural para stakeholders
+- ✅ Seja específico ao contexto
+- ✅ Mantenha consistência em todo projeto
+
+**Evite:**
+- ❌ Traduções literais forçadas
+- ❌ Anglicismos desnecessários
 
 ---
 
@@ -220,22 +223,21 @@ public class StrategyRepository : IStrategyRepository { }
 
 ---
 
-## 🔢 Numeração de Agents
+## 🔢 Numeração de Agentes
 
-**Formato:** Múltiplos de 10 para permitir inserções futuras
+**Formato:** Múltiplos de 5 para permitir inserções futuras
 
 ```
 10 - SDA (Strategic Domain Analyst)
+15 - DE (Domain Engineer)
 20 - UXD (User Experience Designer)
-30 - DE (Domain Engineer)
-40 - DBA (Database Administrator)
-50 - FE (Frontend Engineer)
+25 - GM (GitHub Manager)
+30 - PE (Platform Engineer)
+35 - SEC (Security Specialist)
+45 - SE (Software Engineer)
+50 - DBA (Database Administrator)
+55 - FE (Frontend Engineer)
 60 - QAE (Quality Assurance Engineer)
-70 - GM (GitHub Manager)
-
-[Espaço para futuros agents]
-15 - SEC (Security Specialist) - quando necessário
-45 - PE (Platform Engineer) - quando necessário
 ```
 
 ---
@@ -244,7 +246,7 @@ public class StrategyRepository : IStrategyRepository { }
 
 ```
 00-doc-ddd/
-├── 00-feedback/                    # Feedbacks entre agents
+├── 00-feedback/                    # Feedbacks entre agentes
 ├── 01-inputs-raw/                  # Requisitos originais
 ├── 02-strategic-design/            # SDA deliverables
 ├── 03-ux-design/                   # UXD deliverables

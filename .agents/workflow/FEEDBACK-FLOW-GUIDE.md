@@ -7,7 +7,7 @@
 
 ## 🎯 Objetivo
 
-Documentar o fluxo completo de feedback entre agents no DDD Workflow v2.0, com exemplos práticos e melhores práticas.
+Documentar o fluxo completo de feedback entre agentes no DDD Workflow v2.0, com exemplos práticos e melhores práticas.
 
 ---
 
@@ -37,7 +37,7 @@ Documentar o fluxo completo de feedback entre agents no DDD Workflow v2.0, com e
 
 ### ❌ Não Use Feedback Para:
 
-- **Workflow normal:** Agents seguem ordem natural (SDA → UXD → DE → DBA → FE → QAE)
+- **Workflow normal:** Agentes seguem ordem natural (SDA → UXD → DE → DBA → FE → QAE)
 - **Entrega inicial:** Primeira versão de deliverable não precisa de feedback
 - **Comunicação trivial:** Use comentários em código ou mensagens diretas
 
