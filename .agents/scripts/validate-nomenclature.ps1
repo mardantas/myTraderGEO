@@ -1,5 +1,5 @@
 # validate-nomenclature.ps1
-# Valida nomenclatura de documentos e código conforme padrões DDD Workflow v2.0
+# Valida nomenclatura de documentos e código conforme padrões DDD Workflow
 
 param(
     [string]$Path = ".",
@@ -10,7 +10,7 @@ param(
 $ErrorCount = 0
 $WarningCount = 0
 
-Write-Host "`n📝 DDD Workflow Nomenclature Validator v2.0`n" -ForegroundColor Cyan
+Write-Host "`n📝 DDD Workflow Nomenclature Validator`n" -ForegroundColor Cyan
 
 # Carregar padrões de nomenclatura
 $businessTermsPT = @{
@@ -35,6 +35,8 @@ $validDocPattern = @{
     "05-database-design" = '^DBA-\d{2}-.*\.md$'
     "06-quality-assurance" = '^QAE-\d{2}-.*\.md$'
     "07-github-management" = '^GM-\d{2}-.*\.md$'
+    "08-platform-engineering" = '^PE-\d{2}-.*\.md$|^PE-EPIC-\d+-.*\.md$'
+    "09-security" = '^SEC-\d{2}-.*\.md$|^SEC-EPIC-\d+-.*\.md$'
     "00-feedback" = '^FEEDBACK-\d{3}-[A-Z]+-[A-Z]+-.*\.md$'
 }
 
@@ -210,7 +212,7 @@ if (Test-Path "00-doc-ddd/00-feedback") {
             $title = $Matches[4]
 
             # Validar agents existem
-            $validAgents = @("SDA", "UXD", "DE", "DBA", "FE", "QAE", "GM")
+            $validAgents = @("SDA", "UXD", "DE", "DBA", "SE", "FE", "QAE", "GM", "PE", "SEC", "USER")
 
             if ($from -notin $validAgents) {
                 Write-Host "  ❌ Invalid source agent: $from in $($feedback.Name)" -ForegroundColor Red

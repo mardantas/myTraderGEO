@@ -403,6 +403,277 @@ Mudar estrutura de pastas = atualizar **apenas** `workflow-config.json` (zero mu
 
 ---
 
+## 🔍 Validação de Qualidade
+
+O workflow inclui scripts PowerShell para validar nomenclatura e estrutura do projeto automaticamente.
+
+### 📋 Scripts Disponíveis
+
+#### 1. validate-nomenclature.ps1
+
+**Objetivo:** Valida nomenclatura de documentos, feedbacks e código conforme padrões DDD.
+
+**Localização:** `.agents/scripts/validate-nomenclature.ps1`
+
+**O que valida:**
+- ✅ Nomenclatura de documentos em `00-doc-ddd/` (SDA-XX, DE-XX, UXD-XX, etc)
+- ✅ Formato de feedbacks (FEEDBACK-NNN-FROM-TO-title.md)
+- ✅ Agentes válidos em feedbacks (SDA, UXD, DE, DBA, SE, FE, QAE, GM, PE, SEC)
+- ✅ Placeholders em documentos ([PROJECT_NAME], [YYYY-MM-DD], [EpicName])
+- ✅ Templates têm extensão `.template.md`
+- ✅ Templates têm placeholders obrigatórios
+- ✅ *(Opcional)* Código backend/frontend (com flag `-CheckCode`)
+
+**Uso:**
+
+```powershell
+# Validação básica (apenas documentos)
+.\.agents\scripts\validate-nomenclature.ps1
+
+# Com validação de código backend/frontend
+.\.agents\scripts\validate-nomenclature.ps1 -CheckCode
+
+# Modo verbose (mostra todos os arquivos validados)
+.\.agents\scripts\validate-nomenclature.ps1 -Verbose
+
+# Combinado (código + verbose)
+.\.agents\scripts\validate-nomenclature.ps1 -CheckCode -Verbose
+```
+
+**Validações de Código (se `-CheckCode`):**
+
+Backend (C#):
+- ✅ Classes de domínio usam inglês (não português)
+- ✅ Aggregates têm suporte a Domain Events
+- ✅ Value Objects são immutable (sem setters)
+
+Frontend (React):
+- ✅ Componentes seguem PascalCase
+- ✅ Componentes têm `export default`
+- ✅ Hooks seguem padrão `use*`
+
+**Exemplo de Output:**
+```
+📝 DDD Workflow Nomenclature Validator
+
+📋 Validating document nomenclature in 00-doc-ddd...
+  ✅ 02-strategic-design/SDA-01-Event-Storming.md
+  ✅ 04-tactical-design/DE-01-CreateStrategy-Domain-Model.md
+  ❌ Invalid name: 04-tactical-design/modelo-tatico.md
+     Expected pattern: ^DE-\d{2}-.*\.md$
+
+💬 Validating feedback nomenclature...
+  ✅ FEEDBACK-001-DE-SDA-adicionar-evento.md
+  ❌ Invalid source agent: XYZ in FEEDBACK-002-XYZ-DE-test.md
+
+===========================================================
+📊 NOMENCLATURE VALIDATION SUMMARY
+===========================================================
+
+❌ Errors: 2
+⚠️  Warnings: 0
+
+Please fix errors before proceeding.
+```
+
+---
+
+#### 2. validate-structure.ps1
+
+**Objetivo:** Valida estrutura de pastas, arquivos e agentes do workflow.
+
+**Localização:** `.agents/scripts/validate-structure.ps1`
+
+**O que valida:**
+- ✅ Pastas obrigatórias existem (`00-doc-ddd/*`, `.agents/templates/*`)
+- ✅ Arquivos de documentação presentes (00-Workflow-Guide.md, 01-Agents-Overview.md, etc)
+- ✅ Agentes XML válidos e estruturados corretamente
+- ✅ Templates obrigatórios presentes
+- ✅ Nomenclatura de documentos existentes
+- ✅ Formato de feedbacks
+- ✅ Detecção de pastas obsoletas
+
+**Uso:**
+
+```powershell
+# Validação básica
+.\.agents\scripts\validate-structure.ps1
+
+# Modo verbose (mostra todos os arquivos validados)
+.\.agents\scripts\validate-structure.ps1 -Verbose
+```
+
+**Pastas Obrigatórias Validadas:**
+```
+00-doc-ddd/
+├── 00-feedback/
+├── 01-inputs-raw/
+├── 02-strategic-design/
+├── 03-ux-design/
+├── 04-tactical-design/
+├── 05-database-design/
+├── 06-quality-assurance/
+├── 07-github-management/
+├── 08-platform-engineering/
+└── 09-security/
+
+.agents/templates/
+├── 01-strategic-design/
+├── 02-ux-design/
+├── 03-tactical-design/
+├── 04-database-design/
+├── 05-quality-assurance/
+├── 06-github-management/
+├── 07-feedback/
+├── 08-platform-engineering/
+└── 09-security/
+```
+
+**Agentes XML Validados:**
+- 10-SDA - Strategic Domain Analyst.xml
+- 15-DE - Domain Engineer.xml
+- 20-UXD - User Experience Designer.xml
+- 25-GM - GitHub Manager.xml
+- 30-PE - Platform Engineer.xml
+- 35-SEC - Security Specialist.xml
+- 45-SE - Software Engineer.xml
+- 50-DBA - Database Administrator.xml
+- 55-FE - Frontend Engineer.xml
+- 60-QAE - Quality Assurance Engineer.xml
+
+**Exemplo de Output:**
+```
+🔍 DDD Workflow Structure Validator
+
+📁 Validating folder structure...
+  ✅ 00-doc-ddd/00-feedback
+  ✅ 00-doc-ddd/02-strategic-design
+  ❌ Missing: 00-doc-ddd/08-platform-engineering
+
+🤖 Validating agent definitions...
+  ✅ 10-SDA - Strategic Domain Analyst.xml (3 deliverables)
+  ✅ 15-DE - Domain Engineer.xml (1 deliverables)
+  ❌ Missing: 30-PE - Platform Engineer.xml
+
+📝 Validating templates...
+  ✅ .agents/templates/01-strategic-design/SDA-01-Event-Storming.template.md
+  ⚠️  Template missing placeholders: UXD-02-Wireframes.template.md
+     Missing: [PROJECT_NAME], [YYYY-MM-DD]
+
+===========================================================
+📊 VALIDATION SUMMARY
+===========================================================
+
+Errors: 2
+Warnings: 1
+Please fix errors before proceeding.
+```
+
+---
+
+### 🔄 Quando Executar os Scripts
+
+**Obrigatório:**
+- ✅ **Antes de criar Pull Request** (garante qualidade)
+- ✅ **Após adicionar novos documentos** (valida nomenclatura)
+- ✅ **Após criar novos agentes XML** (valida estrutura)
+
+**Recomendado:**
+- ⏰ **Semanalmente** (detecção proativa de problemas)
+- 🆕 **Após onboarding de novo dev** (garante conhecimento dos padrões)
+- 🔧 **Após modificar templates** (valida consistência)
+
+**Opcional:**
+- 🔄 **Antes de cada commit** (git hook - configuração manual)
+- 🚀 **CI/CD** (GitHub Actions - futuro)
+
+---
+
+### 📊 Exit Codes
+
+Ambos os scripts retornam exit codes para integração com CI/CD:
+
+| Exit Code | Significado | Ação |
+|-----------|-------------|------|
+| `0` | ✅ Tudo OK ou apenas warnings | Pode prosseguir |
+| `1` | ❌ Erros encontrados | **Corrigir antes de continuar** |
+
+**Exemplo de uso em CI:**
+```powershell
+.\.agents\scripts\validate-structure.ps1
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "Validation failed!"
+    exit 1
+}
+```
+
+---
+
+### 🛠️ Configuração de Git Hook (Opcional)
+
+Para executar validação automaticamente antes de cada commit:
+
+**1. Criar `.git/hooks/pre-commit` (Windows):**
+```powershell
+#!/usr/bin/env pwsh
+
+Write-Host "`n🔍 Running validation checks...`n" -ForegroundColor Cyan
+
+# Validar estrutura
+.\.agents\scripts\validate-structure.ps1
+$structureResult = $LASTEXITCODE
+
+# Validar nomenclatura
+.\.agents\scripts\validate-nomenclature.ps1
+$nomenclatureResult = $LASTEXITCODE
+
+if ($structureResult -ne 0 -or $nomenclatureResult -ne 0) {
+    Write-Host "`n❌ Validation failed! Fix errors before committing.`n" -ForegroundColor Red
+    exit 1
+}
+
+Write-Host "`n✅ All validations passed!`n" -ForegroundColor Green
+exit 0
+```
+
+**2. Dar permissão de execução (Git Bash):**
+```bash
+chmod +x .git/hooks/pre-commit
+```
+
+---
+
+### 💡 Troubleshooting
+
+**Problema: "Execution of scripts is disabled on this system"**
+
+**Solução (Windows PowerShell):**
+```powershell
+# Permitir execução de scripts locais (uma vez)
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+
+# Ou executar diretamente
+powershell -ExecutionPolicy Bypass -File .\.agents\scripts\validate-nomenclature.ps1
+```
+
+**Problema: "Cannot find path .agents/scripts"**
+
+**Solução:**
+```powershell
+# Executar da raiz do projeto
+cd c:\Users\Marco\Projetos\myTraderGEO
+.\.agents\scripts\validate-nomenclature.ps1
+```
+
+**Problema: Script falha em Linux/Mac**
+
+**Solução:**
+- Scripts PowerShell requerem PowerShell Core (multiplataforma)
+- Instalar: https://github.com/PowerShell/PowerShell
+- Ou executar no Windows
+
+---
+
 ## 📚 Referências
 
 - **Agentes:** [01-Agents-Overview.md](01-Agents-Overview.md)
@@ -411,8 +682,8 @@ Mudar estrutura de pastas = atualizar **apenas** `workflow-config.json` (zero mu
 - **Padrões DDD:** [04-DDD-Patterns-Reference.md](04-DDD-Patterns-Reference.md)
 - **Padrões de API:** [05-API-Standards.md](05-API-Standards.md)
 - **PE/SEC Checkpoints:** [07-PE-SEC-Checkpoint-Decision-Matrix.md](07-PE-SEC-Checkpoint-Decision-Matrix.md)
-- **Fluxo de Feedback:** [../workflow/FEEDBACK-FLOW-GUIDE.md](../workflow/FEEDBACK-FLOW-GUIDE.md)
-- **Think Mode:** [../workflow/THINK-MODE-GUIDE.md](../workflow/THINK-MODE-GUIDE.md)
+- **Fluxo de Feedback:** [08-FEEDBACK-FLOW-GUIDE.md](08-FEEDBACK-FLOW-GUIDE.md)
+- **Think Mode:** [09-THINK-MODE-GUIDE.md](09-THINK-MODE-GUIDE.md)
 - **Config Master:** `workflow-config.json`
 
 ---

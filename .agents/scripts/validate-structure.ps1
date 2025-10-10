@@ -7,9 +7,8 @@ param(
 
 $ErrorCount = 0
 $WarningCount = 0
-$config = Get-Content "workflow-config.json" | ConvertFrom-Json
 
-Write-Host "`n🔍 DDD Workflow Structure Validator v2.0`n" -ForegroundColor Cyan
+Write-Host "`n🔍 DDD Workflow Structure Validator`n" -ForegroundColor Cyan
 
 # 1. Validar pastas obrigatórias
 Write-Host "📁 Validating folder structure..." -ForegroundColor Yellow
@@ -23,13 +22,17 @@ $requiredFolders = @(
     "00-doc-ddd/05-database-design",
     "00-doc-ddd/06-quality-assurance",
     "00-doc-ddd/07-github-management",
+    "00-doc-ddd/08-platform-engineering",
+    "00-doc-ddd/09-security",
     ".agents/templates/01-strategic-design",
     ".agents/templates/02-ux-design",
     ".agents/templates/03-tactical-design",
     ".agents/templates/04-database-design",
     ".agents/templates/05-quality-assurance",
     ".agents/templates/06-github-management",
-    ".agents/templates/07-feedback"
+    ".agents/templates/07-feedback",
+    ".agents/templates/08-platform-engineering",
+    ".agents/templates/09-security"
 )
 
 foreach ($folder in $requiredFolders) {
@@ -45,10 +48,12 @@ foreach ($folder in $requiredFolders) {
 Write-Host "`n📄 Validating configuration files..." -ForegroundColor Yellow
 
 $requiredFiles = @(
-    ".ddd-workflow-config.json",
     ".agents/docs/00-Workflow-Guide.md",
     ".agents/docs/01-Agents-Overview.md",
-    ".agents/docs/02-Nomenclature-Standards.md"
+    ".agents/docs/02-Nomenclature-Standards.md",
+    ".agents/docs/03-Security-And-Platform-Strategy.md",
+    ".agents/docs/04-DDD-Patterns-Reference.md",
+    ".agents/docs/05-API-Standards.md"
 )
 
 foreach ($file in $requiredFiles) {
@@ -65,12 +70,15 @@ Write-Host "`n🤖 Validating agent definitions..." -ForegroundColor Yellow
 
 $requiredAgents = @(
     "10-SDA - Strategic Domain Analyst.xml",
+    "15-DE - Domain Engineer.xml",
     "20-UXD - User Experience Designer.xml",
-    "30-DE - Domain Engineer.xml",
-    "40-DBA - Database Administrator.xml",
-    "50-FE - Frontend Engineer.xml",
-    "60-QAE - Quality Assurance Engineer.xml",
-    "70-GM - GitHub Manager.xml"
+    "25-GM - GitHub Manager.xml",
+    "30-PE - Platform Engineer.xml",
+    "35-SEC - Security Specialist.xml",
+    "45-SE - Software Engineer.xml",
+    "50-DBA - Database Administrator.xml",
+    "55-FE - Frontend Engineer.xml",
+    "60-QAE - Quality Assurance Engineer.xml"
 )
 
 foreach ($agent in $requiredAgents) {
@@ -109,15 +117,18 @@ Write-Host "`n📝 Validating templates..." -ForegroundColor Yellow
 $requiredTemplates = @(
     ".agents/templates/01-strategic-design/SDA-01-Event-Storming.template.md",
     ".agents/templates/01-strategic-design/SDA-02-Context-Map.template.md",
-    ".agents/templates/01-strategic-design/SDA-03-Epic-Backlog.template.md",
-    ".agents/templates/02-ux-design/UXD-01-User-Flows.template.md",
-    ".agents/templates/02-ux-design/UXD-02-Wireframes.template.md",
-    ".agents/templates/02-ux-design/UXD-03-Component-Library.template.md",
+    ".agents/templates/01-strategic-design/SDA-03-Ubiquitous-Language.template.md",
+    ".agents/templates/02-ux-design/UXD-00-Design-Foundations.template.md",
+    ".agents/templates/02-ux-design/UXD-01-[EpicName]-Wireframes.template.md",
     ".agents/templates/03-tactical-design/DE-01-[EpicName]-Tactical-Model.template.md",
     ".agents/templates/04-database-design/DBA-01-[EpicName]-Schema-Review.template.md",
-    ".agents/templates/05-quality-assurance/QAE-01-Test-Strategy.template.md",
-    ".agents/templates/06-github-management/GM-01-GitHub-Setup.template.md",
-    ".agents/templates/07-feedback/FEEDBACK.template.md"
+    ".agents/templates/05-quality-assurance/QAE-00-Test-Strategy.template.md",
+    ".agents/templates/06-github-management/GM-00-GitHub-Setup.template.md",
+    ".agents/templates/07-feedback/FEEDBACK.template.md",
+    ".agents/templates/08-platform-engineering/PE-00-Environments-Setup.template.md",
+    ".agents/templates/08-platform-engineering/PE-EPIC-N-Performance-Checkpoint.template.md",
+    ".agents/templates/09-security/SEC-00-Security-Baseline.template.md",
+    ".agents/templates/09-security/SEC-EPIC-N-Security-Checkpoint.template.md"
 )
 
 foreach ($template in $requiredTemplates) {
@@ -138,7 +149,7 @@ foreach ($folder in $docFolders) {
     $docs = Get-ChildItem $folder.FullName -Filter "*.md"
 
     foreach ($doc in $docs) {
-        $validPattern = '^(SDA|UXD|DE|DBA|FE|QAE|GM)-\d{2}-.*\.md$'
+        $validPattern = '^(SDA|UXD|DE|DBA|SE|FE|QAE|GM|PE|SEC)-\d{2}-.*\.md$'
 
         if ($doc.Name -notmatch $validPattern -and $doc.Name -ne "README.md") {
             Write-Host "  ⚠️  Non-standard name: $($folder.Name)/$($doc.Name)" -ForegroundColor Yellow
