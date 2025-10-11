@@ -60,6 +60,9 @@ Issue: #1
 Este commit marca o início do trabalho na feature de Discovery Foundation."
 
 git push origin feature/discovery-foundation -u
+
+# Criar PR Draft imediatamente
+gh pr create --draft --title "[EPIC-00] Discovery Foundation" --body "🚧 WIP - Ref #1"
 ```
 
 #### Épico Funcional
