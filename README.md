@@ -168,6 +168,17 @@ git checkout develop
 # Criar branch da feature
 git checkout -b feature/discovery-foundation
 
+# Fazer commit vazio marcando início da feature
+git commit --allow-empty -m "chore: Início de uma nova feature
+
+Feature: Discovery Foundation
+Issue: #1
+
+Este commit marca o início do trabalho na feature de Discovery Foundation."
+
+# Push da branch
+git push origin feature/discovery-foundation -u
+
 # Trabalhar nos deliverables (SDA, UXD, GM, PE, SEC, QAE)
 # Fazer commits conforme cada agente completa seu trabalho
 
@@ -181,8 +192,8 @@ git commit -m "SDA: Modelagem estratégica completa
 
 Ref #1"
 
-# Push da branch
-git push origin feature/discovery-foundation -u
+# Push das mudanças
+git push
 ```
 
 ---
@@ -382,7 +393,12 @@ Dia 1-2: DE
   → DE-01-[EpicName]-Domain-Model.md
 
 Dia 2: GM
-  → Cria sub-issues detalhadas
+  → Cria sub-issues detalhadas (1 por agente)
+
+Dia 2: Criar Branch + Commit Inicial
+  → git checkout -b feature/epic-N-nome-do-epic
+  → git commit --allow-empty -m "chore: Início de uma nova feature"
+  → git push origin feature/epic-N-nome-do-epic -u
 
 Dia 2-3: DBA
   → DBA-01-[EpicName]-Schema-Review.md
@@ -409,6 +425,18 @@ Deploy
   → Monitoramento
 
 Duração: 10 dias (2 semanas)
+```
+
+**🔹 Padrão: Commit Inicial Obrigatório**
+
+Toda feature/épico deve começar com commit vazio:
+```bash
+git commit --allow-empty -m "chore: Início de uma nova feature
+
+Feature: [Nome do Épico]
+Issue: #[número]
+
+Este commit marca o início do trabalho na feature."
 ```
 
 ---
