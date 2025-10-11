@@ -340,14 +340,27 @@ Agentes suportam execução em dois modos:
 ```
 5. DE: Modelar BCs do Épico 1 (DE-01-Epic1-Domain-Model.md)
 6. GM: Criar issue detalhada no GitHub
-7. DBA: Revisar schema (migrations EF), sugerir índices
-8. SE: Implementar domain + application + infrastructure + APIs
-9. UXD: Criar wireframes (paralelo com SE)
-10. FE: Implementar UI do Épico 1 (consumindo APIs do SE)
-11. QAE: Testar integração + E2E (QUALITY GATE)
-12. PE: Deploy staging → production
-13. Feedback do usuário
-14. Ajustes se necessário
+7. Criar branch: git checkout -b feature/epic-01-nome-do-epic
+8. Commit vazio inicial: git commit --allow-empty -m "chore: Início de uma nova feature"
+9. DBA: Revisar schema (migrations EF), sugerir índices
+10. SE: Implementar domain + application + infrastructure + APIs
+11. UXD: Criar wireframes (paralelo com SE)
+12. FE: Implementar UI do Épico 1 (consumindo APIs do SE)
+13. QAE: Testar integração + E2E (QUALITY GATE)
+14. PE: Deploy staging → production
+15. Feedback do usuário
+16. Ajustes se necessário
+```
+
+**Padrão de Commit Inicial:**
+Todo épico/feature deve começar com um commit vazio marcando o início formal:
+```bash
+git commit --allow-empty -m "chore: Início de uma nova feature
+
+Feature: [Nome do Épico]
+Issue: #[número]
+
+Este commit marca o início do trabalho na feature [descrição]."
 ```
 
 ### Épicos 2, 3, N...
