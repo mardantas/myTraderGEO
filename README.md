@@ -159,7 +159,7 @@ gh issue create \
 
 ---
 
-### **Passo 7: Criar Branch `feature/discovery-foundation` e Trabalhar**
+### **Passo 7: Criar Branch, Commit Inicial e PR Draft**
 
 ```bash
 # Voltar para develop
@@ -178,7 +178,50 @@ Este commit marca o início do trabalho na feature de Discovery Foundation."
 
 # Push da branch
 git push origin feature/discovery-foundation -u
+```
 
+**Agora criar PR como Draft (trabalho em progresso):**
+
+#### **Opção A: Usar Claude Code (Recomendado) 🤖**
+
+```
+Claude, crie uma PR Draft da branch feature/discovery-foundation para develop.
+Título: [EPIC-00] Discovery Foundation
+Marque como Draft (trabalho em progresso) e inclua checklist dos deliverables.
+```
+
+#### **Opção B: Via GitHub CLI**
+
+```bash
+gh pr create \
+  --draft \
+  --base develop \
+  --head feature/discovery-foundation \
+  --title "[EPIC-00] Discovery Foundation" \
+  --body "## 🚧 Work in Progress
+
+Esta é a PR da Issue #1 - Discovery Foundation.
+
+Marcada como **Draft** enquanto os agentes trabalham nos deliverables.
+
+### Progress Checklist:
+- [ ] SDA: Modelagem estratégica
+- [ ] UXD: Design Foundations
+- [ ] GM: GitHub Setup
+- [ ] PE: Ambientes
+- [ ] SEC: Security Baseline
+- [ ] QAE: Test Strategy
+
+Será marcada como ready for review quando todos os deliverables estiverem completos.
+
+Ref #1"
+```
+
+---
+
+### **Passo 8: Trabalhar nos Deliverables**
+
+```bash
 # Trabalhar nos deliverables (SDA, UXD, GM, PE, SEC, QAE)
 # Fazer commits conforme cada agente completa seu trabalho
 
@@ -192,41 +235,65 @@ git commit -m "SDA: Modelagem estratégica completa
 
 Ref #1"
 
-# Push das mudanças
+# Push das mudanças (atualiza PR automaticamente)
 git push
 ```
 
+**Nota:** Cada push atualiza a PR Draft automaticamente. Reviewers podem acompanhar o progresso.
+
 ---
 
-### **Passo 8: Criar Pull Request e Finalizar Discovery**
+### **Passo 9: Marcar PR como Ready for Review**
+
+Quando todos os deliverables estiverem completos e todos os commits feitos:
 
 #### **Opção A: Usar Claude Code (Recomendado) 🤖**
 
-Após completar todos os deliverables e fazer os commits, solicite:
-
 ```
-Claude, crie um Pull Request da branch feature/discovery-foundation para develop.
-Título: [EPIC-00] Discovery Foundation
-Use o template de PR e preencha com os detalhes dos deliverables completados.
+Claude, marque a PR como ready for review e atualize o body com todos os deliverables completados.
 ```
 
-**Claude irá:**
-- ✅ Criar o PR via `gh pr create`
-- ✅ Preencher usando o [template de PR](.github/pull_request_template.md)
-- ✅ Listar todos os deliverables completados
-- ✅ Referenciar Issue #1 com `Closes #1`
+#### **Opção B: Via GitHub CLI**
 
----
+```bash
+# Marcar PR como ready for review
+gh pr ready
 
-#### **Opção B: Criar Manualmente no GitHub**
+# Atualizar body da PR com deliverables completos
+gh pr edit --body "## ✅ Discovery Foundation Complete
 
-1. No GitHub, vá para **Pull Requests** → **New Pull Request**
-2. Selecione:
-   - **Base:** `develop`
-   - **Compare:** `feature/discovery-foundation`
-3. Preencha o template:
-   - **Título:** `[EPIC-00] Discovery Foundation`
-   - **Bounded Context:** `Fundação Estratégica`
+Todos os deliverables foram completados:
+
+### 📊 SDA - Strategic Domain Analyst
+- ✅ SDA-01-Event-Storming.md
+- ✅ SDA-02-Context-Map.md
+- ✅ SDA-03-Ubiquitous-Language.md
+
+### 🎨 UXD - User Experience Designer
+- ✅ UXD-00-Design-Foundations.md
+
+### ⚙️ GM - GitHub Manager
+- ✅ GM-00-GitHub-Setup.md
+- ✅ Labels, CI/CD, branch protection
+
+### 🏗️ PE - Platform Engineer
+- ✅ PE-00-Environments-Setup.md
+- ✅ Docker Compose (dev/staging/prod)
+
+### 🔒 SEC - Security Specialist
+- ✅ SEC-00-Security-Baseline.md
+
+### ✅ QAE - Quality Assurance Engineer
+- ✅ QAE-00-Test-Strategy.md
+
+Closes #1"
+```
+
+#### **Opção C: Manualmente no GitHub**
+
+1. Acesse a PR no GitHub
+2. Clique em **Ready for review** (botão no topo)
+3. Edite a descrição marcando todos os checkboxes como completos
    - Listar deliverables completados
    - Marcar checklists de testes e validação
 4. No final do corpo do PR, adicione: `Closes #1`
