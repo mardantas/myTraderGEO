@@ -1,0 +1,231 @@
+name: Setup New Project
+
+on:
+  workflow_dispatch:
+    inputs:
+      project_name:
+        description: 'Nome do novo projeto'
+        required: true
+        type: string
+      project_repo_url:
+        description: 'URL do repositório GitHub do novo projeto'
+        required: true
+        type: string
+      create_discovery_issue:
+        description: 'Criar Issue #1 (Discovery Foundation) automaticamente?'
+        required: true
+        type: boolean
+        default: true
+
+jobs:
+  setup-project:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Workflow Repo
+        uses: actions/checkout@v4
+        with:
+          path: workflow-template
+
+      - name: Setup Git Configuration
+        run: |
+          git config --global user.name "DDD Workflow Bot"
+          git config --global user.email "workflow-bot@example.com"
+
+      - name: Clone New Project Repository
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Cloning ${{ inputs.project_repo_url }}..."
+          git clone ${{ inputs.project_repo_url }} new-project
+          cd new-project
+
+          # Verificar se já tem conteúdo (além de .git)
+          if [ "$(ls -A | grep -v '^\.git$' | wc -l)" -gt 0 ]; then
+            echo "⚠️ WARNING: Repository is not empty. Proceeding with caution..."
+          fi
+
+      - name: Copy Workflow Structure
+        run: |
+          echo "Copying workflow structure to new project..."
+
+          # Copiar estrutura completa (exceto .git)
+          rsync -av \
+            --exclude='.git' \
+            --exclude='README.md' \
+            --exclude='.github/workflows/setup-new-project.yml' \
+            workflow-template/ new-project/
+
+          echo "✅ Structure copied successfully"
+
+      - name: Customize Project Files
+        run: |
+          cd new-project
+
+          # Substituir placeholder [PROJECT_NAME] nos arquivos relevantes
+          echo "Customizing project name in files..."
+
+          # Substituir no README.md se existir
+          if [ -f "README.md" ]; then
+            sed -i "s/myTraderGEO/${{ inputs.project_name }}/g" README.md
+          fi
+
+          # Substituir no workflow-config.json se existir
+          if [ -f "workflow-config.json" ]; then
+            sed -i "s/myTraderGEO/${{ inputs.project_name }}/g" workflow-config.json
+          fi
+
+          echo "✅ Project files customized"
+
+      - name: Create Initial Commit
+        run: |
+          cd new-project
+
+          git add .
+          git commit -m "chore: Setup inicial do DDD Workflow v1.0
+
+          - Estrutura de 10 agentes especializados (.agents/)
+          - Templates de documentação DDD
+          - Templates de Issues/PRs (.github/)
+          - Scripts de validação (nomenclatura + estrutura)
+          - Configuração do workflow (workflow-config.json)
+
+          Este commit estabelece a fundação do processo DDD.
+
+          Próximo passo: Criar branch develop e executar Discovery Foundation (Issue #1)
+
+          🚀 Ambiente pronto para início do projeto
+          🤖 Automatizado via GitHub Actions"
+
+          echo "✅ Initial commit created"
+
+      - name: Create Develop Branch
+        run: |
+          cd new-project
+
+          # Criar branch develop
+          git checkout -b develop
+
+          # Commit vazio marcando início
+          git commit --allow-empty -m "chore: Início do Projeto
+
+          Branch develop criada a partir da main.
+          Pronta para receber a primeira feature (Discovery Foundation).
+
+          Próximo passo: Criar Issue #1 (Discovery Foundation) e branch feature/discovery-foundation
+          🤖 Automatizado via GitHub Actions"
+
+          echo "✅ Develop branch created"
+
+      - name: Push to Remote
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd new-project
+
+          # Push main
+          git checkout main
+          git push origin main
+
+          # Push develop
+          git checkout develop
+          git push origin develop
+
+          echo "✅ Pushed to remote repository"
+
+      - name: Create Discovery Foundation Issue
+        if: ${{ inputs.create_discovery_issue }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd new-project
+
+          # Extrair owner/repo da URL
+          REPO_PATH=$(echo "${{ inputs.project_repo_url }}" | sed 's/.*github\.com[:/]\(.*\)\.git/\1/')
+
+          echo "Creating Issue #1 in ${REPO_PATH}..."
+
+          gh issue create \
+            --repo "${REPO_PATH}" \
+            --title "[EPIC-00] Discovery Foundation - Modelagem Estratégica e Setup Inicial" \
+            --label "epic,discovery,setup,priority-high" \
+            --body "## 🎯 Objetivo
+
+          Executar fase de Discovery completa do DDD Workflow v1.0, estabelecendo fundação estratégica e técnica do projeto **${{ inputs.project_name }}**.
+
+          ## 👥 Agentes Envolvidos
+
+          - [ ] **SDA** - Strategic Domain Analyst
+          - [ ] **UXD** - User Experience Designer
+          - [ ] **GM** - GitHub Manager
+          - [ ] **PE** - Platform Engineer
+          - [ ] **SEC** - Security Specialist
+          - [ ] **QAE** - Quality Assurance Engineer
+
+          ## 📋 Deliverables
+
+          ### SDA (Strategic Domain Analyst)
+          - [ ] SDA-01-Event-Storming.md
+          - [ ] SDA-02-Context-Map.md
+          - [ ] SDA-03-Ubiquitous-Language.md
+
+          ### UXD (User Experience Designer)
+          - [ ] UXD-00-Design-Foundations.md
+
+          ### GM (GitHub Manager)
+          - [ ] GM-00-GitHub-Setup.md
+          - [ ] Labels configuradas
+          - [ ] CI/CD básico
+
+          ### PE (Platform Engineer)
+          - [ ] PE-00-Environments-Setup.md
+          - [ ] Docker Compose (dev/stage/prod)
+          - [ ] Scripts de deploy
+
+          ### SEC (Security Specialist)
+          - [ ] SEC-00-Security-Baseline.md
+
+          ### QAE (Quality Assurance Engineer)
+          - [ ] QAE-00-Test-Strategy.md
+
+          ## ⏱️ Estimativa
+
+          3-4 dias (conforme Workflow Guide - Fase Discovery)
+
+          ## 🔗 Referências
+
+          - [Workflow Guide](.agents/docs/00-Workflow-Guide.md)
+          - [Agents Overview](.agents/docs/01-Agents-Overview.md)
+
+          ---
+
+          🤖 **Issue criada automaticamente via GitHub Actions**"
+
+          echo "✅ Issue #1 created successfully"
+
+      - name: Setup Summary
+        run: |
+          echo "## 🎉 Project Setup Complete!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ **Project:** ${{ inputs.project_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "✅ **Repository:** ${{ inputs.project_repo_url }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📦 What was done:" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Workflow structure copied" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Initial commit created on \`main\`" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Branch \`develop\` created" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Pushed to remote repository" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ inputs.create_discovery_issue }}" = "true" ]; then
+            echo "- ✅ Issue #1 (Discovery Foundation) created" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🚀 Next Steps:" >> $GITHUB_STEP_SUMMARY
+          echo "1. Clone the project locally: \`git clone ${{ inputs.project_repo_url }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "2. Checkout develop: \`git checkout develop\`" >> $GITHUB_STEP_SUMMARY
+          echo "3. Create feature branch: \`git checkout -b feature/discovery-foundation\`" >> $GITHUB_STEP_SUMMARY
+          echo "4. Start working on Issue #1 (Discovery Foundation)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📚 **Documentation:** See [README.md](README.md) for complete workflow guide" >> $GITHUB_STEP_SUMMARY

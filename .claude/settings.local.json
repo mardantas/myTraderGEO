@@ -24,7 +24,10 @@
       "Bash(do echo \"=== $file ===\")",
       "Bash(head:*)",
       "Bash(ren:*)",
-      "Read(//c/Users/Marco/Projetos/**)"
+      "Read(//c/Users/Marco/Projetos/**)",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)",
+      "Bash(git rm:*)"
     ],
     "deny": [],
     "ask": []
