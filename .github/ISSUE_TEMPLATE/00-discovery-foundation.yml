@@ -1,0 +1,285 @@
+name: 🚀 Discovery Foundation
+description: Issue #1 mandatória - Fase de Discovery completa do DDD Workflow
+title: "[EPIC-00] Discovery Foundation - Modelagem Estratégica e Setup Inicial"
+labels: ["epic", "discovery", "setup", "priority-high"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🚀 Discovery Foundation - Setup Inicial do Projeto
+
+        Esta é a **Issue #1 mandatória** de todo projeto usando o DDD Workflow v1.0.
+
+        **Objetivo:** Estabelecer fundação estratégica e técnica antes de implementar funcionalidades.
+
+        **Duração estimada:** 3-4 dias úteis
+
+  - type: input
+    id: project-name
+    attributes:
+      label: Nome do Projeto
+      description: Nome oficial do projeto
+      placeholder: ex. myTraderGEO, SistemaVendas, PlataformaEducacional
+    validations:
+      required: true
+
+  - type: textarea
+    id: project-description
+    attributes:
+      label: Descrição do Projeto
+      description: Visão geral do que o projeto se propõe a fazer
+      placeholder: |
+        Descreva em 2-3 parágrafos:
+        - Qual problema o sistema resolve
+        - Quem são os usuários principais
+        - Qual o valor de negócio esperado
+    validations:
+      required: true
+
+  - type: dropdown
+    id: project-size
+    attributes:
+      label: Tamanho Estimado do Projeto
+      description: Classificação para ajustar nível de detalhamento
+      options:
+        - Pequeno (1-3 meses, 1-2 devs)
+        - Médio (3-6 meses, 2-4 devs)
+        - Grande (6+ meses, 4+ devs)
+      default: 1
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+
+        ## 👥 Deliverables por Agente
+
+        Marque cada checkbox conforme o deliverable é completado.
+
+  - type: markdown
+    attributes:
+      value: |
+        ### 📊 SDA - Strategic Domain Analyst
+
+        **Objetivo:** Modelagem estratégica completa do sistema
+
+  - type: textarea
+    id: sda-deliverables
+    attributes:
+      label: Deliverables SDA
+      value: |
+        - [ ] **SDA-01-Event-Storming.md** - Domain Events identificados e mapeados
+        - [ ] **SDA-02-Context-Map.md** - Bounded Contexts mapeados com relacionamentos
+        - [ ] **SDA-03-Ubiquitous-Language.md** - Glossário inicial de termos do domínio
+        - [ ] Épicos prioritários identificados (alto nível)
+
+        **Localização:** `00-doc-ddd/02-strategic-design/`
+        **Prazo:** Dia 1-2 (2 dias)
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ### 🎨 UXD - User Experience Designer
+
+        **Objetivo:** Fundamentos de design para todo o sistema
+
+  - type: textarea
+    id: uxd-deliverables
+    attributes:
+      label: Deliverables UXD
+      value: |
+        - [ ] **UXD-00-Design-Foundations.md** - Cores, tipografia, componentes base
+        - [ ] Paleta de cores definida
+        - [ ] Tipografia e escalas definidas
+        - [ ] Componentes UI base documentados
+
+        **Localização:** `00-doc-ddd/03-ux-design/`
+        **Prazo:** Dia 2-3 (paralelo com outros agentes)
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ### ⚙️ GM - GitHub Manager
+
+        **Objetivo:** Configurar GitHub para o projeto
+
+  - type: textarea
+    id: gm-deliverables
+    attributes:
+      label: Deliverables GM
+      value: |
+        - [ ] **GM-00-GitHub-Setup.md** - Documentação do setup realizado
+        - [ ] Labels configuradas (epic, feature, bug, domain, etc)
+        - [ ] Branch protection rules ativadas (main, develop)
+        - [ ] CI/CD básico configurado (build + test)
+        - [ ] GitHub Actions para deploy (staging/prod - básico)
+
+        **Localização:** `00-doc-ddd/07-github-management/`
+        **Prazo:** Dia 2-3 (paralelo)
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ### 🏗️ PE - Platform Engineer
+
+        **Objetivo:** Ambientes de desenvolvimento, staging e produção
+
+  - type: textarea
+    id: pe-deliverables
+    attributes:
+      label: Deliverables PE
+      value: |
+        - [ ] **PE-00-Environments-Setup.md** - Documentação dos ambientes
+        - [ ] `docker-compose.dev.yml` - Ambiente de desenvolvimento
+        - [ ] `docker-compose.staging.yml` - Ambiente de staging
+        - [ ] `docker-compose.prod.yml` - Ambiente de produção
+        - [ ] Scripts de deploy (`deploy.sh` ou PowerShell)
+        - [ ] `.env.example` - Variáveis de ambiente documentadas
+        - [ ] Setup de banco de dados (migrations iniciais)
+
+        **Localização:** `00-doc-ddd/08-platform-engineering/`
+        **Prazo:** Dia 2-4 (paralelo, pode levar mais tempo)
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ### 🔒 SEC - Security Specialist
+
+        **Objetivo:** Baseline de segurança do projeto
+
+  - type: textarea
+    id: sec-deliverables
+    attributes:
+      label: Deliverables SEC
+      value: |
+        - [ ] **SEC-00-Security-Baseline.md** - Baseline de segurança documentada
+        - [ ] OWASP Top 3 mitigações identificadas e documentadas
+        - [ ] LGPD/GDPR mínimo (mapeamento de dados sensíveis)
+        - [ ] Estratégia de autenticação definida (JWT, OAuth, etc)
+        - [ ] Checklist de segurança essencial
+
+        **Localização:** `00-doc-ddd/09-security/`
+        **Prazo:** Dia 3 (paralelo)
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ### ✅ QAE - Quality Assurance Engineer
+
+        **Objetivo:** Estratégia de testes para o projeto
+
+  - type: textarea
+    id: qae-deliverables
+    attributes:
+      label: Deliverables QAE
+      value: |
+        - [ ] **QAE-00-Test-Strategy.md** - Estratégia completa de testes
+        - [ ] Ferramentas de teste definidas (xUnit, Playwright, k6, etc)
+        - [ ] Cobertura mínima estabelecida (≥70%)
+        - [ ] Critérios de qualidade (DoD, quality gates)
+        - [ ] Estrutura de testes configurada (pastas, convenções)
+
+        **Localização:** `00-doc-ddd/06-quality-assurance/`
+        **Prazo:** Dia 3-4 (paralelo)
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+
+        ## 📋 Checklist de Conclusão
+
+  - type: textarea
+    id: completion-checklist
+    attributes:
+      label: Checklist Final
+      value: |
+        - [ ] Todos os 7 deliverables criados e revisados
+        - [ ] Scripts de validação executados sem erros
+          - [ ] `.agents/scripts/validate-structure.ps1`
+          - [ ] `.agents/scripts/validate-nomenclature.ps1`
+        - [ ] Estrutura de pastas validada (00-doc-ddd completa)
+        - [ ] GitHub configurado (labels, protection rules, CI/CD)
+        - [ ] Ambientes básicos funcionando (dev no mínimo)
+        - [ ] Documentação revisada por pares (se equipe > 1 dev)
+        - [ ] Épicos priorizados para próxima fase
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+
+        ## 🔄 Fluxo de Trabalho
+
+        1. **Branch:** Criar `feature/discovery-foundation` a partir de `develop`
+        2. **Commits:** 1 commit por agente (ou agrupados por responsabilidade)
+           ```bash
+           git commit -m "SDA: Modelagem estratégica completa
+
+           - SDA-01-Event-Storming.md
+           - SDA-02-Context-Map.md
+           - SDA-03-Ubiquitous-Language.md
+
+           Ref #1"
+           ```
+        3. **Pull Request:** `feature/discovery-foundation` → `develop`
+        4. **Merge Strategy:** "Create a merge commit" (preserva histórico dos agentes)
+        5. **Fechamento:** Issue fecha automaticamente com `Closes #1` no último commit
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+
+        ## 📚 Referências
+
+        - [Workflow Guide](.agents/docs/00-Workflow-Guide.md) - Guia completo do processo
+        - [Agents Overview](.agents/docs/01-Agents-Overview.md) - Detalhes dos 10 agentes
+        - [Nomenclature Standards](.agents/docs/02-Nomenclature-Standards.md) - Padrões de nomenclatura
+
+  - type: input
+    id: estimated-start-date
+    attributes:
+      label: Data de Início Estimada
+      description: Quando pretende iniciar a Discovery?
+      placeholder: YYYY-MM-DD
+    validations:
+      required: false
+
+  - type: input
+    id: estimated-end-date
+    attributes:
+      label: Data de Conclusão Estimada
+      description: Previsão de conclusão (3-4 dias úteis após início)
+      placeholder: YYYY-MM-DD
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-notes
+    attributes:
+      label: Notas Adicionais
+      description: Qualquer informação relevante sobre o projeto ou contexto
+      placeholder: |
+        - Restrições técnicas conhecidas
+        - Integrações obrigatórias
+        - Requisitos de compliance específicos
+    validations:
+      required: false
