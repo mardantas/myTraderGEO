@@ -21,7 +21,7 @@
         <responsibility>Frontend project skeleton (structure)</responsibility>
         <responsibility>UI component implementation according to UXD specs</responsibility>
         <responsibility>State management (Redux, Zustand, etc)</responsibility>
-        <responsibility>API integration with backend (DE)</responsibility>
+        <responsibility>API integration with backend (SE)</responsibility>
         <responsibility>Responsiveness and accessibility</responsibility>
         <responsibility>Basic unit tests for components</responsibility>
     </responsibilities>
@@ -46,8 +46,8 @@
     </deliverables>
 
     <predecessors>
-        <predecessor agent="UXD">Wireframes and component library</predecessor>
-        <predecessor agent="DE">APIs for integration</predecessor>
+        <predecessor agent="UXD" phase="iteration">Wireframes and component library (UXD-00 + UXD-01)</predecessor>
+        <predecessor agent="SE" phase="iteration">Functional APIs for integration (REST endpoints, OpenAPI spec)</predecessor>
     </predecessors>
 
     <successors>
@@ -56,7 +56,7 @@
 
     <quality-checklist path="FE-checklist.yml" base-path="checklists">
         <essential-check>Components follow UXD specs</essential-check>
-        <essential-check>Integration with DE APIs functional</essential-check>
+        <essential-check>Integration with SE APIs functional</essential-check>
         <essential-check>Responsive on mobile/tablet/desktop</essential-check>
         <essential-check>Basic accessibility (WCAG)</essential-check>
         <essential-check>Basic unit tests created</essential-check>
@@ -65,7 +65,7 @@
     <definition-of-done>
         <criteria type="objective">
             <criterion>All epic components implemented according to UXD wireframes</criterion>
-            <criterion>Integration with DE APIs functional (all routes manually tested)</criterion>
+            <criterion>Integration with SE APIs functional (all routes manually tested)</criterion>
             <criterion>State management implemented (Redux/Zustand/Context)</criterion>
             <criterion>Responsive at 3 breakpoints (mobile/tablet/desktop)</criterion>
             <criterion>Basic unit tests ≥60% coverage on critical components</criterion>

@@ -48,6 +48,8 @@
     </deliverables>
 
     <predecessors>
+        <predecessor agent="SDA" phase="discovery">Bounded Contexts defined (to define test strategy and coverage per BC criticality)</predecessor>
+        <predecessor agent="PE" phase="discovery">Tech stack defined to choose test tools (xUnit vs Jest, Vitest vs Mocha, Playwright vs Cypress)</predecessor>
         <predecessor agent="SE" phase="iteration">Backend code complete (Day 3-6)</predecessor>
         <predecessor agent="FE" phase="iteration">Frontend code complete (Day 7-9)</predecessor>
         <predecessor agent="UXD" phase="iteration">UXD-01 wireframes to create E2E test scenarios</predecessor>
