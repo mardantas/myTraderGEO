@@ -7,20 +7,22 @@
 
 ---
 
-## 📊 Executive Summary
+## 📊 Executive Summary - Discovery Execution Order
 
-| # | Code | Agent | Scope | Phase | Deliverables |
-|---|------|-------|-------|-------|--------------|
-| 10 | SDA | Strategic Domain Analyst | Complete system | Discovery | 3 docs |
-| 15 | DE | Domain Engineer | Per epic ONLY | Iteration | 1 doc/epic |
-| 20 | UXD | User Experience Designer | System + Per epic | Discovery + Iteration | 1 doc + 1/epic |
-| 25 | GM | GitHub Manager | Setup + Per epic | Discovery + Iteration | 1 doc + issues |
-| 30 | PE | Platform Engineer | Basic setup | Discovery | 1 doc + scripts |
-| 35 | SEC | Security Specialist | Baseline | Discovery | 1 doc |
-| 45 | SE | Software Engineer | Per epic | Iteration | Code |
-| 50 | DBA | Database Administrator | Per epic | Iteration | Migrations |
-| 55 | FE | Frontend Engineer | Per epic | Iteration | Code |
-| 60 | QAE | Quality Assurance Engineer | Strategy + Per epic | Discovery + Iteration | 1 doc + tests |
+| Order | # | Code | Agent | Scope | Phase | Deliverables | Dependencies |
+|-------|---|------|-------|-------|-------|--------------|--------------|
+| **1** | 10 | SDA | Strategic Domain Analyst | Complete system | Discovery (Day 1-2) | 3 docs | - |
+| **2a** | 20 | UXD | User Experience Designer | System + Per epic | Discovery (Day 2-3) + Iteration | 1 doc + 1/epic | SDA |
+| **2b** | 30 | **PE** | **Platform Engineer** | **Basic setup** | **Discovery (Day 2-3)** | **1 doc + scripts** | **SDA** |
+| **3a** | 25 | GM | GitHub Manager | Setup + Per epic | Discovery (Day 3-4) + Iteration | 1 doc + issues | SDA, **PE (stack)** |
+| **3b** | 35 | SEC | Security Specialist | Baseline | Discovery (Day 3-4) | 1 doc | SDA, **PE (stack)** |
+| **3c** | 60 | QAE | Quality Assurance Engineer | Strategy + Per epic | Discovery (Day 3-4) + Iteration | 1 doc + tests | SDA, **PE (stack)** |
+| - | 15 | DE | Domain Engineer | Per epic ONLY | Iteration | 1 doc/epic | SDA |
+| - | 50 | DBA | Database Administrator | Per epic | Iteration | Migrations | DE, PE |
+| - | 45 | SE | Software Engineer | Per epic | Iteration | Code | DE, DBA |
+| - | 55 | FE | Frontend Engineer | Per epic | Iteration | Code | SE, UXD |
+
+**⚠️ Critical:** PE must execute BEFORE GM, SEC, and QAE because it defines the tech stack (Backend, Frontend, Database) that these agents need to choose compatible tools.
 
 ---
 
@@ -147,8 +149,9 @@ Model tactical domain PER EPIC (does NOT implement code).
 Integrate DDD workflow with GitHub. **Issues created AFTER DE-01** (refined epic).
 
 ### Responsibilities
-**Discovery (1x):**
+**Discovery (1x - Day 3-4):**
 - Initial GitHub setup (labels, CI/CD, templates, branch protection)
+- **CI/CD configuration based on PE stack** (build, test, deploy)
 - **❌ DOES NOT create issues** (epics not refined yet)
 
 **Per Epic (Nx - Day 2):**
@@ -159,11 +162,14 @@ Integrate DDD workflow with GitHub. **Issues created AFTER DE-01** (refined epic
   - Tasks checklist
 
 ### When Executes
-- **Discovery:** GitHub setup (labels, CI/CD, templates) - NO issues
+- **Discovery (Day 3-4):** GitHub setup (labels, CI/CD, templates) - **AFTER PE defines stack**
 - **Iteration (Day 2):** Creates issue AFTER DE-01
 
 ### Scope
 **Complete system** - traceability of all epics
+
+### Dependencies
+- **Depends on:** SDA (BCs for labels), **PE (stack for CI/CD configuration)**
 
 ### Deliverables
 ```
@@ -190,10 +196,11 @@ Integrate DDD workflow with GitHub. **Issues created AFTER DE-01** (refined epic
 ## 30 - PE (Platform Engineer)
 
 ### Objective
-Configure basic environments (dev/stage/prod) with **deploy scripts** - NO complete IaC.
+**Define tech stack** and configure basic environments (dev/stage/prod) with **deploy scripts** - NO complete IaC.
 
 ### Responsibilities
-**Discovery ONLY (1x):**
+**Discovery ONLY (1x - Day 2-3):**
+- **Define Tech Stack (Backend, Frontend, Database)** ← CRITICAL for GM/SEC/QAE
 - Docker Compose for environments (dev, staging, production)
 - Deploy scripts (deploy.sh)
 - Environment variables configuration (.env.example)
@@ -201,12 +208,16 @@ Configure basic environments (dev/stage/prod) with **deploy scripts** - NO compl
 - Configured health checks
 
 ### When Executes
-- **Discovery (1x):** PE-00-Environments-Setup
+- **Discovery (Day 2-3):** PE-00-Environments-Setup ← **BEFORE GM, SEC, QAE**
 - **Per Epic (OPTIONAL - Light Review):** Quick performance checkpoint (15-30 min)
 
 ### Scope
-- **Discovery:** Basic setup - pragmatic for small/medium projects
+- **Discovery:** Define stack + basic setup - pragmatic for small/medium projects
 - **Per Epic:** Light performance review (optional, only if needed)
+
+### Dependencies
+- **Depends on:** SDA (BCs to estimate environments)
+- **Blocks:** GM (CI/CD), SEC (security tools), QAE (test tools) until stack is defined
 
 ### Deliverables
 ```
@@ -275,22 +286,26 @@ deploy.sh
 Define **essential security baseline** - OWASP Top 3, LGPD minimum, auth strategy.
 
 ### Responsibilities
-**Discovery ONLY (1x):**
+**Discovery ONLY (1x - Day 3-4):**
 - Identify main threats per BC
 - OWASP Top 3 mitigations (Broken Access Control, Cryptographic Failures, Injection)
 - LGPD minimum (personal data mapping, deletion strategy, privacy policy)
 - Authentication & Authorization strategy (JWT, domain-level authz)
 - Input validation strategy
 - Secrets management strategy (environment variables)
+- **Security tools compatible with PE stack** (OWASP ZAP, Snyk, etc)
 - Basic security monitoring (security events logging)
 
 ### When Executes
-- **Discovery (1x):** SEC-00-Security-Baseline
+- **Discovery (Day 3-4):** SEC-00-Security-Baseline - **AFTER PE defines stack**
 - **Per Epic (OPTIONAL - Light Review):** Quick security checkpoint (15-30 min)
 
 ### Scope
 - **Discovery:** Essential baseline - pragmatic for small/medium projects
 - **Per Epic:** Light security review (optional, only if needed)
+
+### Dependencies
+- **Depends on:** SDA (BCs, UL for threat identification), **PE (stack for compatible tools)**
 
 ### Deliverables
 ```
@@ -474,8 +489,9 @@ Implement user interfaces following UXD specs.
 Ensure quality as **QUALITY GATE** at end of each epic.
 
 ### Responsibilities
-**Discovery (1x):**
+**Discovery (1x - Day 3-4):**
 - QAE-00-Test-Strategy.md (tools, minimum coverage, criteria)
+- **Test tools selection based on PE stack** (xUnit vs Jest, Vitest vs Mocha, Playwright vs Cypress)
 
 **Per Epic (Nx - Day 10 - QUALITY GATE):**
 - Integration tests (SE APIs, cross-BC communication)
@@ -488,11 +504,14 @@ Ensure quality as **QUALITY GATE** at end of each epic.
 - ❌ **Tests fail** → BLOCK deploy, send feedback to SE/FE
 
 ### When Executes
-- **Discovery:** QAE-00-Test-Strategy (1x)
+- **Discovery (Day 3-4):** QAE-00-Test-Strategy - **AFTER PE defines stack**
 - **Iteration (Day 10):** FINAL quality gate (integration + E2E + regression + smoke)
 
 ### Scope
 **Per epic** - mandatory quality gate before deploy
+
+### Dependencies
+- **Depends on:** SDA (BCs for test strategy), **PE (stack for test tools selection)**
 
 ### Deliverables
 ```
@@ -517,7 +536,7 @@ Ensure quality as **QUALITY GATE** at end of each epic.
 
 ## 🔄 Agent Interactions
 
-### Discovery Phase (SDA → [UXD + GM + PE + SEC + QAE] parallel)
+### Discovery Phase (SDA → [UXD + PE] → [GM + SEC + QAE])
 ```
 Day 1-2: SDA
   - Event Storming
@@ -525,22 +544,32 @@ Day 1-2: SDA
   - Ubiquitous Language
   - Prioritized epics
     ↓
-Day 2-4: [UXD + GM + PE + SEC + QAE] in PARALLEL
+Day 2-3: [UXD + PE] in PARALLEL (Independent Foundations)
 
   UXD: UXD-00-Design-Foundations (colors, typography, base components)
        - Consumes: BCs, Context Map (from SDA)
-
-  GM: GM-00-GitHub-Setup (labels, CI/CD, templates)
-      - ❌ DOES NOT create issues (epics not refined)
+       - ✅ Independent of tech stack
 
   PE: PE-00-Environments-Setup (Docker Compose, scripts)
       - Consumes: BCs (from SDA) to estimate environments
+      - ✅ DEFINES tech stack (Backend, Frontend, Database)
+    ↓
+Day 3-4: [GM + SEC + QAE] in PARALLEL (Depend on PE Stack)
+
+  GM: GM-00-GitHub-Setup (labels, CI/CD, templates)
+      - Consumes: PE stack definition for CI/CD configuration
+      - ❌ DOES NOT create issues (epics not refined)
+      - ⚠️ DEPENDS on PE stack
 
   SEC: SEC-00-Security-Baseline (OWASP Top 3, LGPD, auth strategy)
-       - Consumes: BCs, Ubiquitous Language (from SDA) to identify threats
+       - Consumes: BCs, UL (from SDA) to identify threats
+       - Consumes: PE stack for compatible security tools
+       - ⚠️ DEPENDS on PE stack
 
   QAE: QAE-00-Test-Strategy (tools, coverage, criteria)
        - Consumes: BCs (from SDA) to define test strategy
+       - Consumes: PE stack to choose test tools (xUnit vs Jest, etc)
+       - ⚠️ DEPENDS on PE stack
 ```
 
 ### Iteration Phase (DE → GM → DBA → [SE + UXD] → FE → QAE → DEPLOY)
