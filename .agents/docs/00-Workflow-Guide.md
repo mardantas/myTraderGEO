@@ -23,17 +23,17 @@ Este workflow combina **DDD estratégico e tático** com **desenvolvimento ágil
 | Ordem | Sigla | Agente | Quando Executa | Escopo | Dependências |
 |-------|-------|--------|----------------|--------|--------------|
 | 1 | SDA | Strategic Domain Analyst | 1x Discovery (Dia 1-2) | Sistema completo | - |
-| 2a | UXD | User Experience Designer | 1x Discovery (Dia 2-3) + Por épico | Fundamentos + Wireframes | SDA |
-| 2b | **PE** | **Platform Engineer** | **1x Discovery (Dia 2-3)** | **Define stack + ambientes** | **SDA** |
-| 3a | GM | GitHub Manager | 1x Discovery (Dia 3-4) + Por épico | Setup CI/CD + Issues | **PE** (stack) |
-| 3b | SEC | Security Specialist | 1x Discovery (Dia 3-4) | Baseline de segurança | **PE** (stack) |
-| 3c | QAE | Quality Assurance Engineer | 1x Discovery (Dia 3-4) + Por épico | Estratégia de testes + Quality gate | **PE** (stack) |
-| - | DE | Domain Engineer | Por épico | Modelagem tática | SDA |
-| - | DBA | Database Administrator | Por épico | Migrations e validação | DE, PE |
-| - | SE | Software Engineer | Por épico | Implementação backend | DE, DBA |
-| - | FE | Frontend Engineer | Por épico | Implementação frontend | SE, UXD |
+| 2 | UXD | User Experience Designer | 1x Discovery (Dia 2-3) + Por épico | Fundamentos + Wireframes | SDA |
+| 3 | **PE** | **Platform Engineer** | **1x Discovery (Dia 2-3)** | **Define stack + ambientes** | **SDA** |
+| 4 | QAE | Quality Assurance Engineer | 1x Discovery (Dia 3-4) + Por épico | Estratégia de testes + Quality gate | **PE** (stack) |
+| 5 | SEC | Security Specialist | 1x Discovery (Dia 3-4) | Baseline de segurança | **PE** (stack) |
+| 6 | GM | GitHub Manager | 1x Discovery (Dia 3-4) + Por épico | Setup CI/CD + Issues | **PE** (stack) |
+| 7 | DE | Domain Engineer | Por épico | Modelagem tática | SDA |
+| 8 | DBA | Database Administrator | Por épico | Migrations e validação | DE, PE |
+| 9 | SE | Software Engineer | Por épico | Implementação backend | DE, DBA |
+| 10 | FE | Frontend Engineer | Por épico | Implementação frontend | SE, UXD |
 
-**⚠️ Atenção:** PE (Platform Engineer) **deve executar ANTES** de GM, SEC e QAE na Discovery, pois define o stack tecnológico que estes agentes precisam para escolher ferramentas compatíveis.
+**⚠️ Atenção:** PE (Platform Engineer) **deve executar ANTES** de QAE, SEC e GM na Discovery, pois define o stack tecnológico que estes agentes precisam para escolher ferramentas compatíveis.
 
 Ver detalhes em [01-Agents-Overview.md](01-Agents-Overview.md)
 
@@ -64,13 +64,12 @@ Dia 2-3: [UXD + PE] (PARALELO - Fundações Independentes)
     - Setup de banco de dados
     - Scripts de deploy (ainda não IaC)
 
-Dia 3-4: [GM + SEC + QAE] (PARALELO - Dependem do Stack do PE)
+Dia 3-4: [QAE + SEC + GM] (PARALELO - Dependem do Stack do PE)
 
-  GM:
-    - Setup GitHub (labels, template PR, proteção de branch)
-    - CI/CD básico baseado no stack do PE (build + test)
-    - GitHub Actions (deploy staging/prod)
-    - ❌ NÃO cria issues (épicos ainda não refinados)
+  QAE:
+    - Estratégia de Testes baseada no stack do PE
+    - Ferramentas de teste (unit, integration, E2E)
+    - Cobertura mínima e critérios de qualidade
 
   SEC:
     - Baseline de Segurança (threat model básico)
@@ -78,14 +77,15 @@ Dia 3-4: [GM + SEC + QAE] (PARALELO - Dependem do Stack do PE)
     - LGPD/compliance mínimo
     - Ferramentas de segurança compatíveis com stack
 
-  QAE:
-    - Estratégia de Testes baseada no stack do PE
-    - Ferramentas de teste (unit, integration, E2E)
-    - Cobertura mínima e critérios de qualidade
+  GM:
+    - Setup GitHub (labels, template PR, proteção de branch)
+    - CI/CD básico baseado no stack do PE (build + test)
+    - GitHub Actions (deploy staging/prod)
+    - ❌ NÃO cria issues (épicos ainda não refinados)
 ```
 
 **Duração:** 3-4 dias
-**Deliverables:** 7 documentos (SDA: 3, UXD: 1, PE: 1, GM: 1, SEC: 1, QAE: 1)
+**Deliverables:** 7 documentos (SDA: 3, UXD: 1, PE: 1, QAE: 1, SEC: 1, GM: 1)
 
 **Dependências Críticas na Discovery:**
 
@@ -95,15 +95,15 @@ SDA (Dia 1-2)
   ├─→ UXD (Dia 2-3) - Independente de stack
   └─→ PE (Dia 2-3) - Define stack tecnológico
         ↓
-        ├─→ GM (Dia 3-4) - CI/CD baseado no stack
+        ├─→ QAE (Dia 3-4) - Ferramentas de teste baseadas no stack
         ├─→ SEC (Dia 3-4) - Ferramentas compatíveis com stack
-        └─→ QAE (Dia 3-4) - Ferramentas de teste baseadas no stack
+        └─→ GM (Dia 3-4) - CI/CD baseado no stack
 ```
 
 **Por que esta ordem?**
-- ✅ **PE primeiro:** Define .NET/Node, React/Vue, PostgreSQL/MongoDB → decisões que impactam GM, SEC, QAE
+- ✅ **PE primeiro:** Define .NET/Node, React/Vue, PostgreSQL/MongoDB → decisões que impactam QAE, SEC, GM
 - ✅ **UXD paralelo com PE:** Design independe de stack técnico
-- ✅ **GM, SEC, QAE depois de PE:** Escolhem ferramentas compatíveis (xUnit vs Jest, OWASP ZAP vs Snyk, GitHub Actions config específico)
+- ✅ **QAE, SEC, GM depois de PE:** Escolhem ferramentas compatíveis (xUnit vs Jest, OWASP ZAP vs Snyk, GitHub Actions config específico)
 
 ---
 
@@ -357,7 +357,7 @@ Agentes suportam execução em dois modos:
 ```
 1. SDA: Modelagem estratégica (BCs, Context Map, UL, Épicos)
 2. [UXD + PE] paralelo: Fundamentos independentes de stack
-3. [GM + SEC + QAE] paralelo: Baseados no stack definido por PE
+3. [QAE + SEC + GM] paralelo: Baseados no stack definido por PE
 4. Usuário: Prioriza épicos
 5. Iniciar Épico 1
 ```

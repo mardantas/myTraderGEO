@@ -44,9 +44,12 @@
     </deliverables>
 
     <successors>
-        <successor agent="DE">High-level domain model for Discovery phase</successor>
-        <successor agent="UXD">User flows based on BCs and epics</successor>
-        <successor agent="GM">Issues per epic in GitHub</successor>
+        <successor agent="UXD" phase="discovery">Design foundations based on BCs and user personas (UXD-00)</successor>
+        <successor agent="PE" phase="discovery">BCs help estimate infrastructure needs (complexity, real-time requirements, scale)</successor>
+        <successor agent="QAE" phase="discovery">BCs define test strategy (coverage per BC criticality - core vs supporting vs generic)</successor>
+        <successor agent="SEC" phase="discovery">BCs identify sensitive data and threat surfaces for security baseline</successor>
+        <successor agent="GM" phase="discovery">BCs used for GitHub labels and milestones structure</successor>
+        <successor agent="DE" phase="iteration">BCs, Context Map, and Ubiquitous Language for tactical modeling per epic (DE-01-[EpicName])</successor>
     </successors>
 
     <execution-modes>

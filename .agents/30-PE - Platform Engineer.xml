@@ -60,14 +60,15 @@
     </deliverables>
 
     <predecessors>
-        <predecessor agent="SDA">Bounded Contexts defined (to estimate infrastructure needs)</predecessor>
-        <predecessor agent="GM" phase="discovery">Can work in parallel with GM during Discovery</predecessor>
+        <predecessor agent="SDA" phase="discovery">Bounded Contexts defined (to estimate infrastructure needs and complexity)</predecessor>
     </predecessors>
 
     <successors>
+        <successor agent="QAE" phase="discovery">Tech stack defined for test tools selection (xUnit vs Jest, Vitest vs Mocha, Playwright vs Cypress)</successor>
+        <successor agent="SEC" phase="discovery">Tech stack defined for security tools selection (SAST/DAST compatible with stack - OWASP ZAP config, Snyk for .NET vs npm)</successor>
+        <successor agent="GM" phase="discovery">Tech stack defined for CI/CD configuration (dotnet build vs npm build, GitHub Actions workflow)</successor>
         <successor agent="SE" phase="iteration">Environments ready for backend development</successor>
         <successor agent="FE" phase="iteration">Environments ready for frontend development</successor>
-        <successor agent="QAE" phase="iteration">Infrastructure ready for deployment and testing</successor>
     </successors>
 
     <quality-checklist path="PE-checklist.yml" base-path="checklists">

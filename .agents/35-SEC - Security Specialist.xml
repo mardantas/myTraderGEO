@@ -52,19 +52,18 @@
     </deliverables>
 
     <predecessors>
-        <predecessor agent="SDA">Bounded Contexts and sensitive data identified</predecessor>
-        <predecessor agent="DE">Backend APIs implemented (security review)</predecessor>
-        <predecessor agent="DBA">Database schema finalized (encryption, access control)</predecessor>
-        <predecessor agent="FE">Frontend implemented (XSS, CSRF prevention)</predecessor>
-        <predecessor agent="PE">Infrastructure configured (network security, WAF)</predecessor>
+        <predecessor agent="SDA" phase="discovery">Bounded Contexts and sensitive data identified</predecessor>
+        <predecessor agent="PE" phase="discovery">Tech stack defined for security tools selection (OWASP ZAP config, Snyk for .NET vs npm, Dependabot, CodeQL)</predecessor>
     </predecessors>
 
     <successors>
-        <successor agent="DE">Vulnerabilities remediated (security fixes)</successor>
-        <successor agent="DBA">Security controls implemented (encryption, audit)</successor>
-        <successor agent="PE">Security hardening applied (WAF rules, HSM)</successor>
-        <successor agent="QAE">Security tests added (DAST, fuzzing)</successor>
+        <successor agent="SE" phase="iteration">Secure coding guidelines for implementation (input validation, authentication, authorization)</successor>
+        <successor agent="FE" phase="iteration">Frontend security guidelines (XSS prevention, CSRF tokens)</successor>
+        <successor agent="DBA" phase="iteration">Database security guidelines (encryption, access control, audit logging)</successor>
+        <successor agent="QAE" phase="iteration">Security testing requirements (DAST, fuzzing - optional for Epic 4+)</successor>
     </successors>
+
+    <note>SEC-00 executes in Discovery for baseline security. Security reviews per epic (SEC-EPIC-[N]) are OPTIONAL checkpoints (see 07-PE-SEC-Checkpoint-Decision-Matrix.md) and would depend on DE, DBA, SE, FE implementations.</note>
 
     <quality-checklist path="SEC-checklist.yml" base-path="checklists">
         <essential-check>Complete threat model (all BCs modeled with STRIDE)</essential-check>
