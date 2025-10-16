@@ -274,7 +274,7 @@ Todos os deliverables foram completados:
 
 ### ⚙️ GM - GitHub Manager
 - ✅ GM-00-GitHub-Setup.md
-- ✅ Labels, CI/CD, branch protection
+- ✅ Labels, CI/CD, branch strategy (GitHub Free)
 
 ### 🏗️ PE - Platform Engineer
 - ✅ PE-00-Environments-Setup.md
