@@ -119,7 +119,7 @@
             <criterion>Dependabot configured (.github/dependabot.yml) for NuGet and npm</criterion>
             <criterion>Weekly CodeQL analysis configured</criterion>
             <criterion>Secret scanning enabled in repository</criterion>
-            <criterion>Branch protection rules on main (require PR, status checks)</criterion>
+            <criterion>Branch protection guidelines documented (discipline-based approach for GitHub Free)</criterion>
         </criteria>
 
         <criteria type="deployment">

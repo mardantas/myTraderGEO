@@ -337,7 +337,7 @@ Integrate DDD workflow with GitHub. **Issues created AFTER DE-01** (refined epic
 
 ### Responsibilities
 **Discovery (1x - Day 3-4):**
-- Initial GitHub setup (labels, CI/CD, templates, branch protection)
+- Initial GitHub setup (labels, CI/CD, templates, branch strategy)
 - **CI/CD configuration based on PE stack** (build, test, deploy)
 - **❌ DOES NOT create issues** (epics not refined yet)
 
