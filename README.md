@@ -438,15 +438,20 @@ Dia 1-2: SDA
   → Context Map
   → Linguagem Ubíqua
 
-Dia 2-4: [UXD + GM + PE + SEC + QAE] (PARALELO)
+Dia 2-3: [UXD + PE] (PARALELO - Fundações Independentes)
   → UXD: Design Foundations
-  → GM: GitHub Setup (labels, CI/CD, branch protection)
-  → PE: Ambientes (dev/stage/prod com Docker)
-  → SEC: Security Baseline
-  → QAE: Test Strategy
+  → PE: Define Stack + Ambientes (dev/stage/prod com Docker)
+
+Dia 3-4: [GM + SEC + QAE] (PARALELO - Dependem do Stack do PE)
+  → GM: GitHub Setup (CI/CD baseado no stack)
+  → SEC: Security Baseline (ferramentas compatíveis)
+  → QAE: Test Strategy (ferramentas baseadas no stack)
 
 Duração: 3-4 dias
 Deliverables: 7 documentos
+
+⚠️ Ordem Crítica: PE deve executar ANTES de GM/SEC/QAE
+   PE define stack → GM/SEC/QAE escolhem ferramentas compatíveis
 ```
 
 ---
