@@ -12,17 +12,17 @@
 | Order | # | Code | Agent | Scope | Phase | Deliverables | Dependencies |
 |-------|---|------|-------|-------|-------|--------------|--------------|
 | **1** | 10 | SDA | Strategic Domain Analyst | Complete system | Discovery (Day 1-2) | 3 docs | - |
-| **2a** | 20 | UXD | User Experience Designer | System + Per epic | Discovery (Day 2-3) + Iteration | 1 doc + 1/epic | SDA |
-| **2b** | 30 | **PE** | **Platform Engineer** | **Basic setup** | **Discovery (Day 2-3)** | **1 doc + scripts** | **SDA** |
-| **3a** | 25 | GM | GitHub Manager | Setup + Per epic | Discovery (Day 3-4) + Iteration | 1 doc + issues | SDA, **PE (stack)** |
-| **3b** | 35 | SEC | Security Specialist | Baseline | Discovery (Day 3-4) | 1 doc | SDA, **PE (stack)** |
-| **3c** | 60 | QAE | Quality Assurance Engineer | Strategy + Per epic | Discovery (Day 3-4) + Iteration | 1 doc + tests | SDA, **PE (stack)** |
-| - | 15 | DE | Domain Engineer | Per epic ONLY | Iteration | 1 doc/epic | SDA |
-| - | 50 | DBA | Database Administrator | Per epic | Iteration | Migrations | DE, PE |
-| - | 45 | SE | Software Engineer | Per epic | Iteration | Code | DE, DBA |
-| - | 55 | FE | Frontend Engineer | Per epic | Iteration | Code | SE, UXD |
+| **2** | 20 | UXD | User Experience Designer | System + Per epic | Discovery (Day 2-3) + Iteration | 1 doc + 1/epic | SDA |
+| **3** | 30 | **PE** | **Platform Engineer** | **Basic setup** | **Discovery (Day 2-3)** | **1 doc + scripts** | **SDA** |
+| **4** | 60 | QAE | Quality Assurance Engineer | Strategy + Per epic | Discovery (Day 3-4) + Iteration | 1 doc + tests | SDA, **PE (stack)** |
+| **5** | 35 | SEC | Security Specialist | Baseline | Discovery (Day 3-4) | 1 doc | SDA, **PE (stack)** |
+| **6** | 25 | GM | GitHub Manager | Setup + Per epic | Discovery (Day 3-4) + Iteration | 1 doc + issues | SDA, **PE (stack)** |
+| **7** | 15 | DE | Domain Engineer | Per epic ONLY | Iteration | 1 doc/epic | SDA |
+| **8** | 50 | DBA | Database Administrator | Per epic | Iteration | Migrations | DE, PE |
+| **9** | 45 | SE | Software Engineer | Per epic | Iteration | Code | DE, DBA |
+| **10** | 55 | FE | Frontend Engineer | Per epic | Iteration | Code | SE, UXD |
 
-**⚠️ Critical:** PE must execute BEFORE GM, SEC, and QAE because it defines the tech stack (Backend, Frontend, Database) that these agents need to choose compatible tools.
+**⚠️ Critical:** PE must execute BEFORE QAE, SEC, and GM because it defines the tech stack (Backend, Frontend, Database) that these agents need to choose compatible tools.
 
 ---
 
@@ -103,93 +103,6 @@ Design user experience: foundations in Discovery + specific wireframes per epic.
 
 ### Specification
 [20-UXD - User Experience Designer.xml](../20-UXD%20-%20User%20Experience%20Designer.xml)
-
----
-
-## 15 - DE (Domain Engineer)
-
-### Objective
-Model tactical domain PER EPIC (does NOT implement code).
-
-### Responsibilities
-- Detailed tactical modeling PER EPIC (Aggregates, Entities, Value Objects)
-- Domain Events and business rules
-- Use Cases / Application Services (specification)
-- Repository interfaces (contracts)
-- Integration contracts between epic BCs
-
-### When Executes
-- **Per epic (Nx):** DE-01-[EpicName]-Domain-Model ONLY
-
-### Scope
-- **Iteration ONLY:** Multiple epic BCs (detailed modeling)
-- UXD, PE, SEC work with SDA outputs (BCs, Context Map, UL)
-
-### Deliverables
-```
-00-doc-ddd/04-tactical-design/
-└── DE-01-[EpicName]-Domain-Model.md  (Per epic - Nx)
-```
-
-### Example Invocation
-```
-"DE, model epic 'Create Strategy' in Strategy + Market Data BCs"
-"DE, create DE-01-Calculate-Greeks-Domain-Model"
-"DE, create feedback for SDA about missing event"
-```
-
-### Specification
-[15-DE - Domain Engineer.xml](../15-DE%20-%20Domain%20Engineer.xml)
-
----
-
-## 25 - GM (GitHub Manager)
-
-### Objective
-Integrate DDD workflow with GitHub. **Issues created AFTER DE-01** (refined epic).
-
-### Responsibilities
-**Discovery (1x - Day 3-4):**
-- Initial GitHub setup (labels, CI/CD, templates, branch protection)
-- **CI/CD configuration based on PE stack** (build, test, deploy)
-- **❌ DOES NOT create issues** (epics not refined yet)
-
-**Per Epic (Nx - Day 2):**
-- Reads DE-01-[EpicName]-Domain-Model
-- Creates detailed GitHub issue with:
-  - Use cases (from DE-01)
-  - Acceptance criteria
-  - Tasks checklist
-
-### When Executes
-- **Discovery (Day 3-4):** GitHub setup (labels, CI/CD, templates) - **AFTER PE defines stack**
-- **Iteration (Day 2):** Creates issue AFTER DE-01
-
-### Scope
-**Complete system** - traceability of all epics
-
-### Dependencies
-- **Depends on:** SDA (BCs for labels), **PE (stack for CI/CD configuration)**
-
-### Deliverables
-```
-00-doc-ddd/07-github-management/
-└── GM-00-GitHub-Setup.md
-
-.github/
-├── ISSUE_TEMPLATE/
-├── PULL_REQUEST_TEMPLATE/
-└── workflows/ci.yml  (basic build + test)
-```
-
-### Example Invocation
-```
-"GM, configure GitHub for the project (Discovery)"
-"GM, read DE-01-Create-Strategy and create detailed issue (Iteration)"
-```
-
-### Specification
-[25-GM - GitHub Manager.xml](../25-GM%20-%20GitHub%20Manager.xml)
 
 ---
 
@@ -280,6 +193,57 @@ deploy.sh
 
 ---
 
+## 60 - QAE (Quality Assurance Engineer)
+
+### Objective
+Ensure quality as **QUALITY GATE** at end of each epic.
+
+### Responsibilities
+**Discovery (1x - Day 3-4):**
+- QAE-00-Test-Strategy.md (tools, minimum coverage, criteria)
+- **Test tools selection based on PE stack** (xUnit vs Jest, Vitest vs Mocha, Playwright vs Cypress)
+
+**Per Epic (Nx - Day 10 - QUALITY GATE):**
+- Integration tests (SE APIs, cross-BC communication)
+- E2E tests (UXD-01 wireframe user journeys)
+- Regression tests (previous epics still work)
+- Smoke test (critical functionality)
+
+**QUALITY GATE DECISION:**
+- ✅ **Tests pass** → APPROVE deploy to staging/production
+- ❌ **Tests fail** → BLOCK deploy, send feedback to SE/FE
+
+### When Executes
+- **Discovery (Day 3-4):** QAE-00-Test-Strategy - **AFTER PE defines stack**
+- **Iteration (Day 10):** FINAL quality gate (integration + E2E + regression + smoke)
+
+### Scope
+**Per epic** - mandatory quality gate before deploy
+
+### Dependencies
+- **Depends on:** SDA (BCs for test strategy), **PE (stack for test tools selection)**
+
+### Deliverables
+```
+00-doc-ddd/06-quality-assurance/
+└── QAE-00-Test-Strategy.md  (Discovery - 1x)
+
+02-backend/tests/integration/
+01-frontend/tests/e2e/
+```
+
+### Example Invocation
+```
+"QAE, create test strategy (tools, coverage, criteria)"
+"QAE, execute quality gate for epic 'Create Strategy' (Day 10)"
+"QAE, execute integration + E2E + regression + smoke tests"
+```
+
+### Specification
+[60-QAE - Quality Assurance Engineer.xml](../60-QAE%20-%20Quality%20Assurance%20Engineer.xml)
+
+---
+
 ## 35 - SEC (Security Specialist)
 
 ### Objective
@@ -366,6 +330,129 @@ Define **essential security baseline** - OWASP Top 3, LGPD minimum, auth strateg
 
 ---
 
+## 25 - GM (GitHub Manager)
+
+### Objective
+Integrate DDD workflow with GitHub. **Issues created AFTER DE-01** (refined epic).
+
+### Responsibilities
+**Discovery (1x - Day 3-4):**
+- Initial GitHub setup (labels, CI/CD, templates, branch strategy)
+- **CI/CD configuration based on PE stack** (build, test, deploy)
+- **❌ DOES NOT create issues** (epics not refined yet)
+
+**Per Epic (Nx - Day 2):**
+- Reads DE-01-[EpicName]-Domain-Model
+- Creates detailed GitHub issue with:
+  - Use cases (from DE-01)
+  - Acceptance criteria
+  - Tasks checklist
+
+### When Executes
+- **Discovery (Day 3-4):** GitHub setup (labels, CI/CD, templates) - **AFTER PE defines stack**
+- **Iteration (Day 2):** Creates issue AFTER DE-01
+
+### Scope
+**Complete system** - traceability of all epics
+
+### Dependencies
+- **Depends on:** SDA (BCs for labels), **PE (stack for CI/CD configuration)**
+
+### Deliverables
+```
+00-doc-ddd/07-github-management/
+└── GM-00-GitHub-Setup.md
+
+.github/
+├── ISSUE_TEMPLATE/
+├── PULL_REQUEST_TEMPLATE/
+└── workflows/ci.yml  (basic build + test)
+```
+
+### Example Invocation
+```
+"GM, configure GitHub for the project (Discovery)"
+"GM, read DE-01-Create-Strategy and create detailed issue (Iteration)"
+```
+
+### Specification
+[25-GM - GitHub Manager.xml](../25-GM%20-%20GitHub%20Manager.xml)
+
+---
+
+## 15 - DE (Domain Engineer)
+
+### Objective
+Model tactical domain PER EPIC (does NOT implement code).
+
+### Responsibilities
+- Detailed tactical modeling PER EPIC (Aggregates, Entities, Value Objects)
+- Domain Events and business rules
+- Use Cases / Application Services (specification)
+- Repository interfaces (contracts)
+- Integration contracts between epic BCs
+
+### When Executes
+- **Per epic (Nx):** DE-01-[EpicName]-Domain-Model ONLY
+
+### Scope
+- **Iteration ONLY:** Multiple epic BCs (detailed modeling)
+- UXD, PE, SEC work with SDA outputs (BCs, Context Map, UL)
+
+### Deliverables
+```
+00-doc-ddd/04-tactical-design/
+└── DE-01-[EpicName]-Domain-Model.md  (Per epic - Nx)
+```
+
+### Example Invocation
+```
+"DE, model epic 'Create Strategy' in Strategy + Market Data BCs"
+"DE, create DE-01-Calculate-Greeks-Domain-Model"
+"DE, create feedback for SDA about missing event"
+```
+
+### Specification
+[15-DE - Domain Engineer.xml](../15-DE%20-%20Domain%20Engineer.xml)
+
+---
+
+## 50 - DBA (Database Administrator)
+
+### Objective
+Validate and optimize database schema created by DE.
+
+### Responsibilities
+- **Validation** of DE-created schema
+- Indexing strategy
+- Query optimization
+- Performance review
+- Guidance for DE to adjust schema
+
+### When Executes
+**Per epic** - after DE creates schema
+
+### Scope
+**Multiple epic BCs** - validates coordinated schema between BCs
+
+### Deliverables
+```
+00-doc-ddd/05-database-design/
+└── DBA-01-[EpicName]-Schema-Review.md
+```
+
+### Example Invocation
+```
+"DBA, review schema for epic 'Create Strategy'"
+"DBA, suggest indexes for Greeks query"
+"DBA, process FEEDBACK-007"
+```
+
+### Specification
+[50-DBA - Database Administrator.xml](../50-DBA%20-%20Database%20Administrator.xml)
+
+---
+
 ## 45 - SE (Software Engineer)
 
 ### Objective
@@ -404,42 +491,6 @@ Implement complete backend based on DE domain model.
 
 ### Specification
 [45-SE - Software Engineer.xml](../45-SE%20-%20Software%20Engineer.xml)
-
----
-
-## 50 - DBA (Database Administrator)
-
-### Objective
-Validate and optimize database schema created by DE.
-
-### Responsibilities
-- **Validation** of DE-created schema
-- Indexing strategy
-- Query optimization
-- Performance review
-- Guidance for DE to adjust schema
-
-### When Executes
-**Per epic** - after DE creates schema
-
-### Scope
-**Multiple epic BCs** - validates coordinated schema between BCs
-
-### Deliverables
-```
-00-doc-ddd/05-database-design/
-└── DBA-01-[EpicName]-Schema-Review.md
-```
-
-### Example Invocation
-```
-"DBA, review schema for epic 'Create Strategy'"
-"DBA, suggest indexes for Greeks query"
-"DBA, process FEEDBACK-007"
-```
-
-### Specification
-[50-DBA - Database Administrator.xml](../50-DBA%20-%20Database%20Administrator.xml)
 
 ---
 
@@ -483,60 +534,9 @@ Implement user interfaces following UXD specs.
 
 ---
 
-## 60 - QAE (Quality Assurance Engineer)
-
-### Objective
-Ensure quality as **QUALITY GATE** at end of each epic.
-
-### Responsibilities
-**Discovery (1x - Day 3-4):**
-- QAE-00-Test-Strategy.md (tools, minimum coverage, criteria)
-- **Test tools selection based on PE stack** (xUnit vs Jest, Vitest vs Mocha, Playwright vs Cypress)
-
-**Per Epic (Nx - Day 10 - QUALITY GATE):**
-- Integration tests (SE APIs, cross-BC communication)
-- E2E tests (UXD-01 wireframe user journeys)
-- Regression tests (previous epics still work)
-- Smoke test (critical functionality)
-
-**QUALITY GATE DECISION:**
-- ✅ **Tests pass** → APPROVE deploy to staging/production
-- ❌ **Tests fail** → BLOCK deploy, send feedback to SE/FE
-
-### When Executes
-- **Discovery (Day 3-4):** QAE-00-Test-Strategy - **AFTER PE defines stack**
-- **Iteration (Day 10):** FINAL quality gate (integration + E2E + regression + smoke)
-
-### Scope
-**Per epic** - mandatory quality gate before deploy
-
-### Dependencies
-- **Depends on:** SDA (BCs for test strategy), **PE (stack for test tools selection)**
-
-### Deliverables
-```
-00-doc-ddd/06-quality-assurance/
-└── QAE-00-Test-Strategy.md  (Discovery - 1x)
-
-02-backend/tests/integration/
-01-frontend/tests/e2e/
-```
-
-### Example Invocation
-```
-"QAE, create test strategy (tools, coverage, criteria)"
-"QAE, execute quality gate for epic 'Create Strategy' (Day 10)"
-"QAE, execute integration + E2E + regression + smoke tests"
-```
-
-### Specification
-[60-QAE - Quality Assurance Engineer.xml](../60-QAE%20-%20Quality%20Assurance%20Engineer.xml)
-
----
-
 ## 🔄 Agent Interactions
 
-### Discovery Phase (SDA → [UXD + PE] → [GM + SEC + QAE])
+### Discovery Phase (SDA → [UXD + PE] → [QAE + SEC + GM])
 ```
 Day 1-2: SDA
   - Event Storming
@@ -554,22 +554,22 @@ Day 2-3: [UXD + PE] in PARALLEL (Independent Foundations)
       - Consumes: BCs (from SDA) to estimate environments
       - ✅ DEFINES tech stack (Backend, Frontend, Database)
     ↓
-Day 3-4: [GM + SEC + QAE] in PARALLEL (Depend on PE Stack)
+Day 3-4: [QAE + SEC + GM] in PARALLEL (Depend on PE Stack)
 
-  GM: GM-00-GitHub-Setup (labels, CI/CD, templates)
-      - Consumes: PE stack definition for CI/CD configuration
-      - ❌ DOES NOT create issues (epics not refined)
-      - ⚠️ DEPENDS on PE stack
+  QAE: QAE-00-Test-Strategy (tools, coverage, criteria)
+       - Consumes: BCs (from SDA) to define test strategy
+       - Consumes: PE stack to choose test tools (xUnit vs Jest, etc)
+       - ⚠️ DEPENDS on PE stack
 
   SEC: SEC-00-Security-Baseline (OWASP Top 3, LGPD, auth strategy)
        - Consumes: BCs, UL (from SDA) to identify threats
        - Consumes: PE stack for compatible security tools
        - ⚠️ DEPENDS on PE stack
 
-  QAE: QAE-00-Test-Strategy (tools, coverage, criteria)
-       - Consumes: BCs (from SDA) to define test strategy
-       - Consumes: PE stack to choose test tools (xUnit vs Jest, etc)
-       - ⚠️ DEPENDS on PE stack
+  GM: GM-00-GitHub-Setup (labels, CI/CD, templates)
+      - Consumes: PE stack definition for CI/CD configuration
+      - ❌ DOES NOT create issues (epics not refined)
+      - ⚠️ DEPENDS on PE stack
 ```
 
 ### Iteration Phase (DE → GM → DBA → [SE + UXD] → FE → QAE → DEPLOY)
@@ -632,12 +632,12 @@ Any agent can create FEEDBACK for another:
 | Agent | Templates |
 |-------|-----------|
 | SDA | 3 templates (Event-Storming, Context-Map, Ubiquitous-Language) |
-| DE | 1 template (Epic-Domain-Model) |
 | UXD | 2 templates (Design-Foundations, Epic-Wireframes) |
-| GM | 1 template (GitHub-Setup) |
 | PE | 1 template (Environments-Setup) |
-| SEC | 1 template (Security-Baseline) |
 | QAE | 1 template (Test-Strategy) |
+| SEC | 1 template (Security-Baseline) |
+| GM | 1 template (GitHub-Setup) |
+| DE | 1 template (Epic-Domain-Model) |
 | DBA | 1 template (Epic-Schema-Review) |
 | SE | 0 (code is documentation) |
 | FE | 0 (code is documentation) |

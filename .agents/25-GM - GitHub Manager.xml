@@ -77,7 +77,9 @@
     </deliverables>
 
     <predecessors>
-        <predecessor agent="SDA">Epics defined and prioritized</predecessor>
+        <predecessor agent="SDA" phase="discovery">Bounded Contexts for labels and milestones, epics defined and prioritized</predecessor>
+        <predecessor agent="PE" phase="discovery">Tech stack defined for CI/CD configuration (build commands, test commands, deploy scripts, GitHub Actions workflow)</predecessor>
+        <predecessor agent="DE" phase="iteration">DE-01 provides detailed epic info for GitHub issue creation</predecessor>
     </predecessors>
 
     <successors>
@@ -117,7 +119,7 @@
             <criterion>Dependabot configured (.github/dependabot.yml) for NuGet and npm</criterion>
             <criterion>Weekly CodeQL analysis configured</criterion>
             <criterion>Secret scanning enabled in repository</criterion>
-            <criterion>Branch protection rules on main (require PR, status checks)</criterion>
+            <criterion>Branch protection guidelines documented (discipline-based approach for GitHub Free)</criterion>
         </criteria>
 
         <criteria type="deployment">
