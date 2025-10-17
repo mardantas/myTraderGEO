@@ -22,6 +22,87 @@ Este repositório contém uma **estrutura completa e replicável** para desenvol
 
 ## 🚀 Quick Start: Como Usar este Workflow em um Novo Projeto
 
+### 🎯 Escolha sua Abordagem
+
+Você tem **duas opções** para configurar um novo projeto com este workflow:
+
+| Abordagem | Tempo | Complexidade | Quando Usar |
+|-----------|-------|--------------|-------------|
+| **🤖 [Setup Automático](#-opção-1-setup-automático-via-github-actions-recomendado)** | ~2 min | Baixa | Múltiplos projetos, quer consistência 100%, prefere automação |
+| **👷 [Setup Manual](#-opção-2-setup-manual-passo-a-passo)** | ~15 min | Média | Primeiro uso, quer entender cada passo, customização detalhada |
+
+---
+
+## 🤖 Opção 1: Setup Automático via GitHub Actions (Recomendado)
+
+**Vantagens:**
+- ✅ Zero configuração manual
+- ✅ Issue #1 criada automaticamente
+- ✅ Branches `main` e `develop` prontas
+- ✅ Sem erros humanos
+- ✅ Ideal para criação de múltiplos projetos
+
+### Passo 1: Criar Repositório Vazio no GitHub
+
+1. Acesse [github.com/new](https://github.com/new)
+2. Configure:
+   - **Nome:** `nome-do-seu-projeto`
+   - **Visibilidade:** Pública ou Privada
+   - **⚠️ IMPORTANTE:** Deixe **VAZIO** (não inicialize com README, .gitignore ou LICENSE)
+3. Clique em **Create repository**
+4. Copie a URL:
+   ```
+   https://github.com/seu-usuario/nome-do-seu-projeto.git
+   ```
+
+### Passo 2: Executar Workflow de Setup
+
+1. **Vá para este repositório (myTraderGEO)** no GitHub
+2. Clique em **Actions** (menu superior)
+3. No menu lateral esquerdo, clique em **"Setup New Project"**
+4. Clique no botão **"Run workflow"** (canto superior direito)
+5. Preencha os campos:
+   - **project_name:** `nome-do-seu-projeto`
+   - **project_repo_url:** `https://github.com/seu-usuario/nome-do-seu-projeto.git`
+   - **create_discovery_issue:** ✅ (marcado - cria Issue #1 automaticamente)
+6. Clique em **"Run workflow"** (botão verde)
+
+### Passo 3: Aguardar Conclusão (1-2 minutos)
+
+O workflow executará automaticamente:
+- ✅ Copia estrutura completa do workflow
+- ✅ Customiza arquivos com nome do projeto
+- ✅ Cria commit inicial na branch `main`
+- ✅ Cria branch `develop`
+- ✅ Faz push para o repositório remoto
+- ✅ Cria Issue #1 (Discovery Foundation) automaticamente
+
+Você pode acompanhar o progresso na aba **Actions**.
+
+### Passo 4: Clonar e Começar a Trabalhar
+
+```bash
+# Clonar o projeto (já configurado)
+git clone https://github.com/seu-usuario/nome-do-seu-projeto.git
+cd nome-do-seu-projeto
+
+# Checkout develop
+git checkout develop
+
+# Criar branch da feature
+git checkout -b feature/discovery-foundation
+
+# Começar a trabalhar na Issue #1!
+```
+
+**🎉 Pronto!** Seu projeto está configurado e a Issue #1 já foi criada. Pule para [Passo 8: Trabalhar nos Deliverables](#passo-8-trabalhar-nos-deliverables).
+
+---
+
+## 👷 Opção 2: Setup Manual (Passo a Passo)
+
+Se preferir entender cada passo ou fazer customizações detalhadas, siga o processo manual:
+
 ### **Passo 1: Criar Projeto no Servidor (GitHub)**
 
 1. Acesse o GitHub e crie um novo repositório:

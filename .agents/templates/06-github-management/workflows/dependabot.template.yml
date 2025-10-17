@@ -1,0 +1,107 @@
+version: 2
+updates:
+  # Backend dependencies (NuGet - .NET)
+  # Enable if PE-00 stack includes .NET
+  - package-ecosystem: "nuget"
+    directory: "/02-backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "[GITHUB_USERNAME]"  # Replace with actual GitHub username
+    assignees:
+      - "[GITHUB_USERNAME]"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "backend"
+      - "security"
+    # Group minor and patch updates
+    groups:
+      minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # Frontend dependencies (npm)
+  # Enable if PE-00 stack includes Node.js/npm
+  - package-ecosystem: "npm"
+    directory: "/01-frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "[GITHUB_USERNAME]"
+    assignees:
+      - "[GITHUB_USERNAME]"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "frontend"
+      - "security"
+    # Ignore major version updates for framework packages (review manually)
+    ignore:
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "vite"
+        update-types: ["version-update:semver-major"]
+    # Group development dependencies
+    groups:
+      dev-dependencies:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # GitHub Actions dependencies
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "ci"
+    labels:
+      - "dependencies"
+      - "github-actions"
+
+  # Docker dependencies (if using Dockerfile)
+  # Enable if PE-00 uses Docker
+  # - package-ecosystem: "docker"
+  #   directory: "/02-backend"
+  #   schedule:
+  #     interval: "weekly"
+  #     day: "monday"
+  #   open-pull-requests-limit: 3
+  #   commit-message:
+  #     prefix: "chore"
+  #   labels:
+  #     - "dependencies"
+  #     - "docker"
+
+  # Python dependencies (if using requirements.txt or pipfile)
+  # Enable if PE-00 stack includes Python
+  # - package-ecosystem: "pip"
+  #   directory: "/scripts"  # Adjust path as needed
+  #   schedule:
+  #     interval: "weekly"
+  #   open-pull-requests-limit: 3
+  #   commit-message:
+  #     prefix: "chore"
+  #   labels:
+  #     - "dependencies"
+  #     - "python"
