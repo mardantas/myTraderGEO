@@ -25,10 +25,11 @@
     </general-instructions>
 
     <responsibilities>
-        <responsibility>Discovery: Initial GitHub setup (labels, milestones, templates, CI/CD) - NO issues yet</responsibility>
+        <responsibility>Discovery: Initial GitHub setup (labels, milestones, CI/CD, automation scripts) - NO issues yet</responsibility>
         <responsibility>Per Epic: Create detailed issue AFTER DE-01 (when epic is refined with use cases)</responsibility>
-        <responsibility>Issue and PR templates</responsibility>
-        <responsibility>CI/CD Pipeline (GitHub Actions for build, test, deploy staging/prod)</responsibility>
+        <responsibility>Document existing Issue and PR templates (pre-existing from workflow template)</responsibility>
+        <responsibility>Create CI/CD workflows customized per project stack (from PE-00)</responsibility>
+        <responsibility>Create automation scripts for labels/milestones (from SDA BCs/Epics)</responsibility>
         <responsibility>Security scanning (Dependabot for dependencies, CodeQL for code)</responsibility>
         <responsibility>Branch strategy (branch naming conventions, PR workflow)</responsibility>
         <responsibility>Branch protection alternatives (GitHub Free: discipline-based, no automatic protection)</responsibility>
@@ -36,43 +37,89 @@
     </responsibilities>
 
     <deliverables>
-        <deliverable path="GM-01-GitHub-Setup.md" base-path="github-management">
-            <template base-path="templates">06-github-management/GM-01-GitHub-Setup.template.md</template>
-            <description>Complete GitHub setup documentation (labels, milestones, CI/CD, security)</description>
+        <!-- 1. DOCUMENTATION: Main deliverable documenting what exists and what was created -->
+        <deliverable path="GM-00-GitHub-Setup.md" base-path="github-management">
+            <template base-path="templates">06-github-management/GM-00-GitHub-Setup.template.md</template>
+            <description>GitHub setup documentation (references pre-existing templates, created workflows, and scripts)</description>
+            <phase>discovery</phase>
+            <note>Documents what exists (Issue/PR templates) and what GM created (workflows, scripts)</note>
         </deliverable>
-        <deliverable path=".github/ISSUE_TEMPLATE/">
-            <description>Issue templates (epic, feature, bug)</description>
-            <type>github-config</type>
+
+        <!-- 2. AUTOMATION SCRIPTS: Customized per project (based on SDA output) -->
+        <deliverable path="03-github-manager/setup-labels.sh" base-path="">
+            <template base-path="templates">06-github-management/scripts/setup-labels.template.sh</template>
+            <description>Executable script to create GitHub labels (agents, BCs, epics, types, priority)</description>
+            <customization>Populated from SDA-02-Context-Map.md (BCs) and SDA-01-Event-Storming.md (Epics)</customization>
+            <phase>discovery</phase>
         </deliverable>
-        <deliverable path=".github/PULL_REQUEST_TEMPLATE.md">
-            <description>PR template with test checklist</description>
-            <type>github-config</type>
+
+        <deliverable path="03-github-manager/setup-milestones.sh" base-path="">
+            <template base-path="templates">06-github-management/scripts/setup-milestones.template.sh</template>
+            <description>Executable script to create GitHub milestones per epic</description>
+            <customization>Populated from SDA Epic Backlog (prioritized epics)</customization>
+            <phase>discovery</phase>
         </deliverable>
-        <deliverable path=".github/workflows/ci-backend.yml">
-            <description>CI pipeline for backend (.NET)</description>
-            <type>github-actions</type>
+
+        <deliverable path="03-github-manager/create-epic-issue.sh" base-path="">
+            <template base-path="templates">06-github-management/scripts/create-epic-issue.template.sh</template>
+            <description>Script to create epic issue with proper labels and milestone</description>
+            <customization>Used per epic after DE-01 is complete</customization>
+            <phase>iteration</phase>
         </deliverable>
-        <deliverable path=".github/workflows/ci-frontend.yml">
-            <description>CI pipeline for frontend (React/TS)</description>
-            <type>github-actions</type>
+
+        <deliverable path="03-github-manager/README.md" base-path="">
+            <template base-path="templates">06-github-management/scripts/README.template.md</template>
+            <description>Documentation for automation scripts (how to use, what they do)</description>
+            <phase>discovery</phase>
         </deliverable>
-        <deliverable path=".github/workflows/cd-staging.yml">
-            <description>CD pipeline for staging (optional)</description>
-            <type>github-actions</type>
+
+        <!-- 3. CI/CD WORKFLOWS: Customized per project stack (based on PE-00) -->
+        <deliverable path=".github/workflows/ci-backend.yml" base-path="">
+            <template base-path="templates">06-github-management/workflows/ci-backend.template.yml</template>
+            <description>Backend CI pipeline (customized for stack from PE-00)</description>
+            <customization>Build/test commands, .NET version, working directory from PE-00</customization>
+            <phase>discovery</phase>
+        </deliverable>
+
+        <deliverable path=".github/workflows/ci-frontend.yml" base-path="">
+            <template base-path="templates">06-github-management/workflows/ci-frontend.template.yml</template>
+            <description>Frontend CI pipeline (customized for stack from PE-00)</description>
+            <customization>Build/test commands, Node version, package manager from PE-00</customization>
+            <phase>discovery</phase>
+        </deliverable>
+
+        <deliverable path=".github/workflows/security.yml" base-path="">
+            <template base-path="templates">06-github-management/workflows/security.template.yml</template>
+            <description>Security scanning (CodeQL + secret scanning)</description>
+            <customization>Languages from PE-00 stack (csharp, javascript, typescript)</customization>
+            <phase>discovery</phase>
+        </deliverable>
+
+        <deliverable path=".github/dependabot.yml" base-path="">
+            <template base-path="templates">06-github-management/workflows/dependabot.template.yml</template>
+            <description>Dependabot configuration for dependency updates</description>
+            <customization>Package ecosystems from PE-00 (nuget, npm)</customization>
+            <phase>discovery</phase>
+        </deliverable>
+
+        <deliverable path=".github/workflows/cd-staging.yml" base-path="">
+            <template base-path="templates">06-github-management/workflows/cd-staging.template.yml</template>
+            <description>CD pipeline for staging deployment (optional)</description>
+            <customization>Deploy scripts/commands from PE-00</customization>
             <optional>true</optional>
+            <phase>discovery</phase>
         </deliverable>
-        <deliverable path=".github/workflows/security.yml">
-            <description>Security scanning (Dependabot + CodeQL)</description>
-            <type>github-actions</type>
+
+        <!-- 4. PRE-EXISTING TEMPLATES: Part of workflow template (GM documents only, does NOT create) -->
+        <deliverable path=".github/ISSUE_TEMPLATE/" base-path="" type="pre-existing">
+            <description>Issue templates (part of workflow template, already exist)</description>
+            <gm-action>DOCUMENT ONLY in GM-00 (do NOT create, they already exist)</gm-action>
+            <note>Templates: 00-discovery-foundation.yml, 20-technical-task.yml, 30-feature.yml, 40-user-story.yml, 99-bug.yml</note>
         </deliverable>
-        <deliverable path=".github/dependabot.yml">
-            <description>Dependabot configuration for NuGet and npm</description>
-            <type>github-config</type>
-        </deliverable>
-        <deliverable path="" base-path="github-scripts">
-            <description>Optional PowerShell scripts</description>
-            <type>scripts</type>
-            <optional>true</optional>
+
+        <deliverable path=".github/PULL_REQUEST_TEMPLATE.md" base-path="" type="pre-existing">
+            <description>PR template with DDD checklist (part of workflow template, already exists)</description>
+            <gm-action>DOCUMENT ONLY in GM-00 (do NOT create, it already exists)</gm-action>
         </deliverable>
     </deliverables>
 
@@ -99,12 +146,12 @@
 
     <definition-of-done>
         <criteria type="objective">
-            <criterion>GM-01-GitHub-Setup.md created with complete setup documentation</criterion>
-            <criterion>Labels created (epic, feature, bug, enhancement, documentation)</criterion>
-            <criterion>Milestones created per epic (EPIC-01, EPIC-02, etc)</criterion>
-            <criterion>Issues created for all epics defined by SDA</criterion>
-            <criterion>Functional issue templates (.github/ISSUE_TEMPLATE/)</criterion>
-            <criterion>Functional PR template (.github/PULL_REQUEST_TEMPLATE.md)</criterion>
+            <criterion>GM-00-GitHub-Setup.md created documenting all setup (pre-existing + created)</criterion>
+            <criterion>Automation scripts created in 03-github-manager/ (setup-labels.sh, setup-milestones.sh)</criterion>
+            <criterion>Scripts executed: Labels created (agents, BCs, epics, types, priority, status)</criterion>
+            <criterion>Scripts executed: Milestones created per epic from SDA backlog</criterion>
+            <criterion>Pre-existing Issue templates documented in GM-00 (.github/ISSUE_TEMPLATE/)</criterion>
+            <criterion>Pre-existing PR template documented in GM-00 (.github/PULL_REQUEST_TEMPLATE.md)</criterion>
         </criteria>
 
         <criteria type="cicd">
@@ -124,8 +171,8 @@
 
         <criteria type="deployment">
             <criterion>Staging CD pipeline created if needed (optional)</criterion>
-            <criterion>Deployment process documented in GM-01</criterion>
-            <criterion>Secrets management via GitHub Secrets configured</criterion>
+            <criterion>Deployment process documented in GM-00</criterion>
+            <criterion>Secrets management via GitHub Secrets documented</criterion>
         </criteria>
 
         <criteria type="versioning">
