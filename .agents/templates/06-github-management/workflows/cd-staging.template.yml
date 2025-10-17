@@ -1,0 +1,188 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [ develop ]
+  workflow_dispatch:
+    inputs:
+      deploy_backend:
+        description: 'Deploy Backend'
+        required: true
+        type: boolean
+        default: true
+      deploy_frontend:
+        description: 'Deploy Frontend'
+        required: true
+        type: boolean
+        default: true
+
+env:
+  DOTNET_VERSION: '[DOTNET_VERSION]'  # From PE-00
+  NODE_VERSION: '[NODE_VERSION]'      # From PE-00
+  STAGING_URL: '[STAGING_URL]'        # From PE-00: e.g., https://staging.example.com
+
+jobs:
+  deploy-backend:
+    name: Deploy Backend to Staging
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || inputs.deploy_backend == true
+
+    environment:
+      name: staging
+      url: ${{ env.STAGING_URL }}/api/health
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Restore dependencies
+      run: dotnet restore
+      working-directory: 02-backend
+
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+      working-directory: 02-backend
+
+    - name: Publish
+      run: dotnet publish --no-build --configuration Release --output ./publish
+      working-directory: 02-backend
+
+    # Option 1: Deploy to Azure App Service
+    # - name: Deploy to Azure
+    #   uses: azure/webapps-deploy@v3
+    #   with:
+    #     app-name: '[AZURE_APP_NAME]'
+    #     publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_STAGING }}
+    #     package: 02-backend/publish
+
+    # Option 2: Deploy via SSH/SCP
+    # - name: Deploy via SCP
+    #   uses: appleboy/scp-action@v0.1.7
+    #   with:
+    #     host: ${{ secrets.STAGING_HOST }}
+    #     username: ${{ secrets.STAGING_USERNAME }}
+    #     key: ${{ secrets.STAGING_SSH_KEY }}
+    #     source: "02-backend/publish/*"
+    #     target: "/var/www/api"
+
+    # Option 3: Deploy to Docker Registry
+    # - name: Build and Push Docker Image
+    #   run: |
+    #     docker build -t [REGISTRY]/[PROJECT_NAME]-backend:staging ./02-backend
+    #     echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+    #     docker push [REGISTRY]/[PROJECT_NAME]-backend:staging
+
+    - name: Run Database Migrations
+      run: |
+        # Add your migration command here
+        # Example: dotnet ef database update --connection "${{ secrets.STAGING_CONNECTION_STRING }}"
+        echo "Running database migrations..."
+      working-directory: 02-backend
+
+    - name: Health Check
+      run: |
+        sleep 10
+        curl --fail ${{ env.STAGING_URL }}/api/health || exit 1
+
+  deploy-frontend:
+    name: Deploy Frontend to Staging
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || inputs.deploy_frontend == true
+
+    environment:
+      name: staging
+      url: ${{ env.STAGING_URL }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: 01-frontend/package-lock.json
+
+    - name: Install dependencies
+      run: npm ci
+      working-directory: 01-frontend
+
+    - name: Build
+      run: npm run build
+      working-directory: 01-frontend
+      env:
+        NODE_ENV: staging
+        VITE_API_URL: ${{ env.STAGING_URL }}/api
+        VITE_APP_ENV: staging
+
+    # Option 1: Deploy to Azure Static Web Apps
+    # - name: Deploy to Azure Static Web Apps
+    #   uses: Azure/static-web-apps-deploy@v1
+    #   with:
+    #     azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_STAGING }}
+    #     repo_token: ${{ secrets.GITHUB_TOKEN }}
+    #     action: "upload"
+    #     app_location: "01-frontend"
+    #     output_location: "dist"
+
+    # Option 2: Deploy to S3 + CloudFront
+    # - name: Deploy to S3
+    #   uses: jakejarvis/s3-sync-action@master
+    #   with:
+    #     args: --delete
+    #   env:
+    #     AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET_STAGING }}
+    #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #     AWS_REGION: 'us-east-1'
+    #     SOURCE_DIR: '01-frontend/dist'
+
+    # Option 3: Deploy via SSH/SCP
+    # - name: Deploy via SCP
+    #   uses: appleboy/scp-action@v0.1.7
+    #   with:
+    #     host: ${{ secrets.STAGING_HOST }}
+    #     username: ${{ secrets.STAGING_USERNAME }}
+    #     key: ${{ secrets.STAGING_SSH_KEY }}
+    #     source: "01-frontend/dist/*"
+    #     target: "/var/www/html"
+
+    - name: Health Check
+      run: |
+        sleep 5
+        curl --fail ${{ env.STAGING_URL }} || exit 1
+
+  notify:
+    name: Notify Deployment
+    runs-on: ubuntu-latest
+    needs: [deploy-backend, deploy-frontend]
+    if: always()
+
+    steps:
+    - name: Notify Success
+      if: needs.deploy-backend.result == 'success' && needs.deploy-frontend.result == 'success'
+      run: |
+        echo "✅ Staging deployment successful!"
+        echo "Backend: ${{ env.STAGING_URL }}/api/health"
+        echo "Frontend: ${{ env.STAGING_URL }}"
+
+    - name: Notify Failure
+      if: needs.deploy-backend.result == 'failure' || needs.deploy-frontend.result == 'failure'
+      run: |
+        echo "❌ Staging deployment failed!"
+        exit 1
+
+    # Optional: Send notification to Slack/Discord/Email
+    # - name: Slack Notification
+    #   if: always()
+    #   uses: 8398a7/action-slack@v3
+    #   with:
+    #     status: ${{ job.status }}
+    #     text: 'Staging deployment ${{ job.status }}'
+    #     webhook_url: ${{ secrets.SLACK_WEBHOOK }}
