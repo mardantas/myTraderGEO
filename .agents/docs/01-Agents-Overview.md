@@ -336,44 +336,193 @@ Define **essential security baseline** - OWASP Top 3, LGPD minimum, auth strateg
 Integrate DDD workflow with GitHub. **Issues created AFTER DE-01** (refined epic).
 
 ### Responsibilities
-**Discovery (1x - Day 3-4):**
-- Initial GitHub setup (labels, CI/CD, templates, branch strategy)
-- **CI/CD configuration based on PE stack** (build, test, deploy)
-- **❌ DOES NOT create issues** (epics not refined yet)
 
-**Per Epic (Nx - Day 2):**
-- Reads DE-01-[EpicName]-Domain-Model
-- Creates detailed GitHub issue with:
+#### **Discovery (1x - Day 3-4):**
+- ✅ **Create automation scripts** in `03-github-manager/`:
+  - `setup-labels.sh` (customized from SDA BCs and Epics)
+  - `setup-milestones.sh` (customized from SDA Epic Backlog)
+  - `create-epic-issue.sh` (template for iteration use)
+  - `README.md` (script documentation)
+- ✅ **Execute scripts**: Create labels in GitHub (agents, BCs, epics, types, priority, status, phase)
+- ✅ **Execute scripts**: Create milestones in GitHub (M0 Discovery + M1-MN per epic)
+- ✅ **Create CI/CD workflows** in `.github/workflows/` (customized from PE-00 stack):
+  - `ci-backend.yml` (build, test for backend)
+  - `ci-frontend.yml` (build, test for frontend)
+  - `security.yml` (CodeQL, secret scanning)
+  - `dependabot.yml` (dependency updates)
+- ✅ **Document pre-existing templates**: Issue/PR templates already exist in `.github/` (copied from workflow template during project setup)
+- ❌ **DOES NOT create Issue/PR templates** (they already exist from workflow setup)
+- ❌ **DOES NOT create issues** (epics not refined yet - no DE-01)
+
+#### **Per Epic (Nx - Day 2):**
+- ✅ Read `DE-01-[EpicName]-Domain-Model.md`
+- ✅ Extract: use cases, acceptance criteria, aggregates, domain events
+- ✅ Customize `create-epic-issue.sh` with DE-01 details
+- ✅ Execute script → Creates detailed GitHub issue with:
+  - Epic description and business objectives
   - Use cases (from DE-01)
-  - Acceptance criteria
-  - Tasks checklist
+  - Acceptance criteria (from DE-01)
+  - Deliverables checklist (all agents)
+  - Definition of Done
 
 ### When Executes
-- **Discovery (Day 3-4):** GitHub setup (labels, CI/CD, templates) - **AFTER PE defines stack**
-- **Iteration (Day 2):** Creates issue AFTER DE-01
+- **Discovery (Day 3-4):** GitHub setup (scripts, CI/CD, labels, milestones) - **AFTER PE defines stack**
+- **Iteration (Day 2):** Creates epic issue **AFTER DE-01** is complete
 
 ### Scope
-**Complete system** - traceability of all epics
+**Complete system** - traceability of all epics, CI/CD automation
 
 ### Dependencies
-- **Depends on:** SDA (BCs for labels), **PE (stack for CI/CD configuration)**
+- **Depends on:**
+  - SDA (BCs for labels, epics for milestones)
+  - **PE (stack for CI/CD configuration - CRITICAL)**
+  - DE (DE-01 for issue creation in iteration)
 
 ### Deliverables
+
+#### Discovery (1x)
 ```
 00-doc-ddd/07-github-management/
-└── GM-00-GitHub-Setup.md
+└── GM-00-GitHub-Setup.md  (documents setup, references scripts/workflows)
 
-.github/
-├── ISSUE_TEMPLATE/
-├── PULL_REQUEST_TEMPLATE/
-└── workflows/ci.yml  (basic build + test)
+03-github-manager/
+├── setup-labels.sh          (executable - creates labels)
+├── setup-milestones.sh      (executable - creates milestones)
+├── create-epic-issue.sh     (template for per-epic use)
+└── README.md                (script documentation)
+
+.github/workflows/
+├── ci-backend.yml           (created - customized from PE-00)
+├── ci-frontend.yml          (created - customized from PE-00)
+├── security.yml             (created - languages from PE-00)
+└── dependabot.yml           (created - ecosystems from PE-00)
+
+.github/ISSUE_TEMPLATE/      (pre-existing - NOT created by GM)
+.github/PULL_REQUEST_TEMPLATE.md  (pre-existing - NOT created by GM)
+```
+
+#### Per Epic (Nx)
+```
+GitHub Issue created via create-epic-issue.sh
 ```
 
 ### Example Invocation
+
+#### Discovery
 ```
 "GM, configure GitHub for the project (Discovery)"
+```
+
+**What GM does (step-by-step):**
+
+1. **Read inputs:**
+   - `SDA-02-Context-Map.md` → Extract BCs (for labels)
+   - `SDA-01-Event-Storming.md` → Extract Epics (for labels and milestones)
+   - `PE-00-Environments-Setup.md` → Extract tech stack (for CI/CD)
+
+2. **Create automation scripts** in `03-github-manager/`:
+   - `setup-labels.sh` → Populated with:
+     - Agent labels (agent:SDA, agent:DE, etc.)
+     - BC labels (bc:strategy-management, bc:market-data, etc.) **from SDA-02**
+     - Epic labels (epic:create-strategy, epic:calculate-greeks, etc.) **from SDA-01**
+     - Type, Priority, Status, Phase labels
+   - `setup-milestones.sh` → Populated with:
+     - M0: Discovery Foundation
+     - M1-MN: Epic milestones **from SDA Epic Backlog**
+   - `create-epic-issue.sh` → Template for iteration
+   - `README.md` → Documentation
+
+3. **Execute scripts:**
+   ```bash
+   cd 03-github-manager
+   chmod +x setup-labels.sh setup-milestones.sh
+   ./setup-labels.sh       # Creates labels in GitHub
+   ./setup-milestones.sh   # Creates milestones in GitHub
+   ```
+
+4. **Create CI/CD workflows** in `.github/workflows/`:
+   - `ci-backend.yml` → Customized from PE-00:
+     - .NET version from PE-00
+     - Build/test commands from PE-00
+     - Working directory: `02-backend`
+   - `ci-frontend.yml` → Customized from PE-00:
+     - Node version from PE-00
+     - Package manager (npm/yarn/pnpm) from PE-00
+     - Working directory: `01-frontend`
+   - `security.yml` → Languages from PE-00 (csharp, javascript-typescript)
+   - `dependabot.yml` → Ecosystems from PE-00 (nuget, npm)
+
+5. **Document setup:**
+   - Create `GM-00-GitHub-Setup.md`:
+     - Section 1: Pre-existing templates (Issue/PR templates)
+     - Section 2: Created by GM (labels, milestones, workflows, scripts)
+     - Section 3: Branch strategy (GitHub Free discipline-based)
+     - Section 4: Metrics and monitoring commands
+
+**Output:**
+- ✅ Labels created in GitHub (agents, BCs, epics, types, priority, status)
+- ✅ Milestones created in GitHub (M0 + M1-MN)
+- ✅ CI/CD workflows created and running
+- ✅ Scripts documented and ready for reuse
+- ✅ GM-00-GitHub-Setup.md documenting everything
+
+---
+
+#### Iteration
+```
 "GM, read DE-01-Create-Strategy and create detailed issue (Iteration)"
 ```
+
+**What GM does (step-by-step):**
+
+1. **Read DE-01:**
+   - `DE-01-Create-Strategy-Domain-Model.md`
+   - Extract:
+     - Epic description
+     - Business objectives
+     - Use cases with acceptance criteria
+     - Aggregates, Value Objects, Domain Events
+     - BCs involved
+
+2. **Customize script:**
+   - Edit `03-github-manager/create-epic-issue.sh`:
+     - EPIC_NUMBER="1"
+     - EPIC_SHORT_NAME="create-strategy"
+     - EPIC_FULL_NAME="Create Bull Call Spread Strategy"
+     - Populate issue body with DE-01 details:
+       - Use cases
+       - Acceptance criteria
+       - Deliverables checklist (DE ✅, DBA, SE, UXD, FE, QAE)
+
+3. **Execute script:**
+   ```bash
+   cd 03-github-manager
+   chmod +x create-epic-issue.sh
+   ./create-epic-issue.sh
+   ```
+
+4. **Issue created:**
+   - Title: `[EPIC-01] Create Bull Call Spread Strategy`
+   - Milestone: `M1: Create Strategy`
+   - Labels: `epic:create-strategy`, `bc:strategy-management`, `type:feature`, `priority:high`
+   - Body:
+     - Epic description (from DE-01)
+     - Business objectives (from DE-01)
+     - Domain model summary (from DE-01)
+     - Deliverables checklist:
+       - ✅ DE-01-Create-Strategy-Domain-Model.md (done)
+       - ⬜ DBA-01-Create-Strategy-Schema-Review.md
+       - ⬜ SE: Backend implementation
+       - ⬜ UXD-01-Create-Strategy-Wireframes.md
+       - ⬜ FE: Frontend implementation
+       - ⬜ QAE: Quality gate tests
+     - Acceptance criteria (from DE-01)
+     - Definition of Done
+
+**Output:**
+- ✅ GitHub Issue #N created with complete epic details
+- ✅ Team has clear scope, deliverables, and acceptance criteria
+- ✅ Traceability: Issue → DE-01 → Code → Tests
 
 ### Specification
 [25-GM - GitHub Manager.xml](../25-GM%20-%20GitHub%20Manager.xml)

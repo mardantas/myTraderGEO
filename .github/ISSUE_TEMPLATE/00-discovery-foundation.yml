@@ -116,10 +116,11 @@ body:
       label: Deliverables GM
       value: |
         - [ ] **GM-00-GitHub-Setup.md** - Documentação do setup realizado
-        - [ ] Labels configuradas (epic, feature, bug, domain, etc)
-        - [ ] Branch protection rules ativadas (main, develop)
-        - [ ] CI/CD básico configurado (build + test)
-        - [ ] GitHub Actions para deploy (staging/prod - básico)
+        - [ ] Labels criadas via script (agents, BCs, epics, types, priority, status)
+        - [ ] Milestones criadas via script (M0 Discovery + M1-MN Epics)
+        - [ ] Scripts de automação criados (03-github-manager/)
+        - [ ] CI/CD workflows criados (.github/workflows/)
+        - [ ] Branch strategy documentada (GitHub Free - discipline-based)
 
         **Localização:** `00-doc-ddd/07-github-management/`
         **Prazo:** Dia 2-3 (paralelo)

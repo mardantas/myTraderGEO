@@ -1,940 +1,467 @@
-# GM-01-GitHub-Setup.md
+# GM-00-GitHub-Setup.md
 
 **Projeto:** [PROJECT_NAME]
 **Data:** [YYYY-MM-DD]
 **GitHub Manager:** GM Agent
+**Repository:** [GITHUB_OWNER]/[REPO_NAME]
 
 ---
 
 ## 🎯 Objetivo
 
-Configurar estrutura completa do GitHub para o projeto, incluindo labels, milestones, templates, e project boards alinhados com o workflow DDD.
+Documentar a configuração completa do GitHub para o projeto, incluindo templates pré-existentes (do workflow), workflows CI/CD customizados (por stack), e scripts de automação (por projeto).
 
 ---
 
-## 📋 Pre-requisitos
+## ✅ 1. Pré-Configurado (Parte do Workflow Template)
 
-**GitHub CLI instalado:**
+Os seguintes recursos **já existem** no projeto (copiados do workflow template durante setup inicial):
+
+### 📋 Issue Templates
+
+**Localização:** [.github/ISSUE_TEMPLATE/](.github/ISSUE_TEMPLATE/)
+
+Templates disponíveis:
+
+| Template | Quando Usar | Descrição |
+|----------|-------------|-----------|
+| `00-discovery-foundation.yml` | **Sempre Issue #1** | Discovery phase completa (SDA, UXD, GM, PE, SEC, QAE) |
+| `20-technical-task.yml` | Tarefas técnicas gerais | Generic technical tasks |
+| `30-feature.yml` | Features específicas | Feature development dentro de um epic |
+| `40-user-story.yml` | User stories | User stories (se usar metodologia ágil) |
+| `99-bug.yml` | Bug reports | Reportar bugs |
+
+**Status:** ✅ **Prontos para uso** (não criados pelo GM, apenas documentados)
+
+---
+
+### 🔀 Pull Request Template
+
+**Localização:** [.github/PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE.md)
+
+**Contém:**
+- Descrição das mudanças
+- Epic/Issue relacionado
+- Agent responsável
+- Bounded Contexts afetados
+- Checklist de testes (unit, integration, E2E)
+- Checklist de qualidade (nomenclature, docs, migrations)
+- Screenshots (se UI)
+
+**Status:** ✅ **Pronto para uso** (não criado pelo GM, apenas documentado)
+
+---
+
+## 🚀 2. Criado pelo GM (Customizado para este Projeto)
+
+### 🏷️ Labels
+
+**Localização:** Criadas via script [03-github-manager/setup-labels.sh](../../../03-github-manager/setup-labels.sh)
+
+**Executar:**
 ```bash
-gh --version
-# Se não instalado: https://cli.github.com/
+cd 03-github-manager
+chmod +x setup-labels.sh
+./setup-labels.sh
 ```
 
-**Autenticação:**
+**Labels criadas:**
+
+#### Agents (Quem está trabalhando)
+- `agent:SDA`, `agent:UXD`, `agent:DE`, `agent:DBA`, `agent:SE`, `agent:FE`, `agent:QAE`, `agent:GM`, `agent:PE`, `agent:SEC`
+
+#### Bounded Contexts (Onde está o trabalho) - **From SDA-02-Context-Map.md**
+- `bc:[BC_1]`
+- `bc:[BC_2]`
+- `bc:[BC_3]`
+- *(Customize baseado nos BCs identificados pelo SDA)*
+
+#### Epics (O que é) - **From SDA-01-Event-Storming.md**
+- `epic:[EPIC_1_SHORT_NAME]`
+- `epic:[EPIC_2_SHORT_NAME]`
+- `epic:[EPIC_3_SHORT_NAME]`
+- *(Customize baseado nos épicos priorizados pelo SDA)*
+
+#### Types (Natureza do trabalho)
+- `type:feature`, `type:bug`, `type:refactor`, `type:docs`, `type:test`, `type:chore`
+
+#### Priority
+- `priority:high`, `priority:medium`, `priority:low`
+
+#### Status
+- `status:blocked`, `status:wip`, `status:review`, `status:ready`
+
+#### Phase
+- `phase:discovery`, `phase:iteration`
+
+**Verificar:**
 ```bash
-gh auth login
-gh auth status
+gh label list --repo [OWNER]/[REPO]
 ```
 
-**Repositório criado:**
+---
+
+### 🎯 Milestones
+
+**Localização:** Criados via script [03-github-manager/setup-milestones.sh](../../../03-github-manager/setup-milestones.sh)
+
+**Executar:**
 ```bash
-gh repo view [OWNER]/[REPO_NAME]
+cd 03-github-manager
+chmod +x setup-milestones.sh
+./setup-milestones.sh
 ```
 
----
+**Milestones criados:**
 
-## 🏷️ Labels Configuration
+| Milestone | Descrição | Due Date | Epics |
+|-----------|-----------|----------|-------|
+| **M0: Discovery Foundation** | SDA, UXD, GM, PE, SEC, QAE deliverables | [DISCOVERY_DUE] | Issue #1 |
+| **M1: [EPIC_1_NAME]** | [Epic 1 description from SDA] | [EPIC_1_DUE] | Epic 1 issues |
+| **M2: [EPIC_2_NAME]** | [Epic 2 description from SDA] | [EPIC_2_DUE] | Epic 2 issues |
+| **M3: [EPIC_3_NAME]** | [Epic 3 description from SDA] | [EPIC_3_DUE] | Epic 3 issues |
 
-### Comandos de Criação
+*(Customize baseado no Epic Backlog priorizado do SDA)*
 
+**Verificar:**
 ```bash
-# Labels por Agent (quem trabalha)
-gh label create "agent:SDA" --description "Strategic Domain Analyst" --color "0E8A16"
-gh label create "agent:UXD" --description "User Experience Designer" --color "1D76DB"
-gh label create "agent:DE" --description "Domain Engineer" --color "5319E7"
-gh label create "agent:DBA" --description "Database Administrator" --color "D93F0B"
-gh label create "agent:FE" --description "Frontend Engineer" --color "FBCA04"
-gh label create "agent:QAE" --description "Quality Assurance Engineer" --color "006B75"
-gh label create "agent:GM" --description "GitHub Manager" --color "B60205"
-
-# Labels por Bounded Context (onde está)
-gh label create "bc:[BC_NAME_1]" --description "Bounded Context: [BC_NAME_1]" --color "C2E0C6"
-gh label create "bc:[BC_NAME_2]" --description "Bounded Context: [BC_NAME_2]" --color "C2E0C6"
-# Repetir para cada BC identificado pelo SDA
-
-# Labels por Epic (o que é)
-gh label create "epic:[EPIC_1_SHORT]" --description "Epic: [EPIC_1_FULL_NAME]" --color "FEF2C0"
-gh label create "epic:[EPIC_2_SHORT]" --description "Epic: [EPIC_2_FULL_NAME]" --color "FEF2C0"
-# Repetir para cada épico do backlog
-
-# Labels de Tipo (natureza)
-gh label create "type:feature" --description "Nova funcionalidade" --color "A2EEEF"
-gh label create "type:bug" --description "Correção de bug" --color "D73A4A"
-gh label create "type:refactor" --description "Refatoração de código" --color "0075CA"
-gh label create "type:docs" --description "Documentação" --color "0075CA"
-gh label create "type:test" --description "Testes" --color "BFD4F2"
-
-# Labels de Prioridade
-gh label create "priority:high" --description "Alta prioridade" --color "D93F0B"
-gh label create "priority:medium" --description "Média prioridade" --color "FBCA04"
-gh label create "priority:low" --description "Baixa prioridade" --color "0E8A16"
-
-# Labels de Status
-gh label create "status:blocked" --description "Bloqueado" --color "B60205"
-gh label create "status:wip" --description "Work in Progress" --color "FBCA04"
-gh label create "status:review" --description "Em revisão" --color "0052CC"
+gh milestone list --repo [OWNER]/[REPO]
 ```
 
-### Script de Setup Completo
+---
 
+### ⚙️ CI/CD Workflows
+
+**Localização:** `.github/workflows/` (criados pelo GM, customizados baseado em PE-00 stack)
+
+#### Backend CI Pipeline
+
+**Arquivo:** [.github/workflows/ci-backend.yml](.github/workflows/ci-backend.yml)
+
+**Stack:** [From PE-00: e.g., .NET 8.0]
+
+**Triggers:**
+- Push para `develop`, `main`
+- Pull requests para `develop`, `main`
+- Apenas quando arquivos em `02-backend/` mudam
+
+**Jobs:**
+1. **build-and-test**
+   - Setup .NET [VERSION from PE-00]
+   - Restore dependencies
+   - Build (Release)
+   - Run unit tests (`Category=Unit`)
+   - Run integration tests (`Category=Integration`)
+   - Publish test results
+
+2. **build-docker** (opcional, se usar Docker)
+   - Build Docker image
+   - Cache layers para performance
+
+**Status checks:** ✅ Required before merge (discipline-based, GitHub Free)
+
+---
+
+#### Frontend CI Pipeline
+
+**Arquivo:** [.github/workflows/ci-frontend.yml](.github/workflows/ci-frontend.yml)
+
+**Stack:** [From PE-00: e.g., React 18 + Vite, Node 20.x, npm]
+
+**Triggers:**
+- Push para `develop`, `main`
+- Pull requests para `develop`, `main`
+- Apenas quando arquivos em `01-frontend/` mudam
+
+**Jobs:**
+1. **build-and-test**
+   - Setup Node.js [VERSION from PE-00]
+   - Install dependencies ([PACKAGE_MANAGER from PE-00: npm/yarn/pnpm])
+   - Lint code
+   - Type check (TypeScript)
+   - Run unit tests
+   - Build (production)
+   - Upload artifacts (optional)
+
+2. **build-docker** (opcional, se usar Docker)
+   - Build Docker image
+   - Cache layers para performance
+
+**Status checks:** ✅ Required before merge (discipline-based, GitHub Free)
+
+---
+
+#### Security Scanning
+
+**Arquivo:** [.github/workflows/security.yml](.github/workflows/security.yml)
+
+**Triggers:**
+- Push para `main`, `develop`
+- Pull requests
+- Schedule: Semanal (Sundays, 00:00 UTC)
+- Manual dispatch
+
+**Jobs:**
+1. **CodeQL Analysis**
+   - Languages: [From PE-00: e.g., csharp, javascript-typescript]
+   - Security-extended queries
+   - Autobuild (for compiled languages)
+
+2. **Secret Scanning**
+   - TruffleHog OSS
+   - Detecta secrets commitados
+
+3. **Dependency Review** (apenas em PRs)
+   - Fail on: moderate+ severity
+   - Deny licenses: GPL-2.0, GPL-3.0
+
+4. **OWASP Dependency Check** (opcional)
+   - Weekly full scan
+   - HTML report gerado
+
+**Reports:** Disponíveis na aba Security do GitHub
+
+---
+
+#### Dependabot Configuration
+
+**Arquivo:** [.github/dependabot.yml](.github/dependabot.yml)
+
+**Package ecosystems:** [From PE-00 stack]
+
+| Ecosystem | Directory | Schedule | Notes |
+|-----------|-----------|----------|-------|
+| `nuget` | `/02-backend` | Weekly (Mondays, 09:00) | .NET packages |
+| `npm` | `/01-frontend` | Weekly (Mondays, 09:00) | Node packages, ignora major de React/Vite |
+| `github-actions` | `/` | Weekly (Mondays, 09:00) | GitHub Actions versions |
+
+**Configuration:**
+- Open PRs limit: 5 per ecosystem
+- Auto-reviewers: [GITHUB_USERNAME]
+- Labels: `dependencies`, `backend`/`frontend`, `security`
+- Grouped updates: minor + patch together
+
+---
+
+#### CD Staging Pipeline (Opcional)
+
+**Arquivo:** [.github/workflows/cd-staging.yml](.github/workflows/cd-staging.yml)
+
+**Triggers:**
+- Push para `develop`
+- Manual dispatch
+
+**Environments:**
+- **Staging:** [STAGING_URL from PE-00]
+
+**Jobs:**
+1. **deploy-backend**
+   - Build + Publish
+   - Run migrations
+   - Deploy (Azure/AWS/Docker - customizar)
+   - Health check
+
+2. **deploy-frontend**
+   - Build (production)
+   - Deploy (S3/Azure Static Web Apps/Vercel - customizar)
+   - Health check
+
+3. **notify**
+   - Slack/Discord/Email notification (optional)
+
+**Status:** ⚠️ **Requires customization** (deployment target from PE-00)
+
+---
+
+## 🔒 3. Branch Strategy (GitHub Free)
+
+**⚠️ GitHub Free Limitation:** Branch protection rules não disponíveis.
+
+### Estratégia Discipline-Based
+
+#### Fluxo Obrigatório
+```
+feature/* → develop → main
+```
+
+**Regras (aplicadas manualmente):**
+- ❌ **NUNCA** push direto para `main` ou `develop`
+- ✅ **SEMPRE** criar PR para merge
+- ✅ **SEMPRE** verificar CI status checks antes de merge
+- ✅ **Recomendado:** Pelo menos 1 code review
+
+#### Branch Naming Convention
+```
+feature/epic-N-[short-name]    # Feature branches (por épico)
+feature/de-[task]              # Domain Engineer tasks
+feature/fe-[component]         # Frontend tasks
+feature/se-[feature]           # Backend tasks
+bugfix/[issue]-[name]          # Bug fixes
+hotfix/[critical]              # Production hotfixes
+```
+
+#### Git Hooks Locais (Opcional - Prevenção)
+
+**Localização:** [03-github-manager/pre-push-hook.sh](../../../03-github-manager/pre-push-hook.sh) (se criado)
+
+Previne push acidental para `main`:
 ```bash
-#!/bin/bash
-# setup-github-labels.sh
-
-REPO="[OWNER]/[REPO_NAME]"
-
-echo "🏷️ Creating labels for $REPO..."
-
-# Agents
-gh label create "agent:SDA" -d "Strategic Domain Analyst" -c "0E8A16" -R $REPO
-gh label create "agent:UXD" -d "User Experience Designer" -c "1D76DB" -R $REPO
-gh label create "agent:DE" -d "Domain Engineer" -c "5319E7" -R $REPO
-gh label create "agent:DBA" -d "Database Administrator" -c "D93F0B" -R $REPO
-gh label create "agent:FE" -d "Frontend Engineer" -c "FBCA04" -R $REPO
-gh label create "agent:QAE" -d "Quality Assurance Engineer" -c "006B75" -R $REPO
-gh label create "agent:GM" -d "GitHub Manager" -c "B60205" -R $REPO
-
-# Types
-gh label create "type:feature" -d "Nova funcionalidade" -c "A2EEEF" -R $REPO
-gh label create "type:bug" -d "Correção de bug" -c "D73A4A" -R $REPO
-gh label create "type:refactor" -d "Refatoração" -c "0075CA" -R $REPO
-gh label create "type:docs" -d "Documentação" -c "0075CA" -R $REPO
-gh label create "type:test" -d "Testes" -c "BFD4F2" -R $REPO
-
-# Priority
-gh label create "priority:high" -d "Alta" -c "D93F0B" -R $REPO
-gh label create "priority:medium" -d "Média" -c "FBCA04" -R $REPO
-gh label create "priority:low" -d "Baixa" -c "0E8A16" -R $REPO
-
-# Status
-gh label create "status:blocked" -d "Bloqueado" -c "B60205" -R $REPO
-gh label create "status:wip" -d "Work in Progress" -c "FBCA04" -R $REPO
-gh label create "status:review" -d "Em revisão" -c "0052CC" -R $REPO
-
-echo "✅ Labels created successfully!"
+cp 03-github-manager/pre-push-hook.sh .git/hooks/pre-push
+chmod +x .git/hooks/pre-push
 ```
+
+**Nota:** Git hooks são locais (cada dev precisa configurar).
 
 ---
 
-## 🎯 Milestones Structure
-
-### Por Épico (Recomendado)
-
-```bash
-# Milestone 1: Primeiro Épico
-gh milestone create "Epic 1: [NOME_DO_EPIC]" \
-  --description "Implementação completa do épico [NOME]" \
-  --due-date "YYYY-MM-DD"
-
-# Milestone 2: Segundo Épico
-gh milestone create "Epic 2: [OUTRO_EPIC]" \
-  --description "Implementação de [descrição]" \
-  --due-date "YYYY-MM-DD"
-
-# Milestone 0: Discovery (opcional)
-gh milestone create "M0: Discovery & Setup" \
-  --description "Strategic analysis, UX design, GitHub setup" \
-  --due-date "YYYY-MM-DD"
-```
-
-### Visualização
-
-```bash
-# Listar milestones
-gh milestone list
-
-# Ver progresso de um milestone
-gh issue list --milestone "Epic 1: [NOME]"
-```
-
----
-
-## 📝 Issue Templates
-
-### Template 1: Epic-Level Issue
-
-**Arquivo:** `.github/ISSUE_TEMPLATE/epic.md`
-
-```markdown
----
-name: Epic Issue
-about: Issue para um épico completo (functionality-based)
-title: 'Epic: [NOME_FUNCIONALIDADE]'
-labels: 'type:feature, priority:high'
-assignees: ''
----
-
-## 📋 Descrição do Épico
-
-[Descrição da funcionalidade completa que atravessa múltiplos BCs]
-
-## 🎯 Objetivos de Negócio
-
-- [ ] Objetivo 1
-- [ ] Objetivo 2
-
-## 🏗️ Bounded Contexts Envolvidos
-
-- [ ] BC 1: [Nome]
-- [ ] BC 2: [Nome]
-
-## 👥 Agents Responsáveis
-
-- [ ] **DE:** Tactical model + backend
-- [ ] **DBA:** Schema review
-- [ ] **FE:** Frontend implementation
-- [ ] **QAE:** Test strategy + tests
-
-## 📦 Deliverables
-
-- [ ] `DE-01-[EpicName]-Tactical-Model.md`
-- [ ] `DBA-01-[EpicName]-Schema-Review.md`
-- [ ] Backend code (domain + application + API)
-- [ ] Frontend code (components + pages)
-- [ ] `QAE-01-Test-Strategy.md`
-- [ ] Tests (unit + integration + E2E)
-
-## 🔗 Dependências
-
-- Epic anterior: [link]
-- Bloqueadores: [descrever]
-
-## ✅ Definition of Done
-
-- [ ] Todos os deliverables criados
-- [ ] Code review aprovado
-- [ ] Testes passando (coverage >= 70%)
-- [ ] Documentação atualizada
-- [ ] Deploy em staging OK
-```
-
-### Template 2: Feature-Level Issue
-
-**Arquivo:** `.github/ISSUE_TEMPLATE/feature.md`
-
-```markdown
----
-name: Feature/Task Issue
-about: Issue para uma tarefa específica dentro de um épico
-title: '[AGENT]: [Descrição]'
-labels: 'type:feature'
-assignees: ''
----
-
-## 📋 Descrição
-
-[O que precisa ser feito]
-
-## 🎯 Épico Pai
-
-Pertence ao épico: #[ISSUE_NUMBER]
-
-## 👤 Agent Responsável
-
-**Agent:** [SDA/UXD/DE/DBA/FE/QAE/GM]
-
-## ✅ Acceptance Criteria
-
-- [ ] Critério 1
-- [ ] Critério 2
-- [ ] Critério 3
-
-## 📦 Deliverables
-
-- [ ] [Arquivo ou código específico]
-
-## 🔗 Referências
-
-- Documento relacionado: [link]
-- Código relacionado: [link]
-```
-
-### Template 3: Bug Issue
-
-**Arquivo:** `.github/ISSUE_TEMPLATE/bug.md`
-
-```markdown
----
-name: Bug Report
-about: Reportar um bug
-title: '[BUG]: [Descrição curta]'
-labels: 'type:bug'
-assignees: ''
----
-
-## 🐛 Descrição do Bug
-
-[Descrição clara do problema]
-
-## 🔄 Steps to Reproduce
-
-1. Vá para '...'
-2. Clique em '...'
-3. Veja o erro
-
-## ✅ Expected Behavior
-
-[O que deveria acontecer]
-
-## ❌ Actual Behavior
-
-[O que acontece atualmente]
-
-## 📸 Screenshots
-
-[Se aplicável]
-
-## 🔍 Contexto
-
-- **BC:** [Qual bounded context]
-- **Component:** [Qual componente/agregado]
-- **Agent responsável:** [DE/FE/etc]
-
-## ✅ Definition of Done
-
-- [ ] Test que reproduz o bug criado
-- [ ] Bug corrigido
-- [ ] Test passando (regression prevention)
-- [ ] Code review aprovado
-```
-
----
-
-## 🔀 Pull Request Template
-
-**Arquivo:** `.github/PULL_REQUEST_TEMPLATE.md`
-
-```markdown
-## 📋 Descrição
-
-[Descrição das mudanças]
-
-## 🎯 Epic/Issue Relacionado
-
-Closes #[ISSUE_NUMBER]
-
-## 👤 Agent
-
-**Agent:** [SDA/UXD/DE/DBA/FE/QAE/GM]
-
-## 🏗️ Bounded Context(s)
-
-- [ ] [BC 1]
-- [ ] [BC 2]
-
-## 🧪 Testes
-
-- [ ] Unit tests adicionados/atualizados
-- [ ] Integration tests adicionados/atualizados
-- [ ] E2E tests adicionados (se aplicável)
-- [ ] Todos os testes passando
-- [ ] Coverage >= 70%
-
-## 📝 Checklist
-
-- [ ] Código segue nomenclature standards
-- [ ] Documentação atualizada
-- [ ] Migration criada (se mudou schema)
-- [ ] Sem breaking changes (ou documentados)
-- [ ] Code review solicitado
-
-## 📸 Screenshots (se UI)
-
-[Screenshots ou GIFs se aplicável]
-
-## 🔗 Referências
-
-- Tactical Model: [link]
-- Wireframe: [link]
-```
-
----
-
-## 📊 Project Boards
-
-### Board 1: Epic Kanban
-
-**Colunas:**
-
-```bash
-# Criar project
-gh project create --title "[PROJECT-NAME] - Epics" --owner [OWNER]
-
-# Adicionar colunas (via web interface ou API)
-# 📋 Backlog → 🎯 Ready → 🚧 In Progress → 👀 Review → ✅ Done
-```
-
-**Automações:**
-- Issue criada com label `epic:*` → Backlog
-- Issue assignada → In Progress
-- PR criado → Review
-- PR merged → Done
-
-### Board 2: Sprint/Iteration Board
-
-**Colunas:**
-
-```
-📋 To Do → 🚧 In Progress → 👀 Review → ✅ Done
-```
-
-**Filtros:**
-- Por agent: `label:agent:DE`
-- Por BC: `label:bc:strategy-management`
-- Por prioridade: `label:priority:high`
-
----
-
-## 🌳 Git Flow Integration
-
-### Branch Strategy
-
-```
-main (production)
-  └── develop (integration)
-       ├── feature/epic-[N]-[short-name] (por épico)
-       │    ├── feature/de-[tactical-model]
-       │    ├── feature/fe-[component-name]
-       │    └── feature/qae-[test-implementation]
-       └── hotfix/[bug-description]
-```
-
-### Comandos
-
-```bash
-# Criar branch de épico
-git checkout develop
-git checkout -b feature/epic-1-bull-call-spread
-
-# Criar branch de task específica
-git checkout feature/epic-1-bull-call-spread
-git checkout -b feature/de-strategy-aggregate
-
-# Merge flow
-feature/de-* → feature/epic-* → develop → main
-```
-
----
-
-## 🔔 Notifications & Webhooks
-
-### Notificações Recomendadas
-
-**Para o usuário (Product Owner):**
-- Issues assignadas a ele
-- PRs que mencionam ele
-- Epic concluído
-
-**Para agents (via automation):**
-- Feedback criado para o agent
-- PR bloqueado por testes
-- Dependency issue resolvida
-
-### Webhook Setup (opcional)
-
-```bash
-# Criar webhook para CI/CD
-gh webhook create \
-  --url "https://[CI_SERVICE]/webhook" \
-  --event "push,pull_request" \
-  --secret "[SECRET]"
-```
-
----
-
-## 📈 Métricas e Reports
-
-### Issues por Agent
-
-```bash
-# Ver workload de cada agent
-gh issue list --label "agent:DE" --state open
-gh issue list --label "agent:FE" --state open
-```
-
-### Progresso de Épico
-
-```bash
-# Ver progresso de um épico específico
-gh issue list --milestone "Epic 1: Bull Call Spread"
-gh issue list --label "epic:bull-call" --state closed
-```
-
-### Velocity
-
-```bash
-# Issues fechadas na última semana
-gh issue list --state closed --search "closed:>=$(date -d '7 days ago' +%Y-%m-%d)"
-```
-
----
-
-## 🔧 GitHub Actions (CI/CD)
-
-### Workflow Básico
-
-**Arquivo:** `.github/workflows/ci.yml`
-
-```yaml
-name: CI
-
-on:
-  pull_request:
-    branches: [develop, main]
-  push:
-    branches: [develop, main]
-
-jobs:
-  backend-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '8.0.x'
-
-      - name: Restore dependencies
-        run: dotnet restore
-
-      - name: Build
-        run: dotnet build --no-restore
-
-      - name: Unit Tests
-        run: dotnet test --filter Category=Unit --no-build --verbosity normal
-
-      - name: Integration Tests
-        run: dotnet test --filter Category=Integration --no-build --verbosity normal
-
-  frontend-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Unit Tests
-        run: npm run test:unit
-
-      - name: Build
-        run: npm run build
-
-  quality-gates:
-    needs: [backend-tests, frontend-tests]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check coverage
-        run: |
-          # Implementar verificação de coverage >= 70%
-          echo "Coverage check passed"
-```
-
----
-
-## 🚀 CI/CD Pipeline (GitHub Actions)
-
-### Backend CI Pipeline
-
-**Arquivo:** `.github/workflows/ci-backend.yml`
-
-```yaml
-name: Backend CI
-
-on:
-  push:
-    branches: [ develop, feature/** ]
-  pull_request:
-    branches: [ develop, main ]
-
-jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '8.0.x'
-
-    - name: Restore dependencies
-      run: dotnet restore
-      working-directory: ./02-backend
-
-    - name: Build
-      run: dotnet build --no-restore --configuration Release
-      working-directory: ./02-backend
-
-    - name: Run unit tests
-      run: dotnet test --no-build --configuration Release --verbosity normal
-      working-directory: ./02-backend
-```
-
-### Frontend CI Pipeline
-
-**Arquivo:** `.github/workflows/ci-frontend.yml`
-
-```yaml
-name: Frontend CI
-
-on:
-  push:
-    branches: [ develop, feature/** ]
-  pull_request:
-    branches: [ develop, main ]
-
-jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-
-    - name: Install dependencies
-      run: npm ci
-      working-directory: ./01-frontend
-
-    - name: Lint
-      run: npm run lint
-      working-directory: ./01-frontend
-
-    - name: Run tests
-      run: npm test
-      working-directory: ./01-frontend
-
-    - name: Build
-      run: npm run build
-      working-directory: ./01-frontend
-```
-
-### Security Scanning Pipeline
-
-**Arquivo:** `.github/workflows/security.yml`
-
-```yaml
-name: Security Scan
-
-on:
-  push:
-    branches: [ main, develop ]
-  schedule:
-    - cron: '0 0 * * 0'  # Weekly on Sunday
-
-jobs:
-  codeql:
-    runs-on: ubuntu-latest
-    permissions:
-      security-events: write
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
-      with:
-        languages: csharp, javascript
-
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v2
-
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
-```
-
-### Dependabot Configuration
-
-**Arquivo:** `.github/dependabot.yml`
-
-```yaml
-version: 2
-updates:
-  # Backend (.NET)
-  - package-ecosystem: "nuget"
-    directory: "/02-backend"
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 5
-
-  # Frontend (npm)
-  - package-ecosystem: "npm"
-    directory: "/01-frontend"
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 5
-```
-
----
-
-## 🔒 Branch Protection (GitHub Free)
-
-**⚠️ GitHub Free NÃO permite Branch Protection Rules.**
-
-### Alternativas para Proteção de Branches (GitHub Free):
-
-#### 1. **Disciplina de Code Review (CRÍTICO)**
-- ✅ **Regra de Ouro:** NUNCA fazer merge ou push direto em `main`
-- ✅ **Fluxo obrigatório:** Sempre criar PR para `main` ou `develop`
-- ✅ **Checklist PR:** Template força validação manual
-- ⚠️ **Responsabilidade:** Desenvolvedor deve ter disciplina (sem proteção automática)
-
-**Best Practice:**
-```bash
-# ❌ NUNCA fazer:
-git checkout main
-git merge feature/xyz
-git push origin main
-
-# ✅ SEMPRE fazer:
-git checkout feature/xyz
-git push origin feature/xyz
-# Depois criar PR via GitHub UI ou gh CLI
-gh pr create --base main --head feature/xyz
-```
-
-#### 2. **GitHub Actions como Gatekeeper**
-```yaml
-# .github/workflows/ci.yml
-# Actions rodam em PRs e mostram status (✅ ou ❌)
-# Developer deve verificar antes de merge
-
-name: CI
-on:
-  pull_request:
-    branches: [main, develop]
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Run tests
-        run: npm test
-      - name: Block if tests fail
-        if: failure()
-        run: exit 1
-```
-
-**Importante:** GitHub Free não bloqueia merge automaticamente se CI falhar, mas mostra status ❌ no PR.
-
-#### 3. **Git Hooks Locais (Opcional - Prevenção Local)**
-```bash
-# .git/hooks/pre-push (criar e dar chmod +x)
-#!/bin/bash
-CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-
-if [ "$CURRENT_BRANCH" == "main" ]; then
-  echo "❌ ERRO: Push direto para main não permitido!"
-  echo "   Crie um PR: git checkout -b feature/... && git push origin feature/..."
-  exit 1
-fi
-
-if [ "$CURRENT_BRANCH" == "develop" ]; then
-  echo "⚠️  AVISO: Push para develop. Tem certeza? (Ctrl+C para cancelar)"
-  sleep 3
-fi
-```
-
-**Limitação:** Git hooks são locais (não são commitados no repo). Cada desenvolvedor precisa configurar.
-
-#### 4. **Branch Naming Convention (Organização)**
-```bash
-# ✅ Branches permitidos:
-feature/epic-X-nome      # Nova funcionalidade
-bugfix/issue-Y-nome      # Correção de bug
-hotfix/critical-Z        # Hotfix de produção
-refactor/component-name  # Refatoração
-
-# ❌ Evitar push direto:
-main       # Somente via PR (disciplina manual)
-develop    # Somente via PR de feature/* (disciplina manual)
-```
-
-### ⚠️ Considerações para GitHub Free
-
-**O que NÃO temos (GitHub Free):**
-- ❌ Branch protection rules (não bloqueia push direto)
-- ❌ Required reviewers (não força aprovação)
-- ❌ Required status checks (CI pode falhar e ainda fazer merge)
-- ❌ Restrict push (qualquer membro pode push para main)
-
-**O que temos como alternativa:**
-- ✅ Pull Request workflow (processo manual)
-- ✅ GitHub Actions status (mostra ✅/❌ mas não bloqueia)
-- ✅ Code review solicitação (mas não obrigatório)
-- ✅ Git hooks locais (prevenção individual)
-
-**Recomendação:**
-- Para projetos solo ou pequenos: **Disciplina + PR workflow + Git hooks**
-- Para times >3 pessoas: **Considerar GitHub Pro** ($4/user/month para branch protection)
-
-### Semantic Versioning Strategy
-
-**Formato:** `vMAJOR.MINOR.PATCH`
-
-| Tipo | Incrementa | Exemplo | Quando |
-|------|-----------|---------|--------|
-| **MAJOR** | v2.0.0 | Breaking changes | API incompatível |
-| **MINOR** | v1.1.0 | New features | Nova funcionalidade, backward compatible |
-| **PATCH** | v1.0.1 | Bug fixes | Correção de bugs |
+### Semantic Versioning
+
+**Format:** `vMAJOR.MINOR.PATCH`
+
+| Tipo | Exemplo | Quando |
+|------|---------|--------|
+| **MAJOR** | v2.0.0 | Breaking changes (API incompatível) |
+| **MINOR** | v1.1.0 | New features (backward compatible) |
+| **PATCH** | v1.0.1 | Bug fixes |
 
 **Tagging:**
 ```bash
 # Após merge em main
-git tag -a v1.0.0 -m "Release v1.0.0: Bull Call Spread feature"
+git tag -a v1.0.0 -m "Release v1.0.0: [Epic Name]"
 git push origin v1.0.0
 
-# GitHub Release (via gh CLI)
+# GitHub Release
 gh release create v1.0.0 \
-  --title "v1.0.0: Bull Call Spread" \
-  --notes "- Feature: Bull Call Spread strategy
-           - Fix: Greeks calculation precision
-           - Docs: Updated API docs"
+  --title "v1.0.0: [Epic Name]" \
+  --notes "- Feature: [description]
+           - Fix: [description]"
 ```
 
 ---
 
-## ✅ Validation Checklist
+## 📊 4. Métricas e Monitoramento
 
-### Setup Inicial (Discovery)
+### Ver Progresso de Épico
+```bash
+# Issues em um milestone
+gh issue list --milestone "M1: [Epic Name]" --repo [OWNER]/[REPO]
 
-- [ ] GitHub CLI instalado e autenticado
-- [ ] Repositório criado
-- [ ] Labels criados (agents, BCs, epics, types, priority, status)
-- [ ] Milestones criados para Discovery + Epics
-- [ ] Issue templates criados (epic, feature, bug)
-- [ ] PR template criado
-- [ ] Project board(s) configurado
-- [ ] Git Flow branches criadas (main, develop)
-- [ ] **CI/CD:** Backend workflow (.github/workflows/ci-backend.yml)
-- [ ] **CI/CD:** Frontend workflow (.github/workflows/ci-frontend.yml)
-- [ ] **Security:** CodeQL workflow (.github/workflows/security.yml)
-- [ ] **Security:** Dependabot config (.github/dependabot.yml)
-- [ ] **Proteção:** Branch naming convention documentada
-- [ ] **Versioning:** Semantic versioning strategy definida
+# Issues por agent
+gh issue list --label "agent:DE" --state open --repo [OWNER]/[REPO]
 
-### Por Épico (Iteração)
+# Issues bloqueadas
+gh issue list --label "status:blocked" --repo [OWNER]/[REPO]
+```
 
-- [ ] Milestone do épico criado
-- [ ] Epic issue criado com todos os deliverables
-- [ ] Labels `epic:[name]` criadas
-- [ ] Feature branches criadas (feature/epic-X-nome)
-- [ ] Task issues criadas para cada agent
-- [ ] **CI/CD:** Workflows rodando em PRs
-- [ ] **Code Review:** PR aprovado antes de merge
+### Velocity (Issues fechadas)
+```bash
+# Última semana
+gh issue list --state closed --search "closed:>=YYYY-MM-DD" --repo [OWNER]/[REPO]
+
+# Por épico
+gh issue list --state closed --milestone "M1: [Epic]" --repo [OWNER]/[REPO]
+```
+
+### CI/CD Status
+```bash
+# Ver últimos workflow runs
+gh run list --repo [OWNER]/[REPO]
+
+# Ver run específico
+gh run view [RUN_ID] --repo [OWNER]/[REPO]
+```
 
 ---
 
-## 🚢 Deployment Checklist (MVP Básico)
+## 📋 5. Checklist de Verificação
 
-### Ambientes
+### Discovery (GM-00 - Uma vez)
 
-| Ambiente | URL | Branch | Deploy |
-|----------|-----|--------|--------|
-| **Development** | http://localhost:[PORT] | feature/* | Local (docker-compose) |
-| **Staging** | https://staging.[YOUR-DOMAIN] | develop | Manual ou CD pipeline |
-| **Production** | https://app.[YOUR-DOMAIN] | main | Manual com aprovação |
+- [ ] **Labels criadas** via `setup-labels.sh`
+  - [ ] Agents (10 labels)
+  - [ ] Bounded Contexts (do SDA-02)
+  - [ ] Epics (do SDA-01)
+  - [ ] Types, Priority, Status, Phase
+- [ ] **Milestones criados** via `setup-milestones.sh`
+  - [ ] M0: Discovery Foundation
+  - [ ] M1-MN: Epic milestones (do SDA backlog)
+- [ ] **Issue #1 criada** (Discovery Foundation)
+  - [ ] Usa template `00-discovery-foundation.yml`
+  - [ ] Assignada ao milestone M0
+- [ ] **CI/CD Workflows criados**
+  - [ ] `ci-backend.yml` (customizado do PE-00)
+  - [ ] `ci-frontend.yml` (customizado do PE-00)
+  - [ ] `security.yml` (languages do PE-00)
+- [ ] **Dependabot configurado**
+  - [ ] Ecosystems do PE-00 stack
+- [ ] **Branch strategy documentada**
+  - [ ] Naming conventions
+  - [ ] PR workflow discipline
+- [ ] **Scripts documentados**
+  - [ ] README.md em 03-github-manager/
 
-### Pre-Deployment Checklist
+### Per Epic (GM - Por Iteração)
 
-**Antes de deploy em Staging/Production:**
-- [ ] Todos os testes passando (unit + integration + E2E)
-- [ ] Code review aprovado
-- [ ] DBA schema review OK (se houver migrations)
-- [ ] QAE sign-off (testes em staging completos)
-- [ ] Feature flag OFF por default (se nova feature)
-- [ ] Rollback plan documentado
-- [ ] Database backup recente (< 1h)
-
-### Deployment Steps (Manual)
-
-```bash
-# 1. Pull latest code
-git checkout main
-git pull origin main
-
-# 2. Build backend
-cd 02-backend
-dotnet publish -c Release -o ./publish
-
-# 3. Build frontend
-cd ../01-frontend
-npm run build
-
-# 4. Run database migrations (ANTES de deploy código)
-cd ../02-backend
-dotnet ef database update --connection "Production-ConnectionString"
-
-# 5. Deploy (exemplo Azure - adaptar para seu cloud provider)
-az webapp up --name [APP-NAME]-api --resource-group [RESOURCE-GROUP]
-
-# 6. Health check
-curl https://api.[YOUR-DOMAIN]/health
-# Expected: { "status": "healthy" }
-
-# 7. Smoke tests (adaptar para seu domínio)
-# - Login funciona?
-# - Funcionalidade principal funciona?
-# - APIs críticas respondem?
-
-# 8. Monitor por 30 minutos
-# - Application Insights / CloudWatch
-# - Error rate < 1%
-# - Response time < 500ms p95
-```
-
-### Rollback Procedure
-
-```bash
-# Se deploy falhar, rollback imediato:
-
-# 1. Revert código para versão anterior
-az webapp deployment source config-zip \
-  --name [APP-NAME]-api \
-  --resource-group [RESOURCE-GROUP] \
-  --src previous-version.zip
-
-# 2. Rollback database (se necessário)
-dotnet ef database update [PreviousMigration] \
-  --connection "Production-ConnectionString"
-
-# 3. Notificar equipe
-gh issue create \
-  --title "Rollback: Deployment failed" \
-  --body "Rolled back to v1.0.0 due to [reason]"
-```
-
-### Post-Deployment
-
-- [ ] Verificar logs (sem errors críticos)
-- [ ] Atualizar documentation (se API mudou)
-- [ ] Notificar usuários (se breaking change)
-- [ ] Create GitHub Release (tag + changelog)
-- [ ] Update monitoring dashboards
+- [ ] **Epic issue criada** via `create-epic-issue.sh`
+  - [ ] APÓS DE-01 completo
+  - [ ] Populated com info do DE-01
+  - [ ] Assignada ao milestone correto
+  - [ ] Labels corretas (epic, BC, priority)
+- [ ] **Sub-issues criadas** (opcional)
+  - [ ] Uma por agent (DE, DBA, SE, UXD, FE, QAE)
+  - [ ] Linked ao epic issue principal
 
 ---
 
 ## 🔗 Referências
 
-- **SDA Output:** Para identificar BCs e criar labels correspondentes
-- **SDA Epic Backlog:** Para criar milestones e epic issues
-- **Agents Overview:** Para entender responsabilidades e criar labels de agents
-- **Security & Platform:** .agents/03-Security-And-Platform-Strategy.md
-- **GitHub CLI Docs:** https://cli.github.com/manual/
+### Documentos Consultados
+- **SDA-01 Event Storming:** [00-doc-ddd/02-strategic-design/SDA-01-Event-Storming.md](00-doc-ddd/02-strategic-design/SDA-01-Event-Storming.md) - Epics para labels/milestones
+- **SDA-02 Context Map:** [00-doc-ddd/02-strategic-design/SDA-02-Context-Map.md](00-doc-ddd/02-strategic-design/SDA-02-Context-Map.md) - BCs para labels
+- **PE-00 Environments Setup:** [00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md](00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md) - Stack para CI/CD
+
+### Scripts Criados
+- [03-github-manager/setup-labels.sh](../../../03-github-manager/setup-labels.sh)
+- [03-github-manager/setup-milestones.sh](../../../03-github-manager/setup-milestones.sh)
+- [03-github-manager/create-epic-issue.sh](../../../03-github-manager/create-epic-issue.sh)
+- [03-github-manager/README.md](../../../03-github-manager/README.md)
+
+### Workflows Criados
+- [.github/workflows/ci-backend.yml](.github/workflows/ci-backend.yml)
+- [.github/workflows/ci-frontend.yml](.github/workflows/ci-frontend.yml)
+- [.github/workflows/security.yml](.github/workflows/security.yml)
+- [.github/dependabot.yml](.github/dependabot.yml)
+- [.github/workflows/cd-staging.yml](.github/workflows/cd-staging.yml) *(opcional)*
+
+### Templates Pré-Existentes
+- [.github/ISSUE_TEMPLATE/](.github/ISSUE_TEMPLATE/) (8 templates)
+- [.github/PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE.md)
 
 ---
 
-**GitHub Setup Version:** 2.0
-**Status:** Executar no início do projeto (Discovery) e atualizar a cada novo épico
+## 📝 Notas
+
+### GitHub Free Limitations
+- ❌ Branch protection rules não disponíveis
+- ❌ Required reviewers não forçados
+- ❌ Required status checks não bloqueiam merge automaticamente
+- ✅ **Mitigation:** Disciplina + PR workflow + CI status visibility
+
+### Customização Necessária
+Todos os scripts em `03-github-manager/` precisam ser customizados com:
+- BCs do SDA-02
+- Epics do SDA-01
+- Stack do PE-00
+- Datas de due dates
+- Owner/Repo name
+
+### Próximos Passos
+1. ✅ Discovery completo → Issue #1 fechada
+2. ✅ Workflows CI/CD rodando
+3. ➡️ **Próximo:** DE-01 para primeiro épico → GM cria epic issue
+
+---
+
+**GitHub Setup Version:** 3.0 (Simplified)
+**Status:** ✅ **Executado e validado**
+**Última atualização:** [YYYY-MM-DD]
