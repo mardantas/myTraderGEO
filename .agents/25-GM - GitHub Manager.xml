@@ -18,6 +18,36 @@
 
         **WORKFLOW INTEGRATION:** Issues created only after tactical design ensures accurate scope and traceability
 
+        **⚠️ CRITICAL EXECUTION ORDER:**
+        1. Read SDA-02 (Bounded Contexts) and SDA-01 (Epics) for labels customization
+        2. Read PE-00 (Stack) for CI/CD workflows customization
+        3. Create ALL files in this order:
+           a. setup-labels.sh script (from SDA data)
+           b. CI/CD workflow files (.github/workflows/*.yml) - MANDATORY, not just documentation
+           c. Epic issue template (.github/ISSUE_TEMPLATE/10-epic.yml)
+           d. Dependabot config (.github/dependabot.yml) - optional but recommended
+           e. 03-github-manager/README.md (operational index)
+           f. GM-00-GitHub-Setup.md (strategic documentation)
+        4. Self-validate against Definition of Done BEFORE marking as complete
+
+        **📋 TWO DOCUMENT STRATEGY (Avoid Duplication):**
+
+        **GM-00-GitHub-Setup.md** (Strategic Reference):
+        - **Target:** Team leads, architects, future maintainers
+        - **Content:** Justifications (WHY), technical details (WHAT), integrations with SDA/PE, GitHub Free limitations, complete workflow specifications
+        - **Style:** Complete, detailed, educational, formal DDD documentation
+        - **Updates:** When strategy or technical decisions change
+
+        **03-github-manager/README.md** (Operational Index):
+        - **Target:** Developers executing tasks day-to-day
+        - **Content:** Quick start commands, execution checklists, CLI examples, links to GM-00 sections for details
+        - **Style:** Minimal, imperative, quick reference, command-focused
+        - **Principle:** README is an INDEX/QUICK-REFERENCE to GM-00, NOT a duplicate
+        - **Rule:** Use links to GM-00 sections instead of repeating explanations
+        - **Updates:** When commands or execution steps change
+
+        **CRITICAL:** Avoid content duplication. README provides COMMANDS and LINKS, GM-00 provides EXPLANATIONS and JUSTIFICATIONS.
+
         **⚠️ GITHUB FREE LIMITATION:**
         - GitHub Free does NOT support automatic branch protection rules
         - Use discipline-based approach: PR workflow + Git hooks + CI status checks
@@ -45,68 +75,99 @@
     </responsibilities>
 
     <deliverables>
-        <!-- 1. DOCUMENTATION: Main deliverable documenting what exists and what was created -->
-        <deliverable path="GM-00-GitHub-Setup.md" base-path="github-management">
-            <template base-path="templates">06-github-management/GM-00-GitHub-Setup.template.md</template>
-            <description>GitHub setup documentation (references pre-existing templates, created workflows, and scripts)</description>
-            <phase>discovery</phase>
-            <note>Documents what exists (Issue/PR templates) and what GM created (workflows, scripts)</note>
-        </deliverable>
+        <!-- EXECUTION ORDER: Create files in sequence (a → f) before finalizing GM-00 documentation -->
 
-        <!-- 2. AUTOMATION SCRIPT: Single script for labels (HIGH ROI) -->
-        <deliverable path="03-github-manager/setup-labels.sh" base-path="">
+        <!-- 1a. AUTOMATION SCRIPT: Single script for labels (HIGH ROI) - CREATE FIRST -->
+        <deliverable path="03-github-manager/setup-labels.sh" base-path="" order="1">
             <template base-path="templates">06-github-management/scripts/setup-labels.template.sh</template>
             <description>Executable script to create GitHub labels (agents, BCs, epics, types, priority)</description>
             <customization>Populated from SDA-02-Context-Map.md (BCs) and SDA-01-Event-Storming.md (Epics)</customization>
             <note>One-time execution, saves ~10min vs manual UI creation</note>
             <phase>discovery</phase>
+            <type>script</type>
+            <mandatory>true</mandatory>
         </deliverable>
 
-        <deliverable path="03-github-manager/README.md" base-path="">
-            <template base-path="templates">06-github-management/scripts/README.template.md</template>
-            <description>Documentation for setup process (script + manual steps)</description>
-            <note>Includes instructions for milestones via UI, epic issues via form</note>
+        <!-- 1b. CI/CD WORKFLOWS: Customized per project stack (based on PE-00) - CRITICAL: CREATE FILES, NOT JUST DOCUMENT -->
+        <deliverable path=".github/workflows/ci-backend.yml" base-path="" order="2">
+            <template base-path="templates">06-github-management/workflows/ci-backend.template.yml</template>
+            <description>Backend CI pipeline (customized for stack from PE-00)</description>
+            <customization>Build/test commands, .NET version, working directory from PE-00</customization>
             <phase>discovery</phase>
+            <type>workflow-file</type>
+            <mandatory>true</mandatory>
+            <critical>MUST CREATE PHYSICAL FILE in .github/workflows/, not just document in GM-00</critical>
         </deliverable>
 
-        <!-- 3. EPIC ISSUE TEMPLATE: GitHub native form (replaces bash script) -->
-        <deliverable path=".github/ISSUE_TEMPLATE/10-epic.yml" base-path="">
+        <deliverable path=".github/workflows/ci-frontend.yml" base-path="" order="3">
+            <template base-path="templates">06-github-management/workflows/ci-frontend.template.yml</template>
+            <description>Frontend CI pipeline (customized for stack from PE-00)</description>
+            <customization>Build/test commands, Node version, package manager from PE-00</customization>
+            <phase>discovery</phase>
+            <type>workflow-file</type>
+            <mandatory>true</mandatory>
+            <critical>MUST CREATE PHYSICAL FILE in .github/workflows/, not just document in GM-00</critical>
+        </deliverable>
+
+        <deliverable path=".github/workflows/security.yml" base-path="" order="4">
+            <template base-path="templates">06-github-management/workflows/security.template.yml</template>
+            <description>Security scanning (CodeQL + secret scanning)</description>
+            <customization>Languages from PE-00 stack (csharp, javascript, typescript)</customization>
+            <phase>discovery</phase>
+            <type>workflow-file</type>
+            <mandatory>true</mandatory>
+            <critical>MUST CREATE PHYSICAL FILE in .github/workflows/, not just document in GM-00</critical>
+        </deliverable>
+
+        <!-- 1c. EPIC ISSUE TEMPLATE: GitHub native form -->
+        <deliverable path=".github/ISSUE_TEMPLATE/10-epic.yml" base-path="" order="5">
             <template base-path="templates">06-github-management/issue-templates/10-epic.template.yml</template>
             <description>Epic issue template (GitHub form, used per epic after DE-01)</description>
             <customization>Dropdown options customized with project epics from SDA</customization>
             <note>GitHub native, faster and more flexible than bash script</note>
             <phase>discovery</phase>
+            <type>template-file</type>
+            <mandatory>true</mandatory>
         </deliverable>
 
-        <!-- 4. CI/CD WORKFLOWS: Customized per project stack (based on PE-00) -->
-        <deliverable path=".github/workflows/ci-backend.yml" base-path="">
-            <template base-path="templates">06-github-management/workflows/ci-backend.template.yml</template>
-            <description>Backend CI pipeline (customized for stack from PE-00)</description>
-            <customization>Build/test commands, .NET version, working directory from PE-00</customization>
-            <phase>discovery</phase>
-        </deliverable>
-
-        <deliverable path=".github/workflows/ci-frontend.yml" base-path="">
-            <template base-path="templates">06-github-management/workflows/ci-frontend.template.yml</template>
-            <description>Frontend CI pipeline (customized for stack from PE-00)</description>
-            <customization>Build/test commands, Node version, package manager from PE-00</customization>
-            <phase>discovery</phase>
-        </deliverable>
-
-        <deliverable path=".github/workflows/security.yml" base-path="">
-            <template base-path="templates">06-github-management/workflows/security.template.yml</template>
-            <description>Security scanning (CodeQL + secret scanning)</description>
-            <customization>Languages from PE-00 stack (csharp, javascript, typescript)</customization>
-            <phase>discovery</phase>
-        </deliverable>
-
-        <deliverable path=".github/dependabot.yml" base-path="">
+        <!-- 1d. DEPENDABOT: Optional but recommended -->
+        <deliverable path=".github/dependabot.yml" base-path="" order="6">
             <template base-path="templates">06-github-management/workflows/dependabot.template.yml</template>
-            <description>Dependabot configuration for dependency updates (optional)</description>
+            <description>Dependabot configuration for dependency updates (optional but recommended)</description>
             <customization>Package ecosystems from PE-00 (nuget, npm)</customization>
             <optional>true</optional>
             <note>Alternative: Enable via GitHub UI (Settings → Security → Dependabot)</note>
             <phase>discovery</phase>
+            <type>config-file</type>
+            <mandatory>false</mandatory>
+        </deliverable>
+
+        <!-- 1e. OPERATIONAL INDEX: README - minimal quick reference with links to GM-00 -->
+        <deliverable path="03-github-manager/README.md" base-path="" order="7">
+            <template base-path="templates">06-github-management/scripts/README.template.md</template>
+            <description>OPERATIONAL quick reference: minimal index with commands and links to GM-00 sections</description>
+            <note>Quick start, commands, checklists. Links to GM-00 for explanations. NO DUPLICATION.</note>
+            <phase>discovery</phase>
+            <type>documentation-operational</type>
+            <mandatory>true</mandatory>
+            <purpose>operational</purpose>
+            <target-audience>developers executing tasks</target-audience>
+            <relationship>
+                <references>GM-00-GitHub-Setup.md</references>
+                <principle>README is an INDEX to GM-00, not a duplicate</principle>
+            </relationship>
+        </deliverable>
+
+        <!-- 1f. STRATEGIC DOCUMENTATION: GM-00 - complete reference (CREATE LAST) -->
+        <deliverable path="GM-00-GitHub-Setup.md" base-path="github-management" order="8">
+            <template base-path="templates">06-github-management/GM-00-GitHub-Setup.template.md</template>
+            <description>STRATEGIC GitHub documentation: justifications, technical details, integrations with SDA/PE, GitHub Free limitations</description>
+            <phase>discovery</phase>
+            <note>Complete reference - explains WHY and WHAT. References files created above.</note>
+            <type>documentation-strategic</type>
+            <mandatory>true</mandatory>
+            <purpose>strategic</purpose>
+            <target-audience>team leads, architects, future maintainers</target-audience>
         </deliverable>
 
         <deliverable path=".github/workflows/cd-staging.yml" base-path="">
@@ -153,21 +214,38 @@
     </quality-guidelines>
 
     <definition-of-done>
-        <criteria type="objective">
-            <criterion>GM-00-GitHub-Setup.md created documenting all setup (v1.0 approach)</criterion>
-            <criterion>setup-labels.sh created in 03-github-manager/ and executed (labels created)</criterion>
-            <criterion>Epic issue template created (.github/ISSUE_TEMPLATE/10-epic.yml)</criterion>
-            <criterion>Manual steps documented (milestones via UI, Dependabot enable)</criterion>
+        <self-validation>
+            BEFORE marking GM-00 as complete, you MUST self-validate ALL criteria below.
+            If ANY criterion is not met, GM-00 is NOT complete.
+            Use this as a checklist to verify your work BEFORE submitting.
+        </self-validation>
+
+        <criteria type="files-created" priority="critical">
+            <criterion>PHYSICAL FILE created: 03-github-manager/setup-labels.sh (script)</criterion>
+            <criterion>PHYSICAL FILE created: .github/workflows/ci-backend.yml (workflow)</criterion>
+            <criterion>PHYSICAL FILE created: .github/workflows/ci-frontend.yml (workflow)</criterion>
+            <criterion>PHYSICAL FILE created: .github/workflows/security.yml (workflow)</criterion>
+            <criterion>PHYSICAL FILE created: .github/ISSUE_TEMPLATE/10-epic.yml (template)</criterion>
+            <criterion>PHYSICAL FILE created: .github/dependabot.yml (config) - optional but recommended</criterion>
+            <criterion>PHYSICAL FILE created: 03-github-manager/README.md (operational index)</criterion>
+            <criterion>PHYSICAL FILE created: GM-00-GitHub-Setup.md (strategic documentation)</criterion>
+        </criteria>
+
+        <criteria type="documentation-quality" priority="critical">
+            <criterion>GM-00 is STRATEGIC: includes justifications (WHY), technical details (WHAT), integrations with SDA/PE</criterion>
+            <criterion>README is OPERATIONAL: includes commands (HOW), checklists, links to GM-00 sections</criterion>
+            <criterion>NO CONTENT DUPLICATION between GM-00 and README (README uses links instead of repeating)</criterion>
+            <criterion>README clearly states it is an INDEX/QUICK-REFERENCE to GM-00</criterion>
             <criterion>Pre-existing Issue templates documented in GM-00 (.github/ISSUE_TEMPLATE/)</criterion>
             <criterion>Pre-existing PR template documented in GM-00 (.github/PULL_REQUEST_TEMPLATE.md)</criterion>
         </criteria>
 
-        <criteria type="cicd">
-            <criterion>Backend CI pipeline created (.github/workflows/ci-backend.yml)</criterion>
-            <criterion>Frontend CI pipeline created (.github/workflows/ci-frontend.yml)</criterion>
-            <criterion>Security scan pipeline created (.github/workflows/security.yml)</criterion>
-            <criterion>Pipelines running successfully on PRs</criterion>
-            <criterion>Status checks configured (PR blocked if CI fails)</criterion>
+        <criteria type="cicd" priority="critical">
+            <criterion>Backend CI workflow FILE exists with correct stack (from PE-00)</criterion>
+            <criterion>Frontend CI workflow FILE exists with correct stack (from PE-00)</criterion>
+            <criterion>Security workflow FILE exists with correct languages (from PE-00)</criterion>
+            <criterion>All workflows have proper triggers (push, PR, paths)</criterion>
+            <criterion>Workflows documented in GM-00 with technical details</criterion>
         </criteria>
 
         <criteria type="security">
@@ -197,7 +275,16 @@
         </criteria>
 
         <exit-condition>
-            GitHub setup complete when: labels created AND CI/CD workflows created AND epic issue template ready AND manual steps documented AND agents can work without blockers
+            GitHub setup is COMPLETE when ALL of these are TRUE:
+            1. ALL PHYSICAL FILES created (8 files: script + 3 workflows + template + dependabot + 2 docs)
+            2. GM-00 explains WHY/WHAT (strategic)
+            3. README explains HOW (operational, minimal, links to GM-00)
+            4. NO duplication between GM-00 and README
+            5. Self-validation checklist above is 100% complete
+            6. Agents can work without blockers
+
+            ⚠️ IF YOU ONLY DOCUMENTED WORKFLOWS WITHOUT CREATING FILES → NOT COMPLETE
+            ⚠️ IF GM-00 AND README HAVE DUPLICATED CONTENT → NOT COMPLETE
         </exit-condition>
     </definition-of-done>
 

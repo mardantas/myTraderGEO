@@ -9,11 +9,25 @@ note: |
   Os checks abaixo são RECOMENDAÇÕES de boas práticas.
   Para MVP com 1-2 devs: implemente progressivamente, não tudo de uma vez.
 
+execution_order:
+  - "1. Read SDA-02 (Bounded Contexts) and SDA-01 (Epics) first"
+  - "2. Read PE-00 (Stack) for CI/CD workflows customization"
+  - "3. Create files in order: labels script → workflows → templates → README → GM-00"
+  - "4. Self-validate against Definition of Done BEFORE marking complete"
+
 essential_practices:
+  - "Execute deliverables in documented order (see 25-GM spec)"
+  - "Create PHYSICAL FILES for workflows (.github/workflows/*.yml) - not just document"
   - "GitHub configurado com labels e milestones"
   - "Issues criadas por épico"
   - "Templates de issue e PR funcionais"
   - "Rastreabilidade épico → issues clara"
+
+documentation_strategy:
+  - "GM-00: Strategic reference (WHY/WHAT) - for architects and maintainers"
+  - "README: Operational index (HOW) - commands and links to GM-00"
+  - "NO content duplication between GM-00 and README"
+  - "README must clearly state it is an INDEX/QUICK-REFERENCE to GM-00"
 
 cicd_pipeline_recommended:
   - "CI Backend: .github/workflows/ci-backend.yml (build + test .NET)"
@@ -46,6 +60,11 @@ security_recommended:
   - "Consultar .agents/docs/03-Security-And-Platform-Strategy.md (seção GM)"
 
 success_criteria:
+  - "ALL 8 physical files created (script + 3 workflows + template + dependabot + 2 docs)"
+  - "GM-00 is STRATEGIC: includes WHY/WHAT, justifications, integrations"
+  - "README is OPERATIONAL: includes HOW, commands, links to GM-00 sections"
+  - "NO duplication between GM-00 and README (README uses links)"
   - "CI rodando em PRs e bloqueando merges com testes falhando"
   - "Dependabot alertando sobre vulnerabilidades"
   - "Issues organizadas por épicos/milestones"
+  - "Self-validation checklist 100% complete before marking done"
