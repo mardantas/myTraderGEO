@@ -1,0 +1,104 @@
+version: '3.8'
+
+# ==================================
+# myTraderGEO - Development Environment
+# ==================================
+# Usage: docker compose -f 05-infra/docker/docker-compose.yml up
+
+services:
+  # Backend API (.NET 8)
+  api:
+    build:
+      context: ../../02-backend
+      dockerfile: ../../05-infra/dockerfiles/backend/Dockerfile.dev
+    ports:
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Host=database;Port=5432;Database=mytrader_dev;Username=postgres;Password=dev_password_123
+      - JwtSettings__Secret=dev-secret-key-change-in-production-minimum-32-chars
+      - JwtSettings__Issuer=myTraderGEO
+      - JwtSettings__Audience=myTraderGEO
+      - JwtSettings__ExpirationMinutes=60
+      - Logging__LogLevel__Default=Information
+      - Logging__LogLevel__Microsoft.AspNetCore=Warning
+    volumes:
+      - ../../02-backend:/app
+      - /app/bin
+      - /app/obj
+    depends_on:
+      database:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - mytrader-network
+
+  # Frontend (Vue 3 + Vite)
+  frontend:
+    build:
+      context: ../../01-frontend
+      dockerfile: ../../05-infra/dockerfiles/frontend/Dockerfile.dev
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:5000
+      - VITE_WS_URL=ws://localhost:5000/hubs/market
+    volumes:
+      - ../../01-frontend:/app
+      - /app/node_modules
+    depends_on:
+      - api
+    networks:
+      - mytrader-network
+
+  # Database (PostgreSQL 15)
+  database:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=mytrader_dev
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=dev_password_123
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=pt_BR.UTF-8 --lc-ctype=pt_BR.UTF-8
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ../../04-database/init-scripts:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - mytrader-network
+
+  # PgAdmin (Database Management - Optional)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    ports:
+      - "8080:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@mytrader.local
+      - PGADMIN_DEFAULT_PASSWORD=admin123
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - database
+    networks:
+      - mytrader-network
+    profiles:
+      - tools
+
+volumes:
+  postgres_dev_data:
+  pgadmin_data:
+
+networks:
+  mytrader-network:
+    driver: bridge

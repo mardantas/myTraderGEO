@@ -1,0 +1,180 @@
+version: '3.8'
+
+# ==================================
+# myTraderGEO - Production Environment
+# ==================================
+# Usage: 05-infra/scripts/deploy.sh production
+# Architecture: Cloudflare -> Traefik (Let's Encrypt) -> API/Frontend
+
+services:
+  # Traefik Reverse Proxy
+  traefik:
+    image: traefik:v3.0
+    container_name: traefik
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"  # Dashboard (protect with auth in production!)
+    environment:
+      - ACME_EMAIL=${ACME_EMAIL}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ../configs/traefik.yml:/etc/traefik/traefik.yml:ro
+      - traefik_letsencrypt:/letsencrypt
+      - traefik_logs:/var/log/traefik
+    labels:
+      # Enable Traefik for itself (dashboard)
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`traefik.${DOMAIN}`)"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
+      # Dashboard auth (generate with: htpasswd -nb admin password)
+      - "traefik.http.routers.dashboard.middlewares=dashboard-auth"
+      - "traefik.http.middlewares.dashboard-auth.basicauth.users=${TRAEFIK_DASHBOARD_AUTH}"
+    networks:
+      - mytrader-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  api:
+    image: ${DOCKER_REGISTRY:-ghcr.io/seu-usuario}/mytrader-api:${VERSION:-latest}
+    expose:
+      - "8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=${DATABASE_URL_PRODUCTION}
+      - JwtSettings__Secret=${JWT_SECRET}
+      - JwtSettings__Issuer=myTraderGEO
+      - JwtSettings__Audience=myTraderGEO
+      - JwtSettings__ExpirationMinutes=15
+      - Logging__LogLevel__Default=Warning
+      - Logging__LogLevel__Microsoft.AspNetCore=Error
+      - Serilog__MinimumLevel__Default=Warning
+      - Serilog__WriteTo__0__Name=File
+      - Serilog__WriteTo__0__Args__path=/app/logs/log-.txt
+      - Serilog__WriteTo__0__Args__rollingInterval=Day
+    volumes:
+      - ../../logs/api:/app/logs
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
+    labels:
+      # Enable Traefik
+      - "traefik.enable=true"
+      # HTTP Router
+      - "traefik.http.routers.api.rule=Host(`api.${DOMAIN}`)"
+      - "traefik.http.routers.api.entrypoints=websecure"
+      - "traefik.http.routers.api.tls.certresolver=letsencrypt"
+      # Service
+      - "traefik.http.services.api.loadbalancer.server.port=8080"
+      # Middlewares (CORS, rate limiting, etc)
+      - "traefik.http.routers.api.middlewares=api-ratelimit"
+      - "traefik.http.middlewares.api-ratelimit.ratelimit.average=100"
+      - "traefik.http.middlewares.api-ratelimit.ratelimit.burst=50"
+    networks:
+      - mytrader-network
+    depends_on:
+      database:
+        condition: service_healthy
+      traefik:
+        condition: service_started
+
+  frontend:
+    image: ${DOCKER_REGISTRY:-ghcr.io/seu-usuario}/mytrader-frontend:${VERSION:-latest}
+    expose:
+      - "80"
+    environment:
+      - VITE_API_URL=https://api.${DOMAIN}
+      - VITE_WS_URL=wss://api.${DOMAIN}/hubs/market
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+    labels:
+      # Enable Traefik
+      - "traefik.enable=true"
+      # HTTP Router
+      - "traefik.http.routers.frontend.rule=Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
+      # Service
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+      # Middleware - redirect www to non-www
+      - "traefik.http.routers.frontend.middlewares=frontend-redirect"
+      - "traefik.http.middlewares.frontend-redirect.redirectregex.regex=^https://www\\.(.+)"
+      - "traefik.http.middlewares.frontend-redirect.redirectregex.replacement=https://$${1}"
+      - "traefik.http.middlewares.frontend-redirect.redirectregex.permanent=true"
+    networks:
+      - mytrader-network
+    depends_on:
+      - api
+      - traefik
+
+  database:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=${DB_NAME_PRODUCTION:-mytrader_prod}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+      - ../../backups:/backups
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
+    networks:
+      - mytrader-network
+
+volumes:
+  postgres_prod_data:
+  traefik_letsencrypt:
+  traefik_logs:
+
+networks:
+  mytrader-network:
+    driver: bridge
