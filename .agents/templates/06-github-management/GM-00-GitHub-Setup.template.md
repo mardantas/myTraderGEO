@@ -2,14 +2,16 @@
 
 **Projeto:** [PROJECT_NAME]
 **Data:** [YYYY-MM-DD]
-**GitHub Manager:** GM Agent
+**GitHub Manager:** GM Agent (v1.0)
 **Repository:** [GITHUB_OWNER]/[REPO_NAME]
 
 ---
 
 ## 🎯 Objetivo
 
-Documentar a configuração completa do GitHub para o projeto, incluindo templates pré-existentes (do workflow), workflows CI/CD customizados (por stack), e scripts de automação (por projeto).
+Documentar a configuração do GitHub para o projeto: templates pré-existentes (workflow), workflows CI/CD customizados (stack), labels via script, e passos manuais documentados.
+
+**Versão 1.0:** Automate HIGH ROI tasks, manual for LOW FREQUENCY tasks.
 
 ---
 
@@ -101,31 +103,56 @@ gh label list --repo [OWNER]/[REPO]
 
 ---
 
-### 🎯 Milestones
+### 🎯 Milestones (Manual via GitHub UI)
 
-**Localização:** Criados via script [03-github-manager/setup-milestones.sh](../../../03-github-manager/setup-milestones.sh)
+**Abordagem:** ✅ Criar manualmente conforme necessário (30s cada)
 
-**Executar:**
-```bash
-cd 03-github-manager
-chmod +x setup-milestones.sh
-./setup-milestones.sh
+**Por quê manual:**
+- Baixa frequência (5-10 milestones total)
+- GitHub UI é rápido (30s)
+- Milestones podem mudar (prioridades, datas)
+- `gh milestone` não existe nativamente (requer extensão)
+
+**Como criar:**
 ```
+GitHub UI → Issues → Milestones → New Milestone
 
-**Milestones criados:**
-
-| Milestone | Descrição | Due Date | Epics |
-|-----------|-----------|----------|-------|
-| **M0: Discovery Foundation** | SDA, UXD, GM, PE, SEC, QAE deliverables | [DISCOVERY_DUE] | Issue #1 |
-| **M1: [EPIC_1_NAME]** | [Epic 1 description from SDA] | [EPIC_1_DUE] | Epic 1 issues |
-| **M2: [EPIC_2_NAME]** | [Epic 2 description from SDA] | [EPIC_2_DUE] | Epic 2 issues |
-| **M3: [EPIC_3_NAME]** | [Epic 3 description from SDA] | [EPIC_3_DUE] | Epic 3 issues |
-
-*(Customize baseado no Epic Backlog priorizado do SDA)*
+M0: Discovery Foundation (Due: +14 days)
+M1: [EPIC_1_NAME] (Due: calculated based on priority)
+M2: [EPIC_2_NAME] ...
+```
 
 **Verificar:**
 ```bash
-gh milestone list --repo [OWNER]/[REPO]
+gh api repos/[OWNER]/[REPO]/milestones
+```
+
+---
+
+### 🎯 Epic Issue Template (GitHub Native Form)
+
+**Localização:** [.github/ISSUE_TEMPLATE/10-epic.yml](.github/ISSUE_TEMPLATE/10-epic.yml)
+
+**Abordagem:** ✅ GitHub native form (substituiu bash script)
+
+**Por quê GitHub form > bash script:**
+- Mais rápido (2min form vs 5min bash customization)
+- Mais flexível (fácil ajustar campos sem editar script)
+- GitHub native (sem manutenção, sempre atualizado)
+- Melhor UX (dropdowns, checkboxes, validação)
+
+**Template contém:**
+- Epic number, name input fields
+- Milestone dropdown (opciones customizadas com epics do projeto)
+- Description, objectives, acceptance criteria (text areas)
+- Deliverables checklist (checkboxes por agent)
+- Definition of Done (checkboxes)
+
+**Uso (Per Epic - AFTER DE-01):**
+```
+GitHub UI → New Issue → 🎯 Epic Issue
+→ Preencher formulário (2min) com dados do DE-01
+→ Submit → Issue criada!
 ```
 
 ---
@@ -377,39 +404,41 @@ gh run view [RUN_ID] --repo [OWNER]/[REPO]
 
 ### Discovery (GM-00 - Uma vez)
 
-- [ ] **Labels criadas** via `setup-labels.sh`
+- [ ] **Labels criadas** via `setup-labels.sh` ✅ AUTOMATED
+  - [ ] Script executado (creates 41 labels, saves ~10min)
   - [ ] Agents (10 labels)
   - [ ] Bounded Contexts (do SDA-02)
   - [ ] Epics (do SDA-01)
   - [ ] Types, Priority, Status, Phase
-- [ ] **Milestones criados** via `setup-milestones.sh`
-  - [ ] M0: Discovery Foundation
-  - [ ] M1-MN: Epic milestones (do SDA backlog)
-- [ ] **Issue #1 criada** (Discovery Foundation)
-  - [ ] Usa template `00-discovery-foundation.yml`
-  - [ ] Assignada ao milestone M0
-- [ ] **CI/CD Workflows criados**
+- [ ] **Milestone M0 criado** via GitHub UI ⚠️ MANUAL
+  - [ ] M0: Discovery Foundation (30s)
+- [ ] **Epic issue template criado** ✅ AUTOMATED
+  - [ ] `.github/ISSUE_TEMPLATE/10-epic.yml` (GitHub form)
+- [ ] **CI/CD Workflows criados** ✅ AUTOMATED
   - [ ] `ci-backend.yml` (customizado do PE-00)
   - [ ] `ci-frontend.yml` (customizado do PE-00)
   - [ ] `security.yml` (languages do PE-00)
-- [ ] **Dependabot configurado**
-  - [ ] Ecosystems do PE-00 stack
+- [ ] **Dependabot** ⚠️ OPTIONAL
+  - [ ] Config file criado OU
+  - [ ] Habilitado via GitHub UI (Settings → Security)
+- [ ] **Manual steps documentados**
+  - [ ] Milestones via UI
+  - [ ] Epic issues via form template
+  - [ ] Merge strategy (Create merge commit)
 - [ ] **Branch strategy documentada**
   - [ ] Naming conventions
   - [ ] PR workflow discipline
-- [ ] **Scripts documentados**
-  - [ ] README.md em 03-github-manager/
+  - [ ] Merge strategy
 
 ### Per Epic (GM - Por Iteração)
 
-- [ ] **Epic issue criada** via `create-epic-issue.sh`
+- [ ] **Milestone criado** via GitHub UI ⚠️ MANUAL
+  - [ ] M1, M2, etc conforme necessário (30s cada)
+- [ ] **Epic issue criada** via GitHub form ⚠️ USER ACTION
   - [ ] APÓS DE-01 completo
-  - [ ] Populated com info do DE-01
-  - [ ] Assignada ao milestone correto
-  - [ ] Labels corretas (epic, BC, priority)
-- [ ] **Sub-issues criadas** (opcional)
-  - [ ] Uma por agent (DE, DBA, SE, UXD, FE, QAE)
-  - [ ] Linked ao epic issue principal
+  - [ ] User fills form with DE-01 details (2min)
+  - [ ] Assigned to milestone
+  - [ ] Labels: epic, BC, priority (manual ou automation)
 
 ---
 
@@ -421,9 +450,7 @@ gh run view [RUN_ID] --repo [OWNER]/[REPO]
 - **PE-00 Environments Setup:** [00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md](00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md) - Stack para CI/CD
 
 ### Scripts Criados
-- [03-github-manager/setup-labels.sh](../../../03-github-manager/setup-labels.sh)
-- [03-github-manager/setup-milestones.sh](../../../03-github-manager/setup-milestones.sh)
-- [03-github-manager/create-epic-issue.sh](../../../03-github-manager/create-epic-issue.sh)
+- [03-github-manager/setup-labels.sh](../../../03-github-manager/setup-labels.sh) ✅ ONE-TIME
 - [03-github-manager/README.md](../../../03-github-manager/README.md)
 
 ### Workflows Criados
@@ -447,21 +474,30 @@ gh run view [RUN_ID] --repo [OWNER]/[REPO]
 - ❌ Required status checks não bloqueiam merge automaticamente
 - ✅ **Mitigation:** Disciplina + PR workflow + CI status visibility
 
-### Customização Necessária
-Todos os scripts em `03-github-manager/` precisam ser customizados com:
-- BCs do SDA-02
-- Epics do SDA-01
-- Stack do PE-00
-- Datas de due dates
-- Owner/Repo name
+### Customização Executada
+`setup-labels.sh` customizado com:
+- ✅ BCs do SDA-02
+- ✅ Epics do SDA-01
+- ✅ Owner/Repo name
+
+Epic issue template customizado com:
+- ✅ Milestone dropdown options (project epics)
+
+CI/CD workflows customizados com:
+- ✅ Stack do PE-00 (backend, frontend, languages)
+
+### Passos Manuais Documentados
+- ⚠️ Milestones: Criar via GitHub UI conforme necessário
+- ⚠️ Epic issues: Usar GitHub form template (AFTER DE-01)
+- ⚠️ Dependabot: Habilitar via UI (opcional)
 
 ### Próximos Passos
 1. ✅ Discovery completo → Issue #1 fechada
 2. ✅ Workflows CI/CD rodando
-3. ➡️ **Próximo:** DE-01 para primeiro épico → GM cria epic issue
+3. ➡️ **Próximo:** DE-01 para primeiro épico → User creates epic issue via form
 
 ---
 
-**GitHub Setup Version:** 3.0 (Simplified)
+**GitHub Setup Version:** 1.0
 **Status:** ✅ **Executado e validado**
 **Última atualização:** [YYYY-MM-DD]

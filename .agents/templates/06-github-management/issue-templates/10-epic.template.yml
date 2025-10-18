@@ -1,0 +1,130 @@
+name: 🎯 Epic Issue
+description: Create a new epic after DE-01 domain model is complete
+title: "[EPIC-XX] "
+labels: ["type:feature", "phase:iteration"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 📋 Epic Issue Template
+
+        **When to use:** AFTER DE-01-{EpicName}-Domain-Model.md is complete
+
+        **Purpose:** Track epic development across all agents (DBA, SE, UXD, FE, QAE)
+
+  - type: input
+    id: epic-number
+    attributes:
+      label: Epic Number
+      description: Sequential epic number (1, 2, 3...)
+      placeholder: "1"
+    validations:
+      required: true
+
+  - type: input
+    id: epic-name
+    attributes:
+      label: Epic Name
+      description: Full epic name
+      placeholder: "Strategy Creation and Analysis"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: milestone
+    attributes:
+      label: Milestone
+      description: Select or create milestone for this epic (create via GitHub UI first)
+      options:
+        - M1: [EPIC_1_NAME]
+        - M2: [EPIC_2_NAME]
+        - M3: [EPIC_3_NAME]
+        - M4: [EPIC_4_NAME]
+        - M5: [EPIC_5_NAME]
+        - Other (specify in description)
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Epic Description
+      description: Copy from DE-01 or SDA Context Map
+      placeholder: |
+        This epic implements...
+
+        Bounded Contexts involved:
+        - BC 1
+        - BC 2
+    validations:
+      required: true
+
+  - type: textarea
+    id: objectives
+    attributes:
+      label: Business Objectives
+      description: From DE-01 or SDA
+      placeholder: |
+        - [ ] Objective 1
+        - [ ] Objective 2
+        - [ ] Objective 3
+      value: |
+        - [ ]
+    validations:
+      required: false
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: From DE-01 domain model
+      placeholder: |
+        - [ ] Criterion 1
+        - [ ] Criterion 2
+      value: |
+        - [ ]
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: deliverables
+    attributes:
+      label: Agent Deliverables
+      description: Track completion per agent
+      options:
+        - label: "**DE-01** Domain Model (✅ DONE before creating this issue)"
+          required: true
+        - label: "**DBA-01** Schema Review and Migrations"
+        - label: "**UXD-01** Wireframes"
+        - label: "**SE** Backend implementation (domain + application + API)"
+        - label: "**FE** Frontend implementation (components + pages)"
+        - label: "**QAE** Quality Gate (integration + E2E + regression tests)"
+
+  - type: checkboxes
+    id: definition-of-done
+    attributes:
+      label: Definition of Done
+      options:
+        - label: "All deliverables complete"
+        - label: "Code review approved"
+        - label: "Unit tests passing (backend ≥80%, frontend ≥70%)"
+        - label: "Integration tests passing"
+        - label: "E2E tests passing"
+        - label: "Deployed to staging"
+        - label: "QAE quality gate approved"
+        - label: "Documentation updated"
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional Notes
+      description: Dependencies, blockers, or other relevant information
+      placeholder: |
+        **Depends on:** Epic X, Issue Y
+        **Blocks:** Epic Z
+
+        **Technical notes:**
+        - Performance considerations
+        - Security requirements
+        - etc.
