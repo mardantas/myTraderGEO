@@ -346,33 +346,43 @@ Integrate DDD workflow with GitHub (v1.0). **Issues created via GitHub form AFTE
 ### Responsibilities
 
 #### **Discovery (1x - Day 3-4):**
-- ✅ **Create setup-labels.sh** in `03-github-manager/` (customized from SDA BCs and Epics)
+- ✅ **Create setup-labels.sh** in `03-github-manager/scripts/` (customized from SDA BCs and Epics)
 - ✅ **Execute script**: Create labels in GitHub (agents, BCs, epics, types, priority, status, phase)
-- ✅ **Document manual steps**: Milestones via GitHub UI, Dependabot enable via UI
+- ✅ **Create helper scripts**: `create-milestone.sh`, `create-epic-issue.sh` (for iteration phase)
 - ✅ **Create epic issue template**: `.github/ISSUE_TEMPLATE/10-epic.yml` (GitHub native form)
 - ✅ **Create CI/CD workflows** in `.github/workflows/` (customized from PE-00 stack):
   - `ci-backend.yml` (build, test for backend)
   - `ci-frontend.yml` (build, test for frontend)
   - `security.yml` (CodeQL, secret scanning)
-  - `dependabot.yml` (optional - can enable via UI instead)
+  - `dependabot.yml` (dependency updates)
 - ✅ **Document pre-existing templates**: Issue/PR templates already exist in `.github/`
-- ❌ **DOES NOT create milestones** (create manually via UI as needed - 30s each)
+- ❌ **DOES NOT create milestones** (created per epic during iteration - not all at once)
 - ❌ **DOES NOT create issues** (epics not refined yet - no DE-01)
 
 #### **Per Epic (Nx - Day 2):**
 - ✅ Read `DE-01-[EpicName]-Domain-Model.md`
-- ✅ **Guide user** to create epic issue via GitHub form:
-  - Navigate to GitHub → New Issue → 🎯 Epic Issue
-  - Fill form (2min) with DE-01 details:
-    - Epic number, name, milestone
-    - Description, objectives, acceptance criteria (copy from DE-01)
-    - Deliverables checklist (all agents)
-    - Definition of Done
-- ✅ **No bash script** - GitHub native form is faster and more flexible
+- ✅ Extract epic information:
+  - Epic number (from filename: DE-01-EPIC-01-*.md)
+  - Epic name and description
+  - Objectives and acceptance criteria
+  - BCs involved
+- ✅ **EXECUTE `create-milestone.sh` automatically:**
+  - Creates milestone: `M{number}: EPIC-{number} - {name from DE-01}`
+  - Sets due date: Today + 6 weeks
+  - Sets description: First paragraph from DE-01
+- ✅ **EXECUTE `create-epic-issue.sh` automatically:**
+  - Creates epic issue with base template
+  - Links to milestone created above
+  - Populates with basic structure
+- ✅ **Guide user to customize epic issue:**
+  - Edit issue to add complete DE-01 objectives
+  - Edit issue to add complete acceptance criteria
+  - Add BC labels (bc:*)
+  - Add any epic-specific details from DE-01
 
 ### When Executes
-- **Discovery (Day 3-4):** GitHub setup (labels script, CI/CD, epic template) - **AFTER PE defines stack**
-- **Iteration (Day 2):** Guide user to create epic issue via form **AFTER DE-01** is complete
+- **Discovery (Day 3-4):** GitHub setup (labels script, CI/CD, epic template, helper scripts) - **AFTER PE defines stack**
+- **Iteration (Day 2):** Execute scripts to create milestone + epic issue **AFTER DE-01** is complete
 
 ### Scope
 **Complete system** - traceability of all epics, CI/CD automation
@@ -390,15 +400,17 @@ Integrate DDD workflow with GitHub (v1.0). **Issues created via GitHub form AFTE
 00-doc-ddd/07-github-management/
 └── GM-00-GitHub-Setup.md  (documents pragmatic setup)
 
-03-github-manager/
+03-github-manager/scripts/
 ├── setup-labels.sh          (executable - creates labels, ONE-TIME)
-└── README.md                (documentation: script + manual steps)
+├── create-milestone.sh      (executable - creates milestone per epic, ON-DEMAND)
+├── create-epic-issue.sh     (executable - creates epic issue per epic, ON-DEMAND)
+└── README.md                (documentation: scripts usage)
 
 .github/workflows/
 ├── ci-backend.yml           (created - customized from PE-00)
 ├── ci-frontend.yml          (created - customized from PE-00)
 ├── security.yml             (created - languages from PE-00)
-└── dependabot.yml           (optional - or enable via UI)
+└── dependabot.yml           (created - ecosystems from PE-00)
 
 .github/ISSUE_TEMPLATE/
 ├── 10-epic.yml              (created - GitHub native form for epics)
@@ -409,8 +421,9 @@ Integrate DDD workflow with GitHub (v1.0). **Issues created via GitHub form AFTE
 
 #### Per Epic (Nx)
 ```
-GitHub Issue created by USER via GitHub form (10-epic.yml template)
-GM guides user, does NOT create issue automatically
+Milestone M{number} created by GM via create-milestone.sh script
+Epic Issue created by GM via create-epic-issue.sh script
+User customizes issue with DE-01 complete details (1min)
 ```
 
 ### Example Invocation
@@ -475,55 +488,66 @@ GM guides user, does NOT create issue automatically
 
 #### Iteration
 ```
-"GM, guide me to create epic issue for DE-01-Strategy-Creation (Iteration)"
+"GM, create milestone and epic issue for EPIC-01 (Iteration)"
 ```
 
 **What GM does (step-by-step):**
 
 1. **Read DE-01:**
-   - `DE-01-Strategy-Creation-Domain-Model.md`
+   - `DE-01-EPIC-01-Strategy-Creation-Domain-Model.md`
    - Extract:
-     - Epic description
+     - Epic number: 01 (from filename)
+     - Epic name: Strategy Creation (from filename)
+     - Epic description (first paragraph)
      - Business objectives
      - Acceptance criteria
-     - Domain model summary (Aggregates, Value Objects, Domain Events)
      - BCs involved
 
-2. **Instruct user to create issue via GitHub form:**
+2. **Execute create-milestone.sh automatically:**
+   ```bash
+   ./03-github-manager/scripts/create-milestone.sh \
+     1 \
+     "EPIC-01 - Strategy Creation and Analysis" \
+     "Catálogo de templates, criação de estratégias, cálculos automáticos" \
+     "2026-02-28"
    ```
-   Navigate to: GitHub → Issues → New Issue → 🎯 Epic Issue
+   - Milestone M1 created in GitHub
+   - Due date: Today + 6 weeks
 
-   Fill form (2min):
-   - Epic Number: 1
-   - Epic Name: Strategy Creation and Analysis
-   - Milestone: M1: Strategy Creation (create via UI first if needed)
-   - Description: Copy from DE-01
-   - Objectives: Copy from DE-01
-   - Acceptance Criteria: Copy from DE-01
-   - Check: DE-01 Domain Model (done)
-   - Uncheck: DBA, UXD, SE, FE, QAE (pending)
-
-   Submit → Issue created!
+3. **Execute create-epic-issue.sh automatically:**
+   ```bash
+   ./03-github-manager/scripts/create-epic-issue.sh \
+     1 \
+     "M1: EPIC-01 - Strategy Creation and Analysis"
    ```
+   - Epic issue created with base template
+   - Title: `[EPIC-01] [TODO: Epic Name]`
+   - Milestone: `M1: EPIC-01 - Strategy Creation and Analysis`
+   - Labels: `epic`, `priority-high`, `agent:DE`, `agent:DBA`, `agent:SE`, `agent:FE`, `agent:QAE`
 
-3. **Result:**
-   - Issue created with all DE-01 details
-   - Title: `[EPIC-1] Strategy Creation and Analysis`
-   - Labels: `type:feature`, `phase:iteration`, `epic:strategy-creation` (manual)
-   - Milestone: `M1: Strategy Creation` (manual)
-   - Body populated from form
+4. **Guide user to customize epic issue:**
+   ```
+   ⚠️ NEXT STEPS:
+   1. Open epic issue in GitHub
+   2. Edit title: [EPIC-01] Strategy Creation and Analysis
+   3. Add complete objectives from DE-01
+   4. Add complete acceptance criteria from DE-01
+   5. Add BC labels: bc:strategy-planning, bc:market-data
+   6. Verify deliverables checklist matches DE-01
+   ```
 
 **Output:**
-- ✅ User creates issue via GitHub UI (faster, more flexible than bash)
-- ✅ Epic details from DE-01 captured
-- ✅ Deliverables checklist ready for team
-- ✅ Traceability: Issue → DE-01 → Code → Tests
+- ✅ Milestone M1 created automatically (20s)
+- ✅ Epic issue created automatically with base template (20s)
+- ✅ User customizes issue with DE-01 rich details (1min)
+- ✅ Total time: 1min40s (vs 3min manual)
+- ✅ Traceability: Issue → Milestone → DE-01 → Code → Tests
 
-**Why GitHub form > bash script:**
-- Faster (2min form vs 5min bash customization)
-- More flexible (easy to adjust fields, no script editing)
-- GitHub native (no maintenance, always up-to-date)
-- Better UX (dropdowns, checkboxes, validation)
+**Why automated scripts + guided customization:**
+- Faster (GM creates structure 40s vs user 3min)
+- Consistent (milestone and issue always created, always linked)
+- Flexible (user adds rich DE-01 context)
+- Best of both worlds (automation + human context)
 
 ### Specification
 [25-GM - GitHub Manager.xml](../25-GM%20-%20GitHub%20Manager.xml)
@@ -729,7 +753,9 @@ Day 1-2: DE
     ↓
 Day 2: GM
   - Reads DE-01
-  - Creates detailed GitHub issue
+  - Executes create-milestone.sh (milestone M{N} created)
+  - Executes create-epic-issue.sh (epic issue created with base template)
+  - User customizes issue with DE-01 details (1min)
     ↓
 Day 2-3: DBA
   - Validates DE-01 schema
