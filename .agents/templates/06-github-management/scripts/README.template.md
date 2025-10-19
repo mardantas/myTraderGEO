@@ -8,8 +8,8 @@
 
 This is a **quick reference guide** for executing GitHub setup tasks. For strategic decisions, justifications, and technical details, consult [GM-00-GitHub-Setup.md](../00-doc-ddd/07-github-management/GM-00-GitHub-Setup.md).
 
-**This README:** Commands and checklists (HOW to execute)
-**GM-00:** Justifications and details (WHY and WHAT)
+- **This README:** Commands and checklists (HOW to execute)
+- **GM-00:** Justifications and details (WHY and WHAT)
 
 ---
 
