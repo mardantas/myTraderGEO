@@ -1,0 +1,60 @@
+# ==================================
+# myTraderGEO - .gitignore
+# ==================================
+
+# Environment variables (NEVER COMMIT!)
+.env
+.env.local
+.env.*.local
+05-infra/configs/.env
+
+# IDEs
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Backend (.NET)
+02-backend/bin/
+02-backend/obj/
+02-backend/out/
+02-backend/*.user
+02-backend/.vs/
+
+# Frontend (Vue + Node)
+01-frontend/node_modules/
+01-frontend/dist/
+01-frontend/dist-ssr/
+01-frontend/.vite/
+01-frontend/.cache/
+
+# Database
+04-database/*.sql
+04-database/backups/
+*.dump
+*.backup
+
+# Docker
+*.tar
+docker-compose.override.yml
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~

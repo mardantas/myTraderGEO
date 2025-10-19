@@ -1,0 +1,227 @@
+name: Epic Issue
+description: Create a new Epic - large cross-BC feature (based on SDA-01 Event Storming)
+title: "[EPIC-XX] "
+labels: ["epic"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 📋 Epic Overview
+
+        Épicos são grandes funcionalidades que atravessam múltiplos Bounded Contexts (cross-BC).
+        Baseie-se em **SDA-01 Event Storming** e **SDA-02 Context Map** para definir o épico.
+
+        **Épicos planejados (SDA-02):**
+        - EPIC-01: Criação e Análise de Estratégias
+        - EPIC-02: Execução e Monitoramento de Estratégias
+        - EPIC-03: Gestão de Risco e Controle Financeiro
+        - EPIC-04: Comunidade e Compartilhamento
+        - EPIC-05: Serviços para Consultores
+        - EPIC-06: Backtesting e Análise Avançada (Futuro)
+        - EPIC-07: Execução Automatizada de Ordens (Futuro)
+
+  - type: input
+    id: epic-number
+    attributes:
+      label: Epic Number
+      description: Número do épico (ex: EPIC-01, EPIC-02)
+      placeholder: "EPIC-01"
+    validations:
+      required: true
+
+  - type: textarea
+    id: objectives
+    attributes:
+      label: 🎯 Objectives
+      description: Principais objetivos de negócio deste épico
+      placeholder: |
+        - Permitir que traders criem estratégias com opções/ações
+        - Fornecer cálculos automáticos de margem e risco
+        - Suportar templates reutilizáveis
+    validations:
+      required: true
+
+  - type: textarea
+    id: bounded-contexts
+    attributes:
+      label: 🏗️ Bounded Contexts Involved
+      description: Quais Bounded Contexts estão envolvidos (conforme SDA-02)
+      placeholder: |
+        - **Strategy Planning** (Core) - criação de estratégias
+        - **Risk Management** (Core) - validação de risco
+        - **Market Data** (Supporting) - preços e volatilidade
+        - **User Management** (Generic) - autenticação e perfil
+    validations:
+      required: true
+
+  - type: textarea
+    id: user-stories
+    attributes:
+      label: 📖 Key User Stories
+      description: Principais user stories deste épico (ver SDA-02 para detalhes)
+      placeholder: |
+        - [ ] Como trader, quero criar templates definindo estrutura/topologia
+        - [ ] Como trader, quero instanciar template em ativo específico
+        - [ ] Como trader, quero ver cálculos automáticos de margem
+        - [ ] Como trader, quero validar estratégia contra meu perfil de risco
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: ✅ Acceptance Criteria
+      description: Critérios de aceitação em alto nível para o épico
+      placeholder: |
+        - [ ] Todos BCs envolvidos implementados (core domain logic)
+        - [ ] User stories principais concluídas
+        - [ ] Testes de integração entre BCs passando
+        - [ ] Documentação de API atualizada
+        - [ ] Deploy em staging testado
+    validations:
+      required: true
+
+  - type: textarea
+    id: deliverables
+    attributes:
+      label: 📦 Deliverables (por Agent)
+      description: Entregáveis esperados de cada agent responsável
+      placeholder: |
+        **DE (Domain Engineer - Backend):**
+        - [ ] Aggregates, Entities, Value Objects (core domain)
+        - [ ] Domain Services e Application Services
+        - [ ] API endpoints (REST)
+        - [ ] Unit tests (domínio)
+
+        **FE (Frontend Engineer):**
+        - [ ] Componentes Vue 3 (UI)
+        - [ ] State management (Pinia stores)
+        - [ ] Integration com API backend
+        - [ ] Unit tests (Vitest)
+
+        **DBA (Database Architect):**
+        - [ ] Schema PostgreSQL (migrations)
+        - [ ] Índices e constraints
+        - [ ] Seed data (se aplicável)
+
+        **QAE (Quality Assurance Engineer):**
+        - [ ] Integration tests (TestContainers)
+        - [ ] E2E tests (Playwright)
+        - [ ] Performance tests (se crítico)
+
+        **SEC (Security Specialist):**
+        - [ ] Security review (authn/authz)
+        - [ ] Input validation review
+        - [ ] LGPD compliance check (se dados sensíveis)
+    validations:
+      required: true
+
+  - type: textarea
+    id: definition-of-done
+    attributes:
+      label: ✅ Definition of Done
+      description: Checklist completo para considerar épico concluído
+      placeholder: |
+        **Code:**
+        - [ ] Todos deliverables implementados (DE, FE, DBA)
+        - [ ] Code review aprovado (peer review)
+        - [ ] No code smells críticos (SonarQube)
+
+        **Testing:**
+        - [ ] Unit tests: >80% coverage (backend + frontend)
+        - [ ] Integration tests passando (cross-BC)
+        - [ ] E2E tests críticos passando (Playwright)
+        - [ ] Performance acceptable (se aplicável)
+
+        **Security:**
+        - [ ] Security review completo (SEC agent)
+        - [ ] Dependency vulnerabilities resolvidas (Snyk/npm audit)
+        - [ ] LGPD compliance validado (se dados sensíveis)
+
+        **Documentation:**
+        - [ ] API documentation atualizada (Swagger/OpenAPI)
+        - [ ] Architecture Decision Records (ADR) criados
+        - [ ] User documentation atualizada
+
+        **Deploy:**
+        - [ ] Deploy em staging bem-sucedido
+        - [ ] Smoke tests em staging passando
+        - [ ] Rollback plan documentado
+        - [ ] Production deploy aprovado pelo PO
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: Prioridade do épico
+      options:
+        - "1 - Critical (MVP blocker)"
+        - "2 - High (MVP essential)"
+        - "3 - Medium (nice to have)"
+        - "4 - Low (future enhancement)"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: milestone
+    attributes:
+      label: Milestone
+      description: Milestone associado (conforme SDA-02)
+      options:
+        - "M0: Discovery Foundation"
+        - "M1: EPIC-01 - Criação e Análise de Estratégias"
+        - "M2: EPIC-02 - Execução e Monitoramento"
+        - "M3: EPIC-03 - Gestão de Risco"
+        - "M4: EPIC-04 - Comunidade"
+        - "M5: EPIC-05 - Serviços Consultores"
+        - "M6: EPIC-06 - Backtesting (Futuro)"
+        - "M7: EPIC-07 - Execução Automatizada (Futuro)"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: business-value
+    attributes:
+      label: Business Value
+      description: Valor de negócio do épico
+      options:
+        - "High - Core domain differentiation"
+        - "Medium - Supporting feature"
+        - "Low - Generic/commodity"
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: 🔗 Dependencies
+      description: Dependências de outros épicos ou issues
+      placeholder: |
+        - Depende de: #X (outro épico)
+        - Bloqueia: #Y (próximo épico)
+        - Requer: PE-00 (infra setup), SEC-00 (security baseline)
+
+  - type: textarea
+    id: risks
+    attributes:
+      label: ⚠️ Risks & Mitigation
+      description: Riscos identificados e estratégias de mitigação
+      placeholder: |
+        - **Risco:** Complexidade cálculo margem B3
+          **Mitigação:** Consultar Simulador B3, criar spike técnico
+        - **Risco:** Integração tempo real (SignalR)
+          **Mitigação:** POC separado antes de implementação completa
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Informações adicionais, links, referências
+      placeholder: |
+        - Ver SDA-02 Context Map (seção épico correspondente)
+        - Ver SDA-01 Event Storming (processos de negócio)
+        - Simulador B3: https://simulador.b3.com.br/
