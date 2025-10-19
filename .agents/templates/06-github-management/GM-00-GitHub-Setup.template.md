@@ -9,9 +9,14 @@
 
 ## 🎯 Objetivo
 
-Documentar a configuração do GitHub para o projeto: templates pré-existentes (workflow), workflows CI/CD customizados (stack), labels via script, e passos manuais documentados.
+Documentar a configuração do GitHub para o projeto: templates pré-existentes (workflow), workflows CI/CD customizados (stack), labels via script, e automação de milestones/epic issues por épico.
 
-**Versão 1.0:** Automate HIGH ROI tasks, manual for LOW FREQUENCY tasks.
+**Versão 1.0 - Philosophy:**
+- ✅ **Automate HIGH ROI tasks:**
+  - **Discovery (1x):** Labels via script, CI/CD workflows files, Dependabot config, helper scripts
+  - **Per Epic (Nx):** Milestones + Epic issues (executed automatically by GM on Day 2)
+- ✅ **Hybrid approach:** Scripts create base structure (fast, consistent) + User customizes with rich context (DE-01 details)
+- ✅ **GitHub Free adaptations:** NO branch protection (discipline-based workflow documented)
 
 ---
 
@@ -125,12 +130,16 @@ gh label list --repo [OWNER]/[REPO]
 
 ### 🎯 Milestones
 
-**Abordagem:** ✅ Criar manualmente conforme necessário (30s cada via UI, ou via CLI)
+**Abordagem:** ✅ Criar **sob demanda** (um por vez, quando iniciar cada épico)
 
-**Por quê manual:**
-- Baixa frequência (5-10 milestones total)
-- GitHub UI é rápido (30s)
-- Milestones podem mudar (prioridades, datas)
+**Por quê sob demanda:**
+- Baixa frequência (5-10 milestones total no projeto)
+- GitHub UI é rápido (30s cada)
+- Milestones podem mudar (prioridades, datas) - criar apenas quando necessário
+- **Criar incrementalmente:** M0 no Discovery, M1 quando iniciar EPIC-01, M2 quando iniciar EPIC-02, etc
+- **NÃO criar todos de uma vez** - épicos futuros podem mudar completamente
+
+**Script auxiliar criado:** [03-github-manager/scripts/create-milestone.sh](../../../03-github-manager/scripts/create-milestone.sh) ⚙️ ON-DEMAND TOOL
 
 **Milestones Planejados (conforme SDA-01 épicos):**
 
@@ -144,7 +153,15 @@ gh label list --repo [OWNER]/[REPO]
 
 ---
 
-**Como criar (Opção 1 - GitHub UI):**
+**Como usar (quando iniciar um épico):**
+
+1. **Quando iniciar EPIC-01** → Criar M1 (opção 1, 2 ou 3 abaixo)
+2. **Quando iniciar EPIC-02** → Criar M2 (opção 1, 2 ou 3 abaixo)
+3. E assim por diante...
+
+---
+
+**Como criar (Opção 1 - GitHub UI - Mais simples):**
 ```
 GitHub UI → Issues → Milestones → New Milestone
 → Title: M1: [EPIC_1_NAME]
@@ -153,7 +170,24 @@ GitHub UI → Issues → Milestones → New Milestone
 → Create milestone
 ```
 
-**Como criar (Opção 2 - GitHub CLI via API):**
+**Como criar (Opção 2 - Script auxiliar - Mais rápido):**
+```bash
+# M1: Primeiro Épico
+./03-github-manager/scripts/create-milestone.sh \
+  1 \
+  "EPIC-01 - [EPIC_1_NAME]" \
+  "[EPIC_1_DESCRIPTION from SDA-01]" \
+  "2026-02-28"
+
+# M2: Segundo Épico
+./03-github-manager/scripts/create-milestone.sh \
+  2 \
+  "EPIC-02 - [EPIC_2_NAME]" \
+  "[EPIC_2_DESCRIPTION from SDA-01]" \
+  "2026-04-30"
+```
+
+**Como criar (Opção 3 - GitHub CLI direto - Mais customizável):**
 
 ```bash
 # M0: Discovery Foundation
@@ -193,15 +227,24 @@ gh api repos/[OWNER]/[REPO]/milestones
 
 **Localização do Template:** [.github/ISSUE_TEMPLATE/10-epic.yml](.github/ISSUE_TEMPLATE/10-epic.yml)
 
-**Abordagem:** ✅ GitHub native form (substituiu bash script) + CLI alternativa
+**Abordagem:** ✅ Criar **sob demanda** (um por vez, após milestone criado e DE-01 completo)
 
-**Por quê GitHub form > bash script:**
-- Mais rápido (2min form vs 5min bash customization)
-- Mais flexível (fácil ajustar campos sem editar script)
-- GitHub native (sem manutenção, sempre atualizado)
-- Melhor UX (dropdowns, checkboxes, validação)
+**Opções disponíveis:**
+1. **GitHub Form** (preferencial) - UX melhor, validação automática, 2min
+2. **Script auxiliar** - Rápido, gera template base para editar depois
+3. **CLI direto** - Customização total, requer copy-paste
 
-**Quando criar:** ✅ APÓS DE-01-{EpicName}-Domain-Model.md estar completo
+**Quando criar:**
+- ✅ **APÓS** milestone correspondente criado (M1, M2, etc)
+- ✅ **APÓS** DE-01-{EpicName}-Domain-Model.md estar completo
+- ✅ **Um por vez** (não criar todos os épicos de uma vez)
+
+**Execução Automática (Per Epic - Day 2):**
+- ⚙️ **GM executa `create-milestone.sh` automaticamente** quando executado por épico
+- ⚙️ **GM executa `create-epic-issue.sh` automaticamente** quando executado por épico
+- ⚠️ **User customiza epic issue** com detalhes completos do DE-01 (1min)
+
+**Script auxiliar criado:** [03-github-manager/scripts/create-epic-issue.sh](../../../03-github-manager/scripts/create-epic-issue.sh) ⚙️ AUTO-EXECUTED BY GM
 
 ---
 
@@ -216,7 +259,7 @@ gh api repos/[OWNER]/[REPO]/milestones
 
 ---
 
-**Como criar (Opção 1 - GitHub Form UI):**
+**Como criar (Opção 1 - GitHub Form - Preferencial):**
 ```
 GitHub UI → New Issue → 🎯 Epic Issue
 → Preencher formulário (2min) com dados do DE-01:
@@ -231,7 +274,25 @@ GitHub UI → New Issue → 🎯 Epic Issue
 → Submit → Issue criada!
 ```
 
-**Como criar (Opção 2 - GitHub CLI):**
+**Como criar (Opção 2 - Script auxiliar - Rápido):**
+```bash
+# EPIC-01: Primeiro Épico (após DE-01 completo)
+./03-github-manager/scripts/create-epic-issue.sh \
+  1 \
+  "M1: EPIC-01 - [EPIC_1_NAME]"
+
+# EPIC-02: Segundo Épico (após DE-02 completo)
+./03-github-manager/scripts/create-epic-issue.sh \
+  2 \
+  "M2: EPIC-02 - [EPIC_2_NAME]"
+
+# ⚠️ IMPORTANTE: Editar o epic issue criado para customizar com detalhes do DE-01:
+#   - Atualizar título com epic name
+#   - Adicionar BC labels (bc:*)
+#   - Preencher objectives, acceptance criteria do DE-01
+```
+
+**Como criar (Opção 3 - GitHub CLI direto - Customizável):**
 
 ```bash
 # EPIC-01: Primeiro Épico (exemplo completo)
@@ -619,8 +680,11 @@ gh run view [RUN_ID] --repo [OWNER]/[REPO]
   - [ ] Bounded Contexts (do SDA-02)
   - [ ] Epics (do SDA-01)
   - [ ] Types, Priority, Status, Phase
-- [ ] **Milestone M0 criado** via GitHub UI ⚠️ MANUAL
-  - [ ] M0: Discovery Foundation (30s)
+- [ ] **Helper scripts criados** ✅ AUTOMATED
+  - [ ] `create-milestone.sh` (para criar milestones sob demanda)
+  - [ ] `create-epic-issue.sh` (para criar epic issues sob demanda)
+- [ ] **Milestone M0 criado** ⚠️ ON-DEMAND
+  - [ ] M0: Discovery Foundation (30s - UI, script, ou CLI)
 - [ ] **Epic issue template criado** ✅ AUTOMATED
   - [ ] `.github/ISSUE_TEMPLATE/10-epic.yml` (GitHub form)
 - [ ] **CI/CD Workflows criados** ✅ AUTOMATED
@@ -630,24 +694,33 @@ gh run view [RUN_ID] --repo [OWNER]/[REPO]
 - [ ] **Dependabot** ⚠️ OPTIONAL
   - [ ] Config file criado OU
   - [ ] Habilitado via GitHub UI (Settings → Security)
-- [ ] **Manual steps documentados**
-  - [ ] Milestones via UI
-  - [ ] Epic issues via form template
-  - [ ] Merge strategy (Create merge commit)
+- [ ] **Documentação criada**
+  - [ ] GM-00: Estratégia e justificativas (POR QUÊ/O QUÊ)
+  - [ ] README: Comandos e quick reference (COMO)
+  - [ ] Scripts auxiliares documentados
 - [ ] **Branch strategy documentada**
   - [ ] Naming conventions
   - [ ] PR workflow discipline
   - [ ] Merge strategy
 
-### Per Epic (GM - Por Iteração)
+### Per Epic (Por Iteração - Sob Demanda)
 
-- [ ] **Milestone criado** via GitHub UI ⚠️ MANUAL
-  - [ ] M1, M2, etc conforme necessário (30s cada)
-- [ ] **Epic issue criada** via GitHub form ⚠️ USER ACTION
-  - [ ] APÓS DE-01 completo
-  - [ ] User fills form with DE-01 details (2min)
+**Quando:** Ao iniciar cada novo épico (após DE-01 completo)
+
+- [ ] **Milestone criado** ⚙️ ON-DEMAND (um por vez)
+  - [ ] Opção 1: GitHub UI (30s)
+  - [ ] Opção 2: Script `create-milestone.sh` (20s)
+  - [ ] Opção 3: CLI direto
+  - [ ] **NÃO criar todos de uma vez** - apenas quando necessário
+- [ ] **Epic issue criada** ⚙️ ON-DEMAND (após milestone + DE-01)
+  - [ ] APÓS milestone correspondente criado
+  - [ ] APÓS DE-01-{EpicName}-Domain-Model.md completo
+  - [ ] Opção 1: GitHub Form (2min - preferencial)
+  - [ ] Opção 2: Script `create-epic-issue.sh` + edição manual
+  - [ ] Opção 3: CLI direto
+  - [ ] Customizar com detalhes do DE-01
   - [ ] Assigned to milestone
-  - [ ] Labels: epic, BC, priority (manual ou automation)
+  - [ ] Labels: epic, BC, priority
 
 ---
 
@@ -659,7 +732,9 @@ gh run view [RUN_ID] --repo [OWNER]/[REPO]
 - **PE-00 Environments Setup:** [00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md](00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md) - Stack para CI/CD
 
 ### Scripts Criados
-- [03-github-manager/setup-labels.sh](../../../03-github-manager/setup-labels.sh) ✅ ONE-TIME
+- [03-github-manager/scripts/setup-labels.sh](../../../03-github-manager/scripts/setup-labels.sh) ✅ ONE-TIME (Discovery)
+- [03-github-manager/scripts/create-milestone.sh](../../../03-github-manager/scripts/create-milestone.sh) ⚙️ ON-DEMAND (Per Epic)
+- [03-github-manager/scripts/create-epic-issue.sh](../../../03-github-manager/scripts/create-epic-issue.sh) ⚙️ ON-DEMAND (Per Epic)
 - [03-github-manager/README.md](../../../03-github-manager/README.md)
 
 ### Workflows Criados
