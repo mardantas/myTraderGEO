@@ -50,10 +50,10 @@ This is a **quick reference guide** for executing GitHub setup tasks. For strate
 
 ### `setup-labels.sh`
 **Purpose:** Creates 41 GitHub labels (agents, BCs, epics, types, priorities, status)
-**Execute once:** During Discovery phase
+**Execute:** Once during Discovery phase
 **Usage:**
 ```bash
-bash 03-github-manager/setup-labels.sh
+bash 03-github-manager/scripts/setup-labels.sh
 ```
 
 **Verify:**
@@ -62,6 +62,65 @@ gh label list --repo [OWNER]/[REPO]
 ```
 
 **See GM-00 for:** Complete label list and justifications
+
+---
+
+### `create-milestone.sh`
+**Purpose:** Creates a milestone on-demand (one at a time, when starting an epic)
+**Execute:** Automatically by GM on Day 2 of each epic iteration
+**Manual Usage (if needed):**
+```bash
+bash 03-github-manager/scripts/create-milestone.sh \
+  <number> "<title>" "<description>" "<due-date-YYYY-MM-DD>"
+```
+
+**Examples:**
+```bash
+# M0: Discovery (no due date)
+bash 03-github-manager/scripts/create-milestone.sh \
+  0 "Discovery Foundation" "Setup inicial" ""
+
+# M1: EPIC-01 (with due date)
+bash 03-github-manager/scripts/create-milestone.sh \
+  1 "EPIC-01 - Name" "Description" "2026-02-28"
+```
+
+**Verify:**
+```bash
+gh api repos/[OWNER]/[REPO]/milestones
+```
+
+**See GM-00 for:** Complete milestone strategy
+
+---
+
+### `create-epic-issue.sh`
+**Purpose:** Creates an epic issue on-demand (after DE-01 complete)
+**Execute:** Automatically by GM on Day 2 of each epic iteration
+**Manual Usage (if needed):**
+```bash
+bash 03-github-manager/scripts/create-epic-issue.sh \
+  <epic-number> "<milestone-title>"
+```
+
+**Examples:**
+```bash
+# EPIC-01 (after DE-01-EPIC-01-*.md complete)
+bash 03-github-manager/scripts/create-epic-issue.sh \
+  1 "M1: EPIC-01 - Name"
+```
+
+**⚠️ IMPORTANT:**
+- Script creates base template automatically
+- **User MUST edit issue after creation** to add complete DE-01 details
+- GM guides user on what to customize (1min)
+
+**Verify:**
+```bash
+gh issue list --label epic --repo [OWNER]/[REPO]
+```
+
+**See GM-00 for:** Complete epic issue structure
 
 ---
 
@@ -130,51 +189,81 @@ gh issue list --state closed --milestone "M1: EPIC-01" --repo [OWNER]/[REPO]
 
 ---
 
-## 🔄 Per Epic Workflow
+## 🔄 Per Epic Workflow (Automated by GM)
 
-### When: After DE-01 domain model is complete
+### When: GM executes on Day 2 of each epic iteration (after DE-01 complete)
 
-1. **Create Milestone** (if not exists)
-   - GitHub UI → Milestones → New Milestone (30 seconds)
-   - **Details:** [GM-00 Milestones](../00-doc-ddd/07-github-management/GM-00-GitHub-Setup.md#milestones)
+**GM automatically:**
+1. ✅ Reads DE-01-EPIC-{N}-{Name}-Domain-Model.md
+2. ✅ Executes `create-milestone.sh` → Milestone M{N} created
+3. ✅ Executes `create-epic-issue.sh` → Epic issue created with base template
+4. ⚠️ Guides user to customize epic issue (1min)
 
-2. **Create Epic Issue**
+---
 
-   **Option A: GitHub Form (recommended for first epic)**
-   ```
-   GitHub → New Issue → Select "🎯 Epic Issue" template
-   Fill form with DE-01 details (2min)
-   Submit
-   ```
+### What GM Does Automatically
 
-   **Option B: CLI (faster for subsequent epics)**
+1. **Create Milestone** (executed by GM automatically - 20s)
+
+   GM executes:
    ```bash
-   gh issue create --repo [OWNER]/[REPO] \
-     --title "[EPIC-01] Epic Name" \
-     --label "epic,bc:context-name,priority-high,agent:DE,agent:SE,agent:FE,agent:QAE" \
-     --milestone "M1: Epic Name" \
-     --body "$(cat <<'EOF'
-   ## Epic Overview
-   [Paste from DE-01]
-
-   ## Objectives
-   - Objective 1
-   - Objective 2
-
-   ## Acceptance Criteria
-   - [ ] Criterion 1
-   - [ ] Criterion 2
-
-   [See GM-00 for complete template structure]
-   EOF
-   )"
+   bash 03-github-manager/scripts/create-milestone.sh \
+     {N} \
+     "EPIC-{N} - {Name from DE-01}" \
+     "{Description from DE-01}" \
+     "{Today + 6 weeks}"
    ```
 
-   **Details:** [GM-00 Epic Issues](../00-doc-ddd/07-github-management/GM-00-GitHub-Setup.md#epic-issues)
+   **Result:** Milestone M{N} created in GitHub
 
-3. **Optional: Create Sub-Issues**
-   - 1 issue per agent (DE, DBA, SE, FE, QAE)
-   - Link to epic issue
+2. **Create Epic Issue** (executed by GM automatically - 20s)
+
+   GM executes:
+   ```bash
+   bash 03-github-manager/scripts/create-epic-issue.sh \
+     {N} \
+     "M{N}: EPIC-{N} - {Name from DE-01}"
+   ```
+
+   **Result:** Epic issue created with base template
+
+3. **User Customizes Issue** (guided by GM - 1min)
+
+   GM instructs user to:
+   ```
+   ⚠️ NEXT STEPS:
+   1. Open epic issue in GitHub
+   2. Edit title: [EPIC-{N}] {Name from DE-01}
+   3. Add complete objectives from DE-01
+   4. Add complete acceptance criteria from DE-01
+   5. Add BC labels: bc:context-1, bc:context-2
+   6. Verify deliverables checklist
+   ```
+
+---
+
+### Manual Alternatives (if needed)
+
+If you need to create milestone/epic manually (GM didn't execute or retry needed):
+
+**Option A: Use the scripts manually**
+```bash
+# Create milestone
+bash 03-github-manager/scripts/create-milestone.sh \
+  1 "EPIC-01 - Name" "Description" "2026-02-28"
+
+# Create epic issue
+bash 03-github-manager/scripts/create-epic-issue.sh \
+  1 "M1: EPIC-01 - Name"
+```
+
+**Option B: GitHub UI**
+```
+GitHub → Issues → Milestones → New Milestone
+GitHub → New Issue → Select "🎯 Epic Issue" template
+```
+
+**Details:** [GM-00 Epic Issues](../00-doc-ddd/07-github-management/GM-00-GitHub-Setup.md#epic-issues)
    - **Details:** [GM-00 Issue Strategy](../00-doc-ddd/07-github-management/GM-00-GitHub-Setup.md#issue-strategy)
 
 ---
