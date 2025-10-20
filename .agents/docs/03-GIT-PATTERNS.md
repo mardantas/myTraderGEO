@@ -4,6 +4,43 @@ Este documento estabelece os padrões de uso do Git no DDD Workflow.
 
 ---
 
+## 📑 Índice
+
+### **Fundamentos**
+1. [🌳 Estrutura de Branches](#estrutura-de-branches)
+2. [📝 Padrão: Commit Inicial de Feature](#padrão-commit-inicial-de-feature)
+3. [🔄 Padrão de Commits por Agente](#padrão-de-commits-por-agente)
+4. [📋 Nomenclatura de Branches](#nomenclatura-de-branches)
+5. [🔀 Estratégias de Merge](#estratégias-de-merge)
+6. [🏷️ Convenção de Mensagens de Commit](#convenção-de-mensagens-de-commit)
+
+### **Ferramentas e Gestão**
+7. [🔍 Git Log Recomendado](#git-log-recomendado)
+8. [🏷️ Milestones e Tags](#milestones-e-tags)
+   - [Milestones (GitHub)](#milestones-github-issuesprojects)
+   - [Tags (Git/Releases)](#tags-gitreleases)
+   - [Comparação: Milestone vs Tag](#comparação-milestone-vs-tag)
+   - [Workflow Completo (Milestone + Tag)](#workflow-completo-milestone--tag)
+
+### **Boas Práticas**
+9. [🚫 O Que NÃO Fazer](#o-que-não-fazer)
+10. [✅ Checklist de Qualidade](#checklist-de-qualidade)
+
+### **Guias Operacionais**
+11. [📋 GUIA OPERACIONAL: Encerrar Discovery Foundation](#guia-operacional-encerrar-discovery-foundation)
+12. [📋 GUIA OPERACIONAL: Iniciar Novo Épico](#guia-operacional-iniciar-novo-épico)
+    - [FASE 1: Modelagem Tática (DE)](#fase-1-modelagem-tática-de)
+    - [FASE 2: GitHub Setup (GM)](#fase-2-github-setup-gm)
+    - [FASE 3: Git Workflow](#fase-3-git-workflow-você)
+    - [FASE 4: Implementação](#fase-4-implementação-iterativa)
+    - [FASE 5: Encerramento](#fase-5-encerramento)
+
+### **Referências**
+13. [🎯 Quem Faz O Quê?](#quem-faz-o-quê)
+
+---
+
+<a id="estrutura-de-branches"></a>
 ## 🌳 Estrutura de Branches
 
 ### **Branches Principais**
@@ -28,6 +65,7 @@ workflow → main → develop → feature/*
 
 ---
 
+<a id="padrão-commit-inicial-de-feature"></a>
 ## 📝 Padrão: Commit Inicial de Feature
 
 ### **Obrigatório para TODAS as features/épicos**
@@ -90,6 +128,7 @@ git push origin feature/epic-01-criar-estrategia -u
 
 ---
 
+<a id="padrão-de-commits-por-agente"></a>
 ## 🔄 Padrão de Commits por Agente
 
 ### **Formato**
@@ -171,6 +210,7 @@ Closes #5"
 
 ---
 
+<a id="nomenclatura-de-branches"></a>
 ## 📋 Nomenclatura de Branches
 
 ### **Padrão**
@@ -198,14 +238,41 @@ feature/refactor-aggregate-structure
 
 ---
 
+<a id="estratégias-de-merge"></a>
 ## 🔀 Estratégias de Merge
+
+**IMPORTANTE:** Todos os merges devem ser feitos **via Pull Request** no GitHub.
+
+### **Padrão de Merge**
+
+1. **Via GitHub UI (Recomendado)**
+   - Acesse a PR no GitHub
+   - Clique em "Merge pull request"
+   - Escolha "**Create a merge commit**" (equivalente a `--no-ff`)
+   - Confirme o merge
+
+2. **Via GitHub CLI**
+   ```bash
+   gh pr merge --merge --delete-branch
+   ```
+
+3. **Manual (apenas se não houver PR)**
+   ```bash
+   git merge <branch> --no-ff -m "Mensagem do merge"
+   ```
 
 ### **Discovery Foundation (Issue #1)**
 
 ```bash
-# Merge com merge commit (preserva histórico de 6+ commits)
-git checkout develop
-git merge feature/discovery-foundation --no-ff -m "Merge: Discovery Foundation
+# Merge via PR com merge commit (preserva histórico de 6+ commits)
+# GitHub UI: Escolha "Create a merge commit"
+# GitHub CLI:
+gh pr merge --merge --delete-branch
+```
+
+**Mensagem do merge commit:**
+```
+Merge: Discovery Foundation
 
 Completa fase de Discovery com todos os deliverables:
 - SDA: Modelagem estratégica
@@ -215,32 +282,41 @@ Completa fase de Discovery com todos os deliverables:
 - SEC: Security baseline
 - QAE: Test strategy
 
-Closes #1"
+Closes #1
 ```
 
-### **Épicos Funcionais (Sub-Issues)**
+### **Épicos Funcionais**
 
-Cada agente tem sua própria issue e PR:
+Cada deliverable tem sua própria branch e PR. Merges feitos via PR:
 
 ```bash
-# DE
-git merge feature/epic-01-domain-model --no-ff
-# DBA
-git merge feature/epic-01-schema --no-ff
-# SE
-git merge feature/epic-01-backend --no-ff
-# UXD
-git merge feature/epic-01-wireframes --no-ff
-# FE
-git merge feature/epic-01-frontend --no-ff
-# QAE (última - fecha o épico)
-git merge feature/epic-01-quality-gate --no-ff
+# Cada agente cria PR e faz merge via GitHub
+# Todos usando "Create a merge commit" (--no-ff)
+
+# DE: Domain Model
+gh pr merge --merge
+
+# DBA: Schema Review
+gh pr merge --merge
+
+# SE: Backend Implementation
+gh pr merge --merge
+
+# UXD: Wireframes
+gh pr merge --merge
+
+# FE: Frontend Implementation
+gh pr merge --merge
+
+# QAE: Quality Gate (última - fecha o épico)
+gh pr merge --merge
 ```
 
-**Estratégia:** `--no-ff` (no fast-forward) para preservar contexto histórico
+**Estratégia:** Sempre usar "Create a merge commit" (equivalente a `--no-ff`) para preservar contexto histórico
 
 ---
 
+<a id="convenção-de-mensagens-de-commit"></a>
 ## 🏷️ Convenção de Mensagens de Commit
 
 ### **Tipos (Conventional Commits)**
@@ -303,6 +379,7 @@ Este commit marca o início do trabalho no épico de cálculo de Greeks.
 
 ---
 
+<a id="git-log-recomendado"></a>
 ## 🔍 Git Log Recomendado
 
 ### **Ver Histórico da Feature**
@@ -330,18 +407,322 @@ git diff main..develop
 
 ---
 
-## 🚫 O Que NÃO Fazer
+<a id="milestones-e-tags"></a>
+## 🏷️ Milestones e Tags
 
-❌ Commitar diretamente em `main` ou `develop`
-❌ Esquecer o commit vazio inicial
-❌ Usar fast-forward em merges importantes (`--ff`)
-❌ Esquecer de referenciar Issue (`Ref #N` ou `Closes #N`)
-❌ Commits genéricos ("fix", "update", "changes")
-❌ Commitar código sem testes
-❌ Fazer push sem validar localmente
+### **Resumo Rápido**
+
+**Milestones** e **Tags** trabalham **juntos** no ciclo de vida de um épico:
+
+- **Milestone (GitHub)** → Gerencia trabalho e progresso do épico
+- **Tag (Git)** → Marca versão do código quando vai para produção
+
+**Ambos são usados**, não é um "ou" outro!
 
 ---
 
+### **🎯 Milestones (GitHub Issues/Projects)**
+
+**O que são:**
+- Agrupadores de issues relacionadas a um épico
+- Mostram progresso visual (ex: 5/15 issues completas = 33%)
+- Têm data de entrega (due date)
+- Vivem no GitHub (não no Git)
+
+**Convenção de nomenclatura:**
+```
+M0: Discovery Foundation
+M1: EPIC-01 - Criar Estratégia
+M2: EPIC-02 - Calcular Greeks
+M3: EPIC-03 - Nome do Épico
+...
+```
+
+**Quando criar:**
+- ✅ **Sob demanda** (um por vez, quando iniciar o épico)
+- ✅ M0 → Criado durante Discovery Foundation
+- ✅ M1 → Criado no Dia 2 do EPIC-01 (após DE-01 completo)
+- ✅ M2 → Criado no Dia 2 do EPIC-02 (após DE-02 completo)
+- ❌ **NÃO criar todos de uma vez** - épicos futuros podem mudar de escopo
+
+**Como criar:**
+
+1. **Via Script (Automático pelo GM)**
+   ```bash
+   ./03-github-manager/scripts/create-milestone.sh \
+     1 \
+     "EPIC-01 - Criar Estratégia Bull Call Spread" \
+     "Descrição do épico" \
+     "2026-02-28"
+   ```
+
+2. **Via GitHub CLI**
+   ```bash
+   gh api repos/OWNER/REPO/milestones -X POST \
+     -f title="M1: EPIC-01 - Criar Estratégia" \
+     -f description="Epic description" \
+     -f due_on="2025-12-31T23:59:59Z" \
+     -f state="open"
+   ```
+
+3. **Via GitHub UI** (30s - mais simples)
+   ```
+   GitHub → Issues → Milestones → New Milestone
+   Title: M1: EPIC-01 - Criar Estratégia
+   Due date: 2025-12-31
+   ```
+
+**Relação com Épicos:**
+- 1 Milestone = 1 Épico
+- Milestone agrupa **TODAS** as issues do épico:
+  ```
+  M1: EPIC-01 - Criar Estratégia
+  ├── Issue #5: [EPIC-01] Criar Estratégia (épico pai)
+  ├── Issue #6: DE: Domain Model
+  ├── Issue #7: DBA: Schema Review
+  ├── Issue #8: SE: Backend Implementation
+  ├── Issue #9: UXD: Wireframes
+  ├── Issue #10: FE: Frontend Implementation
+  └── Issue #11: QAE: Quality Gate
+
+  Progresso: 5/7 completas (71%)
+  Due Date: 2025-11-30
+  Status: Open
+  ```
+
+**Quando fechar:**
+- ✅ Quando **todas as issues** do milestone estão completas
+- ✅ Após merge do épico para `develop`
+- ✅ Antes de criar a release/tag
+
+**Fechar milestone:**
+```bash
+# Via GitHub CLI
+gh api repos/OWNER/REPO/milestones/1 -X PATCH -f state=closed
+
+# Via GitHub UI
+GitHub → Issues → Milestones → M1 → Close milestone
+```
+
+---
+
+### **🏷️ Tags (Git/Releases)**
+
+**O que são:**
+- Marcadores de versões específicas do código no Git
+- Imutáveis (sempre apontam para o mesmo commit)
+- Usadas para releases em produção
+- Vivem no Git (não no GitHub Issues)
+
+**Convenção: Semantic Versioning**
+```
+v0.1.0 - Discovery Foundation (MINOR release)
+v1.0.0 - EPIC-01 completo (MAJOR release - primeira versão)
+v1.1.0 - EPIC-02 completo (MINOR release - nova feature)
+v1.1.1 - Bugfix crítico (PATCH release)
+v2.0.0 - Breaking change (MAJOR release)
+```
+
+**Formato Semantic Versioning:**
+```
+vMAJOR.MINOR.PATCH
+
+MAJOR: Breaking changes (incompatível com versão anterior)
+MINOR: Nova funcionalidade (compatível com versão anterior)
+PATCH: Bugfix (compatível com versão anterior)
+```
+
+**Quando criar:**
+- ✅ Após merge para `main` (produção)
+- ✅ Quando marcar uma release/versão
+- ✅ Geralmente após épico completo e deploy em produção
+- ✅ Após smoke test em staging passar
+
+**Como criar:**
+
+1. **Via Git + GitHub CLI (Recomendado)**
+   ```bash
+   # 1. Garantir que está na main atualizada
+   git checkout main
+   git pull origin main
+
+   # 2. Criar tag anotada
+   git tag -a v1.0.0 -m "Release v1.0.0: EPIC-01 - Criar Estratégia
+
+   Features:
+   - Criação de estratégias Bull Call Spread
+   - Cálculo automático de Greeks
+   - Dashboard de estratégias
+
+   Closes #5"
+
+   # 3. Push da tag
+   git push origin v1.0.0
+
+   # 4. Criar GitHub Release com changelog
+   gh release create v1.0.0 \
+     --title "v1.0.0 - EPIC-01: Criar Estratégia" \
+     --notes "Changelog baseado nas issues do M1"
+   ```
+
+2. **Via GitHub UI**
+   ```
+   GitHub → Releases → Create a new release
+   Choose tag: v1.0.0 (create new tag)
+   Title: v1.0.0 - EPIC-01: Criar Estratégia
+   Description: [Changelog do épico]
+   Publish release
+   ```
+
+**Usar em deploy:**
+```bash
+# Deploy referencia a tag específica
+docker build -t myapp:v1.0.0 .
+kubectl set image deployment/myapp myapp=myapp:v1.0.0
+
+# Rollback para versão anterior
+kubectl set image deployment/myapp myapp=myapp:v0.1.0
+```
+
+---
+
+### **📊 Comparação: Milestone vs Tag**
+
+| Aspecto | Milestone | Tag |
+|---------|-----------|-----|
+| **Onde vive?** | GitHub Issues | Git Repository |
+| **Propósito** | Gerenciar trabalho | Marcar versões |
+| **Quando criar?** | Início do épico | Merge para main |
+| **Quando fechar?** | Todas issues completas | N/A (imutável) |
+| **Vincula a** | Issues (#5, #6, #7) | Commit específico (SHA) |
+| **Mutável?** | Sim (pode reabrir) | Não (imutável) |
+| **Visível em** | GitHub Projects | Git log, Releases |
+| **Usado para** | Tracking, Velocity | Deploy, Rollback |
+| **Criado por** | GM (automaticamente) | Desenvolvedor (manualmente) |
+| **Tem data?** | Sim (due date) | Não (apenas timestamp) |
+
+---
+
+### **🔄 Workflow Completo (Milestone + Tag)**
+
+**Linha do tempo de um épico:**
+
+```bash
+# ==============================
+# DIA 1: MODELAGEM (DE)
+# ==============================
+# DE cria DE-01-EPIC-01-CreateStrategy-Domain-Model.md
+
+# ==============================
+# DIA 2: GITHUB SETUP (GM)
+# ==============================
+# GM cria MILESTONE M1
+./03-github-manager/scripts/create-milestone.sh \
+  1 "EPIC-01 - Criar Estratégia" "..." "2025-11-30"
+
+# GM cria ISSUE épico #5 vinculada a M1
+./03-github-manager/scripts/create-epic-issue.sh \
+  1 "M1: EPIC-01 - Criar Estratégia"
+
+# ==============================
+# DIA 3-10: IMPLEMENTAÇÃO
+# ==============================
+# Criar issues para cada agente, todas vinculadas a M1
+gh issue create --title "DE: Domain Model" --milestone "M1: EPIC-01" --label "agent:DE"
+gh issue create --title "DBA: Schema Review" --milestone "M1: EPIC-01" --label "agent:DBA"
+gh issue create --title "SE: Backend" --milestone "M1: EPIC-01" --label "agent:SE"
+gh issue create --title "UXD: Wireframes" --milestone "M1: EPIC-01" --label "agent:UXD"
+gh issue create --title "FE: Frontend" --milestone "M1: EPIC-01" --label "agent:FE"
+gh issue create --title "QAE: Quality Gate" --milestone "M1: EPIC-01" --label "agent:QAE"
+
+# Trabalho no épico... issues sendo fechadas...
+# Progresso visível: M1 (3/7 completas → 5/7 completas → 7/7 completas)
+
+# ==============================
+# DIA 10: FIM DO ÉPICO
+# ==============================
+# QAE aprova → Merge PR para develop
+gh pr merge --merge --delete-branch
+
+# ✅ FECHAR MILESTONE M1 (todas issues completas)
+gh api repos/OWNER/REPO/milestones/1 -X PATCH -f state=closed
+
+# ==============================
+# DIA 11: RELEASE PARA PRODUÇÃO
+# ==============================
+# Deploy staging → smoke test → aprovado
+
+# Merge develop → main (via PR)
+gh pr create --base main --head develop --title "Release: EPIC-01"
+gh pr merge --merge
+
+# ✅ CRIAR TAG v1.0.0
+git tag -a v1.0.0 -m "Release v1.0.0: EPIC-01 - Criar Estratégia
+
+Features:
+- Criação de estratégias Bull Call Spread
+- Cálculo automático de Greeks
+
+Closes #5"
+
+git push origin v1.0.0
+
+# ✅ CRIAR GITHUB RELEASE
+gh release create v1.0.0 \
+  --title "v1.0.0 - EPIC-01: Criar Estratégia" \
+  --notes "Changelog:
+- Criação de estratégias Bull Call Spread
+- Cálculo automático de Greeks
+- Dashboard de estratégias
+
+Issues fechadas: #5, #6, #7, #8, #9, #10, #11
+Milestone: M1 (7/7 completas)"
+
+# Deploy production
+# PE: docker-compose -f docker-compose.prod.yml up -d
+```
+
+---
+
+### **✅ Checklist: Milestones e Tags**
+
+**Ao iniciar épico:**
+- [ ] ✅ DE-01 criado e mergeado em `develop`
+- [ ] ✅ GM criou Milestone M{N}
+- [ ] ✅ GM criou Issue épico #{N}
+- [ ] ✅ Issue customizada com detalhes do DE-01
+- [ ] ✅ Todas as issues do épico vinculadas ao Milestone M{N}
+
+**Ao finalizar épico:**
+- [ ] ✅ Todas as issues do Milestone M{N} fechadas
+- [ ] ✅ PR mergeada para `develop`
+- [ ] ✅ Milestone M{N} fechado
+- [ ] ✅ Deploy staging + smoke test aprovado
+- [ ] ✅ PR de `develop` → `main` criada e mergeada
+- [ ] ✅ Tag v{X.Y.Z} criada
+- [ ] ✅ GitHub Release criada com changelog
+- [ ] ✅ Deploy production executado
+
+**Referências:**
+- Para detalhes completos sobre Milestones: [GM-00-GitHub-Setup.md](../../00-doc-ddd/07-github-management/GM-00-GitHub-Setup.md)
+- Para scripts de automação: [03-github-manager/README.md](../../03-github-manager/README.md)
+
+---
+
+<a id="o-que-não-fazer"></a>
+## 🚫 O Que NÃO Fazer
+
+- ❌ Commitar diretamente em `main` ou `develop`
+- ❌ Esquecer o commit vazio inicial
+- ❌ Usar fast-forward em merges importantes (`--ff`)
+- ❌ Esquecer de referenciar Issue (`Ref #N` ou `Closes #N`)
+- ❌ Commits genéricos ("fix", "update", "changes")
+- ❌ Commitar código sem testes
+- ❌ Fazer push sem validar localmente
+
+---
+
+<a id="checklist-de-qualidade"></a>
 ## ✅ Checklist de Qualidade
 
 Antes de fazer push:
@@ -356,6 +737,7 @@ Antes de fazer push:
 
 ---
 
+<a id="guia-operacional-encerrar-discovery-foundation"></a>
 ## 📋 GUIA OPERACIONAL: Encerrar Discovery Foundation
 
 ### **Contexto**
@@ -416,15 +798,24 @@ gh pr ready
 # 3. Marque todos os checkboxes como completos
 
 # ====================================
-# 4. MERGE PARA DEVELOP
+# 4. MERGE PARA DEVELOP (VIA PR)
 # ====================================
 
-# Esperar aprovação (se houver revisor)
-# Caso contrário, prosseguir
+# Opção A: Via GitHub UI (Recomendado)
+# 1. Acesse a PR no GitHub
+# 2. Espere aprovação (se houver revisor)
+# 3. Clique em "Merge pull request"
+# 4. Escolha "Create a merge commit" (equivalente a --no-ff)
+# 5. Confirme o merge
+# 6. (Opcional) Delete a branch via UI
 
+# Opção B: Via GitHub CLI
+gh pr merge --merge --delete-branch
+
+# Opção C: Merge Manual (apenas se não houver PR)
+# ⚠️ Use apenas se por algum motivo não criou PR
 git checkout develop
 git pull origin develop
-
 git merge feature/discovery-foundation --no-ff -m "Merge: Discovery Foundation
 
 Completa fase de Discovery com todos os deliverables:
@@ -436,7 +827,6 @@ Completa fase de Discovery com todos os deliverables:
 - Test strategy (QAE)
 
 Closes #1"
-
 git push origin develop
 
 # ====================================
@@ -446,9 +836,32 @@ git push origin develop
 # Fazer isso apenas se Discovery é marco importante
 # (Ex: v0.1.0 - Fundação do Projeto)
 
+# Opção A: Via GitHub UI (Recomendado)
+# 1. Crie uma PR de develop → main
+# 2. Título: "Release: Discovery Foundation Complete (v0.1.0)"
+# 3. Faça o merge via "Create a merge commit"
+# 4. Após merge, crie tag via GitHub Releases
+
+# Opção B: Via GitHub CLI
+# Criar PR de develop para main
+gh pr create \
+  --base main \
+  --head develop \
+  --title "Release: Discovery Foundation Complete (v0.1.0)" \
+  --body "Primeira release do projeto com fundação DDD estabelecida."
+
+# Fazer merge da PR
+gh pr merge --merge
+
+# Criar release com tag
+gh release create v0.1.0 \
+  --title "v0.1.0 - Discovery Foundation" \
+  --notes "Primeira release do projeto com fundação DDD estabelecida."
+
+# Opção C: Merge Manual (apenas se não usar PR)
+# ⚠️ Use apenas se por algum motivo não criou PR
 git checkout main
 git pull origin main
-
 git merge develop --no-ff -m "Release: Discovery Foundation Complete (v0.1.0)
 
 Primeira release do projeto com fundação DDD estabelecida.
@@ -462,7 +875,6 @@ Deliverables:
 
 Próximo passo: Iniciar épicos funcionais."
 
-# Criar tag de versão
 git tag v0.1.0
 git push origin main --tags
 
@@ -502,6 +914,7 @@ git log --oneline --graph -n 10
 
 ---
 
+<a id="guia-operacional-iniciar-novo-épico"></a>
 ## 📋 GUIA OPERACIONAL: Iniciar Novo Épico
 
 ### **Contexto**
@@ -557,22 +970,22 @@ Ref #1"
 
 git push origin feature/epic-01-domain-model -u
 
-# 4. (Opcional) Criar PR para review do DE-01
+# 4. Criar PR para review do DE-01
 gh pr create \
   --title "DE: Modelo de domínio EPIC-01" \
   --body "Domain model para review antes de criar issue. Ref #1" \
   --base develop \
   --head feature/epic-01-domain-model
 
-# 5. Após review (ou skip se solo dev), merge para develop
-git checkout develop
-git pull origin develop
-git merge feature/epic-01-domain-model --no-ff -m "Merge: DE domain model EPIC-01"
-git push origin develop
+# 5. Fazer merge da PR (após review ou skip se solo dev)
+# Opção 5A: Via GitHub UI
+# 1. Acesse a PR no GitHub
+# 2. Clique em "Merge pull request"
+# 3. Escolha "Create a merge commit"
+# 4. (Opcional) Delete a branch via UI
 
-# 6. Deletar branch (opcional)
-git branch -d feature/epic-01-domain-model
-git push origin --delete feature/epic-01-domain-model
+# Opção 5B: Via GitHub CLI
+gh pr merge --merge --delete-branch
 
 # -------------------------------------
 # OPÇÃO B: Direto em Develop (Pragmático)
@@ -819,7 +1232,20 @@ git push
 # Marcar PR como ready for review
 gh pr ready
 
-# Merge para develop (após QAE aprovar)
+# Opção A: Merge via GitHub UI (Recomendado)
+# 1. Acesse a PR no GitHub
+# 2. Espere aprovação do QAE (ou revisor)
+# 3. Clique em "Merge pull request"
+# 4. Escolha "Create a merge commit" (equivalente a --no-ff)
+# 5. Confirme o merge
+# 6. Issue #5 fechada automaticamente (devido ao "Closes #5" no commit)
+# 7. (Opcional) Delete a branch via UI
+
+# Opção B: Merge via GitHub CLI
+gh pr merge --merge --delete-branch
+
+# Opção C: Merge Manual (apenas se não houver PR)
+# ⚠️ Use apenas se por algum motivo não criou PR
 git checkout develop
 git pull origin develop
 git merge feature/epic-01-criar-estrategia --no-ff -m "Merge: EPIC-01 - Criar Estratégia
@@ -844,12 +1270,19 @@ git push origin develop
 
 # Smoke test staging (QAE)
 
+# (Opcional) Se aprovado em staging, promover para main/production
+# Criar PR de develop → main
+gh pr create \
+  --base main \
+  --head develop \
+  --title "Release: EPIC-01 - Criar Estratégia" \
+  --body "Release do EPIC-01 para produção após aprovação em staging."
+
+# Fazer merge da PR (via UI ou CLI)
+gh pr merge --merge
+
 # Deploy production (PE)
 # PE: docker compose -f docker-compose.prod.yml up -d
-
-# (Opcional) Deletar branch
-git branch -d feature/epic-01-criar-estrategia
-git push origin --delete feature/epic-01-criar-estrategia
 
 # ====================================
 # VERIFICAR ESTADO FINAL
@@ -898,6 +1331,7 @@ git log --oneline --graph -n 10
 
 ---
 
+<a id="quem-faz-o-quê"></a>
 ## 🎯 Quem Faz O Quê?
 
 ### **GM (GitHub Manager)**

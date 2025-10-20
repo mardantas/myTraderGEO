@@ -830,8 +830,10 @@ Any agent can create FEEDBACK for another:
 ### Documentation
 - **Workflow Guide:** [00-Workflow-Guide.md](00-Workflow-Guide.md)
 - **Nomenclature:** [02-Nomenclature-Standards.md](02-Nomenclature-Standards.md)
-- **DDD Patterns:** [04-DDD-Patterns-Reference.md](04-DDD-Patterns-Reference.md)
-- **API Standards:** [05-API-Standards.md](05-API-Standards.md)
+- **Git Patterns:** [03-GIT-PATTERNS.md](03-GIT-PATTERNS.md)
+- **Security & Platform:** [04-Security-And-Platform-Strategy.md](04-Security-And-Platform-Strategy.md)
+- **DDD Patterns:** [05-DDD-Patterns-Reference.md](05-DDD-Patterns-Reference.md)
+- **API Standards:** [06-API-Standards.md](06-API-Standards.md)
 
 ### Agent XML Specifications
 - [10-SDA - Strategic Domain Analyst.xml](../10-SDA%20-%20Strategic%20Domain%20Analyst.xml)
