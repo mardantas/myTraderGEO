@@ -324,6 +324,33 @@ gh pr merge --merge
 
 ---
 
+### **⏱️ Quando fazer merge para `develop`?**
+
+**Decisão atual: Merge por Epic (conclusão completa)**
+
+Durante as iterações de um épico, múltiplos agentes trabalham em sequência (DE → DBA → SE → FE → QAE). O merge para `develop` acontece **apenas ao final do épico**, quando todos os agentes completaram seus trabalhos.
+
+```bash
+# ❌ NÃO fazer merge após cada agente
+epic-issue-finish.sh 7        # DBA finaliza → apenas commit + push na feature branch
+epic-issue-finish.sh 8        # SE finaliza → apenas commit + push na feature branch
+
+# ✅ Fazer merge após epic completo
+epic-close.sh 1 --merge       # QAE aprovou → merge para develop + release
+```
+
+**Razões da escolha:**
+- ✅ `develop` sempre **estável** (features completas e testadas)
+- ✅ **Menos overhead** de gerenciamento (1 merge por epic vs 5-6 merges)
+- ✅ **Alinhado com DDD** (bounded context completo antes do merge)
+- ✅ **Ideal para equipes pequenas** e MVPs (1-2 desenvolvedores)
+- ✅ **Revisão holística** (1 PR com contexto completo do epic)
+
+**Alternativa não utilizada:**
+- **Merge contínuo** (após cada agente): Útil para equipes grandes (3+ devs) ou produtos maduros que precisam de integração contínua mais agressiva. Requer feature flags para esconder funcionalidades incompletas e maior overhead de gestão de conflitos.
+
+---
+
 <a id="convenção-de-mensagens-de-commit"></a>
 ## 🏷️ Convenção de Mensagens de Commit
 
@@ -1599,6 +1626,24 @@ GM: Lendo DE-01-EPIC-01-CreateStrategy-Domain-Model.md...
 - ✅ **Mais rápido** - 40s vs 3min manual
 - ✅ **Sem erros** - Dados vêm diretamente do DE-01
 - ✅ **Consistente** - Sempre mesma estrutura
+
+---
+
+#### **📋 Fluxo: Use Cases → Epic Issues**
+
+Os use cases são documentados no **DE-01** (Domain Model) e transformados em objetivos/critérios da Epic Issue:
+
+```
+DE-01-Domain-Model.md               Epic Issue #N
+┌─────────────────────┐            ┌──────────────────────┐
+│ ## Use Cases        │            │ ## 📊 Objectives     │
+│ 1. Criar Estratégia │ ─ GM ────→ │ 1. Criar estratégias │
+│ 2. Calcular P&L     │  extrai    │ 2. Calcular P&L      │
+│ 3. Visualizar Greeks│            │ 3. Exibir Greeks     │
+└─────────────────────┘            └──────────────────────┘
+```
+
+**Use cases NÃO viram issues individuais** - ficam como objectives/acceptance criteria da Epic Issue.
 
 ---
 
