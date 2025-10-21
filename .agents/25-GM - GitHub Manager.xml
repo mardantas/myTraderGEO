@@ -59,6 +59,8 @@
         **NOMENCLATURE:** ALWAYS follow naming standards (see config.paths.standards.nomenclature) for labels, branches, issues
 
         **SECURITY AND PERFORMANCE:** Always consult security and platform strategy (see config.paths.standards.security-platform) to implement security and performance practices on GitHub (Dependabot, CodeQL, workflows).
+
+        **GIT WORKFLOW PATTERNS:** For complete Git workflow details (branches, PRs, milestones, tags, commit patterns, merge strategies), reference `.agents/docs/03-GIT-PATTERNS.md`. GM documents branch strategy and merge strategy in GM-00 but should link to 03-GIT-PATTERNS.md for comprehensive guidance.
     </general-instructions>
 
     <responsibilities>
@@ -188,6 +190,46 @@
         <deliverable path=".github/PULL_REQUEST_TEMPLATE.md" base-path="" type="pre-existing">
             <description>PR template with DDD checklist (part of workflow template, already exists)</description>
             <gm-action>DOCUMENT ONLY in GM-00 (do NOT create, it already exists)</gm-action>
+        </deliverable>
+
+        <!-- OPTIONAL HELPER SCRIPTS: Templates provided, user executes when needed -->
+        <deliverable path="03-github-manager/scripts/create-milestone.sh" base-path="" type="optional-helper">
+            <template base-path="templates">06-github-management/scripts/create-milestone.template.sh</template>
+            <description>Helper script: Create milestone on-demand</description>
+            <gm-action>TEMPLATE PROVIDED, user customizes [OWNER]/[REPO] and executes manually when needed</gm-action>
+            <note>DOCUMENT in README.md with usage examples</note>
+            <phase>discovery</phase>
+            <mandatory>false</mandatory>
+        </deliverable>
+
+        <deliverable path="03-github-manager/scripts/create-epic-issue.sh" base-path="" type="optional-helper">
+            <template base-path="templates">06-github-management/scripts/create-epic-issue.template.sh</template>
+            <description>Helper script: Create epic issue after DE-01</description>
+            <gm-action>TEMPLATE PROVIDED, user customizes [OWNER]/[REPO] and executes manually when needed</gm-action>
+            <note>DOCUMENT in README.md with usage examples</note>
+            <phase>discovery</phase>
+            <mandatory>false</mandatory>
+        </deliverable>
+
+        <deliverable path="03-github-manager/scripts/create-epic-full.sh" base-path="" type="optional-helper">
+            <template base-path="templates">06-github-management/scripts/create-epic-full.template.sh</template>
+            <description>Helper script: Create complete epic setup (milestone + all issues) - RECOMMENDED</description>
+            <gm-action>TEMPLATE PROVIDED, user customizes [OWNER]/[REPO] and executes manually when starting epic</gm-action>
+            <note>DOCUMENT in README.md as RECOMMENDED automation - saves ~15min per epic</note>
+            <phase>discovery</phase>
+            <mandatory>false</mandatory>
+            <benefit>Automation: Creates milestone + epic issue + 6 agent issues (DE, DBA, SE, UXD, FE, QAE) in one command</benefit>
+        </deliverable>
+
+        <deliverable path="03-github-manager/scripts/start-work-on-issue.sh" base-path="" type="optional-helper">
+            <template base-path="templates">06-github-management/scripts/start-work-on-issue.template.sh</template>
+            <description>Helper script: Automate starting work on issue (branch + commit + PR) - RECOMMENDED</description>
+            <gm-action>TEMPLATE PROVIDED, user customizes [OWNER]/[REPO] and executes manually when starting work on issue</gm-action>
+            <note>DOCUMENT in README.md as RECOMMENDED automation - saves ~3min per issue, ensures 03-GIT-PATTERNS.md compliance</note>
+            <phase>discovery</phase>
+            <mandatory>false</mandatory>
+            <benefit>Automation: Creates branch (kebab-case), initial empty commit (03-GIT-PATTERNS standard), push, draft PR</benefit>
+            <references>03-GIT-PATTERNS.md for commit message format</references>
         </deliverable>
     </deliverables>
 

@@ -321,9 +321,10 @@ Agentes suportam execução em dois modos:
 │   │   ├── 00-Workflow-Guide.md          # Este documento
 │   │   ├── 01-Agents-Overview.md         # Detalhes dos agentes
 │   │   ├── 02-Nomenclature-Standards.md  # Padrões de nomenclatura
-│   │   ├── 03-Security-And-Platform-Strategy.md
-│   │   ├── 04-DDD-Patterns-Reference.md
-│   │   └── 05-API-Standards.md
+│   │   ├── 03-GIT-PATTERNS.md            # Padrões Git (branches, PRs, milestones, tags)
+│   │   ├── 04-Security-And-Platform-Strategy.md
+│   │   ├── 05-DDD-Patterns-Reference.md
+│   │   └── 06-API-Standards.md
 │   ├── 10-SDA.xml ... 60-QAE.xml         # Especificações dos agentes
 │   ├── templates/                         # Templates para deliverables
 │   └── workflow/                          # Checklists e validações
@@ -389,6 +390,9 @@ Issue: #[número]
 
 Este commit marca o início do trabalho na feature [descrição]."
 ```
+
+> **📖 Para detalhes completos sobre Git workflow (branches, PRs, milestones, tags):**
+> Ver [03-GIT-PATTERNS.md](03-GIT-PATTERNS.md)
 
 ### Épicos 2, 3, N...
 
@@ -718,12 +722,13 @@ cd c:\Users\Marco\Projetos\myTraderGEO
 
 - **Agentes:** [01-Agents-Overview.md](01-Agents-Overview.md)
 - **Nomenclatura:** [02-Nomenclature-Standards.md](02-Nomenclature-Standards.md)
-- **Segurança:** [03-Security-And-Platform-Strategy.md](03-Security-And-Platform-Strategy.md)
-- **Padrões DDD:** [04-DDD-Patterns-Reference.md](04-DDD-Patterns-Reference.md)
-- **Padrões de API:** [05-API-Standards.md](05-API-Standards.md)
-- **PE/SEC Checkpoints:** [07-PE-SEC-Checkpoint-Decision-Matrix.md](07-PE-SEC-Checkpoint-Decision-Matrix.md)
-- **Fluxo de Feedback:** [08-FEEDBACK-FLOW-GUIDE.md](08-FEEDBACK-FLOW-GUIDE.md)
-- **Think Mode:** [09-THINK-MODE-GUIDE.md](09-THINK-MODE-GUIDE.md)
+- **Padrões Git:** [03-GIT-PATTERNS.md](03-GIT-PATTERNS.md) - Branches, PRs, Milestones, Tags
+- **Segurança:** [04-Security-And-Platform-Strategy.md](04-Security-And-Platform-Strategy.md)
+- **Padrões DDD:** [05-DDD-Patterns-Reference.md](05-DDD-Patterns-Reference.md)
+- **Padrões de API:** [06-API-Standards.md](06-API-Standards.md)
+- **PE/SEC Checkpoints:** [08-PE-SEC-Checkpoint-Decision-Matrix.md](08-PE-SEC-Checkpoint-Decision-Matrix.md)
+- **Fluxo de Feedback:** [09-FEEDBACK-FLOW-GUIDE.md](09-FEEDBACK-FLOW-GUIDE.md)
+- **Think Mode:** [10-THINK-MODE-GUIDE.md](10-THINK-MODE-GUIDE.md)
 - **Config Master:** `workflow-config.json`
 
 ---

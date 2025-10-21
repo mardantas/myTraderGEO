@@ -124,6 +124,91 @@ gh issue list --label epic --repo [OWNER]/[REPO]
 
 ---
 
+### `create-epic-full.sh` ⭐ **NEW - RECOMMENDED**
+**Purpose:** Creates COMPLETE epic setup: milestone + epic issue + all agent issues (all at once)
+**Execute:** When starting a new epic (after DE-01 complete)
+**Usage:**
+```bash
+bash 03-github-manager/scripts/create-epic-full.sh \
+  <epic-number> "<epic-name>" "<due-date-YYYY-MM-DD>"
+```
+
+**Examples:**
+```bash
+# EPIC-01
+bash 03-github-manager/scripts/create-epic-full.sh \
+  1 "Criar Estratégia Bull Call Spread" "2026-02-28"
+```
+
+**What it creates:**
+1. Milestone M1
+2. Issue: [EPIC-01] Epic Name (parent)
+3. Issue: DE - Domain Model
+4. Issue: DBA - Schema Review
+5. Issue: SE - Backend Implementation
+6. Issue: UXD - Wireframes
+7. Issue: FE - Frontend Implementation
+8. Issue: QAE - Quality Gate
+
+**✅ Advantages:**
+- Saves ~15min vs creating issues manually
+- Ensures consistency (all issues follow same pattern)
+- All issues linked to milestone automatically
+- Agent labels applied automatically
+
+**⚠️ Note:** Still need to customize epic issue with DE-01 details
+
+**Verify:**
+```bash
+gh issue list --milestone "M1: EPIC-01" --repo [OWNER]/[REPO]
+```
+
+**See GM-00 for:** Complete epic workflow and customization
+
+---
+
+### `start-work-on-issue.sh` ⭐ **NEW - RECOMMENDED**
+**Purpose:** Automates starting work on an issue (branch + commit + PR)
+**Execute:** When you're ready to start working on a specific issue
+**Usage:**
+```bash
+bash 03-github-manager/scripts/start-work-on-issue.sh <issue-number>
+```
+
+**Examples:**
+```bash
+# Start work on issue #6 (DE: Domain Model)
+bash 03-github-manager/scripts/start-work-on-issue.sh 6
+```
+
+**What it does:**
+1. Fetches issue info (title, milestone, labels)
+2. Generates branch name (feature/epic-01-de-domain-model)
+3. Creates and checks out branch
+4. Makes initial empty commit (following 03-GIT-PATTERNS.md)
+5. Pushes branch to origin
+6. Creates draft PR linked to issue
+
+**✅ Advantages:**
+- Saves ~3min vs manual setup
+- Ensures correct branch naming (kebab-case, with epic number)
+- Initial commit follows 03-GIT-PATTERNS.md standard
+- PR automatically linked to issue
+
+**When ready for review:**
+```bash
+gh pr ready  # Mark PR as ready for review
+```
+
+**When approved:**
+```bash
+gh pr merge --merge --delete-branch
+```
+
+**See 03-GIT-PATTERNS.md for:** Complete Git workflow details
+
+---
+
 ## 🔧 Common Commands
 
 ### Labels
@@ -349,6 +434,7 @@ For strategic decisions, technical details, justifications, and integrations:
 **→ [GM-00-GitHub-Setup.md](../00-doc-ddd/07-github-management/GM-00-GitHub-Setup.md)**
 
 Other references:
+- [03-GIT-PATTERNS.md](../.agents/docs/03-GIT-PATTERNS.md) - Git workflow (branches, PRs, milestones, tags)
 - [SDA-01 Event Storming](../00-doc-ddd/02-strategic-design/SDA-01-Event-Storming.md) - Epics source
 - [SDA-02 Context Map](../00-doc-ddd/02-strategic-design/SDA-02-Context-Map.md) - Bounded Contexts source
 - [PE-00 Environments Setup](../00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md) - Stack for CI/CD

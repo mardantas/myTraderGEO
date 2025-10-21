@@ -498,56 +498,100 @@ User customizes issue with DE-01 complete details (1min)
    - Extract:
      - Epic number: 01 (from filename)
      - Epic name: Strategy Creation (from filename)
-     - Epic description (first paragraph)
-     - Business objectives
-     - Acceptance criteria
-     - BCs involved
+     - **Bounded Contexts:** Strategy, MarketData (from DE-01 section)
+     - **Objectives:** List of business objectives (from DE-01)
+     - **Acceptance Criteria:** List of criteria (from DE-01)
 
-2. **Execute create-milestone.sh automatically:**
+2. **Execute epic-create.sh automatically with extracted data:**
    ```bash
-   ./03-github-manager/scripts/create-milestone.sh \
+   ./03-github-manager/scripts/epic-create.sh \
      1 \
-     "EPIC-01 - Strategy Creation and Analysis" \
-     "Catálogo de templates, criação de estratégias, cálculos automáticos" \
-     "2026-02-28"
+     "Criar e Visualizar Estratégia" \
+     "2026-02-28" \
+     --bcs "Strategy,MarketData" \
+     --objectives "Permitir criação de estratégias|Calcular P&L automaticamente" \
+     --criteria "Usuário pode criar estratégia|P&L é exibido em tempo real"
    ```
-   - Milestone M1 created in GitHub
-   - Due date: Today + 6 weeks
 
-3. **Execute create-epic-issue.sh automatically:**
-   ```bash
-   ./03-github-manager/scripts/create-epic-issue.sh \
-     1 \
-     "M1: EPIC-01 - Strategy Creation and Analysis"
-   ```
-   - Epic issue created with base template
-   - Title: `[EPIC-01] [TODO: Epic Name]`
-   - Milestone: `M1: EPIC-01 - Strategy Creation and Analysis`
-   - Labels: `epic`, `priority-high`, `agent:DE`, `agent:DBA`, `agent:SE`, `agent:FE`, `agent:QAE`
-
-4. **Guide user to customize epic issue:**
-   ```
-   ⚠️ NEXT STEPS:
-   1. Open epic issue in GitHub
-   2. Edit title: [EPIC-01] Strategy Creation and Analysis
-   3. Add complete objectives from DE-01
-   4. Add complete acceptance criteria from DE-01
-   5. Add BC labels: bc:strategy-planning, bc:market-data
-   6. Verify deliverables checklist matches DE-01
-   ```
+3. **Script creates everything automatically:**
+   - ✅ Milestone M1 with description from DE-01
+   - ✅ Epic issue **fully populated:**
+     - Title: `[EPIC-01] Criar e Visualizar Estratégia`
+     - Bounded Contexts listed
+     - Objectives numbered (1, 2, 3...)
+     - Acceptance criteria with checkboxes
+     - Labels: `epic`, `priority-high`, `bc:strategy`, `bc:market-data`
+   - ✅ 6 Agent issues created (DE, DBA, SE, UXD, FE, QAE)
+   - ✅ All issues linked to Milestone M1
 
 **Output:**
-- ✅ Milestone M1 created automatically (20s)
-- ✅ Epic issue created automatically with base template (20s)
-- ✅ User customizes issue with DE-01 rich details (1min)
-- ✅ Total time: 1min40s (vs 3min manual)
+- ✅ Milestone M1 created automatically
+- ✅ Epic issue **100% populated** from DE-01 (no manual editing needed!)
+- ✅ 6 agent issues created
+- ✅ BC labels applied automatically
+- ✅ Total time: **40s** (vs 3min manual)
 - ✅ Traceability: Issue → Milestone → DE-01 → Code → Tests
 
-**Why automated scripts + guided customization:**
-- Faster (GM creates structure 40s vs user 3min)
-- Consistent (milestone and issue always created, always linked)
-- Flexible (user adds rich DE-01 context)
-- Best of both worlds (automation + human context)
+**Why fully automated:**
+- **Faster:** GM reads DE-01 and creates everything populated (40s vs 3min)
+- **Consistent:** Always same structure, always complete
+- **Zero manual work:** No need to edit issue after creation
+- **Accurate:** Data comes directly from DE-01 (no copy-paste errors)
+
+---
+
+#### Git Workflow Automation
+
+GM also executes **Git workflow automation scripts** to streamline branch management, PRs, and releases.
+
+**Available Scripts:**
+
+```bash
+# DISCOVERY FOUNDATION
+discovery-start.sh              # Inicia Discovery (branch + PR + milestone)
+discovery-finish.sh [--merge] [--release]  # Finaliza Discovery
+
+# ÉPICO - Modelagem (DE)
+epic-modeling-start.sh <N>      # DE inicia modelagem (branch DE-01)
+epic-modeling-finish.sh <N>     # DE finaliza modelagem (merge DE-01)
+
+# ÉPICO - GitHub Setup (GM)
+epic-create.sh <N> "<name>" "<due-date>"  # Cria milestone + issues
+
+# ÉPICO - Issues Individuais
+epic-issue-start.sh <issue-number>    # Inicia trabalho em issue (branch + PR)
+epic-issue-finish.sh <issue-number> [--merge]  # Finaliza issue
+
+# ÉPICO - Encerramento
+epic-close.sh <N> [--release <version>]  # Fecha milestone + release
+```
+
+**Example Invocations:**
+
+```
+"GM, inicie a Discovery Foundation"
+→ Executes: discovery-start.sh
+
+"GM, finalize a Discovery Foundation e faça o merge"
+→ Executes: discovery-finish.sh --merge
+
+"GM, crie milestone e issues para EPIC-01"
+→ Executes: epic-create.sh 1 "Criar Estratégia" "2026-02-28"
+
+"DBA, revise o schema do EPIC-01"
+→ GM executes: epic-issue-start.sh 7 (creates branch + PR for issue #7)
+
+"GM, finalize a issue #7"
+→ Executes: epic-issue-finish.sh 7 --merge
+
+"GM, feche o EPIC-01 e crie release v1.0.0"
+→ Executes: epic-close.sh 1 --release v1.0.0
+```
+
+**Complete Documentation:**
+- [03-GIT-PATTERNS.md#scripts-executáveis-automação-completa](03-GIT-PATTERNS.md#scripts-executáveis-automação-completa)
+
+---
 
 ### Specification
 [25-GM - GitHub Manager.xml](../25-GM%20-%20GitHub%20Manager.xml)
@@ -830,8 +874,10 @@ Any agent can create FEEDBACK for another:
 ### Documentation
 - **Workflow Guide:** [00-Workflow-Guide.md](00-Workflow-Guide.md)
 - **Nomenclature:** [02-Nomenclature-Standards.md](02-Nomenclature-Standards.md)
-- **DDD Patterns:** [04-DDD-Patterns-Reference.md](04-DDD-Patterns-Reference.md)
-- **API Standards:** [05-API-Standards.md](05-API-Standards.md)
+- **Git Patterns:** [03-GIT-PATTERNS.md](03-GIT-PATTERNS.md)
+- **Security & Platform:** [04-Security-And-Platform-Strategy.md](04-Security-And-Platform-Strategy.md)
+- **DDD Patterns:** [05-DDD-Patterns-Reference.md](05-DDD-Patterns-Reference.md)
+- **API Standards:** [06-API-Standards.md](06-API-Standards.md)
 
 ### Agent XML Specifications
 - [10-SDA - Strategic Domain Analyst.xml](../10-SDA%20-%20Strategic%20Domain%20Analyst.xml)
