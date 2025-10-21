@@ -1372,36 +1372,36 @@ DISCOVERY FOUNDATION
 <a id="scripts-discovery-foundation"></a>
 ### **📦 Discovery Foundation**
 
-#### `discovery-start.sh`
+#### Setup Inicial (GitHub Actions)
 
-**Quando usar:** Início do projeto, após criar `workflow-config.json`
+**⚠️ IMPORTANTE:** O setup da Discovery (Issue #1, Milestone M0, branch, PR) é feito **automaticamente pelo GitHub Actions**, NÃO por script local.
 
-**O que faz:**
-1. Valida que está em `main` ou `develop`
-2. Cria branch `feature/discovery-foundation`
-3. Faz commit inicial vazio (padrão do workflow)
-4. Push para remote com tracking (`-u`)
-5. Cria PR Draft no GitHub
-6. Cria Milestone M0 (se não existir)
+**O que o GitHub Actions cria:**
+1. ✅ Issue #1 (Discovery Foundation)
+2. ✅ Milestone M0
+3. ✅ Branch `feature/discovery-foundation`
+4. ✅ Commit inicial vazio (`--allow-empty`)
+5. ✅ PR Draft
 
 **Como executar:**
+1. Vá para o repositório `myTraderGEO` no GitHub
+2. Actions → "Setup New Project" → Run workflow
+3. Preencha: `project_name`, `project_repo_url`
+4. Aguarde 1-2 minutos
+5. Clone o projeto e comece a trabalhar!
+
+**Usuário faz:**
 ```bash
-bash ./.agents/scripts/discovery-start.sh
+git clone https://github.com/user/projeto.git
+cd projeto
+git checkout feature/discovery-foundation  # Já existe!
+# Trabalhar nos deliverables (SDA, UXD, PE, GM, SEC, QAE)
 ```
 
-**Invocação via GM:**
-```
-User: "GM, inicie a Discovery Foundation"
-
-GM: Executando discovery-start.sh...
-    ✅ Branch criada: feature/discovery-foundation
-    ✅ PR #1 aberta (draft)
-    ✅ Milestone M0 criada
-
-    📋 Próximos passos:
-       1. Invocar agentes: SDA, UXD, PE, SEC, QAE, GM
-       2. Quando completo: discovery-finish.sh
-```
+**Por que não há script `discovery-start.sh`?**
+- Scripts do GM só existem DEPOIS que GM executa durante a Discovery
+- Chicken-egg problem: não pode executar script que ainda não foi criado
+- GitHub Actions resolve isso criando tudo automaticamente
 
 ---
 

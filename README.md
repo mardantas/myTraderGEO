@@ -28,17 +28,22 @@ O setup do workflow é dividido em **2 fases**:
 
 | Fase | O que faz | Ferramenta | Tempo |
 |------|-----------|------------|-------|
-| **1️⃣ [Estrutura Base](#fase-1-setup-da-estrutura-base-via-github-actions)** | Copia estrutura do workflow e cria branches | GitHub Actions (automático) | ~2 min |
-| **2️⃣ [Discovery Start](#fase-2-iniciar-discovery-via-script)** | Cria Issue #1, Milestone M0, branch e PR | Script bash (local) | ~1 min |
+| **1️⃣ [Setup Completo](#fase-1-setup-completo-via-github-actions)** | Setup completo automático (Issue, branches, PR, etc) | GitHub Actions | ~2 min |
+| **2️⃣ [Trabalhar](#fase-2-trabalhar-nos-deliverables)** | Criar deliverables (SDA, UXD, PE, GM, SEC, QAE) | Agentes + Commits | 3-4 dias |
+| **3️⃣ [Finalizar](#fase-3-finalizar-discovery)** | Merge para develop e release opcional | Script GM | ~1 min |
 
 ---
 
-## Fase 1: Setup da Estrutura Base (via GitHub Actions)
+## Fase 1: Setup Completo (via GitHub Actions)
 
 **O que será criado automaticamente:**
 - ✅ Estrutura completa do workflow copiada
-- ✅ Branches `main` e `develop` criadas e prontas
-- ✅ Commits iniciais feitos
+- ✅ Branches `main` e `develop` criadas
+- ✅ **Issue #1** (Discovery Foundation) criada
+- ✅ **Milestone M0** criada
+- ✅ Branch `feature/discovery-foundation` criada
+- ✅ **Commit inicial vazio** (`--allow-empty`)
+- ✅ **PR Draft** criada
 - ✅ Push para repositório remoto
 
 ### Passo 1: Criar Repositório Vazio no GitHub
@@ -77,83 +82,30 @@ O workflow executará automaticamente:
 
 Você pode acompanhar o progresso na aba **Actions**.
 
-**✅ Fase 1 Completa!** Agora vá para a **Fase 2** para iniciar a Discovery.
+**✅ Fase 1 Completa!** Tudo configurado automaticamente. Agora vá para a **Fase 2**.
 
 ---
 
-## Fase 2: Iniciar Discovery (via Script)
+## Fase 2: Trabalhar nos Deliverables
 
-Agora que a estrutura base está pronta, vamos iniciar a fase de Discovery Foundation.
+Agora que tudo está configurado, trabalhe nos deliverables.
 
-### Passo 1: Clonar o Projeto Localmente
+### Passo 1: Clonar e Começar
 
 ```bash
-# Clonar o projeto (já configurado)
 git clone https://github.com/seu-usuario/nome-do-seu-projeto.git
 cd nome-do-seu-projeto
+
+# Checkout da branch (já criada pelo GitHub Actions)
+git checkout feature/discovery-foundation
 ```
 
-### Passo 2: Executar Script discovery-start.sh
+### Passo 2: Trabalhar nos Deliverables
 
-Este script criará automaticamente:
-- ✅ Issue #1 (Discovery Foundation)
-- ✅ Milestone M0
-- ✅ Branch `feature/discovery-foundation`
-- ✅ Commit inicial vazio
-- ✅ PR Draft
-- ✅ Link da Issue ao Milestone
+Invoque os agentes para criar os deliverables e faça commits conforme completa:
 
 ```bash
-# Executar o script
-bash .agents/templates/06-github-management/scripts/discovery-start.template.sh
-```
-
-**Saída esperada:**
-```
-🚀 DISCOVERY FOUNDATION - START
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-━━━ STEP 1/7: Creating Issue #1 (Discovery Foundation) ━━━
-  ✅ Issue #1 created
-
-━━━ STEP 2/7: Creating Milestone M0 ━━━
-  ✅ Milestone M0 created
-
-━━━ STEP 3/7: Validating and switching to develop ━━━
-  ✅ Already on develop
-  ✅ Develop updated
-
-━━━ STEP 4/7: Checking if branch exists ━━━
-  ✅ Branch doesn't exist (will create)
-
-━━━ STEP 5/7: Creating branch and initial commit ━━━
-  ✅ Branch created: feature/discovery-foundation
-  ✅ Initial empty commit created
-  ✅ Pushed to remote
-
-━━━ STEP 6/7: Creating Draft PR ━━━
-  ✅ Draft PR created: #2
-
-━━━ STEP 7/7: Linking Issue #1 to Milestone M0 ━━━
-  ✅ Issue #1 linked to Milestone M0
-
-✅ DISCOVERY FOUNDATION STARTED!
-
-📋 Next Steps:
-1. Invoke agents to create deliverables (SDA, UXD, GM, PE, SEC, QAE)
-2. When all deliverables complete: ./discovery-finish.sh --merge
-```
-
-### Passo 3: Trabalhar nos Deliverables
-
-```bash
-# Você já está na branch feature/discovery-foundation
-# Agora invoque os agentes para criar os deliverables
-
-# Exemplo: Invocar SDA
-# "SDA, perform complete strategic modeling of the system"
-
-# Commits exemplo:
+# Exemplo: Depois que SDA completar
 git add 00-doc-ddd/02-strategic-design/SDA-*.md
 git commit -m "SDA: Modelagem estratégica completa
 
@@ -162,341 +114,87 @@ git commit -m "SDA: Modelagem estratégica completa
 - SDA-03-Ubiquitous-Language.md
 
 Ref #1"
-
 git push
+
+# Repita para cada agente: UXD, PE, GM, SEC, QAE
 ```
 
-**🎉 Pronto!** Seu projeto está configurado e você pode começar a trabalhar nos deliverables da Discovery.
+**Importante:** GM criará os scripts de automação como parte do deliverable GM-00.
 
 ---
 
-## 📝 Alternativa: Setup Manual Completo
+## Fase 3: Finalizar Discovery
 
-<details>
-<summary>Clique aqui se preferir fazer todo o setup manualmente (sem GitHub Actions)</summary>
+Quando todos os deliverables estiverem completos, finalize a Discovery.
 
-### **Passo 1: Criar Repositório no GitHub**
+### Opção A: Usando Script do GM (Recomendado)
 
-1. Acesse o GitHub e crie um novo repositório:
-   - Nome: `nome-do-seu-projeto`
-   - Visibilidade: Pública ou Privada
-   - **NÃO** inicialize com README, .gitignore ou LICENSE
-
-2. Copie a URL do repositório criado:
-   ```
-   https://github.com/seu-usuario/nome-do-seu-projeto.git
-   ```
-
----
-
-### **Passo 2: Clonar Localmente na Branch `main`**
+O GM cria o script `discovery-finish.sh` como parte do GM-00. Use-o para finalizar:
 
 ```bash
-# Clonar o repositório vazio
-git clone https://github.com/seu-usuario/nome-do-seu-projeto.git
-cd nome-do-seu-projeto
+# Validar, fazer merge e criar release
+bash 00-doc-ddd/07-github-management/scripts/discovery-finish.sh --merge --release
 ```
 
----
+O script irá:
+- ✅ Validar que todos os 8 deliverables existem
+- ✅ Executar scripts de validação (PowerShell)
+- ✅ Marcar PR como ready for review
+- ✅ Fazer merge para develop
+- ✅ Criar release v0.1.0 (se `--release` fornecido)
+- ✅ Deletar branches local e remota
 
-### **Passo 3: Copiar Estrutura do Workflow**
+### Opção B: Manual (se GM não criou scripts)
 
 ```bash
-# Copiar TODO o conteúdo deste workflow repo para o novo projeto
-# (ajuste o caminho conforme sua estrutura local)
-
-# Windows (PowerShell)
-Copy-Item -Path "C:\caminho\para\myTraderGEO\*" -Destination . -Recurse -Force
-
-# Linux/Mac
-cp -R /caminho/para/myTraderGEO/* .
-```
-
-**O que será copiado:**
-- `.agents/` - Agentes especializados e templates
-- `00-doc-ddd/` - Estrutura de documentação (vazia)
-- `.github/` - Templates de Issues e PRs
-- `workflow-config.json` - Configuração de caminhos
-- Scripts de validação (`.agents/scripts/`)
-
----
-
-### **Passo 4: Commit Inicial - Ambiente Pronto**
-
-```bash
-# Adicionar todos os arquivos
-git add .
-
-# Criar commit inicial
-git commit -m "chore: Setup inicial do DDD Workflow v1.0
-
-- Estrutura de 10 agentes especializados (.agents/)
-- Templates de documentação DDD
-- Templates de Issues/PRs (.github/)
-- Scripts de validação (nomenclatura + estrutura)
-- Configuração do workflow (workflow-config.json)
-
-Este commit estabelece a fundação do processo DDD.
-
-Próximo passo: Criar branch develop e executar Discovery Foundation (Issue #1)
-
-🚀 Ambiente pronto para início do projeto"
-
-# Push para o repositório remoto
-git push origin main
-```
-
----
-
-### **Passo 5: Criar Branch `develop` a partir da `main`**
-
-```bash
-# Criar branch develop
-git checkout -b develop
-
-# Commit vazio marcando início do projeto
-git commit --allow-empty -m "chore: Início do Projeto
-
-Branch develop criada a partir da main.
-Pronta para receber a primeira feature (Discovery Foundation).
-
-Próximo passo: Criar Issue #1 (Discovery Foundation) e branch feature/discovery-foundation"
-
-# Push da branch develop
-git push origin develop -u
-```
-
----
-
-### **Passo 6: Criar Issue #1 - Discovery Foundation**
-
-#### **Opção A: Usar Claude Code (Recomendado) 🤖**
-
-Se você estiver usando Claude Code, basta solicitar:
-
-```
-Claude, crie a Issue #1 (Discovery Foundation) no GitHub usando o template
-00-discovery-foundation.yml. O nome do projeto é [NOME-DO-SEU-PROJETO].
-```
-
-**Claude irá:**
-- ✅ Ler o template [.github/ISSUE_TEMPLATE/00-discovery-foundation.yml](.github/ISSUE_TEMPLATE/00-discovery-foundation.yml)
-- ✅ Preencher os campos automaticamente com informações do seu projeto
-- ✅ Criar a issue via `gh issue create`
-- ✅ Aplicar labels corretas (`epic`, `discovery`, `setup`, `priority-high`)
-
----
-
-#### **Opção B: Criar Manualmente no GitHub**
-
-1. Acesse seu repositório no GitHub
-2. Vá para **Issues** → **New Issue**
-3. Selecione o template **"🚀 Discovery Foundation"**
-4. Preencha os campos solicitados:
-   - Nome do projeto
-   - Descrição do projeto
-   - Tamanho estimado
-5. Marque os checklists conforme completa cada deliverable
-6. Clique em **Submit new issue**
-
----
-
-#### **Opção C: Via GitHub CLI**
-
-```bash
-gh issue create \
-  --title "[EPIC-00] Discovery Foundation - Modelagem Estratégica e Setup Inicial" \
-  --label "epic,discovery,setup,priority-high" \
-  --template "00-discovery-foundation.yml"
-```
-
----
-
-### **Passo 7: Criar Branch, Commit Inicial e PR Draft**
-
-```bash
-# Voltar para develop
-git checkout develop
-
-# Criar branch da feature
-git checkout -b feature/discovery-foundation
-
-# Fazer commit vazio marcando início da feature
-git commit --allow-empty -m "chore: Início de uma nova feature
-
-Feature: Discovery Foundation
-Issue: #1
-
-Este commit marca o início do trabalho na feature de Discovery Foundation."
-
-# Push da branch
-git push origin feature/discovery-foundation -u
-```
-
-**Agora criar PR como Draft (trabalho em progresso):**
-
-#### **Opção A: Usar Claude Code (Recomendado) 🤖**
-
-```
-Claude, crie uma PR Draft da branch feature/discovery-foundation para develop.
-Título: [EPIC-00] Discovery Foundation
-Marque como Draft (trabalho em progresso) e inclua checklist dos deliverables.
-```
-
-#### **Opção B: Via GitHub CLI**
-
-```bash
-gh pr create \
-  --draft \
-  --base develop \
-  --head feature/discovery-foundation \
-  --title "[EPIC-00] Discovery Foundation" \
-  --body "## 🚧 Work in Progress
-
-Esta é a PR da Issue #1 - Discovery Foundation.
-
-Marcada como **Draft** enquanto os agentes trabalham nos deliverables.
-
-### Progress Checklist:
-- [ ] SDA: Modelagem estratégica
-- [ ] UXD: Design Foundations
-- [ ] GM: GitHub Setup
-- [ ] PE: Ambientes
-- [ ] SEC: Security Baseline
-- [ ] QAE: Test Strategy
-
-Será marcada como ready for review quando todos os deliverables estiverem completos.
-
-Ref #1"
-```
-
----
-
-### **Passo 8: Trabalhar nos Deliverables**
-
-```bash
-# Trabalhar nos deliverables (SDA, UXD, GM, PE, SEC, QAE)
-# Fazer commits conforme cada agente completa seu trabalho
-
-# Exemplo de commit (SDA):
-git add 00-doc-ddd/02-strategic-design/SDA-*.md
-git commit -m "SDA: Modelagem estratégica completa
-
-- SDA-01-Event-Storming.md (domain events identificados)
-- SDA-02-Context-Map.md (5 Bounded Contexts mapeados)
-- SDA-03-Ubiquitous-Language.md (glossário de termos)
-
-Ref #1"
-
-# Push das mudanças (atualiza PR automaticamente)
-git push
-```
-
-**Nota:** Cada push atualiza a PR Draft automaticamente. Reviewers podem acompanhar o progresso.
-
----
-
-### **Passo 9: Marcar PR como Ready for Review**
-
-Quando todos os deliverables estiverem completos e todos os commits feitos:
-
-#### **Opção A: Usar Claude Code (Recomendado) 🤖**
-
-```
-Claude, marque a PR como ready for review e atualize o body com todos os deliverables completados.
-```
-
-#### **Opção B: Via GitHub CLI**
-
-```bash
-# Marcar PR como ready for review
+# Marcar PR como pronta
 gh pr ready
 
-# Atualizar body da PR com deliverables completos
-gh pr edit --body "## ✅ Discovery Foundation Complete
+# Fazer merge
+gh pr merge --merge
 
-Todos os deliverables foram completados:
-
-### 📊 SDA - Strategic Domain Analyst
-- ✅ SDA-01-Event-Storming.md
-- ✅ SDA-02-Context-Map.md
-- ✅ SDA-03-Ubiquitous-Language.md
-
-### 🎨 UXD - User Experience Designer
-- ✅ UXD-00-Design-Foundations.md
-
-### ⚙️ GM - GitHub Manager
-- ✅ GM-00-GitHub-Setup.md
-- ✅ Labels, CI/CD, branch strategy (GitHub Free)
-
-### 🏗️ PE - Platform Engineer
-- ✅ PE-00-Environments-Setup.md
-- ✅ Docker Compose (dev/staging/prod)
-
-### 🔒 SEC - Security Specialist
-- ✅ SEC-00-Security-Baseline.md
-
-### ✅ QAE - Quality Assurance Engineer
-- ✅ QAE-00-Test-Strategy.md
-
-Closes #1"
+# Opcional: criar release
+gh release create v0.1.0 --title "Discovery Foundation Complete" --generate-notes
 ```
 
-#### **Opção C: Manualmente no GitHub**
-
-1. Acesse a PR no GitHub
-2. Clique em **Ready for review** (botão no topo)
-3. Edite a descrição marcando todos os checkboxes como completos
-   - Listar deliverables completados
-   - Marcar checklists de testes e validação
-4. No final do corpo do PR, adicione: `Closes #1`
-5. Clique em **Create Pull Request**
+**🎉 Discovery Completa!** Agora você pode iniciar os épicos funcionais.
 
 ---
 
-#### **Opção C: Via GitHub CLI**
+## 📝 Setup Manual (Sem GitHub Actions)
 
-```bash
-gh pr create \
-  --base develop \
-  --head feature/discovery-foundation \
-  --title "[EPIC-00] Discovery Foundation" \
-  --body "## 🎯 Issue Relacionada
-Closes #1
+<details>
+<summary>Clique aqui se preferir fazer todo o setup manualmente</summary>
 
-## 📋 Tipo de Mudança
-- [x] 📚 Documentação (Discovery Foundation)
+### Passos Resumidos:
 
-## 🏗️ Contexto DDD
-- **Fase:** Discovery (Setup Inicial)
-- **Agentes:** SDA, UXD, GM, PE, SEC, QAE
+1. **Criar repositório vazio no GitHub**
+2. **Clonar e copiar estrutura:**
+   ```bash
+   git clone https://github.com/seu-usuario/nome-do-seu-projeto.git
+   cd nome-do-seu-projeto
 
-## 📖 Descrição
+   # Copiar estrutura do myTraderGEO
+   # Windows: Copy-Item -Path "C:\caminho\myTraderGEO\*" -Destination . -Recurse -Force
+   # Linux/Mac: cp -R /caminho/myTraderGEO/* .
+   ```
 
-### Deliverables Completados:
-- SDA-01-Event-Storming.md
-- SDA-02-Context-Map.md
-- SDA-03-Ubiquitous-Language.md
-- UXD-00-Design-Foundations.md
-- GM-00-GitHub-Setup.md
-- PE-00-Environments-Setup.md
-- SEC-00-Security-Baseline.md
-- QAE-00-Test-Strategy.md
+3. **Commits iniciais e setup Discovery:**
+   ```bash
+   git add .
+   git commit -m "chore: Setup inicial do DDD Workflow v1.0"
+   git push origin main
 
-## ✅ Checklist de Review
-- [x] Documentação completa
-- [x] Scripts de validação executados
-- [x] Estrutura de pastas validada"
-```
+   git checkout -b develop
+   git commit --allow-empty -m "chore: Início do Projeto"
+   git push origin develop -u
 
----
+   # Criar Issue #1, Milestone M0, branch e PR manualmente via gh CLI
+   # (consulte documentação do GitHub CLI ou crie via interface web)
+   ```
 
-#### **Após Criar o PR:**
-
-1. **Review:** Revise o PR (ou peça para colega revisar)
-2. **Merge:** Após aprovação, faça merge usando:
-   - **Estratégia:** "Create a merge commit" (preserva histórico dos agentes)
-3. **Issue #1 fecha automaticamente** se o PR tem `Closes #1`
+4. **Trabalhar nos deliverables**
+5. **Finalizar com discovery-finish.sh (criado pelo GM)**
 
 </details>
 
