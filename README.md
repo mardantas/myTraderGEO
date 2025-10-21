@@ -22,25 +22,24 @@ Este repositório contém uma **estrutura completa e replicável** para desenvol
 
 ## 🚀 Quick Start: Como Usar este Workflow em um Novo Projeto
 
-### 🎯 Escolha sua Abordagem
+### 🎯 Processo em 2 Fases
 
-Você tem **duas opções** para configurar um novo projeto com este workflow:
+O setup do workflow é dividido em **2 fases**:
 
-| Abordagem | Tempo | Complexidade | Quando Usar |
-|-----------|-------|--------------|-------------|
-| **🤖 [Setup Automático](#-opção-1-setup-automático-via-github-actions-recomendado)** | ~2 min | Baixa | Múltiplos projetos, quer consistência 100%, prefere automação |
-| **👷 [Setup Manual](#-opção-2-setup-manual-passo-a-passo)** | ~15 min | Média | Primeiro uso, quer entender cada passo, customização detalhada |
+| Fase | O que faz | Ferramenta | Tempo |
+|------|-----------|------------|-------|
+| **1️⃣ [Estrutura Base](#fase-1-setup-da-estrutura-base-via-github-actions)** | Copia estrutura do workflow e cria branches | GitHub Actions (automático) | ~2 min |
+| **2️⃣ [Discovery Start](#fase-2-iniciar-discovery-via-script)** | Cria Issue #1, Milestone M0, branch e PR | Script bash (local) | ~1 min |
 
 ---
 
-## 🤖 Opção 1: Setup Automático via GitHub Actions (Recomendado)
+## Fase 1: Setup da Estrutura Base (via GitHub Actions)
 
-**Vantagens:**
-- ✅ Zero configuração manual
-- ✅ Issue #1 criada automaticamente
-- ✅ Branches `main` e `develop` prontas
-- ✅ Sem erros humanos
-- ✅ Ideal para criação de múltiplos projetos
+**O que será criado automaticamente:**
+- ✅ Estrutura completa do workflow copiada
+- ✅ Branches `main` e `develop` criadas e prontas
+- ✅ Commits iniciais feitos
+- ✅ Push para repositório remoto
 
 ### Passo 1: Criar Repositório Vazio no GitHub
 
@@ -75,35 +74,108 @@ O workflow executará automaticamente:
 - ✅ Cria commit inicial na branch `main`
 - ✅ Cria branch `develop`
 - ✅ Faz push para o repositório remoto
-- ✅ Cria Issue #1 (Discovery Foundation) automaticamente
 
 Você pode acompanhar o progresso na aba **Actions**.
 
-### Passo 4: Clonar e Começar a Trabalhar
+**✅ Fase 1 Completa!** Agora vá para a **Fase 2** para iniciar a Discovery.
+
+---
+
+## Fase 2: Iniciar Discovery (via Script)
+
+Agora que a estrutura base está pronta, vamos iniciar a fase de Discovery Foundation.
+
+### Passo 1: Clonar o Projeto Localmente
 
 ```bash
 # Clonar o projeto (já configurado)
 git clone https://github.com/seu-usuario/nome-do-seu-projeto.git
 cd nome-do-seu-projeto
-
-# Checkout develop
-git checkout develop
-
-# Criar branch da feature
-git checkout -b feature/discovery-foundation
-
-# Começar a trabalhar na Issue #1!
 ```
 
-**🎉 Pronto!** Seu projeto está configurado e a Issue #1 já foi criada. Pule para [Passo 8: Trabalhar nos Deliverables](#passo-8-trabalhar-nos-deliverables).
+### Passo 2: Executar Script discovery-start.sh
+
+Este script criará automaticamente:
+- ✅ Issue #1 (Discovery Foundation)
+- ✅ Milestone M0
+- ✅ Branch `feature/discovery-foundation`
+- ✅ Commit inicial vazio
+- ✅ PR Draft
+- ✅ Link da Issue ao Milestone
+
+```bash
+# Executar o script
+bash .agents/templates/06-github-management/scripts/discovery-start.template.sh
+```
+
+**Saída esperada:**
+```
+🚀 DISCOVERY FOUNDATION - START
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━ STEP 1/7: Creating Issue #1 (Discovery Foundation) ━━━
+  ✅ Issue #1 created
+
+━━━ STEP 2/7: Creating Milestone M0 ━━━
+  ✅ Milestone M0 created
+
+━━━ STEP 3/7: Validating and switching to develop ━━━
+  ✅ Already on develop
+  ✅ Develop updated
+
+━━━ STEP 4/7: Checking if branch exists ━━━
+  ✅ Branch doesn't exist (will create)
+
+━━━ STEP 5/7: Creating branch and initial commit ━━━
+  ✅ Branch created: feature/discovery-foundation
+  ✅ Initial empty commit created
+  ✅ Pushed to remote
+
+━━━ STEP 6/7: Creating Draft PR ━━━
+  ✅ Draft PR created: #2
+
+━━━ STEP 7/7: Linking Issue #1 to Milestone M0 ━━━
+  ✅ Issue #1 linked to Milestone M0
+
+✅ DISCOVERY FOUNDATION STARTED!
+
+📋 Next Steps:
+1. Invoke agents to create deliverables (SDA, UXD, GM, PE, SEC, QAE)
+2. When all deliverables complete: ./discovery-finish.sh --merge
+```
+
+### Passo 3: Trabalhar nos Deliverables
+
+```bash
+# Você já está na branch feature/discovery-foundation
+# Agora invoque os agentes para criar os deliverables
+
+# Exemplo: Invocar SDA
+# "SDA, perform complete strategic modeling of the system"
+
+# Commits exemplo:
+git add 00-doc-ddd/02-strategic-design/SDA-*.md
+git commit -m "SDA: Modelagem estratégica completa
+
+- SDA-01-Event-Storming.md
+- SDA-02-Context-Map.md
+- SDA-03-Ubiquitous-Language.md
+
+Ref #1"
+
+git push
+```
+
+**🎉 Pronto!** Seu projeto está configurado e você pode começar a trabalhar nos deliverables da Discovery.
 
 ---
 
-## 👷 Opção 2: Setup Manual (Passo a Passo)
+## 📝 Alternativa: Setup Manual Completo
 
-Se preferir entender cada passo ou fazer customizações detalhadas, siga o processo manual:
+<details>
+<summary>Clique aqui se preferir fazer todo o setup manualmente (sem GitHub Actions)</summary>
 
-### **Passo 1: Criar Projeto no Servidor (GitHub)**
+### **Passo 1: Criar Repositório no GitHub**
 
 1. Acesse o GitHub e crie um novo repositório:
    - Nome: `nome-do-seu-projeto`
@@ -425,6 +497,8 @@ Closes #1
 2. **Merge:** Após aprovação, faça merge usando:
    - **Estratégia:** "Create a merge commit" (preserva histórico dos agentes)
 3. **Issue #1 fecha automaticamente** se o PR tem `Closes #1`
+
+</details>
 
 ---
 

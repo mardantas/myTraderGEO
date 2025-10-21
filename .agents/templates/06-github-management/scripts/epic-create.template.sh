@@ -1,23 +1,30 @@
 #!/bin/bash
 
-# create-epic-full.sh
+# epic-create.sh
 # Creates COMPLETE epic setup: milestone + epic issue + agent issues (all at once)
 #
-# Usage: ./create-epic-full.sh <epic-number> "<epic-name>" "<due-date-YYYY-MM-DD>"
+# Usage: ./epic-create.sh <epic-number> "<epic-name>" "<due-date-YYYY-MM-DD>" \
+#          --bcs "<BC1,BC2>" \
+#          --objectives "<Obj1|Obj2|Obj3>" \
+#          --criteria "<Crit1|Crit2|Crit3>"
 #
 # Examples:
-#   ./create-epic-full.sh 1 "Criar Estratégia Bull Call Spread" "2026-02-28"
-#   ./create-epic-full.sh 2 "Calcular Greeks em Tempo Real" "2026-03-31"
+#   ./epic-create.sh 1 "Criar e Visualizar Estratégia" "2026-02-28" \
+#     --bcs "Strategy,MarketData" \
+#     --objectives "Permitir criação de estratégias|Calcular P&L automaticamente" \
+#     --criteria "Usuário pode criar estratégia|P&L é exibido em tempo real"
 #
 # This script creates:
 #   1. Milestone M{N}
-#   2. Issue #X: [EPIC-{N}] Epic Name (parent)
+#   2. Issue #X: [EPIC-{N}] Epic Name (parent) - FULLY POPULATED
 #   3. Issue #X+1: DE - Domain Model
 #   4. Issue #X+2: DBA - Schema Review
 #   5. Issue #X+3: SE - Backend Implementation
 #   6. Issue #X+4: UXD - Wireframes
 #   7. Issue #X+5: FE - Frontend Implementation
 #   8. Issue #X+6: QAE - Quality Gate
+#
+# Note: GM agent reads DE-01, extracts info, and passes as parameters
 
 set -e
 
@@ -28,6 +35,34 @@ REPO="[GITHUB_OWNER]/[REPO_NAME]"
 EPIC_NUM=$1
 EPIC_NAME=$2
 DUE_DATE=$3
+shift 3  # Remove first 3 params
+
+# Optional parameters (from DE-01)
+BCS=""
+OBJECTIVES=""
+CRITERIA=""
+
+# Parse optional flags
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --bcs)
+      BCS="$2"
+      shift 2
+      ;;
+    --objectives)
+      OBJECTIVES="$2"
+      shift 2
+      ;;
+    --criteria)
+      CRITERIA="$2"
+      shift 2
+      ;;
+    *)
+      echo "Unknown parameter: $1"
+      exit 1
+      ;;
+  esac
+done
 
 # Colors
 RED='\033[0;31m'
@@ -60,10 +95,19 @@ echo ""
 echo -e "${BLUE}Epic Name:${NC} ${EPIC_NAME}"
 echo -e "${BLUE}Milestone:${NC} ${MILESTONE_TITLE}"
 echo -e "${BLUE}Due Date:${NC} ${DUE_DATE:-Not set}"
+if [ -n "$BCS" ]; then
+  echo -e "${BLUE}BCs:${NC} ${BCS}"
+fi
+if [ -n "$OBJECTIVES" ]; then
+  echo -e "${BLUE}Objectives:${NC} Provided (will be auto-populated)"
+fi
+if [ -n "$CRITERIA" ]; then
+  echo -e "${BLUE}Criteria:${NC} Provided (will be auto-populated)"
+fi
 echo ""
 echo -e "${YELLOW}This will create:${NC}"
 echo "  1️⃣  Milestone M${EPIC_NUM}"
-echo "  2️⃣  Epic Issue (parent)"
+echo "  2️⃣  Epic Issue (parent) - 100% POPULATED"
 echo "  3️⃣  6 Agent Issues (DE, DBA, SE, UXD, FE, QAE)"
 echo ""
 read -p "Continue? (y/n) " -n 1 -r
@@ -122,6 +166,41 @@ declare -a AGENTS=(
   "QAE|QAE: Quality Gate EPIC-${EPIC_NUM_PADDED}|agent:QAE,type:technical-task,priority-high"
 )
 
+# Build objectives section
+OBJECTIVES_SECTION=""
+if [ -n "$OBJECTIVES" ]; then
+  IFS='|' read -ra OBJ_ARRAY <<< "$OBJECTIVES"
+  counter=1
+  for obj in "${OBJ_ARRAY[@]}"; do
+    OBJECTIVES_SECTION+="$counter. $obj"$'\n'
+    ((counter++))
+  done
+else
+  OBJECTIVES_SECTION="[TODO: Copy objectives from DE-01-EPIC-${EPIC_NUM_PADDED}-*.md]"$'\n\n'"1. Objective 1"$'\n'"2. Objective 2"$'\n'"3. Objective 3"
+fi
+
+# Build criteria section
+CRITERIA_SECTION=""
+if [ -n "$CRITERIA" ]; then
+  IFS='|' read -ra CRIT_ARRAY <<< "$CRITERIA"
+  for crit in "${CRIT_ARRAY[@]}"; do
+    CRITERIA_SECTION+="- [ ] $crit"$'\n'
+  done
+else
+  CRITERIA_SECTION="[TODO: Copy acceptance criteria from DE-01]"$'\n\n'"- [ ] Criterion 1"$'\n'"- [ ] Criterion 2"$'\n'"- [ ] Criterion 3"
+fi
+
+# Build BCs section
+BCS_SECTION=""
+if [ -n "$BCS" ]; then
+  IFS=',' read -ra BC_ARRAY <<< "$BCS"
+  for bc in "${BC_ARRAY[@]}"; do
+    BCS_SECTION+="- \`bc:$(echo $bc | tr '[:upper:]' '[:lower:]')\`"$'\n'
+  done
+else
+  BCS_SECTION="[TODO: Add BC labels from DE-01]"
+fi
+
 # Epic issue body
 EPIC_BODY=$(cat <<EOF
 ## 📋 Epic Overview
@@ -130,25 +209,20 @@ EPIC_BODY=$(cat <<EOF
 **Epic Name:** ${EPIC_NAME}
 **Milestone:** ${MILESTONE_TITLE}
 
+**Bounded Contexts:**
+${BCS_SECTION}
+
 ---
 
 ## 🎯 Objectives
 
-[TODO: Copy objectives from DE-01-EPIC-${EPIC_NUM_PADDED}-*.md]
-
-1. Objective 1
-2. Objective 2
-3. Objective 3
+${OBJECTIVES_SECTION}
 
 ---
 
 ## ✅ Acceptance Criteria
 
-[TODO: Copy acceptance criteria from DE-01]
-
-- [ ] Criterion 1
-- [ ] Criterion 2
-- [ ] Criterion 3
+${CRITERIA_SECTION}
 
 ---
 
@@ -174,12 +248,16 @@ This epic is tracked via the following issues:
 
 ---
 
-**⚠️ TODO:** Customize this epic with DE-01 details:
-- Add Bounded Context labels (bc:*)
-- Copy objectives and acceptance criteria
-- Update sub-issues checklist with actual issue numbers
+$(if [ -n "$OBJECTIVES" ] && [ -n "$CRITERIA" ] && [ -n "$BCS" ]; then
+  echo "✅ **Epic fully populated from DE-01**"
+else
+  echo "**⚠️ TODO:** Epic partially populated. Missing:"
+  [ -z "$OBJECTIVES" ] && echo "- Objectives (from DE-01)"
+  [ -z "$CRITERIA" ] && echo "- Acceptance criteria (from DE-01)"
+  [ -z "$BCS" ] && echo "- Bounded Contexts (from DE-01)"
+fi)
 
-🤖 Generated with GM create-epic-full.sh
+🤖 Generated with GM epic-create.sh
 EOF
 )
 
@@ -295,6 +373,15 @@ for agent_config in "${AGENTS[@]}"; do
     QAE)  BODY="$QAE_BODY" ;;
   esac
 
+  # Add BC labels to EPIC issue
+  if [ "$AGENT_CODE" == "EPIC" ] && [ -n "$BCS" ]; then
+    IFS=',' read -ra BC_ARRAY <<< "$BCS"
+    for bc in "${BC_ARRAY[@]}"; do
+      BC_LABEL="bc:$(echo $bc | tr '[:upper:]' '[:lower:]' | tr ' ' '-')"
+      LABELS="$LABELS,$BC_LABEL"
+    done
+  fi
+
   echo -e "  Creating ${BLUE}${AGENT_CODE}${NC} issue..."
 
   gh issue create --repo $REPO \
@@ -320,13 +407,19 @@ echo ""
 echo "1. View all issues:"
 echo "   gh issue list --milestone \"${MILESTONE_TITLE}\" --repo $REPO"
 echo ""
-echo "2. Customize epic issue:"
-echo "   - Add BC labels (bc:*)"
-echo "   - Copy objectives from DE-01"
-echo "   - Update sub-issues checklist with actual issue numbers"
-echo ""
-echo "3. Start working on DE issue:"
-echo "   ./start-work-on-issue.sh <issue-number>"
+
+if [ -z "$OBJECTIVES" ] || [ -z "$CRITERIA" ] || [ -z "$BCS" ]; then
+  echo "2. Customize epic issue (missing data from DE-01):"
+  [ -z "$OBJECTIVES" ] && echo "   - Add objectives from DE-01"
+  [ -z "$CRITERIA" ] && echo "   - Add acceptance criteria from DE-01"
+  [ -z "$BCS" ] && echo "   - Add BC labels (bc:*)"
+  echo ""
+  echo "3. Start working on issues:"
+else
+  echo "2. Start working on issues:"
+fi
+
+echo "   ./epic-issue-start.sh <issue-number>"
 echo ""
 echo -e "${BLUE}📖 Documentation:${NC}"
 echo "   - Git workflow: .agents/docs/03-GIT-PATTERNS.md"

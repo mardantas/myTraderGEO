@@ -35,8 +35,16 @@ Este documento estabelece os padrões de uso do Git no DDD Workflow.
     - [FASE 4: Implementação](#fase-4-implementação-iterativa)
     - [FASE 5: Encerramento](#fase-5-encerramento)
 
+### **Automação via Scripts**
+13. [🤖 SCRIPTS EXECUTÁVEIS: Automação Completa](#scripts-executáveis-automação-completa)
+    - [Discovery Foundation](#scripts-discovery-foundation)
+    - [Épico - Modelagem (DE)](#scripts-épico-modelagem)
+    - [Épico - GitHub Setup (GM)](#scripts-épico-github-setup)
+    - [Épico - Issues Individuais](#scripts-épico-issues)
+    - [Épico - Encerramento](#scripts-épico-encerramento)
+
 ### **Referências**
-13. [🎯 Quem Faz O Quê?](#quem-faz-o-quê)
+14. [🎯 Quem Faz O Quê?](#quem-faz-o-quê)
 
 ---
 
@@ -110,7 +118,7 @@ git checkout -b feature/epic-01-criar-estrategia
 
 git commit --allow-empty -m "chore: Início de uma nova feature
 
-Feature: Criar Estratégia Bull Call Spread
+Feature: Criar Estratégia
 Issue: #5
 
 Este commit marca o início do trabalho no épico de criação de estratégias."
@@ -451,7 +459,7 @@ M3: EPIC-03 - Nome do Épico
    ```bash
    ./03-github-manager/scripts/create-milestone.sh \
      1 \
-     "EPIC-01 - Criar Estratégia Bull Call Spread" \
+     "EPIC-01 - Criar Estratégia" \
      "Descrição do épico" \
      "2026-02-28"
    ```
@@ -1034,7 +1042,7 @@ git push origin develop
 # 2. Executa: ./03-github-manager/scripts/create-milestone.sh
 ./03-github-manager/scripts/create-milestone.sh \
   1 \
-  "EPIC-01 - Criar Estratégia Bull Call Spread" \
+  "EPIC-01 - Criar Estratégia \
   "Catálogo de templates, criação de estratégias, cálculos automáticos" \
   "2026-02-28"
 
@@ -1043,7 +1051,7 @@ git push origin develop
 # 3. Executa: ./03-github-manager/scripts/create-epic-issue.sh
 ./03-github-manager/scripts/create-epic-issue.sh \
   1 \
-  "M1: EPIC-01 - Criar Estratégia Bull Call Spread"
+  "M1: EPIC-01 - Criar Estratégia"
 
 # Output: Issue #5 created
 
@@ -1072,7 +1080,7 @@ git checkout -b feature/epic-01-criar-estrategia
 # Commit inicial OBRIGATÓRIO (padrão do workflow)
 git commit --allow-empty -m "chore: Início de uma nova feature
 
-Feature: Criar Estratégia Bull Call Spread
+Feature: Criar Estratégia
 Issue: #5
 
 Este commit marca o início do trabalho no épico de criação de estratégias."
@@ -1088,7 +1096,7 @@ gh pr create \
   --title "[EPIC-01] Criar Estratégia" \
   --body "## 🚧 Work in Progress
 
-Épico: Criar Estratégia Bull Call Spread
+Épico: Criar Estratégia
 Issue: #5
 
 ### Deliverables
@@ -1328,6 +1336,442 @@ git log --oneline --graph -n 10
 - [ ] ✅ Deploy production
 - [ ] ✅ Issue fechada automaticamente
 - [ ] ✅ Branch deletada (opcional)
+
+---
+
+<a id="scripts-executáveis-automação-completa"></a>
+## 🤖 SCRIPTS EXECUTÁVEIS: Automação Completa
+
+Esta seção documenta os scripts bash que automatizam o workflow Git, invocáveis pelo GitHub Manager (GM) ou manualmente.
+
+### **Hierarquia de Scripts**
+
+```
+DISCOVERY FOUNDATION
+├── discovery-start.sh           # Inicia Discovery (branch + PR + milestone)
+└── discovery-finish.sh          # Finaliza Discovery (validação + merge + release)
+
+ÉPICO (para cada EPIC-N)
+├── MODELAGEM (DE)
+│   ├── epic-modeling-start.sh   # DE inicia modelagem (branch DE-01)
+│   └── epic-modeling-finish.sh  # DE finaliza (merge DE-01)
+│
+├── GITHUB SETUP (GM)
+│   └── epic-create.sh           # Cria milestone + issues (épico + agentes)
+│
+├── IMPLEMENTAÇÃO (Agentes)
+│   ├── epic-issue-start.sh      # Inicia issue (branch + commit + PR)
+│   └── epic-issue-finish.sh     # Finaliza issue (merge PR)
+│
+└── ENCERRAMENTO
+    └── epic-close.sh            # Fecha milestone + cria release
+```
+
+---
+
+<a id="scripts-discovery-foundation"></a>
+### **📦 Discovery Foundation**
+
+#### `discovery-start.sh`
+
+**Quando usar:** Início do projeto, após criar `workflow-config.json`
+
+**O que faz:**
+1. Valida que está em `main` ou `develop`
+2. Cria branch `feature/discovery-foundation`
+3. Faz commit inicial vazio (padrão do workflow)
+4. Push para remote com tracking (`-u`)
+5. Cria PR Draft no GitHub
+6. Cria Milestone M0 (se não existir)
+
+**Como executar:**
+```bash
+bash ./.agents/scripts/discovery-start.sh
+```
+
+**Invocação via GM:**
+```
+User: "GM, inicie a Discovery Foundation"
+
+GM: Executando discovery-start.sh...
+    ✅ Branch criada: feature/discovery-foundation
+    ✅ PR #1 aberta (draft)
+    ✅ Milestone M0 criada
+
+    📋 Próximos passos:
+       1. Invocar agentes: SDA, UXD, PE, SEC, QAE, GM
+       2. Quando completo: discovery-finish.sh
+```
+
+---
+
+#### `discovery-finish.sh`
+
+**Quando usar:** Após todos os deliverables completos (SDA, UXD, PE, SEC, QAE, GM)
+
+**O que faz:**
+1. Valida que está em `feature/discovery-foundation`
+2. Valida que todos os deliverables existem (lista de 8 arquivos)
+3. Executa scripts de validação (PowerShell)
+4. Faz commit final com `Closes #1`
+5. Push para remote
+6. Marca PR como "ready for review"
+7. **(Opcional)** Faz merge para `develop` (flag `--merge`)
+8. **(Opcional)** Cria release `v0.1.0` (flag `--release`)
+
+**Como executar:**
+```bash
+# Apenas validar e preparar PR
+bash ./.agents/scripts/discovery-finish.sh
+
+# Validar + merge para develop
+bash ./.agents/scripts/discovery-finish.sh --merge
+
+# Validar + merge + criar release v0.1.0
+bash ./.agents/scripts/discovery-finish.sh --release
+```
+
+**Invocação via GM:**
+```
+User: "GM, finalize a Discovery Foundation e faça o merge"
+
+GM: Executando discovery-finish.sh --merge...
+    🔍 Validando deliverables... ✅ (8/8)
+    🔍 Executando validações... ✅
+    ✅ PR mergeada para develop
+    ✅ Issue #1 fechada
+
+    📋 Próximo passo: Iniciar EPIC-01 (epic-modeling-start.sh 1)
+```
+
+---
+
+<a id="scripts-épico-modelagem"></a>
+### **🎨 Épico - Modelagem (DE)**
+
+#### `epic-modeling-start.sh`
+
+**Quando usar:** Domain Engineer (DE) vai criar modelo de domínio do épico
+
+**O que faz:**
+1. Valida que está em `develop`
+2. Atualiza `develop` (`git pull`)
+3. Cria branch `feature/epic-<N>-domain-model`
+4. Orienta DE a criar `DE-01-EPIC-<N>-<Name>-Domain-Model.md`
+
+**Como executar:**
+```bash
+bash ./.agents/scripts/epic-modeling-start.sh <epic-number>
+
+# Exemplo: EPIC-01
+bash ./.agents/scripts/epic-modeling-start.sh 1
+```
+
+**Invocação via GM:**
+```
+User: "GM, prepare ambiente para DE modelar EPIC-01"
+
+GM: Executando epic-modeling-start.sh 1...
+    ✅ Branch criada: feature/epic-01-domain-model
+
+    📋 Próximo passo:
+       1. Abra nova conversa com DE
+       2. Solicite: "DE, modele o épico 'Criar e Visualizar Estratégia'"
+       3. Após DE finalizar, retorne: "GM, finalize a modelagem do EPIC-01"
+
+    Arquivo esperado:
+       00-doc-ddd/04-tactical-design/DE-01-EPIC-01-CreateStrategy-Domain-Model.md
+```
+
+---
+
+#### `epic-modeling-finish.sh`
+
+**Quando usar:** DE finalizou o modelo de domínio
+
+**O que faz:**
+1. Valida que está em `feature/epic-<N>-domain-model`
+2. Valida que arquivo `DE-01-EPIC-<N>-*.md` existe
+3. Faz commit com `Ref #1`
+4. Push para remote
+5. Cria PR para review
+6. Faz merge para `develop`
+7. Deleta branch
+
+**Como executar:**
+```bash
+bash ./.agents/scripts/epic-modeling-finish.sh <epic-number>
+
+# Exemplo: EPIC-01
+bash ./.agents/scripts/epic-modeling-finish.sh 1
+```
+
+**Invocação via GM:**
+```
+User: "GM, finalize a modelagem do EPIC-01"
+
+GM: Executando epic-modeling-finish.sh 1...
+    ✅ Arquivo encontrado: DE-01-EPIC-01-CreateStrategy-Domain-Model.md
+    ✅ PR criada e mergeada
+    ✅ Branch deletada
+
+    📋 Próximo passo: Criar milestone e issues
+       Comando: "GM, crie milestone e issues para EPIC-01"
+```
+
+---
+
+<a id="scripts-épico-github-setup"></a>
+### **🎯 Épico - GitHub Setup (GM)**
+
+#### `epic-create.sh`
+
+**Quando usar:** Após DE-01 mergeado em `develop`, GM vai criar milestone + issues **100% populadas**
+
+**O que faz:**
+1. **Recebe dados extraídos do DE-01 pelo GM agente:**
+   - Bounded Contexts
+   - Objetivos de negócio
+   - Critérios de aceitação
+2. Cria Milestone `M{N}` com descrição
+3. Cria Issue épico **100% populada** (sem necessidade de edição manual):
+   - Título completo
+   - BCs listados
+   - Objetivos numerados
+   - Critérios de aceitação com checkboxes
+   - Labels de BC aplicadas automaticamente (`bc:strategy`, `bc:market-data`)
+4. Cria 6 Issues para agentes (DE, DBA, SE, UXD, FE, QAE)
+5. Vincula todas as issues ao milestone
+6. Aplica labels automaticamente (`agent:*`, `type:epic`, `epic`, `priority:*`)
+
+**Como executar:**
+```bash
+# GM agente lê DE-01 e extrai informações, depois executa:
+bash ./03-github-manager/scripts/epic-create.sh \
+  <epic-number> \
+  "<epic-name>" \
+  "<due-date-YYYY-MM-DD>" \
+  --bcs "<BC1,BC2,BC3>" \
+  --objectives "<Obj1|Obj2|Obj3>" \
+  --criteria "<Crit1|Crit2|Crit3>"
+
+# Exemplo: EPIC-01
+bash ./03-github-manager/scripts/epic-create.sh \
+  1 \
+  "Criar e Visualizar Estratégia" \
+  "2026-02-28" \
+  --bcs "Strategy,MarketData" \
+  --objectives "Permitir criação de estratégias|Calcular P&L automaticamente" \
+  --criteria "Usuário pode criar estratégia|P&L é exibido em tempo real"
+```
+
+**Invocação via GM:**
+```
+User: "GM, crie milestone e issues para EPIC-01"
+
+GM: Lendo DE-01-EPIC-01-CreateStrategy-Domain-Model.md...
+
+    Extraindo informações:
+    - Nome: "Criar e Visualizar Estratégia"
+    - BCs: Strategy, MarketData
+    - Objetivos: Permitir criação de estratégias | Calcular P&L
+    - Critérios: 2 critérios identificados
+
+    Executando epic-create.sh...
+
+    ✅ Milestone M1 criada
+    ✅ Issue #5 criada (épico) - 100% POPULADA
+       - Título: [EPIC-01] Criar e Visualizar Estratégia
+       - BCs: bc:strategy, bc:market-data
+       - Objetivos: ✅ Incluídos
+       - Critérios: ✅ Incluídos
+    ✅ Issues #6-#11 criadas (agentes: DE, DBA, SE, UXD, FE, QAE)
+    ✅ Todas vinculadas ao Milestone M1
+
+    🎉 Setup completo! Nenhuma edição manual necessária.
+
+    📋 Próximo passo: Iniciar trabalho nas issues
+       ./epic-issue-start.sh <issue-number>
+```
+
+**Benefícios da automação completa:**
+- ✅ **Zero trabalho manual** - Issue épica já populada
+- ✅ **Mais rápido** - 40s vs 3min manual
+- ✅ **Sem erros** - Dados vêm diretamente do DE-01
+- ✅ **Consistente** - Sempre mesma estrutura
+
+---
+
+<a id="scripts-épico-issues"></a>
+### **🔨 Épico - Issues Individuais**
+
+#### `epic-issue-start.sh`
+
+**Quando usar:** Agente (DE, DBA, SE, UXD, FE, QAE) vai iniciar trabalho em uma issue
+
+**O que faz:**
+1. Busca info da issue via GitHub CLI (título, milestone, labels)
+2. Extrai número do épico do milestone
+3. Gera nome de branch (kebab-case): `feature/epic-<N>-<agent>-<task>`
+4. Cria e faz checkout da branch
+5. Faz commit inicial vazio (padrão do workflow)
+6. Push para remote com tracking
+7. Cria PR Draft vinculada à issue
+
+**Como executar:**
+```bash
+bash ./.agents/scripts/epic-issue-start.sh <issue-number>
+
+# Exemplo: Issue #7 (DBA: Schema Review)
+bash ./.agents/scripts/epic-issue-start.sh 7
+```
+
+**Invocação via GM:**
+```
+User: "GM, prepare ambiente para DBA trabalhar na issue #7"
+
+GM: Executando epic-issue-start.sh 7...
+    ✅ Branch criada: feature/epic-01-dba-schema-review
+    ✅ Commit inicial feito
+    ✅ PR #12 criada (draft)
+
+    📋 Próximo passo:
+       1. Abra nova conversa com DBA
+       2. Solicite: "DBA, revise o schema do EPIC-01 (issue #7)"
+       3. Após DBA finalizar, retorne: "GM, finalize a issue #7"
+
+    Arquivo esperado:
+       00-doc-ddd/05-database-design/DBA-01-CreateStrategy-Schema-Review.md
+```
+
+---
+
+#### `epic-issue-finish.sh`
+
+**Quando usar:** Agente finalizou trabalho na issue
+
+**O que faz:**
+1. Valida que está na branch correta
+2. Verifica que há commits (além do inicial)
+3. Faz commit final com `Closes #<issue>` (se não tiver)
+4. Push para remote
+5. Marca PR como "ready for review"
+6. **(Opcional)** Faz merge da PR (flag `--merge`)
+7. Deleta branch (se fez merge)
+
+**Como executar:**
+```bash
+bash ./.agents/scripts/epic-issue-finish.sh <issue-number>
+
+# Com merge automático
+bash ./.agents/scripts/epic-issue-finish.sh <issue-number> --merge
+
+# Exemplo: Issue #7 (DBA: Schema Review)
+bash ./.agents/scripts/epic-issue-finish.sh 7 --merge
+```
+
+**Invocação via GM:**
+```
+User: "GM, finalize a issue #7"
+
+GM: Executando epic-issue-finish.sh 7 --merge...
+    ✅ Commit final adicionado (Closes #7)
+    ✅ PR marcada como ready
+    ✅ PR mergeada e branch deletada
+    ✅ Issue #7 fechada automaticamente
+
+    📋 Progresso EPIC-01: 2/7 issues completas (29%)
+```
+
+---
+
+<a id="scripts-épico-encerramento"></a>
+### **🏁 Épico - Encerramento**
+
+#### `epic-close.sh`
+
+**Quando usar:** Todas as issues do épico completas, pronto para fechar milestone
+
+**O que faz:**
+1. Busca milestone `M{N}` via GitHub API
+2. Valida que **todas** as issues do milestone estão fechadas
+3. Fecha milestone
+4. **(Opcional)** Cria release (tag + GitHub Release) - flag `--release <version>`
+5. **(Opcional)** Orienta deploy staging/production
+
+**Como executar:**
+```bash
+bash ./.agents/scripts/epic-close.sh <epic-number>
+
+# Com release
+bash ./.agents/scripts/epic-close.sh <epic-number> --release <version>
+
+# Exemplo: EPIC-01 com release v1.0.0
+bash ./.agents/scripts/epic-close.sh 1 --release v1.0.0
+```
+
+**Invocação via GM:**
+```
+User: "GM, feche o EPIC-01 e crie release v1.0.0"
+
+GM: Validando Milestone M1...
+    ✅ Todas as issues fechadas (7/7)
+
+    Executando epic-close.sh 1 --release v1.0.0...
+
+    ✅ Milestone M1 fechada
+    ✅ Tag v1.0.0 criada em main
+    ✅ GitHub Release v1.0.0 publicada
+
+    📋 Próximos passos:
+       1. Deploy staging: docker compose -f docker-compose.staging.yml up -d
+       2. Smoke test (QAE)
+       3. Deploy production: docker compose -f docker-compose.prod.yml up -d
+```
+
+---
+
+### **📋 Resumo: Fluxo Completo com Scripts**
+
+**Discovery Foundation:**
+```bash
+1. discovery-start.sh                    # GM executa
+2. [Agentes trabalham: SDA, UXD, PE, SEC, QAE, GM]
+3. discovery-finish.sh --merge           # GM executa
+```
+
+**Épico (ex: EPIC-01):**
+```bash
+# Modelagem
+1. epic-modeling-start.sh 1              # GM executa
+2. [DE cria DE-01-EPIC-01-*.md]
+3. epic-modeling-finish.sh 1             # GM executa
+
+# GitHub Setup
+4. epic-create.sh 1 "Nome" "2026-02-28"  # GM executa (cria M1 + issues)
+
+# Implementação (repete para cada issue)
+5. epic-issue-start.sh 6                 # GM executa (DE: Domain Model)
+6. [DE trabalha]
+7. epic-issue-finish.sh 6 --merge        # GM executa
+
+8. epic-issue-start.sh 7                 # GM executa (DBA: Schema Review)
+9. [DBA trabalha]
+10. epic-issue-finish.sh 7 --merge       # GM executa
+
+# ... repete para SE, UXD, FE, QAE ...
+
+# Encerramento
+11. epic-close.sh 1 --release v1.0.0     # GM executa (fecha M1 + release)
+```
+
+---
+
+### **🔗 Referências**
+
+- Scripts existentes: [03-github-manager/scripts/README.template.md](../templates/06-github-management/scripts/README.template.md)
+- Workflow completo: [00-Workflow-Guide.md](00-Workflow-Guide.md)
+- Milestones e Tags: [Seção neste documento](#milestones-e-tags)
 
 ---
 

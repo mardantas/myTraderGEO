@@ -1,16 +1,16 @@
 #!/bin/bash
 
-# start-work-on-issue.sh
-# Automates starting work on a GitHub issue:
+# epic-issue-start.sh
+# Automates starting work on an epic issue:
 #   1. Creates feature branch
 #   2. Makes initial empty commit (following 03-GIT-PATTERNS.md)
 #   3. Pushes branch
 #   4. Creates draft PR linked to issue
 #
-# Usage: ./start-work-on-issue.sh <issue-number>
+# Usage: ./epic-issue-start.sh <issue-number>
 #
 # Examples:
-#   ./start-work-on-issue.sh 6   # Start work on issue #6
+#   ./epic-issue-start.sh 6   # Start work on issue #6 (DE: Domain Model)
 
 set -e
 
@@ -199,7 +199,7 @@ ${MILESTONE}
 - **Issue:** #${ISSUE_NUMBER}
 - **Git Patterns:** [03-GIT-PATTERNS.md](.agents/docs/03-GIT-PATTERNS.md)
 
-🤖 Generated with GM start-work-on-issue.sh
+🤖 Generated with GM epic-issue-start.sh
 EOF
 )
 
