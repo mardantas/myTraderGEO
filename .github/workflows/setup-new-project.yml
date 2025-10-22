@@ -12,17 +12,17 @@ on:
         required: true
         type: string
       create_discovery_issue:
-        description: 'Criar Issue #1 (Discovery Foundation) automaticamente?'
+        description: 'Criar Issue #1 (Discovery Foundation)?'
         required: true
         type: boolean
         default: true
       create_feature_branch:
-        description: 'Criar branch feature/discovery-foundation automaticamente?'
+        description: 'Criar branch feature/discovery-foundation?'
         required: true
         type: boolean
         default: true
       create_draft_pr:
-        description: 'Criar PR Draft automaticamente?'
+        description: 'Criar PR Draft?'
         required: true
         type: boolean
         default: true
@@ -143,65 +143,57 @@ jobs:
 
           echo "✅ Pushed to remote repository"
 
-      - name: Create Discovery Foundation Issue
+      - name: Create Issue #1 and Milestone M0
         if: ${{ inputs.create_discovery_issue }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd new-project
-
-          # Extrair owner/repo da URL
           REPO_PATH=$(echo "${{ inputs.project_repo_url }}" | sed 's/.*github\.com[:/]\(.*\)\.git/\1/')
 
-          echo "Creating Issue #1 in ${REPO_PATH}..."
+          echo "Creating Milestone M0..."
+          gh api repos/$REPO_PATH/milestones -X POST \
+            -f title="M0: Discovery Foundation" \
+            -f description="Setup inicial completo: SDA, UXD, GM, PE, SEC, QAE deliverables" \
+            -f state="open" > /dev/null 2>&1
 
+          echo "Creating Issue #1..."
           gh issue create \
-            --repo "${REPO_PATH}" \
+            --repo "$REPO_PATH" \
             --title "[EPIC-00] Discovery Foundation - Modelagem Estratégica e Setup Inicial" \
             --label "epic,discovery,setup,priority-high" \
+            --milestone "M0: Discovery Foundation" \
             --body "## 🎯 Objetivo
 
           Executar fase de Discovery completa do DDD Workflow v1.0, estabelecendo fundação estratégica e técnica do projeto **${{ inputs.project_name }}**.
 
-          ## 👥 Agentes Envolvidos
+          **Duração estimada:** 3-4 dias úteis
 
-          - [ ] **SDA** - Strategic Domain Analyst
-          - [ ] **UXD** - User Experience Designer
-          - [ ] **GM** - GitHub Manager
-          - [ ] **PE** - Platform Engineer
-          - [ ] **SEC** - Security Specialist
-          - [ ] **QAE** - Quality Assurance Engineer
+          ## 📋 Deliverables por Agente
 
-          ## 📋 Deliverables
-
-          ### SDA (Strategic Domain Analyst)
+          ### 📊 SDA - Strategic Domain Analyst
           - [ ] SDA-01-Event-Storming.md
           - [ ] SDA-02-Context-Map.md
           - [ ] SDA-03-Ubiquitous-Language.md
 
-          ### UXD (User Experience Designer)
+          ### 🎨 UXD - User Experience Designer
           - [ ] UXD-00-Design-Foundations.md
 
-          ### GM (GitHub Manager)
-          - [ ] GM-00-GitHub-Setup.md
-          - [ ] Labels configuradas
-          - [ ] CI/CD básico
-
-          ### PE (Platform Engineer)
+          ### 🏗️ PE - Platform Engineer (executa ANTES de GM/SEC/QAE)
           - [ ] PE-00-Environments-Setup.md
-          - [ ] Docker Compose (dev/stage/prod)
-          - [ ] Scripts de deploy
+          - [ ] Docker Compose (dev/staging/prod)
 
-          ### SEC (Security Specialist)
+          ### ⚙️ GM - GitHub Manager
+          - [ ] GM-00-GitHub-Setup.md
+          - [ ] Labels + CI/CD configurados
+          - [ ] **Scripts de automação criados** (epic-*, discovery-finish.sh)
+
+          ### 🔒 SEC - Security Specialist
           - [ ] SEC-00-Security-Baseline.md
 
-          ### QAE (Quality Assurance Engineer)
+          ### ✅ QAE - Quality Assurance Engineer
           - [ ] QAE-00-Test-Strategy.md
-
-          ## ⏱️ Estimativa
-
-          3-4 dias (conforme Workflow Guide - Fase Discovery)
 
           ## 🔗 Referências
 
@@ -212,17 +204,13 @@ jobs:
 
           🤖 **Issue criada automaticamente via GitHub Actions**"
 
-          echo "✅ Issue #1 created successfully"
+          echo "✅ Issue #1 and Milestone M0 created"
 
       - name: Create Feature Branch
         if: ${{ inputs.create_feature_branch }}
         run: |
           cd new-project
-
-          # Criar branch feature/discovery-foundation
           git checkout -b feature/discovery-foundation
-
-          # Commit vazio marcando início da feature
           git commit --allow-empty -m "chore: Início de uma nova feature
 
           Feature: Discovery Foundation
@@ -230,12 +218,11 @@ jobs:
 
           Este commit marca o início do trabalho na feature de Discovery Foundation.
 
-          🤖 Automatizado via GitHub Actions"
+          🤖 Criado via GitHub Actions"
 
-          # Push da branch
           git push origin feature/discovery-foundation
 
-          echo "✅ Feature branch created and pushed"
+          echo "✅ Feature branch created"
 
       - name: Create Draft PR
         if: ${{ inputs.create_draft_pr && inputs.create_discovery_issue && inputs.create_feature_branch }}
@@ -244,62 +231,43 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd new-project
-
-          # Extrair owner/repo da URL
           REPO_PATH=$(echo "${{ inputs.project_repo_url }}" | sed 's/.*github\.com[:/]\(.*\)\.git/\1/')
 
-          echo "Creating Draft PR in ${REPO_PATH}..."
-
           gh pr create \
-            --repo "${REPO_PATH}" \
+            --repo "$REPO_PATH" \
             --draft \
             --base develop \
             --head feature/discovery-foundation \
-            --title "[EPIC-00] Discovery Foundation" \
-            --body "## 🚧 Work in Progress
+            --title "[DISCOVERY] Foundation" \
+            --body "## 🎯 Issue Relacionada
+          Ref #1
 
-          Esta é a PR da Issue #1 - Discovery Foundation.
+          ## 📋 Tipo de Mudança
+          - [x] 📚 Documentação (Discovery Foundation)
 
-          Marcada como **Draft** enquanto os agentes trabalham nos deliverables.
+          ## 📖 Descrição
 
-          ### 📋 Progress Checklist
+          PR Draft para trabalho em Discovery Foundation.
 
-          #### 📊 SDA - Strategic Domain Analyst
-          - [ ] SDA-01-Event-Storming.md
-          - [ ] SDA-02-Context-Map.md
-          - [ ] SDA-03-Ubiquitous-Language.md
+          ### 📊 Progress Checklist
 
-          #### 🎨 UXD - User Experience Designer
-          - [ ] UXD-00-Design-Foundations.md
+          - [ ] SDA: Modelagem estratégica (3 docs)
+          - [ ] UXD: Design Foundations
+          - [ ] PE: Environments Setup
+          - [ ] GM: GitHub Setup + **Scripts criados**
+          - [ ] SEC: Security Baseline
+          - [ ] QAE: Test Strategy
 
-          #### ⚙️ GM - GitHub Manager
-          - [ ] GM-00-GitHub-Setup.md
-          - [ ] Labels configuradas
-          - [ ] Milestones criadas
-          - [ ] CI/CD workflows criados
+          ## 📚 Referências
 
-          #### 🏗️ PE - Platform Engineer
-          - [ ] PE-00-Environments-Setup.md
-          - [ ] Docker Compose (dev/staging/prod)
-          - [ ] Scripts de deploy
-
-          #### 🔒 SEC - Security Specialist
-          - [ ] SEC-00-Security-Baseline.md
-
-          #### ✅ QAE - Quality Assurance Engineer
-          - [ ] QAE-00-Test-Strategy.md
-
-          ---
-
-          **📌 Será marcada como ready for review quando todos os deliverables estiverem completos.**
-
-          Closes #1
+          - [Workflow Guide](.agents/docs/00-Workflow-Guide.md)
+          - [Git Patterns](.agents/docs/03-GIT-PATTERNS.md)
 
           ---
 
           🤖 **PR criada automaticamente via GitHub Actions**"
 
-          echo "✅ Draft PR created successfully"
+          echo "✅ Draft PR created"
 
       - name: Setup Summary
         run: |
@@ -316,6 +284,7 @@ jobs:
 
           if [ "${{ inputs.create_discovery_issue }}" = "true" ]; then
             echo "- ✅ Issue #1 (Discovery Foundation) created" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Milestone M0 created" >> $GITHUB_STEP_SUMMARY
           fi
 
           if [ "${{ inputs.create_feature_branch }}" = "true" ]; then
@@ -329,17 +298,11 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 🚀 Next Steps:" >> $GITHUB_STEP_SUMMARY
           echo "1. Clone the project locally: \`git clone ${{ inputs.project_repo_url }}\`" >> $GITHUB_STEP_SUMMARY
-
-          if [ "${{ inputs.create_feature_branch }}" = "true" ]; then
-            echo "2. Checkout feature branch: \`git checkout feature/discovery-foundation\`" >> $GITHUB_STEP_SUMMARY
-            echo "3. Start working on deliverables (SDA, UXD, GM, PE, SEC, QAE)" >> $GITHUB_STEP_SUMMARY
-            echo "4. Commit changes as you complete each deliverable" >> $GITHUB_STEP_SUMMARY
-            echo "5. When done, mark PR as ready for review" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "2. Checkout develop: \`git checkout develop\`" >> $GITHUB_STEP_SUMMARY
-            echo "3. Create feature branch: \`git checkout -b feature/discovery-foundation\`" >> $GITHUB_STEP_SUMMARY
-            echo "4. Start working on Issue #1 (Discovery Foundation)" >> $GITHUB_STEP_SUMMARY
-          fi
+          echo "2. Checkout feature branch: \`git checkout feature/discovery-foundation\`" >> $GITHUB_STEP_SUMMARY
+          echo "3. Start working on deliverables (SDA, UXD, PE, GM, SEC, QAE)" >> $GITHUB_STEP_SUMMARY
+          echo "4. Commit changes as you complete each deliverable" >> $GITHUB_STEP_SUMMARY
+          echo "5. When all complete, finalize: \`bash 00-doc-ddd/07-github-management/scripts/discovery-finish.sh --merge\`" >> $GITHUB_STEP_SUMMARY
+          echo "   - (GM creates this script as part of GM-00 deliverable)" >> $GITHUB_STEP_SUMMARY
 
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "📚 **Documentation:** See [README.md](README.md) for complete workflow guide" >> $GITHUB_STEP_SUMMARY
