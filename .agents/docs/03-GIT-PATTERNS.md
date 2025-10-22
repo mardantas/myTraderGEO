@@ -1,4 +1,4 @@
-# Padrões Git - DDD Workflow v1.1
+# Padrões Git - DDD Workflow v1.0
 
 Este documento estabelece os padrões de uso do Git no DDD Workflow.
 
@@ -218,6 +218,12 @@ Closes #1
 ### **Épicos Funcionais**
 
 **Estratégia:** Todos os agentes trabalham na **mesma branch** `feature/epic-N-nome`. O merge para `develop` acontece **apenas uma vez**, quando o épico está completo (após QAE aprovar).
+
+**Como funciona na prática:**
+1. **GM cria a branch** via `epic-start.sh` (commit vazio + PR draft)
+2. **Você invoca cada agente:** "DE, modele EPIC-01" → Agente cria arquivos → Você commita e pusha
+3. **Repete para todos agentes:** DBA, SE, UXD, FE, QAE (cada um commita na mesma branch)
+4. **GM valida e faz merge** via `epic-deploy.sh` (após QAE aprovar)
 
 Durante um épico, os agentes trabalham em sequência commitando na mesma branch:
 
@@ -567,7 +573,7 @@ O GitHub Manager (GM) pode automatizar grande parte do processo Git/GitHub:
 - ✅ **Fase 1:** Criar branch de modelagem (`epic-modeling-start.sh` + `epic-modeling-finish.sh`)
 - ✅ **Fase 2:** Criar milestone + issue épica 100% populada (`epic-create.sh`)
 - ✅ **Fase 3:** Criar branch principal do épico (`epic-start.sh`)
-- ✅ **Fase 5:** Validar + merge + deploy staging (`epic-deploy.sh`) - **NOVO!**
+- ✅ **Fase 5:** Validar + merge + deploy staging (`epic-deploy.sh`)
 - ✅ **Fase 6:** Fechar milestone + criar tag/release + deploy production (`epic-close.sh --release`)
 
 **Passos Manuais (requerem humano):**
@@ -591,13 +597,15 @@ GM: Fecha M1 → Cria tag v1.0.0 → Publica GitHub Release
 ### **GM (GitHub Manager)**
 - ✅ Cria milestone automaticamente (após DE-01)
 - ✅ Cria issue épico automaticamente (100% populada, sem edição manual)
-- ✅ Fornece scripts de automação
+- ✅ Fornece scripts de automação Git/GitHub:
+  - ✅ Cria branches (via `epic-start.sh`, `epic-modeling-start.sh`)
+  - ✅ Cria PRs draft (via `epic-start.sh`)
+  - ✅ Faz merges para develop (via `epic-deploy.sh`)
+  - ✅ Cria tags e releases (via `epic-close.sh`)
 
 **GM NÃO FAZ:**
-- ❌ Criar branches
-- ❌ Fazer commits
-- ❌ Criar PRs
-- ❌ Fazer merges
+- ❌ Fazer commits de código/documentação (exceto commit vazio inicial)
+- ❌ Invocar outros agentes (DBA, SE, UXD, FE, QAE)
 
 ### **VOCÊ (Desenvolvedor/Product Owner)**
 - ✅ Cria branches
@@ -656,9 +664,14 @@ Inclui:
 
 ---
 
-**Versão:** 1.1
+**Versão:** 1.0
 **Data:** 2025-10-22
 **Workflow:** DDD com 10 Agentes
 **Changelog:**
-- v1.1 (2025-10-22): Documento simplificado (-70% linhas), seção de scripts removida (link para arquivos futuros), guias operacionais em tabelas
-- v1.0 (2025-10-20): Versão inicial completa com guias operacionais detalhados
+- v1.0 (2025-10-22): Versão inicial estável
+  - Documento simplificado (-70% linhas para ~600 linhas)
+  - Automação completa via GM: epic-start.sh, epic-deploy.sh, epic-modeling-*.sh, epic-close.sh
+  - Quick Reference com invocações GM em todas as fases automatizáveis
+  - Estratégia de merge: 1 branch por épico (todos agentes trabalham na mesma branch)
+  - Scripts de validação: validate-nomenclature.sh, validate-structure.sh
+  - Clarificação: GM automatiza Git/GitHub (branches, PRs, merges), desenvolvedores invocam agentes e commitam código
