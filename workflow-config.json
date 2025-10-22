@@ -152,8 +152,8 @@
     "min_quality_score": 70,
     "definition_of_done": true,
     "scripts": {
-      "nomenclature": ".agents/workflow/validate-nomenclature.ps1",
-      "structure": ".agents/workflow/validate-structure.ps1"
+      "nomenclature": ".agents/scripts/validate-nomenclature.sh",
+      "structure": ".agents/scripts/validate-structure.sh"
     }
   },
 
