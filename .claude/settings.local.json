@@ -32,7 +32,8 @@
       "Bash(do echo \"=== $f ===\")",
       "Bash(git commit:*)",
       "Bash(git pull:*)",
-      "Bash(git commit -m \"$(cat <<''EOF''\nmerge: Resolve conflict in settings.local.json - combina permissões\n\nCombina permissões de ambas branches:\n- git merge (de main)\n- git commit (de workflow)\n- git pull (de feature branch)\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+      "Bash(git commit -m \"$(cat <<''EOF''\nmerge: Resolve conflict in settings.local.json - combina permissões\n\nCombina permissões de ambas branches:\n- git merge (de main)\n- git commit (de workflow)\n- git pull (de feature branch)\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []
