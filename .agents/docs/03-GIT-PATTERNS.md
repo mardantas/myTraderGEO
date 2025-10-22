@@ -217,41 +217,59 @@ Closes #1
 
 ### **Épicos Funcionais**
 
-Cada deliverable tem sua própria branch e PR. Merges feitos via PR:
+**Estratégia:** Todos os agentes trabalham na **mesma branch** `feature/epic-N-nome`. O merge para `develop` acontece **apenas uma vez**, quando o épico está completo (após QAE aprovar).
+
+Durante um épico, os agentes trabalham em sequência commitando na mesma branch:
 
 ```bash
-# Cada agente cria PR e faz merge via GitHub
-# Todos usando "Create a merge commit" (--no-ff)
+# Todos os agentes commitam na mesma branch feature/epic-N-nome
+# Sequência: DE → DBA → SE → UXD (paralelo com SE) → FE → QAE
+
+git checkout feature/epic-01-criar-estrategia
 
 # DE: Domain Model
-gh pr merge --merge
+git add 00-doc-ddd/04-tactical-design/DE-01-*.md
+git commit -m "DE: Modelagem tática épico Criar Estratégia ... Ref #5"
+git push
 
 # DBA: Schema Review
-gh pr merge --merge
+git add 00-doc-ddd/05-database-design/DBA-01-*.md
+git commit -m "DBA: Schema review épico Criar Estratégia ... Ref #5"
+git push
 
 # SE: Backend Implementation
-gh pr merge --merge
+git add 02-backend/src/*
+git commit -m "SE: Implementação backend épico Criar Estratégia ... Ref #5"
+git push
+
+# UXD: Wireframes (paralelo com SE)
+git add 00-doc-ddd/03-ux-design/UXD-01-*.md
+git commit -m "UXD: Wireframes épico Criar Estratégia ... Ref #5"
+git push
 
 # FE: Frontend Implementation
-gh pr merge --merge
+git add 01-frontend/src/*
+git commit -m "FE: UI para criação de estratégias ... Ref #5"
+git push
 
-# QAE: Quality Gate (última - fecha o épico)
-gh pr merge --merge
+# QAE: Quality Gate (último commit - fecha issue)
+git add 02-backend/tests/* 01-frontend/tests/*
+git commit -m "QAE: Quality gate épico Criar Estratégia ... Closes #5"
+git push
+
+# ✅ APENAS AGORA: Merge único para develop (após QAE aprovar)
+gh pr ready
+gh pr merge --merge --delete-branch
 ```
 
-**Estratégia:** Sempre usar "Create a merge commit" (equivalente a `--no-ff`) para preservar contexto histórico
-
-### **⏱️ Quando fazer merge para `develop`?**
-
-**Decisão: Merge por Epic (conclusão completa)**
-
-Durante as iterações de um épico, múltiplos agentes trabalham em sequência (DE → DBA → SE → FE → QAE). O merge para `develop` acontece **apenas ao final do épico**, quando todos os agentes completaram seus trabalhos.
-
-**Razões:**
+**Razões para 1 merge por épico:**
 - ✅ `develop` sempre **estável** (features completas e testadas)
-- ✅ **Menos overhead** de gerenciamento (1 merge por epic vs 5-6 merges)
+- ✅ **Menos overhead** de gerenciamento (1 merge vs 5-6 merges)
 - ✅ **Alinhado com DDD** (bounded context completo antes do merge)
 - ✅ **Ideal para equipes pequenas** e MVPs (1-2 desenvolvedores)
+- ✅ **Histórico linear** na branch do épico (fácil de revisar)
+
+**Nota:** Sempre usar "Create a merge commit" (equivalente a `--no-ff`) ao fazer merge para `develop` para preservar contexto histórico
 
 ---
 
@@ -487,41 +505,83 @@ Antes de fazer push:
 - [ ] Último commit usa `Closes #N` (se fecha issue)?
 - [ ] Código está formatado?
 - [ ] Testes estão passando?
-- [ ] Validações executadas (`.agents/scripts/validate-*.ps1`)?
+- [ ] Validações executadas (`.agents/scripts/validate-*.sh`)?
 
 ---
 
 <a id="quick-reference-discovery"></a>
 ## 📋 Quick Reference: Discovery
 
-| Passo | Responsável | Ação |
-|-------|-------------|------|
-| **1. Setup Inicial** | GitHub Actions | Cria Issue #1, Milestone M0, branch `feature/discovery-foundation`, commit vazio, PR Draft |
-| **2. Clone** | Você | `git clone <repo>` → `git checkout feature/discovery-foundation` |
-| **3. Trabalho** | Agentes (SDA, UXD, PE, GM, SEC, QAE) | Criar deliverables (7 documentos) |
-| **4. Validação** | Você | Executar `.agents/scripts/validate-*.ps1` |
-| **5. Commit Final** | Você | `git commit -m "docs: Discovery completa ... Closes #1"` |
-| **6. PR Ready** | Você | `gh pr ready` |
-| **7. Merge** | Você | Merge via GitHub UI ("Create a merge commit") |
-| **8. (Opcional) Release** | Você | Merge `develop → main` + tag `v0.1.0` |
+| Passo | Responsável | Ação | Invocação GM (Opcional) |
+|-------|-------------|------|-------------------------|
+| **1. Setup Inicial** | GitHub Actions | Cria Issue #1, Milestone M0, branch `feature/discovery-foundation`, commit vazio, PR Draft | Automático (GitHub Workflow) |
+| **2. Clone** | Você | `git clone <repo>` → `git checkout feature/discovery-foundation` | Manual (não automatizável) |
+| **3. Trabalho** | Agentes (SDA, UXD, PE, GM, SEC, QAE) | Criar deliverables (7 documentos) → Commit cada deliverable | **Exemplo por agente:**<br>`"SDA, faça Event Storming do myTraderGEO"`<br>→ Cria SDA-01, SDA-02, SDA-03<br>→ `git commit -m "SDA: Modelagem estratégica ... Ref #1"`<br><br>`"UXD, crie Design Foundations"`<br>→ Cria UXD-00<br>→ `git commit -m "UXD: Design Foundations ... Ref #1"`<br><br>(Repetir para GM, PE, SEC, QAE) |
+| **4. Validação** | Você | Executar `bash .agents/scripts/validate-nomenclature.sh` e `validate-structure.sh` | Manual (análise de output requer humano) |
+| **5. Commit Final** | Você | `git commit -m "docs: Discovery completa ... Closes #1"` | Manual (mensagem de commit requer contexto) |
+| **6. PR Ready** | Você | `gh pr ready` | Manual |
+| **7. Merge** | Você | Merge via GitHub UI ("Create a merge commit") | `"GM, finalize a Discovery Foundation e faça o merge"` → Executa `discovery-finish.sh --merge` |
+| **8. (Opcional) Release** | Você/GM | Merge `develop → main` + tag `v0.1.0` | `"GM, crie release v0.1.0 da Discovery"` → Executa `discovery-finish.sh --release` |
 
 **Resultado:** Issue #1 fechada, Discovery completa em `develop`
+
+### **Automação com GM (Discovery)**
+
+O GitHub Manager (GM) pode automatizar partes finais da Discovery:
+
+**Passos Automatizáveis:**
+- ✅ **Passo 7:** Validar deliverables + merge para develop (`discovery-finish.sh --merge`)
+- ✅ **Passo 8:** Criar release v0.1.0 (`discovery-finish.sh --release`)
+
+**Passos Manuais (requerem humano):**
+- ⚠️ **Passos 1-6:** Setup, clone, criação de docs, validação, commits (requerem decisões e contexto humano)
+
+**Invocação Típica:**
+```
+Você: [Completa todos os 7 deliverables de Discovery]
+Você: "GM, finalize a Discovery Foundation e faça o merge"
+GM: Valida deliverables (8/8) → Executa validações → Merge para develop → Fecha Issue #1
+```
 
 ---
 
 <a id="quick-reference-épico"></a>
 ## 📋 Quick Reference: Épico
 
-| Fase | Responsável | Ação |
-|------|-------------|------|
-| **1. Modelagem** | DE | Criar `DE-01-EPIC-N-<Nome>-Domain-Model.md` em branch separada → Merge para `develop` |
-| **2. GitHub Setup** | GM | Ler DE-01 → Criar Milestone M{N} → Criar Issue épico #{N} (100% populada) |
-| **3. Git Workflow** | Você | `git checkout -b feature/epic-N-<nome>` → Commit vazio → Push → PR Draft |
-| **4. Implementação** | Agentes | **DBA** → Schema Review<br>**SE** → Backend (paralelo com UXD)<br>**UXD** → Wireframes<br>**FE** → Frontend<br>**QAE** → Quality Gate (testes) |
-| **5. Encerramento** | Você | `gh pr ready` → Merge PR → Deploy staging → Deploy production |
-| **6. Release** | Você | Fechar Milestone M{N} → Tag `vX.Y.Z` → GitHub Release |
+| Fase | Responsável | Ação | Invocação GM (Opcional) |
+|------|-------------|------|-------------------------|
+| **1. Modelagem (DE)** | DE | **Branch temporária** para DE-01:<br>`git checkout -b feature/epic-01-domain-model`<br>→ Criar `DE-01-EPIC-01-<Nome>-Domain-Model.md`<br>→ Commit + PR + Merge para `develop`<br>→ Deletar branch | `"GM, prepare branch para DE modelar EPIC-01"` → Executa `epic-modeling-start.sh 1`<br><br>`"GM, finalize modelagem EPIC-01"` → Executa `epic-modeling-finish.sh 1` (merge + delete) |
+| **2. GitHub Setup (GM)** | GM | Ler DE-01 (agora em `develop`) → Criar Milestone M{N} → Criar Issue épico #{N} (100% populada com BCs, objetivos, critérios) | `"GM, crie milestone e issue para EPIC-01"` → Lê DE-01 + Executa `epic-create.sh 1 ...` |
+| **3. Branch Principal** | Você/GM | **Branch principal do épico** (onde TODOS trabalham):<br>`git checkout -b feature/epic-01-criar-estrategia`<br>→ Commit vazio → Push → PR Draft | `"GM, inicie branch do EPIC-01 'criar-estrategia'"` → Executa `epic-start.sh 1 5 "criar-estrategia"`<br>(cria branch + commit vazio + push + PR draft) |
+| **4. Implementação** | Agentes | **Todos trabalham na MESMA branch** `feature/epic-01-criar-estrategia`:<br>**DBA** → Schema Review → commit + push<br>**SE** → Backend (paralelo com UXD) → commit + push<br>**UXD** → Wireframes → commit + push<br>**FE** → Frontend → commit + push<br>**QAE** → Quality Gate (testes) → commit + push (último commit com `Closes #issue`) | Cada agente invocado individualmente:<br>`"DBA, revise schema EPIC-01"`<br>`"SE, implemente backend EPIC-01"`<br>`"UXD, crie wireframes EPIC-01"`<br>`"FE, implemente UI EPIC-01"`<br>`"QAE, execute quality gate EPIC-01"` |
+| **5. Deploy Staging** | Você/GM | Validar commits → PR ready → Merge para `develop` → Deploy staging | `"GM, faça deploy do EPIC-01 para staging"` → Executa `epic-deploy.sh 1`<br>(valida QAE + merge + staging) |
+| **6. Release** | Você/GM | Fechar Milestone M{N} → Tag `vX.Y.Z` → GitHub Release | `"GM, feche EPIC-01 e crie release v1.0.0"` → Executa `epic-close.sh 1 --release v1.0.0` |
 
 **Resultado:** Epic completo, Issue #{N} fechada, Milestone M{N} fechado, tag criada
+
+### **Automação com GM**
+
+O GitHub Manager (GM) pode automatizar grande parte do processo Git/GitHub:
+
+**Passos Automatizáveis:**
+- ✅ **Fase 1:** Criar branch de modelagem (`epic-modeling-start.sh` + `epic-modeling-finish.sh`)
+- ✅ **Fase 2:** Criar milestone + issue épica 100% populada (`epic-create.sh`)
+- ✅ **Fase 3:** Criar branch principal do épico (`epic-start.sh`)
+- ✅ **Fase 5:** Validar + merge + deploy staging (`epic-deploy.sh`) - **NOVO!**
+- ✅ **Fase 6:** Fechar milestone + criar tag/release + deploy production (`epic-close.sh --release`)
+
+**Passos Manuais (requerem humano):**
+- ⚠️ **Fase 4:** Invocar agentes individualmente (DBA, SE, UXD, FE, QAE) - cada um faz commit + push na mesma branch
+- ⚠️ **Monitoramento:** Smoke tests staging (entre Fase 5 e 6)
+
+**Invocação Típica:**
+```
+Você: "GM, prepare o EPIC-01 'Criar Estratégia'"
+GM: [Lê DE-01] → Cria milestone M1 → Cria issue #5 com objetivos/critérios extraídos
+Você: [Trabalha no épico com agentes DBA, SE, UXD, FE, QAE]
+Você: "GM, finalize EPIC-01 e crie release v1.0.0"
+GM: Fecha M1 → Cria tag v1.0.0 → Publica GitHub Release
+```
 
 ---
 
