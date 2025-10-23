@@ -14,7 +14,7 @@
 **Bounded Contexts Envolvidos:**
 - User Management (completo)
 - Strategy Planning (completo)
-- **Market Data (completo - OptionContract, UnderlyingAsset)**
+- Market Data (completo - OptionContract, UnderlyingAsset)
 - Risk Management (integração via eventos - futuro)
 
 **Objetivo de Negócio:**
@@ -28,20 +28,21 @@ Entregar funcionalidade completa de criação de estratégias com templates (str
 
 #### Aggregates
 
-##### 1. User (Aggregate Root)
+#### 1. User (Aggregate Root)
 
 **Responsabilidade:** Gerenciar cadastro, autenticação e perfil de usuário
 
 **Invariantes (Business Rules):**
 1. Email deve ser único no sistema
 2. Password deve ter no mínimo 8 caracteres
-3. DisplayName deve ter entre 2 e 50 caracteres
+3. DisplayName deve ter entre 2 e 30 caracteres
 4. RiskProfile deve ser um dos valores: Conservador, Moderado, Agressivo
 5. Role deve ser: Trader, Moderator, Administrator
-6. Trader deve ter um SubscriptionPlan associado
-7. Administrator e Moderator não precisam de SubscriptionPlan
-8. **Apenas Traders podem ter PlanOverride**
-9. **PlanOverride expirado deve ser ignorado nos cálculos de limites efetivos**
+6. Trader deve ter um SubscriptionPlan e BillingPeriod associados
+7. Administrator e Moderator não precisam de SubscriptionPlan nem BillingPeriod
+8. Apenas Traders podem ter PlanOverride
+9. PlanOverride expirado deve ser ignorado nos cálculos de limites efetivos
+10. BillingPeriod deve ser Monthly ou Annual
 
 **Entities:**
 
@@ -58,6 +59,7 @@ public class User : Entity<UserId>
     public UserRole Role { get; private set; }
     public RiskProfile? RiskProfile { get; private set; } // Nullable for Admin/Moderator
     public SubscriptionPlanId? SubscriptionPlanId { get; private set; } // Nullable for Admin/Moderator
+    public BillingPeriod? BillingPeriod { get; private set; } // Nullable for Admin/Moderator
     public UserStatus Status { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime? LastLoginAt { get; private set; }
@@ -79,7 +81,8 @@ public class User : Entity<UserId>
         string fullName,
         string displayName,
         RiskProfile riskProfile,
-        SubscriptionPlanId planId)
+        SubscriptionPlanId planId,
+        BillingPeriod billingPeriod)
     {
         if (string.IsNullOrWhiteSpace(fullName))
             throw new DomainException("Full name is required");
@@ -87,8 +90,8 @@ public class User : Entity<UserId>
         if (string.IsNullOrWhiteSpace(displayName))
             throw new DomainException("Display name is required");
 
-        if (displayName.Length < 2 || displayName.Length > 50)
-            throw new DomainException("Display name must be between 2 and 50 characters");
+        if (displayName.Length < 2 || displayName.Length > 30)
+            throw new DomainException("Display name must be between 2 and 30 characters");
 
         var user = new User
         {
@@ -100,6 +103,7 @@ public class User : Entity<UserId>
             Role = UserRole.Trader,
             RiskProfile = riskProfile,
             SubscriptionPlanId = planId,
+            BillingPeriod = billingPeriod,
             Status = UserStatus.Active,
             CreatedAt = DateTime.UtcNow
         };
@@ -127,8 +131,8 @@ public class User : Entity<UserId>
         if (string.IsNullOrWhiteSpace(displayName))
             throw new DomainException("Display name is required");
 
-        if (displayName.Length < 2 || displayName.Length > 50)
-            throw new DomainException("Display name must be between 2 and 50 characters");
+        if (displayName.Length < 2 || displayName.Length > 30)
+            throw new DomainException("Display name must be between 2 and 30 characters");
 
         var user = new User
         {
@@ -169,18 +173,23 @@ public class User : Entity<UserId>
         ));
     }
 
-    public void UpgradeSubscriptionPlan(SubscriptionPlanId newPlanId)
+    public void UpgradeSubscriptionPlan(SubscriptionPlanId newPlanId, BillingPeriod newBillingPeriod)
     {
         if (Role != UserRole.Trader)
             throw new DomainException("Only traders have subscription plans");
 
         var oldPlanId = SubscriptionPlanId;
+        var oldBillingPeriod = BillingPeriod;
+
         SubscriptionPlanId = newPlanId;
+        BillingPeriod = newBillingPeriod;
 
         _domainEvents.Add(new UserPlanUpgraded(
             Id,
             oldPlanId!,
             newPlanId,
+            oldBillingPeriod!.Value,
+            newBillingPeriod,
             DateTime.UtcNow
         ));
     }
@@ -226,8 +235,8 @@ public class User : Entity<UserId>
         if (string.IsNullOrWhiteSpace(newDisplayName))
             throw new DomainException("Display name is required");
 
-        if (newDisplayName.Length < 2 || newDisplayName.Length > 50)
-            throw new DomainException("Display name must be between 2 and 50 characters");
+        if (newDisplayName.Length < 2 || newDisplayName.Length > 30)
+            throw new DomainException("Display name must be between 2 and 30 characters");
 
         DisplayName = newDisplayName;
 
@@ -415,6 +424,8 @@ public record UserPlanUpgraded(
     UserId UserId,
     SubscriptionPlanId OldPlanId,
     SubscriptionPlanId NewPlanId,
+    BillingPeriod OldBillingPeriod,
+    BillingPeriod NewBillingPeriod,
     DateTime OccurredAt
 ) : IDomainEvent;
 
@@ -458,17 +469,20 @@ public record PlanOverrideRevoked(
 
 ---
 
-##### 2. SubscriptionPlan (Aggregate Root)
+#### 2. SubscriptionPlan (Aggregate Root)
 
 **Responsabilidade:** Gerenciar planos de assinatura (Básico, Pleno, Consultor) e seus limites
 
 **Invariantes (Business Rules):**
 1. Name deve ser único
 2. PriceMonthly deve ser >= 0 (plano Básico é gratuito)
-3. StrategyLimit deve ser > 0
-4. Plano Básico deve ter StrategyLimit = 1
-5. Planos pagos (Pleno, Consultor) devem ter StrategyLimit ilimitado (ou alto, ex: 999)
-6. Apenas Administrator pode configurar planos
+3. PriceAnnual deve ser >= 0
+4. Se PriceMonthly > 0, então PriceAnnual deve aplicar desconto (PriceAnnual < PriceMonthly * 12)
+5. AnnualDiscountPercent deve estar entre 0 e 1 (0% a 100%)
+6. StrategyLimit deve ser > 0
+7. Plano Básico deve ter StrategyLimit = 1
+8. Planos pagos (Pleno, Consultor) devem ter StrategyLimit ilimitado (ou alto, ex: 999)
+9. Apenas Administrator pode configurar planos
 
 **Entities:**
 
@@ -480,6 +494,8 @@ public class SubscriptionPlan : Entity<SubscriptionPlanId>
     public SubscriptionPlanId Id { get; private set; }
     public string Name { get; private set; } // Básico, Pleno, Consultor
     public Money PriceMonthly { get; private set; }
+    public Money PriceAnnual { get; private set; }
+    public decimal AnnualDiscountPercent { get; private set; } // ex: 0.20 = 20% desconto
     public int StrategyLimit { get; private set; }
     public PlanFeatures Features { get; private set; }
     public bool IsActive { get; private set; }
@@ -497,6 +513,8 @@ public class SubscriptionPlan : Entity<SubscriptionPlanId>
     public static SubscriptionPlan Create(
         string name,
         Money priceMonthly,
+        Money priceAnnual,
+        decimal annualDiscountPercent,
         int strategyLimit,
         PlanFeatures features)
     {
@@ -506,11 +524,24 @@ public class SubscriptionPlan : Entity<SubscriptionPlanId>
         if (strategyLimit <= 0)
             throw new DomainException("Strategy limit must be positive");
 
+        if (annualDiscountPercent < 0 || annualDiscountPercent > 1)
+            throw new DomainException("Annual discount percent must be between 0 and 1");
+
+        // Validar que preço anual tem desconto em relação ao mensal
+        if (priceMonthly.Amount > 0)
+        {
+            var expectedMaxAnnual = priceMonthly.Amount * 12;
+            if (priceAnnual.Amount >= expectedMaxAnnual)
+                throw new DomainException("Annual price must be less than monthly price * 12");
+        }
+
         var plan = new SubscriptionPlan
         {
             Id = SubscriptionPlanId.New(),
             Name = name,
             PriceMonthly = priceMonthly,
+            PriceAnnual = priceAnnual,
+            AnnualDiscountPercent = annualDiscountPercent,
             StrategyLimit = strategyLimit,
             Features = features,
             IsActive = true,
@@ -521,6 +552,8 @@ public class SubscriptionPlan : Entity<SubscriptionPlanId>
             plan.Id,
             plan.Name,
             plan.PriceMonthly,
+            plan.PriceAnnual,
+            plan.AnnualDiscountPercent,
             plan.StrategyLimit,
             DateTime.UtcNow
         ));
@@ -529,14 +562,29 @@ public class SubscriptionPlan : Entity<SubscriptionPlanId>
     }
 
     // Business Methods
-    public void UpdatePricing(Money newPrice)
+    public void UpdatePricing(Money newPriceMonthly, Money newPriceAnnual, decimal newAnnualDiscountPercent)
     {
-        PriceMonthly = newPrice;
+        if (newAnnualDiscountPercent < 0 || newAnnualDiscountPercent > 1)
+            throw new DomainException("Annual discount percent must be between 0 and 1");
+
+        // Validar que preço anual tem desconto em relação ao mensal
+        if (newPriceMonthly.Amount > 0)
+        {
+            var expectedMaxAnnual = newPriceMonthly.Amount * 12;
+            if (newPriceAnnual.Amount >= expectedMaxAnnual)
+                throw new DomainException("Annual price must be less than monthly price * 12");
+        }
+
+        PriceMonthly = newPriceMonthly;
+        PriceAnnual = newPriceAnnual;
+        AnnualDiscountPercent = newAnnualDiscountPercent;
         UpdatedAt = DateTime.UtcNow;
 
         _domainEvents.Add(new PlanPricingUpdated(
             Id,
-            newPrice,
+            newPriceMonthly,
+            newPriceAnnual,
+            newAnnualDiscountPercent,
             DateTime.UtcNow
         ));
     }
@@ -615,6 +663,12 @@ public record Money(decimal Amount, string Currency)
     public static Money Zero() => new(0, "BRL");
 }
 
+public enum BillingPeriod
+{
+    Monthly = 1,
+    Annual = 12
+}
+
 public record PlanFeatures(
     bool RealtimeData,
     bool AdvancedAlerts,
@@ -652,14 +706,18 @@ public record PlanFeatures(
 public record PlanConfigured(
     SubscriptionPlanId PlanId,
     string Name,
-    Money Price,
+    Money PriceMonthly,
+    Money PriceAnnual,
+    decimal AnnualDiscountPercent,
     int StrategyLimit,
     DateTime OccurredAt
 ) : IDomainEvent;
 
 public record PlanPricingUpdated(
     SubscriptionPlanId PlanId,
-    Money NewPrice,
+    Money NewPriceMonthly,
+    Money NewPriceAnnual,
+    decimal NewAnnualDiscountPercent,
     DateTime OccurredAt
 ) : IDomainEvent;
 
@@ -688,15 +746,20 @@ public record PlanActivated(
 
 ---
 
-##### 3. SystemConfig (Aggregate Root)
+#### 3. SystemConfig (Aggregate Root)
 
 **Responsabilidade:** Gerenciar configurações globais do sistema (taxas, limites, parâmetros)
 
 **Invariantes (Business Rules):**
-1. DefaultCommissionRate deve estar entre 0 e 1 (0% a 100%)
-2. DefaultTaxRate deve estar entre 0 e 1
-3. MaxOpenStrategiesPerUser deve ser > 0
-4. Apenas Administrator pode modificar
+1. BrokerCommissionRate deve estar entre 0 e 1 (0% a 100%)
+2. B3EmolumentRate deve estar entre 0 e 1
+3. SettlementFeeRate deve estar entre 0 e 1
+4. IssRate deve estar entre 0 e 1
+5. IncomeTaxRate deve estar entre 0 e 1
+6. DayTradeIncomeTaxRate deve estar entre 0 e 1
+7. MaxOpenStrategiesPerUser deve ser > 0
+8. MaxStrategiesInTemplate deve ser > 0
+9. Apenas Administrator pode modificar
 
 **Entities:**
 
@@ -706,10 +769,22 @@ public class SystemConfig : Entity<SystemConfigId>
 {
     // Properties
     public SystemConfigId Id { get; private set; }
-    public decimal DefaultCommissionRate { get; private set; } // 0.0025 = 0.25%
-    public decimal DefaultTaxRate { get; private set; } // 0.15 = 15%
+
+    // Taxas Operacionais
+    public decimal BrokerCommissionRate { get; private set; }     // 0.0 = 0% (maioria das corretoras)
+    public decimal B3EmolumentRate { get; private set; }          // 0.000325 = 0.0325% (taxa B3)
+    public decimal SettlementFeeRate { get; private set; }        // 0.000275 = 0.0275% (liquidação)
+    public decimal IssRate { get; private set; }                  // 0.05 = 5% (sobre emolumentos)
+
+    // Impostos
+    public decimal IncomeTaxRate { get; private set; }            // 0.15 = 15% (IR sobre lucro swing-trade)
+    public decimal DayTradeIncomeTaxRate { get; private set; }    // 0.20 = 20% (IR sobre lucro day-trade)
+
+    // Limites do Sistema
     public int MaxOpenStrategiesPerUser { get; private set; }
     public int MaxStrategiesInTemplate { get; private set; }
+
+    // Auditoria
     public DateTime UpdatedAt { get; private set; }
     public UserId UpdatedBy { get; private set; }
 
@@ -729,10 +804,22 @@ public class SystemConfig : Entity<SystemConfigId>
         var config = new SystemConfig
         {
             Id = SingletonId,
-            DefaultCommissionRate = 0.0025m, // 0.25%
-            DefaultTaxRate = 0.15m, // 15%
+
+            // Taxas Operacionais (valores típicos do mercado brasileiro)
+            BrokerCommissionRate = 0.0m,        // 0% - maioria das corretoras tem corretagem zero
+            B3EmolumentRate = 0.000325m,        // 0.0325% - taxa B3
+            SettlementFeeRate = 0.000275m,      // 0.0275% - taxa de liquidação
+            IssRate = 0.05m,                    // 5% sobre emolumentos - ISS
+
+            // Impostos (legislação brasileira)
+            IncomeTaxRate = 0.15m,              // 15% - IR sobre lucro em swing-trade
+            DayTradeIncomeTaxRate = 0.20m,      // 20% - IR sobre lucro em day-trade
+
+            // Limites do Sistema
             MaxOpenStrategiesPerUser = 100,
             MaxStrategiesInTemplate = 10,
+
+            // Auditoria
             UpdatedAt = DateTime.UtcNow,
             UpdatedBy = UserId.New() // System
         };
@@ -745,43 +832,117 @@ public class SystemConfig : Entity<SystemConfigId>
         return config;
     }
 
-    // Business Methods
-    public void UpdateCommissionRate(decimal newRate, UserId adminId)
+    // Business Methods - Atualização de Taxas Operacionais
+    public void UpdateBrokerCommissionRate(decimal newRate, UserId adminId)
     {
         if (newRate < 0 || newRate > 1)
-            throw new DomainException("Commission rate must be between 0 and 1");
+            throw new DomainException("Broker commission rate must be between 0 and 1");
 
-        DefaultCommissionRate = newRate;
+        BrokerCommissionRate = newRate;
         UpdatedAt = DateTime.UtcNow;
         UpdatedBy = adminId;
 
         _domainEvents.Add(new SystemParametersUpdated(
             Id,
-            "DefaultCommissionRate",
+            nameof(BrokerCommissionRate),
             newRate.ToString(),
             adminId,
             DateTime.UtcNow
         ));
     }
 
-    public void UpdateTaxRate(decimal newRate, UserId adminId)
+    public void UpdateB3EmolumentRate(decimal newRate, UserId adminId)
     {
         if (newRate < 0 || newRate > 1)
-            throw new DomainException("Tax rate must be between 0 and 1");
+            throw new DomainException("B3 emolument rate must be between 0 and 1");
 
-        DefaultTaxRate = newRate;
+        B3EmolumentRate = newRate;
         UpdatedAt = DateTime.UtcNow;
         UpdatedBy = adminId;
 
         _domainEvents.Add(new SystemParametersUpdated(
             Id,
-            "DefaultTaxRate",
+            nameof(B3EmolumentRate),
             newRate.ToString(),
             adminId,
             DateTime.UtcNow
         ));
     }
 
+    public void UpdateSettlementFeeRate(decimal newRate, UserId adminId)
+    {
+        if (newRate < 0 || newRate > 1)
+            throw new DomainException("Settlement fee rate must be between 0 and 1");
+
+        SettlementFeeRate = newRate;
+        UpdatedAt = DateTime.UtcNow;
+        UpdatedBy = adminId;
+
+        _domainEvents.Add(new SystemParametersUpdated(
+            Id,
+            nameof(SettlementFeeRate),
+            newRate.ToString(),
+            adminId,
+            DateTime.UtcNow
+        ));
+    }
+
+    public void UpdateIssRate(decimal newRate, UserId adminId)
+    {
+        if (newRate < 0 || newRate > 1)
+            throw new DomainException("ISS rate must be between 0 and 1");
+
+        IssRate = newRate;
+        UpdatedAt = DateTime.UtcNow;
+        UpdatedBy = adminId;
+
+        _domainEvents.Add(new SystemParametersUpdated(
+            Id,
+            nameof(IssRate),
+            newRate.ToString(),
+            adminId,
+            DateTime.UtcNow
+        ));
+    }
+
+    // Business Methods - Atualização de Impostos
+    public void UpdateIncomeTaxRate(decimal newRate, UserId adminId)
+    {
+        if (newRate < 0 || newRate > 1)
+            throw new DomainException("Income tax rate must be between 0 and 1");
+
+        IncomeTaxRate = newRate;
+        UpdatedAt = DateTime.UtcNow;
+        UpdatedBy = adminId;
+
+        _domainEvents.Add(new SystemParametersUpdated(
+            Id,
+            nameof(IncomeTaxRate),
+            newRate.ToString(),
+            adminId,
+            DateTime.UtcNow
+        ));
+    }
+
+    public void UpdateDayTradeIncomeTaxRate(decimal newRate, UserId adminId)
+    {
+        if (newRate < 0 || newRate > 1)
+            throw new DomainException("Day-trade income tax rate must be between 0 and 1");
+
+        DayTradeIncomeTaxRate = newRate;
+        UpdatedAt = DateTime.UtcNow;
+        UpdatedBy = adminId;
+
+        _domainEvents.Add(new SystemParametersUpdated(
+            Id,
+            nameof(DayTradeIncomeTaxRate),
+            newRate.ToString(),
+            adminId,
+            DateTime.UtcNow
+        ));
+    }
+
+    // Business Methods - Atualização de Limites
     public void UpdateMaxOpenStrategies(int newMax, UserId adminId)
     {
         if (newMax <= 0)
@@ -793,7 +954,25 @@ public class SystemConfig : Entity<SystemConfigId>
 
         _domainEvents.Add(new SystemParametersUpdated(
             Id,
-            "MaxOpenStrategiesPerUser",
+            nameof(MaxOpenStrategiesPerUser),
+            newMax.ToString(),
+            adminId,
+            DateTime.UtcNow
+        ));
+    }
+
+    public void UpdateMaxStrategiesInTemplate(int newMax, UserId adminId)
+    {
+        if (newMax <= 0)
+            throw new DomainException("Max strategies in template must be positive");
+
+        MaxStrategiesInTemplate = newMax;
+        UpdatedAt = DateTime.UtcNow;
+        UpdatedBy = adminId;
+
+        _domainEvents.Add(new SystemParametersUpdated(
+            Id,
+            nameof(MaxStrategiesInTemplate),
             newMax.ToString(),
             adminId,
             DateTime.UtcNow
@@ -868,7 +1047,7 @@ public interface ISystemConfigRepository
 
 #### Aggregates
 
-##### 4. StrategyTemplate (Aggregate Root)
+#### 4. StrategyTemplate (Aggregate Root)
 
 **Responsabilidade:** Gerenciar templates de estratégias com strikes relativos e topologia
 
@@ -1160,7 +1339,7 @@ public record TemplateLegRemoved(
 
 ---
 
-##### 5. Strategy (Aggregate Root)
+#### 5. Strategy (Aggregate Root)
 
 **Responsabilidade:** Gerenciar estratégia instanciada com valores absolutos (strikes em R$, datas específicas)
 
