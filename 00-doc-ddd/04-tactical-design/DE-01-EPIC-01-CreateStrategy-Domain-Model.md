@@ -22,13 +22,107 @@ Entregar funcionalidade completa de criação de estratégias com templates (str
 
 ---
 
+## 📋 Índice do Modelo de Domínio
+
+### User Management BC
+
+#### [Aggregate: User](#1-user-aggregate-root)
+**Responsabilidade:** Gerenciamento de usuários, autenticação, perfil e planos
+**Value Objects:**
+- UserId, Email, PasswordHash, UserRole, RiskProfile, UserStatus
+- UserPlanOverride, TradingFees, BillingPeriod
+
+**Domain Events:**
+- UserRegistered, RiskProfileUpdated, UserPlanUpgraded
+- UserLoggedIn, UserSuspended, UserActivated, UserDeleted, DisplayNameUpdated
+- PlanOverrideGranted, PlanOverrideRevoked
+- CustomFeesConfigured, CustomFeesRemoved
+
+---
+
+#### [Aggregate: SubscriptionPlan](#2-subscriptionplan-aggregate-root)
+**Responsabilidade:** Planos de assinatura (Básico, Pleno, Consultor)
+**Value Objects:**
+- SubscriptionPlanId, Money, PlanFeatures
+
+**Domain Events:**
+- PlanConfigured, PlanPricingUpdated, PlanLimitsUpdated
+- PlanFeaturesUpdated, PlanDeactivated, PlanActivated
+
+---
+
+#### [Aggregate: SystemConfig](#3-systemconfig-aggregate-root)
+**Responsabilidade:** Configurações globais (taxas, limites)
+**Value Objects:**
+- SystemConfigId
+
+**Domain Events:**
+- SystemConfigInitialized, SystemParametersUpdated
+
+---
+
+### Strategy Planning BC
+
+#### [Aggregate: StrategyTemplate](#4-strategytemplate-aggregate-root)
+**Responsabilidade:** Templates com strikes relativos
+**Entities:**
+- TemplateLeg
+
+**Value Objects:**
+- StrategyTemplateId, TemplateLegId, RelativeStrike, StrikeReference, OptionType, LegType
+
+**Domain Events:**
+- TemplateCreated, TemplateNameUpdated, TemplateDescriptionUpdated
+- TemplateLegAdded, TemplateLegUpdated, TemplateLegRemoved
+
+---
+
+#### [Aggregate: Strategy](#5-strategy-aggregate-root)
+**Responsabilidade:** Estratégias instanciadas com valores absolutos
+**Entities:**
+- StrategyLeg
+
+**Value Objects:**
+- StrategyId, StrategyLegId
+
+**Domain Events:**
+- StrategyCreated, StrategyOpened, StrategyClosed, StrategyExpired
+
+---
+
+### Market Data BC
+
+#### [Aggregate: OptionContract](#6-optioncontract-aggregate-root)
+**Responsabilidade:** Contratos de opção da B3
+**Entities:**
+- Greeks, ImpliedVolatility
+
+**Value Objects:**
+- OptionContractId, Ticker, OptionSeries, OptionStyle, SettlementType, ContractStatus
+
+**Domain Events:**
+- OptionContractListed, OptionPriceUpdated, GreeksUpdated, IVUpdated
+- LiquidityUpdated, OptionContractExpired
+
+---
+
+#### [Aggregate: UnderlyingAsset](#7-underlyingasset-aggregate-root)
+**Responsabilidade:** Ativos subjacentes (PETR4, VALE3, etc.)
+**Value Objects:**
+- UnderlyingAssetId, Ticker, AssetType
+
+**Domain Events:**
+- UnderlyingAssetRegistered, AssetPriceUpdated, AssetDeactivated
+
+---
+
 ## 🏗️ Modelo Tático por Bounded Context
 
-### User Management
+# User Management
 
-#### Aggregates
+## Aggregates
 
-#### 1. User (Aggregate Root)
+## 1. User (Aggregate Root)
 
 **Responsabilidade:** Gerenciar cadastro, autenticação e perfil de usuário
 
@@ -43,8 +137,10 @@ Entregar funcionalidade completa de criação de estratégias com templates (str
 8. Apenas Traders podem ter PlanOverride
 9. PlanOverride expirado deve ser ignorado nos cálculos de limites efetivos
 10. BillingPeriod deve ser Monthly ou Annual
+11. Apenas Traders podem configurar CustomFees
+12. Todas as taxas em CustomFees devem estar entre 0 e 1 (se especificadas)
 
-**Entities:**
+## Entities
 
 ```csharp
 // Aggregate Root
@@ -66,6 +162,9 @@ public class User : Entity<UserId>
 
     // Plan Override (for VIP, Beta Testers, Trials, etc)
     public UserPlanOverride? PlanOverride { get; private set; }
+
+    // Custom Trading Fees (for different brokers, VIP accounts, etc)
+    public TradingFees? CustomFees { get; private set; } // null = usar SystemConfig
 
     // Domain Events
     private readonly List<IDomainEvent> _domainEvents = new();
@@ -320,10 +419,54 @@ public class User : Entity<UserId>
 
         return plan.Features;
     }
+
+    // Custom Trading Fees Management
+    public void ConfigureCustomFees(TradingFees customFees)
+    {
+        if (Role != UserRole.Trader)
+            throw new DomainException("Only traders can configure custom fees");
+
+        CustomFees = customFees;
+
+        _domainEvents.Add(new CustomFeesConfigured(
+            Id,
+            customFees,
+            DateTime.UtcNow
+        ));
+    }
+
+    public void RemoveCustomFees()
+    {
+        if (CustomFees == null)
+            throw new DomainException("No custom fees to remove");
+
+        CustomFees = null;
+
+        _domainEvents.Add(new CustomFeesRemoved(
+            Id,
+            DateTime.UtcNow
+        ));
+    }
+
+    public TradingFees GetEffectiveTradingFees(SystemConfig systemConfig)
+    {
+        // Se tem custom fees, retorna (com fallback para SystemConfig nos valores null)
+        if (CustomFees != null)
+            return CustomFees;
+
+        // Senão, criar TradingFees baseado no SystemConfig (todos os valores)
+        return new TradingFees(
+            systemConfig.BrokerCommissionRate,
+            systemConfig.B3EmolumentRate,
+            systemConfig.SettlementFeeRate,
+            systemConfig.IncomeTaxRate,
+            systemConfig.DayTradeIncomeTaxRate
+        );
+    }
 }
 ```
 
-**Value Objects:**
+## Value Objects
 
 ```csharp
 public record UserId(Guid Value)
@@ -402,9 +545,53 @@ public record UserPlanOverride(
 
     public bool IsActive() => !IsExpired();
 }
+
+public record TradingFees(
+    decimal? BrokerCommissionRate,      // null = usar SystemConfig
+    decimal? B3EmolumentRate,           // null = usar SystemConfig
+    decimal? SettlementFeeRate,         // null = usar SystemConfig
+    decimal? IncomeTaxRate,             // null = usar SystemConfig
+    decimal? DayTradeIncomeTaxRate      // null = usar SystemConfig
+)
+{
+    public TradingFees
+    {
+        // Validar taxas se especificadas
+        if (BrokerCommissionRate.HasValue && (BrokerCommissionRate.Value < 0 || BrokerCommissionRate.Value > 1))
+            throw new ArgumentException("Broker commission rate must be between 0 and 1");
+
+        if (B3EmolumentRate.HasValue && (B3EmolumentRate.Value < 0 || B3EmolumentRate.Value > 1))
+            throw new ArgumentException("B3 emolument rate must be between 0 and 1");
+
+        if (SettlementFeeRate.HasValue && (SettlementFeeRate.Value < 0 || SettlementFeeRate.Value > 1))
+            throw new ArgumentException("Settlement fee rate must be between 0 and 1");
+
+        if (IncomeTaxRate.HasValue && (IncomeTaxRate.Value < 0 || IncomeTaxRate.Value > 1))
+            throw new ArgumentException("Income tax rate must be between 0 and 1");
+
+        if (DayTradeIncomeTaxRate.HasValue && (DayTradeIncomeTaxRate.Value < 0 || DayTradeIncomeTaxRate.Value > 1))
+            throw new ArgumentException("Day-trade income tax rate must be between 0 and 1");
+    }
+
+    // Helper para pegar taxa efetiva com fallback
+    public decimal GetEffectiveBrokerCommissionRate(SystemConfig config)
+        => BrokerCommissionRate ?? config.BrokerCommissionRate;
+
+    public decimal GetEffectiveB3EmolumentRate(SystemConfig config)
+        => B3EmolumentRate ?? config.B3EmolumentRate;
+
+    public decimal GetEffectiveSettlementFeeRate(SystemConfig config)
+        => SettlementFeeRate ?? config.SettlementFeeRate;
+
+    public decimal GetEffectiveIncomeTaxRate(SystemConfig config)
+        => IncomeTaxRate ?? config.IncomeTaxRate;
+
+    public decimal GetEffectiveDayTradeIncomeTaxRate(SystemConfig config)
+        => DayTradeIncomeTaxRate ?? config.DayTradeIncomeTaxRate;
+}
 ```
 
-**Domain Events:**
+## Domain Events
 
 ```csharp
 public record UserRegistered(
@@ -465,11 +652,22 @@ public record PlanOverrideRevoked(
     UserId RevokedBy,
     DateTime OccurredAt
 ) : IDomainEvent;
+
+public record CustomFeesConfigured(
+    UserId UserId,
+    TradingFees CustomFees,
+    DateTime OccurredAt
+) : IDomainEvent;
+
+public record CustomFeesRemoved(
+    UserId UserId,
+    DateTime OccurredAt
+) : IDomainEvent;
 ```
 
 ---
 
-#### 2. SubscriptionPlan (Aggregate Root)
+## 2. SubscriptionPlan (Aggregate Root)
 
 **Responsabilidade:** Gerenciar planos de assinatura (Básico, Pleno, Consultor) e seus limites
 
@@ -484,7 +682,7 @@ public record PlanOverrideRevoked(
 8. Planos pagos (Pleno, Consultor) devem ter StrategyLimit ilimitado (ou alto, ex: 999)
 9. Apenas Administrator pode configurar planos
 
-**Entities:**
+## Entities
 
 ```csharp
 // Aggregate Root
@@ -640,7 +838,7 @@ public class SubscriptionPlan : Entity<SubscriptionPlanId>
 }
 ```
 
-**Value Objects:**
+## Value Objects
 
 ```csharp
 public record SubscriptionPlanId(Guid Value)
@@ -700,7 +898,7 @@ public record PlanFeatures(
 }
 ```
 
-**Domain Events:**
+## Domain Events
 
 ```csharp
 public record PlanConfigured(
@@ -746,7 +944,7 @@ public record PlanActivated(
 
 ---
 
-#### 3. SystemConfig (Aggregate Root)
+## 3. SystemConfig (Aggregate Root)
 
 **Responsabilidade:** Gerenciar configurações globais do sistema (taxas, limites, parâmetros)
 
@@ -761,7 +959,7 @@ public record PlanActivated(
 8. MaxStrategiesInTemplate deve ser > 0
 9. Apenas Administrator pode modificar
 
-**Entities:**
+## Entities
 
 ```csharp
 // Aggregate Root
@@ -981,13 +1179,13 @@ public class SystemConfig : Entity<SystemConfigId>
 }
 ```
 
-**Value Objects:**
+## Value Objects
 
 ```csharp
 public record SystemConfigId(Guid Value);
 ```
 
-**Domain Events:**
+## Domain Events
 
 ```csharp
 public record SystemConfigInitialized(
@@ -1043,11 +1241,11 @@ public interface ISystemConfigRepository
 
 ---
 
-### Strategy Planning
+# Strategy Planning
 
-#### Aggregates
+## Aggregates
 
-#### 4. StrategyTemplate (Aggregate Root)
+## 4. StrategyTemplate (Aggregate Root)
 
 **Responsabilidade:** Gerenciar templates de estratégias com strikes relativos e topologia
 
@@ -1059,7 +1257,7 @@ public interface ISystemConfigRepository
 5. Template global (Visibility = Global) só pode ser criado por Administrator
 6. Template pessoal (Visibility = Personal) pertence a um UserId
 
-**Entities:**
+## Entities
 
 ```csharp
 // Aggregate Root
@@ -1247,7 +1445,7 @@ public class TemplateLeg : Entity<TemplateLegId>
 }
 ```
 
-**Value Objects:**
+## Value Objects
 
 ```csharp
 public record StrategyTemplateId(Guid Value)
@@ -1313,7 +1511,7 @@ public enum ExpirationReference
 }
 ```
 
-**Domain Events:**
+## Domain Events
 
 ```csharp
 public record TemplateCreated(
@@ -1339,7 +1537,7 @@ public record TemplateLegRemoved(
 
 ---
 
-#### 5. Strategy (Aggregate Root)
+## 5. Strategy (Aggregate Root)
 
 **Responsabilidade:** Gerenciar estratégia instanciada com valores absolutos (strikes em R$, datas específicas)
 
@@ -1351,7 +1549,7 @@ public record TemplateLegRemoved(
 5. Strikes devem ser valores absolutos em R$
 6. Expirations devem ser datas futuras
 
-**Entities:**
+## Entities
 
 ```csharp
 // Aggregate Root
@@ -1569,7 +1767,7 @@ public class StrategyLeg : Entity<StrategyLegId>
 }
 ```
 
-**Value Objects:**
+## Value Objects
 
 ```csharp
 public record StrategyId(Guid Value)
@@ -1624,7 +1822,7 @@ public enum RiskLevel
 }
 ```
 
-**Domain Events:**
+## Domain Events
 
 ```csharp
 public record StrategyInstantiated(
@@ -1699,11 +1897,11 @@ public interface IStrategyRepository
 
 ---
 
-### Market Data
+# Market Data
 
-#### Aggregates
+## Aggregates
 
-#### 6. OptionContract (Aggregate Root)
+## 6. OptionContract (Aggregate Root)
 
 **Responsabilidade:** Gerenciar dados de contratos de opções da B3 (preços, Greeks, ajustes de strike)
 
@@ -1718,7 +1916,7 @@ public interface IStrategyRepository
 8. BidPrice <= AskPrice (quando ambos presentes)
 9. Expiration deve ser futura (para opções Active)
 
-**Entities:**
+## Entities
 
 ```csharp
 // Aggregate Root
@@ -2043,7 +2241,7 @@ public class StrikeAdjustment : Entity<StrikeAdjustmentId>
 }
 ```
 
-**Value Objects:**
+## Value Objects
 
 ```csharp
 public record OptionContractId(Guid Value)
@@ -2092,7 +2290,7 @@ public record OptionGreeks(
 }
 ```
 
-**Domain Events:**
+## Domain Events
 
 ```csharp
 public record OptionContractCreated(
@@ -2142,7 +2340,7 @@ public record OptionExpired(
 
 ---
 
-#### 7. UnderlyingAsset (Aggregate Root)
+## 7. UnderlyingAsset (Aggregate Root)
 
 **Responsabilidade:** Gerenciar dados do ativo subjacente (ação-objeto da opção)
 
@@ -2152,7 +2350,7 @@ public record OptionExpired(
 3. CurrentPrice deve ser > 0
 4. LastUpdated deve ser recente (< 1 dia para Active)
 
-**Entities:**
+## Entities
 
 ```csharp
 // Aggregate Root
@@ -2244,7 +2442,7 @@ public class UnderlyingAsset : Entity<UnderlyingAssetId>
 }
 ```
 
-**Value Objects:**
+## Value Objects
 
 ```csharp
 public record UnderlyingAssetId(Guid Value)
@@ -2260,7 +2458,7 @@ public enum AssetStatus
 }
 ```
 
-**Domain Events:**
+## Domain Events
 
 ```csharp
 public record UnderlyingAssetCreated(
