@@ -48,6 +48,26 @@
 | **Estratégia Criada** | `StrategyCreated` | Evento emitido quando nova estratégia (com ativo subjacente e valores absolutos) é criada por instanciação de template ou do zero | Domain Event |
 | **Template Instanciado** | `TemplateInstantiated` | Evento emitido quando template é transformado em estratégia real (referências relativas → valores absolutos) | Domain Event |
 | **Cálculos Executados** | `CalculationsCompleted` | Evento emitido após cálculo de margem, rentabilidade e gregas | Domain Event |
+| **Status da Estratégia** | `StrategyStatus` | Estado do ciclo de vida: Draft (rascunho), Validated (validada), PaperTrading (simulação), Live (ativo com capital), Closed (encerrada) | Value Object (Enum) |
+| **Visão de Mercado** | `MarketView` | Expectativa de direção do mercado: Bullish (alta), Bearish (baixa), Neutral (lateral), Volatile (volátil) | Value Object (Enum) |
+| **Objetivo da Estratégia** | `StrategyObjective` | Propósito principal: Income (renda), Protection (proteção), Speculation (especulação), Hedge | Value Object (Enum) |
+| **Perfil de Risco da Estratégia** | `StrategyRiskProfile` | Nível de risco: Conservative (baixo), Moderate (médio), Aggressive (alto) | Value Object (Enum) |
+| **Faixa de Preço Ideal** | `PriceRangeIdeal` | Faixa recomendada de preço do ativo subjacente para aplicar a estratégia | Value Object |
+| **Orientações de Defesa** | `DefenseGuidelines` | Recomendações de ajuste quando mercado se move contra expectativa (alta/baixa/volatilidade) | Value Object |
+| **Snapshot de P&L** | `PnLSnapshot` | Registro imutável de lucro/prejuízo em momento específico (histórico) | Entity |
+| **Tipo de Snapshot P&L** | `PnLType` | Categoria do snapshot: Daily (diário automático), OnDemand (manual), Weekly (semanal), Monthly (mensal), Closing (encerramento) | Value Object (Enum) |
+| **P&L Atual** | `CurrentPnL` | Lucro ou prejuízo não realizado da estratégia ativa | Value Object |
+| **Histórico de P&L** | `PnLHistory` | Coleção de snapshots de P&L ao longo do tempo | Collection (Entity) |
+| **Motivo de Encerramento** | `ClosingReason` | Justificativa para fechamento da estratégia (obrigatório ao encerrar) | Value Object |
+| **Estratégia Validada** | `StrategyValidated` | Evento emitido quando estratégia é validada e está pronta para ativação | Domain Event |
+| **Paper Trading Iniciado** | `StrategyPaperTradingStarted` | Evento emitido quando estratégia entra em modo de simulação | Domain Event |
+| **Estratégia Ativada (Live)** | `StrategyWentLive` | Evento emitido quando estratégia é ativada com capital real | Domain Event |
+| **P&L Atualizado** | `StrategyPnLUpdated` | Evento emitido quando P&L atual da estratégia é recalculado | Domain Event |
+| **Snapshot P&L Capturado** | `PnLSnapshotCaptured` | Evento emitido quando snapshot de P&L é registrado no histórico | Domain Event |
+| **Perna Ajustada** | `StrategyLegAdjusted` | Evento emitido quando quantidade de uma perna é alterada (manejo) | Domain Event |
+| **Perna Adicionada** | `StrategyLegAddedToActive` | Evento emitido quando nova perna é adicionada a estratégia ativa (manejo) | Domain Event |
+| **Perna Removida** | `StrategyLegRemoved` | Evento emitido quando perna é removida de estratégia ativa (manejo) | Domain Event |
+| **Estratégia Encerrada** | `StrategyClosed` | Evento emitido quando estratégia é fechada (com P&L final e motivo) | Domain Event |
 
 ---
 
@@ -56,13 +76,10 @@
 | Termo (PT) | Código (EN) | Definição | Tipo DDD |
 |------------|-------------|-----------|----------|
 | **Estratégia Ativa** | `ActiveStrategy` | Estratégia ativada para execução (real) ou acompanhamento (paper trading) | Aggregate Root |
-| **Modo de Execução** | `ExecutionMode` | Paper Trading (simulado) ou Real (executado) | Value Object (Enum) |
-| **Paper Trading** | `PaperTrading` | Modo de acompanhamento hipotético com dados reais mas sem execução efetiva | Value Object |
+| **Paper Trading** | `PaperTrading` | Status de acompanhamento hipotético com dados reais mas sem execução efetiva (é um status, não modo) | Value Object (Status) |
 | **Posição Simulada** | `PaperPosition` | Posição hipotética em paper trading com preços de entrada do momento da ativação | Entity |
 | **Posição Real** | `RealPosition` | Posição efetivamente executada no mercado | Entity |
 | **Ordem** | `Order` | Instrução de compra ou venda de uma opção (apenas real) | Entity |
-| **P&L** | `ProfitAndLoss` | Lucro e prejuízo atual da estratégia (real ou simulado) | Value Object |
-| **P&L Simulado** | `SimulatedPnL` | P&L hipotético calculado em paper trading | Value Object |
 | **Performance** | `StrategyPerformance` | Análise de desempenho incluindo P&L, rentabilidade percentual e gregas atuais (real ou simulado) | Value Object |
 | **Ajuste** | `Adjustment` | Modificação em estratégia ativa (rolagem, hedge, rebalanceamento, encerramento parcial, encerramento total) | Entity |
 | **Rolagem** | `RollOver` | Substituir opções vencendo por opções de vencimento futuro | Value Object |
@@ -114,9 +131,30 @@
 | **Last** | `LastPrice` | Último preço negociado | Value Object |
 | **Volatilidade Implícita** | `ImpliedVolatility` | Expectativa de volatilidade futura embutida no preço da opção | Value Object |
 | **Dados de Mercado** | `MarketData` | Conjunto de preços, volatilidade e timestamps | Aggregate Root |
-| **Feed de Mercado** | `MarketFeed` | Stream de dados em tempo real | Value Object |
+| **Feed de Mercado** | `MarketFeed` | Stream de dados em tempo real | Domain Service |
 | **Timestamp** | `MarketTimestamp` | Data/hora de atualização dos dados | Value Object |
 | **Dados Sincronizados** | `MarketDataSynchronized` | Evento emitido quando dados de mercado são atualizados | Domain Event |
+| **Série de Opção** | `OptionSeries` | Identifica semana de vencimento: W1-W5 (W3 = mensal padrão, 3ª segunda-feira) | Value Object |
+| **Número da Semana** | `WeekNumber` | Número da semana de vencimento (1-5) dentro do mês | Value Object |
+| **Mensal Padrão** | `MonthlyStandard` | Indica se é opção mensal padrão (W3, vence na 3ª segunda-feira) | Value Object (Flag) |
+| **Ajuste de Strike** | `StrikeAdjustment` | Registro de ajuste de strike por dividendo ou evento corporativo | Entity |
+| **Strike Original** | `OriginalStrike` | Preço de exercício original na emissão do contrato (imutável) | Value Object |
+| **Strike Atual** | `CurrentStrike` | Preço de exercício atual (após ajustes por dividendos) | Value Object |
+| **Motivo do Ajuste** | `AdjustmentReason` | Causa do ajuste: Dividend (dividendo), Split, Inplit, etc. | Value Object (Enum) |
+| **Serviço de Streaming** | `MarketDataStreamService` | Serviço de domínio para throttling e cache de updates em tempo real | Domain Service |
+| **Atualização em Tempo Real** | `RealTimePriceUpdate` | Update de preço em tempo real via streaming | Value Object |
+| **Inscrição de Símbolo** | `SymbolSubscription` | Registro de cliente inscrito para receber updates de um símbolo | Value Object |
+| **Throttling de Preço** | `PriceThrottling` | Controle de frequência de updates para evitar sobrecarga | Domain Service Behavior |
+| **Mudança Significativa** | `SignificantChange` | Variação de preço relevante que justifica update (ex: > 0.5%) | Value Object |
+| **Strike Ajustado** | `OptionStrikeAdjusted` | Evento emitido quando strike é ajustado por dividendo ou evento corporativo | Domain Event |
+| **Streaming Iniciado** | `MarketDataStreamStarted` | Evento emitido quando stream de dados em tempo real é iniciado | Domain Event |
+| **Streaming Parado** | `MarketDataStreamStopped` | Evento emitido quando stream de dados em tempo real é interrompido | Domain Event |
+| **Preço em Tempo Real Recebido** | `RealTimePriceReceived` | Evento emitido quando novo preço chega via streaming | Domain Event |
+| **Usuário Inscrito em Símbolo** | `UserSubscribedToSymbol` | Evento emitido quando usuário se inscreve para receber updates de símbolo | Domain Event |
+| **Usuário Desinscrito de Símbolo** | `UserUnsubscribedFromSymbol` | Evento emitido quando usuário cancela inscrição de updates de símbolo | Domain Event |
+| **Sincronização de Opções Iniciada** | `OptionsDataSyncStarted` | Evento emitido quando sincronização batch com B3 inicia | Domain Event |
+| **Sincronização de Opções Concluída** | `OptionsDataSyncCompleted` | Evento emitido quando sincronização batch com B3 termina | Domain Event |
+| **Novos Contratos Descobertos** | `NewOptionContractsDiscovered` | Evento emitido quando novos contratos de opção são encontrados na B3 | Domain Event |
 
 ---
 
@@ -149,16 +187,25 @@
 |------------|-------------|-----------|----------|
 | **Usuário** | `User` | Pessoa registrada na plataforma com role e plano de assinatura | Aggregate Root |
 | **Role** | `Role` | Papel do usuário no sistema: Trader (opera estratégias), Moderator (modera conteúdo), Administrator (gestão do sistema) | Value Object (Enum) |
-| **Plano de Assinatura** | `SubscriptionPlan` | Nível de assinatura do trader: Básico, Pleno, Consultor | Value Object (Enum) |
+| **Plano de Assinatura** | `SubscriptionPlan` | Nível de assinatura do trader: Básico, Pleno, Consultor | Aggregate Root |
 | **Perfil de Risco** | `RiskProfile` | Classificação do trader: Conservador, Moderado, Agressivo | Value Object (Enum) |
 | **Email** | `Email` | Endereço de email único do usuário | Value Object |
 | **Senha** | `Password` | Credencial de autenticação (hashed) | Value Object |
 | **Perfil do Usuário** | `UserProfile` | Dados do usuário (nome, role, perfil de risco, plano de assinatura) | Entity |
 | **Permissões** | `Permissions` | Autorização de acesso baseada em role e plano de assinatura | Value Object |
+| **Override de Plano** | `UserPlanOverride` | Override temporário ou permanente de limites e features do plano (ex: beta tester, VIP, trial) | Value Object |
+| **Período de Cobrança** | `BillingPeriod` | Periodicidade de pagamento: Monthly (mensal) ou Annual (anual com desconto) | Value Object (Enum) |
+| **Taxas de Trading** | `TradingFees` | Taxas de negociação: corretagem, emolumentos B3, liquidação, impostos | Value Object |
+| **Taxas Customizadas** | `CustomFees` | Taxas personalizadas para usuário específico (ex: corretora diferente, conta VIP) | Value Object |
+| **Funcionalidades do Plano** | `PlanFeatures` | Features habilitadas no plano: dados em tempo real, alertas avançados, ferramentas de consultoria | Value Object |
 | **Usuário Cadastrado** | `UserRegistered` | Evento emitido quando novo usuário completa registro | Domain Event |
 | **Role Atribuído** | `RoleAssigned` | Evento emitido quando role é atribuído ao usuário | Domain Event |
 | **Plano de Assinatura Atualizado** | `SubscriptionPlanUpdated` | Evento emitido quando trader muda de plano | Domain Event |
 | **Perfil de Risco Definido** | `RiskProfileDefined` | Evento emitido quando trader define seu perfil de risco | Domain Event |
+| **Override de Plano Concedido** | `PlanOverrideGranted` | Evento emitido quando administrador concede override de plano a usuário | Domain Event |
+| **Override de Plano Revogado** | `PlanOverrideRevoked` | Evento emitido quando administrador revoga override de plano | Domain Event |
+| **Taxas Customizadas Configuradas** | `CustomFeesConfigured` | Evento emitido quando taxas personalizadas são configuradas para usuário | Domain Event |
+| **Taxas Customizadas Removidas** | `CustomFeesRemoved` | Evento emitido quando taxas personalizadas são removidas | Domain Event |
 
 ---
 
@@ -248,6 +295,9 @@
 | **Premium** | **Pleno** | Consistência terminológica em português |
 | **Usuário** em contexto técnico | **User** | Código em inglês |
 | **User** em documentação | **Usuário** ou **Trader** | Documentação em português, especificar role quando relevante |
+| **ExecutionMode** | **StrategyStatus** | Paper trading é um status (PaperTrading), não modo de execução separado |
+| **SimulatedPnL** | **CurrentPnL** | Não há distinção entre P&L real e simulado - mesmo cálculo, contexto determina uso |
+| **ProfitAndLoss** | **CurrentPnL** | Usar termo mais específico para P&L não realizado |
 
 ---
 
@@ -384,6 +434,25 @@ namespace MyTraderGEO.StrategyPlanning.Domain.Interfaces
 | 2025-10-07 | Administrator | Adicionado role | Role para gestão do sistema, usuários e moderação de conteúdo |
 | 2025-10-07 | Perfil de Risco | Explicitado | Separado como entidade distinta (Conservador, Moderado, Agressivo) |
 | 2025-10-07 | Premium → Pleno | Renomeado | Consistência terminológica em português |
+| 2025-10-24 | StrategyStatus | Adicionado | Ciclo de vida da estratégia: Draft, Validated, PaperTrading, Live, Closed |
+| 2025-10-24 | ExecutionMode | Removido | Substituído por StrategyStatus - paper trading é status, não modo |
+| 2025-10-24 | SimulatedPnL | Removido | Não há distinção - CurrentPnL serve para ambos contextos |
+| 2025-10-24 | ProfitAndLoss → CurrentPnL | Renomeado | Termo mais específico para P&L não realizado |
+| 2025-10-24 | MarketView, StrategyObjective, StrategyRiskProfile | Adicionados | Caracterização de templates de estratégia |
+| 2025-10-24 | PriceRangeIdeal, DefenseGuidelines | Adicionados | Orientações de uso de templates |
+| 2025-10-24 | PnLSnapshot, PnLType, PnLHistory | Adicionados | Sistema de tracking histórico de P&L |
+| 2025-10-24 | ClosingReason | Adicionado | Obrigatório ao encerrar estratégia |
+| 2025-10-24 | Eventos de Strategy (9 novos) | Adicionados | StrategyValidated, StrategyPaperTradingStarted, StrategyWentLive, StrategyPnLUpdated, PnLSnapshotCaptured, StrategyLegAdjusted, StrategyLegAddedToActive, StrategyLegRemoved, StrategyClosed |
+| 2025-10-24 | OptionSeries, WeekNumber, MonthlyStandard | Adicionados | Suporte a opções semanais W1-W5 (W3 = mensal padrão) |
+| 2025-10-24 | StrikeAdjustment, OriginalStrike, CurrentStrike, AdjustmentReason | Adicionados | Sistema de ajuste de strike por dividendos |
+| 2025-10-24 | MarketFeed | Atualizado | De Value Object para Domain Service |
+| 2025-10-24 | MarketDataStreamService | Adicionado | Domain Service para streaming, throttling e cache |
+| 2025-10-24 | Eventos de Streaming (9 novos) | Adicionados | MarketDataStreamStarted, MarketDataStreamStopped, RealTimePriceReceived, UserSubscribedToSymbol, UserUnsubscribedFromSymbol, OptionsDataSyncStarted, OptionsDataSyncCompleted, NewOptionContractsDiscovered, OptionStrikeAdjusted |
+| 2025-10-24 | SubscriptionPlan | Atualizado | De Value Object para Aggregate Root |
+| 2025-10-24 | UserPlanOverride, BillingPeriod | Adicionados | Sistema de override de planos (beta tester, VIP, trial) |
+| 2025-10-24 | TradingFees, CustomFees | Adicionados | Taxas customizadas por usuário (corretora, conta VIP) |
+| 2025-10-24 | PlanFeatures | Adicionado | Features habilitadas por plano (realtime data, alertas, consultoria) |
+| 2025-10-24 | Eventos de User (4 novos) | Adicionados | PlanOverrideGranted, PlanOverrideRevoked, CustomFeesConfigured, CustomFeesRemoved |
 
 ---
 
@@ -425,17 +494,17 @@ namespace MyTraderGEO.StrategyPlanning.Domain.Interfaces
 
 ### Cobertura por Bounded Context
 
-- [x] Strategy Planning (21 termos - incluindo Template vs Estratégia, Catálogo com visibilidade)
-- [x] Trade Execution (14 termos)
+- [x] Strategy Planning (41 termos - incluindo StrategyStatus, caracterização de templates, P&L tracking, manejo)
+- [x] Trade Execution (12 termos - removidos ExecutionMode e SimulatedPnL, atualizado PaperTrading)
 - [x] Risk Management (13 termos)
-- [x] Market Data (8 termos)
+- [x] Market Data (26 termos - incluindo opções semanais, ajuste de strike, streaming)
 - [x] Asset Management (15 termos - incluindo Carteira de Ativos e Opções)
-- [x] User Management (7 termos)
+- [x] User Management (16 termos - incluindo plan override, custom fees, billing period)
 - [x] Community & Sharing (7 termos)
 - [x] Consultant Services (6 termos)
 - [x] Analytics & AI (10 termos)
 
-**Total:** 101 termos + 4 termos compartilhados = **105 termos**
+**Total:** 146 termos + 4 termos compartilhados = **150 termos**
 
 ---
 

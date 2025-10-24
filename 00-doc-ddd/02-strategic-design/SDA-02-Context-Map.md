@@ -68,10 +68,12 @@
 **Decisão Estratégica:** Build internamente (futuro: integração API brokers via ACL)
 
 **Entidades Principais:**
-- `ActiveStrategy` (estratégia ativa com modo: paper ou real)
-- `ExecutionMode` (enum: PaperTrading, Real)
+- `ActiveStrategy` (estratégia ativa - status indica se é paper trading ou live)
+- `StrategyStatus` (enum: Draft, Validated, PaperTrading, Live, Closed - gerenciado por Strategy Planning)
 - `PaperPosition` (posição simulada com preços hipotéticos)
 - `RealPosition` (posição real executada)
+
+**Nota:** O conceito de ExecutionMode foi substituído por StrategyStatus no Strategy Planning BC. Paper trading e Live são status da estratégia, não modos de execução separados.
 
 ---
 
@@ -120,10 +122,13 @@
 **Responsabilidade:** Cadastro, autenticação, autorização, gestão de roles e planos de assinatura
 
 **Entidades Principais:**
-- `User` (usuário do sistema)
-- `Role` (papel: Trader, Administrator)
-- `SubscriptionPlan` (plano: Básico, Pleno, Consultor)
+- `User` (usuário do sistema com plan override e custom fees)
+- `Role` (papel: Trader, Administrator, Moderator)
+- `SubscriptionPlan` (Aggregate Root - plano: Básico, Pleno, Consultor)
 - `RiskProfile` (perfil de risco: Conservador, Moderado, Agressivo)
+- `UserPlanOverride` (override temporário de limites/features para beta tester, VIP, trial)
+- `BillingPeriod` (periodicidade: Monthly, Annual)
+- `TradingFees` e `CustomFees` (taxas personalizadas por usuário)
 
 **Roles:**
 - **Trader**: Usuário que opera estratégias (pode ter qualquer plano)
