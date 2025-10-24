@@ -32,7 +32,8 @@
       "Bash(do echo \"=== $f ===\")",
       "Bash(git commit:*)",
       "Bash(git pull:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(bash 03-github-manager/scripts/epic-modeling-finish.sh 1)"
     ],
     "deny": [],
     "ask": []
