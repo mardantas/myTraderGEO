@@ -28,65 +28,84 @@ Entregar funcionalidade completa de criação de estratégias com templates (str
 
 #### [Aggregate: User](#1-user-aggregate-root)
 **Responsabilidade:** Gerenciamento de usuários, autenticação, perfil e planos
+
+**Entities:**
+  - (nenhuma child entity)
+
 **Value Objects:**
-- UserId, Email, PasswordHash, UserRole, RiskProfile, UserStatus
-- UserPlanOverride, TradingFees, BillingPeriod
+  - UserId, Email, PasswordHash, UserRole, RiskProfile, UserStatus
+  - UserPlanOverride, TradingFees, BillingPeriod
 
 **Domain Events:**
-- UserRegistered, RiskProfileUpdated, UserPlanUpgraded
-- UserLoggedIn, UserSuspended, UserActivated, UserDeleted, DisplayNameUpdated
-- PlanOverrideGranted, PlanOverrideRevoked
-- CustomFeesConfigured, CustomFeesRemoved
+  - UserRegistered, RiskProfileUpdated, UserPlanUpgraded
+  - UserLoggedIn, UserSuspended, UserActivated, UserDeleted, DisplayNameUpdated
+  - PlanOverrideGranted, PlanOverrideRevoked
+  - CustomFeesConfigured, CustomFeesRemoved
 
 ---
 
 #### [Aggregate: SubscriptionPlan](#2-subscriptionplan-aggregate-root)
 **Responsabilidade:** Planos de assinatura (Básico, Pleno, Consultor)
+
+**Entities:**
+  - (nenhuma child entity)
+
 **Value Objects:**
-- SubscriptionPlanId, Money, PlanFeatures
+  - SubscriptionPlanId, Money, PlanFeatures
 
 **Domain Events:**
-- PlanConfigured, PlanPricingUpdated, PlanLimitsUpdated
-- PlanFeaturesUpdated, PlanDeactivated, PlanActivated
+  - PlanConfigured, PlanPricingUpdated, PlanLimitsUpdated
+  - PlanFeaturesUpdated, PlanDeactivated, PlanActivated
 
 ---
 
 #### [Aggregate: SystemConfig](#3-systemconfig-aggregate-root)
 **Responsabilidade:** Configurações globais (taxas, limites)
+
+**Entities:**
+  - (nenhuma child entity)
+
 **Value Objects:**
-- SystemConfigId
+  - SystemConfigId
 
 **Domain Events:**
-- SystemConfigInitialized, SystemParametersUpdated
+  - SystemConfigInitialized, SystemParametersUpdated
 
 ---
 
 ### Strategy Planning BC
 
 #### [Aggregate: StrategyTemplate](#4-strategytemplate-aggregate-root)
-**Responsabilidade:** Templates com strikes relativos
+**Responsabilidade:** Templates com strikes relativos + caracterização e orientações
+
 **Entities:**
-- TemplateLeg
+  - TemplateLeg
 
 **Value Objects:**
-- StrategyTemplateId, TemplateLegId, RelativeStrike, StrikeReference, OptionType, LegType
+  - StrategyTemplateId, TemplateLegId, RelativeStrike, StrikeReference, OptionType, LegType
+  - MarketView, StrategyObjective, StrategyRiskProfile, PriceRangeIdeal, DefenseGuidelines
 
 **Domain Events:**
-- TemplateCreated, TemplateNameUpdated, TemplateDescriptionUpdated
-- TemplateLegAdded, TemplateLegUpdated, TemplateLegRemoved
+  - TemplateCreated, TemplateNameUpdated, TemplateDescriptionUpdated
+  - TemplateLegAdded, TemplateLegUpdated, TemplateLegRemoved
 
 ---
 
 #### [Aggregate: Strategy](#5-strategy-aggregate-root)
-**Responsabilidade:** Estratégias instanciadas com valores absolutos
+**Responsabilidade:** Estratégias instanciadas com valores absolutos, paper trading, P&L tracking e manejo
+
 **Entities:**
-- StrategyLeg
+  - StrategyLeg, PnLSnapshot
 
 **Value Objects:**
-- StrategyId, StrategyLegId
+  - StrategyId, StrategyLegId, PnLSnapshotId, StrategyStatus, PnLType
 
 **Domain Events:**
-- StrategyCreated, StrategyOpened, StrategyClosed, StrategyExpired
+  - StrategyCreated, StrategyValidated
+  - StrategyPaperTradingStarted, StrategyWentLive
+  - StrategyPnLUpdated, PnLSnapshotCaptured
+  - StrategyLegAdjusted, StrategyLegAddedToActive, StrategyLegRemoved
+  - StrategyClosed
 
 ---
 
@@ -94,25 +113,34 @@ Entregar funcionalidade completa de criação de estratégias com templates (str
 
 #### [Aggregate: OptionContract](#6-optioncontract-aggregate-root)
 **Responsabilidade:** Contratos de opção da B3
+
 **Entities:**
-- Greeks, ImpliedVolatility
+  - StrikeAdjustment
 
 **Value Objects:**
-- OptionContractId, Ticker, OptionSeries, OptionStyle, SettlementType, ContractStatus
+  - OptionContractId, StrikeAdjustmentId, Ticker, OptionSeries
+  - OptionType, ExerciseType, OptionStatus, OptionGreeks
 
 **Domain Events:**
-- OptionContractListed, OptionPriceUpdated, GreeksUpdated, IVUpdated
-- LiquidityUpdated, OptionContractExpired
+  - OptionContractCreated, OptionMarketPricesUpdated, OptionGreeksUpdated
+  - OptionStrikeAdjusted, OptionExpired
+  - OptionsDataSyncStarted, OptionsDataSyncCompleted, NewOptionContractsDiscovered
+  - MarketDataStreamStarted, MarketDataStreamStopped, RealTimePriceReceived
+  - UserSubscribedToSymbol, UserUnsubscribedFromSymbol
 
 ---
 
 #### [Aggregate: UnderlyingAsset](#7-underlyingasset-aggregate-root)
 **Responsabilidade:** Ativos subjacentes (PETR4, VALE3, etc.)
+
+**Entities:**
+  - (nenhuma child entity)
+
 **Value Objects:**
-- UnderlyingAssetId, Ticker, AssetType
+  - UnderlyingAssetId, Ticker, AssetType
 
 **Domain Events:**
-- UnderlyingAssetRegistered, AssetPriceUpdated, AssetDeactivated
+  - UnderlyingAssetRegistered, AssetPriceUpdated, AssetDeactivated
 
 ---
 
@@ -418,6 +446,32 @@ public class User : Entity<UserId>
         }
 
         return plan.Features;
+    }
+
+    /// <summary>
+    /// Verifica se usuário tem acesso a dados em tempo real
+    /// Requer plano Pleno ou Consultor (ou override ativo)
+    /// </summary>
+    public bool HasRealtimeDataAccess()
+    {
+        if (SubscriptionPlanId == null)
+            return false;
+
+        // Se tem override ativo com RealtimeData = true
+        if (PlanOverride != null &&
+            PlanOverride.IsActive() &&
+            PlanOverride.FeaturesOverride != null &&
+            PlanOverride.FeaturesOverride.RealtimeData)
+        {
+            return true;
+        }
+
+        // Deve carregar SubscriptionPlan para verificar (via repository)
+        // Por enquanto, este método assume que já tem o plano carregado
+        // No uso real: var plan = await _planRepository.GetByIdAsync(SubscriptionPlanId);
+        // return GetEffectiveFeatures(plan).RealtimeData;
+
+        return false; // Placeholder - implementar verificação com plano carregado
     }
 
     // Custom Trading Fees Management
@@ -1263,7 +1317,9 @@ public interface ISystemConfigRepository
 // Aggregate Root
 public class StrategyTemplate : Entity<StrategyTemplateId>
 {
-    // Properties
+    // ========================================
+    // IDENTITY & BASIC INFO
+    // ========================================
     public StrategyTemplateId Id { get; private set; }
     public string Name { get; private set; }
     public string Description { get; private set; }
@@ -1271,11 +1327,28 @@ public class StrategyTemplate : Entity<StrategyTemplateId>
     public UserId? OwnerId { get; private set; } // Null for global templates
     public DateTime CreatedAt { get; private set; }
 
-    // Legs (child entities)
+    // ========================================
+    // STRATEGY CHARACTERISTICS
+    // ========================================
+    public MarketView MarketView { get; private set; }              // Alta, Baixa, Lateral, Volátil
+    public StrategyObjective Objective { get; private set; }        // Income, Proteção, Especulação, Hedge
+    public StrategyRiskProfile RiskProfile { get; private set; }    // Conservador, Moderado, Agressivo
+
+    // ========================================
+    // GUIDANCE & RECOMMENDATIONS
+    // ========================================
+    public PriceRangeIdeal IdealPriceRange { get; private set; }    // Faixa ideal de preço do ativo
+    public DefenseGuidelines DefenseGuidelines { get; private set; } // Orientações de defesa/ajuste
+
+    // ========================================
+    // LEGS (Child Entities)
+    // ========================================
     private readonly List<TemplateLeg> _legs = new();
     public IReadOnlyList<TemplateLeg> Legs => _legs.AsReadOnly();
 
-    // Domain Events
+    // ========================================
+    // DOMAIN EVENTS
+    // ========================================
     private readonly List<IDomainEvent> _domainEvents = new();
     public IReadOnlyList<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
@@ -1286,6 +1359,11 @@ public class StrategyTemplate : Entity<StrategyTemplateId>
     public static StrategyTemplate CreateGlobal(
         string name,
         string description,
+        MarketView marketView,
+        StrategyObjective objective,
+        StrategyRiskProfile riskProfile,
+        PriceRangeIdeal idealPriceRange,
+        DefenseGuidelines defenseGuidelines,
         List<TemplateLeg> legs)
     {
         ValidateTemplate(name, legs);
@@ -1297,6 +1375,11 @@ public class StrategyTemplate : Entity<StrategyTemplateId>
             Description = description,
             Visibility = TemplateVisibility.Global,
             OwnerId = null,
+            MarketView = marketView,
+            Objective = objective,
+            RiskProfile = riskProfile,
+            IdealPriceRange = idealPriceRange,
+            DefenseGuidelines = defenseGuidelines,
             CreatedAt = DateTime.UtcNow,
             _legs = legs
         };
@@ -1317,6 +1400,11 @@ public class StrategyTemplate : Entity<StrategyTemplateId>
         string name,
         string description,
         UserId ownerId,
+        MarketView marketView,
+        StrategyObjective objective,
+        StrategyRiskProfile riskProfile,
+        PriceRangeIdeal idealPriceRange,
+        DefenseGuidelines defenseGuidelines,
         List<TemplateLeg> legs)
     {
         ValidateTemplate(name, legs);
@@ -1328,6 +1416,11 @@ public class StrategyTemplate : Entity<StrategyTemplateId>
             Description = description,
             Visibility = TemplateVisibility.Personal,
             OwnerId = ownerId,
+            MarketView = marketView,
+            Objective = objective,
+            RiskProfile = riskProfile,
+            IdealPriceRange = idealPriceRange,
+            DefenseGuidelines = defenseGuidelines,
             CreatedAt = DateTime.UtcNow,
             _legs = legs
         };
@@ -1464,6 +1557,39 @@ public enum TemplateVisibility
     Personal   // Visible only to owner
 }
 
+/// <summary>
+/// Visão de mercado para a qual a estratégia foi desenhada
+/// </summary>
+public enum MarketView
+{
+    Bullish,    // Alta - espera-se valorização do ativo
+    Bearish,    // Baixa - espera-se desvalorização do ativo
+    Neutral,    // Lateral - espera-se pouca movimentação
+    Volatile    // Volátil - espera-se grande movimentação (qualquer direção)
+}
+
+/// <summary>
+/// Objetivo principal da estratégia
+/// </summary>
+public enum StrategyObjective
+{
+    Income,         // Geração de renda (ex: venda de calls cobertas)
+    Protection,     // Proteção de posição (ex: put protetora, collar)
+    Speculation,    // Especulação direcional (ex: compra de calls/puts)
+    Hedge,          // Hedge de outra estratégia ou portfólio
+    Arbitrage       // Arbitragem (ex: spreads, butterflies)
+}
+
+/// <summary>
+/// Perfil de risco da estratégia (independente do perfil do trader)
+/// </summary>
+public enum StrategyRiskProfile
+{
+    Conservative,   // Baixo risco, baixo retorno (ex: collar, covered call)
+    Moderate,       // Risco médio, retorno médio (ex: spreads)
+    Aggressive      // Alto risco, alto retorno (ex: naked options, long options)
+}
+
 public enum LegType
 {
     Stock,
@@ -1509,6 +1635,60 @@ public enum ExpirationReference
     NamedMonth,    // "janeiro", "fevereiro"
     MonthsOffset   // +1, +6, +12
 }
+
+/// <summary>
+/// Faixa ideal de preço do ativo para aplicar a estratégia
+/// Ex: Collar funciona melhor com ativo entre R$20-R$30
+/// </summary>
+public record PriceRangeIdeal(
+    decimal? MinPrice,     // null = sem limite inferior
+    decimal? MaxPrice,     // null = sem limite superior
+    string? Description    // Descrição opcional (ex: "Funciona melhor com ações de alta liquidez acima de R$20")
+)
+{
+    public static PriceRangeIdeal Any() => new(null, null, "Qualquer faixa de preço");
+
+    public static PriceRangeIdeal Between(decimal min, decimal max, string? description = null)
+        => new(min, max, description);
+
+    public static PriceRangeIdeal Above(decimal min, string? description = null)
+        => new(min, null, description);
+
+    public bool IsInRange(decimal price)
+    {
+        if (MinPrice.HasValue && price < MinPrice.Value)
+            return false;
+
+        if (MaxPrice.HasValue && price > MaxPrice.Value)
+            return false;
+
+        return true;
+    }
+}
+
+/// <summary>
+/// Orientações de defesa e ajuste quando mercado vai contra a expectativa
+/// </summary>
+public record DefenseGuidelines(
+    string? WhenMarketRises,        // O que fazer se mercado sobe (quando esperava baixa/lateral)
+    string? WhenMarketFalls,        // O que fazer se mercado cai (quando esperava alta/lateral)
+    string? WhenVolatilityIncreases, // O que fazer se volatilidade aumenta
+    string? WhenVolatilityDecreases, // O que fazer se volatilidade diminui
+    string? GeneralAdvice,          // Conselhos gerais de ajuste
+    StrategyTemplateId? HedgeTemplateId  // Template de hedge sugerido (opcional)
+)
+{
+    public static DefenseGuidelines None() => new(null, null, null, null, null, null);
+
+    public static DefenseGuidelines Create(
+        string? whenRises = null,
+        string? whenFalls = null,
+        string? whenVolUp = null,
+        string? whenVolDown = null,
+        string? general = null,
+        StrategyTemplateId? hedgeTemplate = null)
+        => new(whenRises, whenFalls, whenVolUp, whenVolDown, general, hedgeTemplate);
+}
 ```
 
 ## Domain Events
@@ -1545,9 +1725,15 @@ public record TemplateLegRemoved(
 1. UserId deve existir e ser Trader
 2. Deve respeitar StrategyLimit do SubscriptionPlan do usuário
 3. Ticker deve ser válido (PETR4, VALE3, etc)
-4. Deve ter ao menos 1 leg
+4. Deve ter ao menos 1 leg sempre (não pode remover última leg)
 5. Strikes devem ser valores absolutos em R$
 6. Expirations devem ser datas futuras
+7. Apenas estratégias PaperTrading ou Live podem ter P&L atualizado
+8. Apenas estratégias PaperTrading ou Live podem ser ajustadas (manejo)
+9. P&L Snapshots são imutáveis após criação
+10. Closing reason é obrigatório ao fechar estratégia
+11. Paper trading pode ser convertido para Live (mantém histórico de P&L)
+12. Validated pode ir direto para Live (sem paper trading)
 
 ## Entities
 
@@ -1563,15 +1749,26 @@ public class Strategy : Entity<StrategyId>
     public StrategyTemplateId? TemplateId { get; private set; } // Null if created from scratch
     public StrategyStatus Status { get; private set; }
     public DateTime CreatedAt { get; private set; }
+    public DateTime? ClosedAt { get; private set; }
+    public string? ClosingReason { get; private set; }
 
-    // Calculated Values
+    // Calculated Values (Initial Estimates)
     public Money? EstimatedMargin { get; private set; }
     public decimal? EstimatedReturn { get; private set; }
     public RiskScore? RiskScore { get; private set; }
 
+    // P&L Tracking
+    public Money? CurrentPnL { get; private set; }              // P&L atual (não realizado)
+    public decimal? CurrentPnLPercentage { get; private set; }  // % de retorno atual
+    public DateTime? LastPnLUpdate { get; private set; }        // Última atualização de P&L
+
     // Legs (child entities)
     private readonly List<StrategyLeg> _legs = new();
     public IReadOnlyList<StrategyLeg> Legs => _legs.AsReadOnly();
+
+    // P&L History (child entities)
+    private readonly List<PnLSnapshot> _pnlHistory = new();
+    public IReadOnlyList<PnLSnapshot> PnLHistory => _pnlHistory.AsReadOnly();
 
     // Domain Events
     private readonly List<IDomainEvent> _domainEvents = new();
@@ -1694,15 +1891,155 @@ public class Strategy : Entity<StrategyId>
         ));
     }
 
-    public void Activate()
+    // Paper Trading Methods
+    public void StartPaperTrading()
     {
         if (Status != StrategyStatus.Validated)
-            throw new DomainException("Only validated strategies can be activated");
+            throw new DomainException("Only validated strategies can start paper trading");
 
-        Status = StrategyStatus.Active;
+        Status = StrategyStatus.PaperTrading;
 
-        _domainEvents.Add(new StrategyActivated(
+        _domainEvents.Add(new StrategyPaperTradingStarted(
             Id,
+            DateTime.UtcNow
+        ));
+    }
+
+    public void GoLive()
+    {
+        if (Status != StrategyStatus.PaperTrading && Status != StrategyStatus.Validated)
+            throw new DomainException("Only paper trading or validated strategies can go live");
+
+        var wasPaperTrading = Status == StrategyStatus.PaperTrading;
+        Status = StrategyStatus.Live;
+
+        _domainEvents.Add(new StrategyWentLive(
+            Id,
+            wasPaperTrading,
+            DateTime.UtcNow
+        ));
+    }
+
+    // P&L Tracking Methods
+    public void UpdatePnL(Money currentPnL, decimal currentPnLPercentage)
+    {
+        if (Status != StrategyStatus.PaperTrading && Status != StrategyStatus.Live)
+            throw new DomainException("Only paper trading or live strategies can have P&L updated");
+
+        CurrentPnL = currentPnL;
+        CurrentPnLPercentage = currentPnLPercentage;
+        LastPnLUpdate = DateTime.UtcNow;
+
+        _domainEvents.Add(new StrategyPnLUpdated(
+            Id,
+            currentPnL,
+            currentPnLPercentage,
+            DateTime.UtcNow
+        ));
+    }
+
+    public void CapturePnLSnapshot(Money pnlValue, decimal pnlPercentage, PnLType type)
+    {
+        if (Status != StrategyStatus.PaperTrading && Status != StrategyStatus.Live && type != PnLType.Closing)
+            throw new DomainException("Only paper trading or live strategies can have P&L snapshots (except closing)");
+
+        var snapshot = PnLSnapshot.Create(Id, pnlValue, pnlPercentage, type);
+        _pnlHistory.Add(snapshot);
+
+        _domainEvents.Add(new PnLSnapshotCaptured(
+            Id,
+            pnlValue,
+            pnlPercentage,
+            type,
+            DateTime.UtcNow
+        ));
+    }
+
+    // Strategy Management Methods (Manejo)
+    public void AdjustLegQuantity(StrategyLegId legId, int newQuantity)
+    {
+        if (Status != StrategyStatus.PaperTrading && Status != StrategyStatus.Live)
+            throw new DomainException("Only paper trading or live strategies can be adjusted");
+
+        var leg = _legs.FirstOrDefault(l => l.Id == legId);
+        if (leg == null)
+            throw new DomainException("Leg not found");
+
+        var oldQuantity = leg.Quantity;
+        leg.UpdateQuantity(newQuantity);
+
+        _domainEvents.Add(new StrategyLegAdjusted(
+            Id,
+            legId,
+            oldQuantity,
+            newQuantity,
+            DateTime.UtcNow
+        ));
+    }
+
+    public void AddLeg(StrategyLeg newLeg)
+    {
+        if (Status != StrategyStatus.PaperTrading && Status != StrategyStatus.Live)
+            throw new DomainException("Only paper trading or live strategies can have legs added");
+
+        if (newLeg == null)
+            throw new DomainException("Leg cannot be null");
+
+        _legs.Add(newLeg);
+
+        _domainEvents.Add(new StrategyLegAddedToActive(
+            Id,
+            newLeg.Id,
+            newLeg.Type,
+            newLeg.Position,
+            newLeg.Quantity,
+            DateTime.UtcNow
+        ));
+    }
+
+    public void RemoveLeg(StrategyLegId legId)
+    {
+        if (Status != StrategyStatus.PaperTrading && Status != StrategyStatus.Live)
+            throw new DomainException("Only paper trading or live strategies can have legs removed");
+
+        if (_legs.Count == 1)
+            throw new DomainException("Cannot remove last leg - close strategy instead");
+
+        var leg = _legs.FirstOrDefault(l => l.Id == legId);
+        if (leg == null)
+            throw new DomainException("Leg not found");
+
+        _legs.Remove(leg);
+
+        _domainEvents.Add(new StrategyLegRemoved(
+            Id,
+            legId,
+            DateTime.UtcNow
+        ));
+    }
+
+    public void Close(Money finalPnL, decimal finalPnLPercentage, string reason)
+    {
+        if (Status != StrategyStatus.PaperTrading && Status != StrategyStatus.Live)
+            throw new DomainException("Only paper trading or live strategies can be closed");
+
+        if (string.IsNullOrWhiteSpace(reason))
+            throw new DomainException("Closing reason is required");
+
+        // Capturar snapshot final
+        CapturePnLSnapshot(finalPnL, finalPnLPercentage, PnLType.Closing);
+
+        Status = StrategyStatus.Closed;
+        CurrentPnL = finalPnL;
+        CurrentPnLPercentage = finalPnLPercentage;
+        ClosedAt = DateTime.UtcNow;
+        ClosingReason = reason;
+
+        _domainEvents.Add(new StrategyClosed(
+            Id,
+            finalPnL,
+            finalPnLPercentage,
+            reason,
             DateTime.UtcNow
         ));
     }
@@ -1764,6 +2101,45 @@ public class StrategyLeg : Entity<StrategyLegId>
             Expiration = expiration
         };
     }
+
+    // Business Method - Ajustar quantidade (para manejo)
+    public void UpdateQuantity(int newQuantity)
+    {
+        if (newQuantity <= 0)
+            throw new DomainException("Quantity must be positive");
+
+        Quantity = newQuantity;
+    }
+}
+
+// Child Entity - P&L Snapshot
+public class PnLSnapshot : Entity<PnLSnapshotId>
+{
+    public PnLSnapshotId Id { get; private set; }
+    public StrategyId StrategyId { get; private set; }
+    public Money PnLValue { get; private set; }
+    public decimal PnLPercentage { get; private set; }
+    public PnLType Type { get; private set; }
+    public DateTime SnapshotAt { get; private set; }
+
+    private PnLSnapshot() { }
+
+    public static PnLSnapshot Create(
+        StrategyId strategyId,
+        Money pnlValue,
+        decimal pnlPercentage,
+        PnLType type)
+    {
+        return new PnLSnapshot
+        {
+            Id = PnLSnapshotId.New(),
+            StrategyId = strategyId,
+            PnLValue = pnlValue,
+            PnLPercentage = pnlPercentage,
+            Type = type,
+            SnapshotAt = DateTime.UtcNow
+        };
+    }
 }
 ```
 
@@ -1778,6 +2154,11 @@ public record StrategyId(Guid Value)
 public record StrategyLegId(Guid Value)
 {
     public static StrategyLegId New() => new(Guid.NewGuid());
+}
+
+public record PnLSnapshotId(Guid Value)
+{
+    public static PnLSnapshotId New() => new(Guid.NewGuid());
 }
 
 public record Ticker(string Value)
@@ -1795,10 +2176,18 @@ public record Ticker(string Value)
 
 public enum StrategyStatus
 {
-    Draft,      // Just created
-    Validated,  // Passed validation
-    Active,     // Currently active
-    Closed      // Finalized
+    Draft,          // Apenas criada (rascunho)
+    Validated,      // Validada, pronta para ativar
+    PaperTrading,   // Paper trading - simulação com dados reais (sem capital)
+    Live,           // Live trading - ativa com capital real
+    Closed          // Encerrada
+}
+
+public enum PnLType
+{
+    Daily,      // Snapshot diário automático
+    OnDemand,   // Trader solicitou atualização manual
+    Closing     // Snapshot final no fechamento da estratégia
 }
 
 public record RiskScore(
@@ -1859,8 +2248,60 @@ public record StrategyValidated(
     DateTime OccurredAt
 ) : IDomainEvent;
 
-public record StrategyActivated(
+public record StrategyPaperTradingStarted(
     StrategyId StrategyId,
+    DateTime OccurredAt
+) : IDomainEvent;
+
+public record StrategyWentLive(
+    StrategyId StrategyId,
+    bool WasPaperTrading,  // true = converteu de paper trading, false = direto de validated
+    DateTime OccurredAt
+) : IDomainEvent;
+
+public record StrategyPnLUpdated(
+    StrategyId StrategyId,
+    Money CurrentPnL,
+    decimal CurrentPnLPercentage,
+    DateTime OccurredAt
+) : IDomainEvent;
+
+public record PnLSnapshotCaptured(
+    StrategyId StrategyId,
+    Money PnLValue,
+    decimal PnLPercentage,
+    PnLType SnapshotType,
+    DateTime OccurredAt
+) : IDomainEvent;
+
+public record StrategyLegAdjusted(
+    StrategyId StrategyId,
+    StrategyLegId LegId,
+    int OldQuantity,
+    int NewQuantity,
+    DateTime OccurredAt
+) : IDomainEvent;
+
+public record StrategyLegAddedToActive(
+    StrategyId StrategyId,
+    StrategyLegId LegId,
+    LegType LegType,
+    Position Position,
+    int Quantity,
+    DateTime OccurredAt
+) : IDomainEvent;
+
+public record StrategyLegRemoved(
+    StrategyId StrategyId,
+    StrategyLegId LegId,
+    DateTime OccurredAt
+) : IDomainEvent;
+
+public record StrategyClosed(
+    StrategyId StrategyId,
+    Money FinalPnL,
+    decimal FinalPnLPercentage,
+    string Reason,
     DateTime OccurredAt
 ) : IDomainEvent;
 ```
@@ -1915,6 +2356,7 @@ public interface IStrategyRepository
 7. ContractMultiplier deve ser > 0 (padrão: 100 para ações, 1 para BOVA11)
 8. BidPrice <= AskPrice (quando ambos presentes)
 9. Expiration deve ser futura (para opções Active)
+10. Series deve ser definida (W1-W5, onde W3 = mensal padrão na 3ª segunda-feira do mês)
 
 ## Entities
 
@@ -1934,6 +2376,7 @@ public class OptionContract : Entity<OptionContractId>
     public Ticker UnderlyingAsset { get; private set; }  // PETR4
     public OptionType Type { get; private set; }         // Call/Put
     public ExerciseType ExerciseType { get; private set; } // American/European
+    public OptionSeries Series { get; private set; }     // W1-W5 (W3 = mensal padrão)
 
     // Strike
     public Money OriginalStrike { get; private set; }    // Strike na emissão
@@ -1996,6 +2439,7 @@ public class OptionContract : Entity<OptionContractId>
         Ticker underlyingAsset,
         OptionType type,
         ExerciseType exerciseType,
+        OptionSeries series,
         Money strike,
         DateTime expiration,
         int contractMultiplier)
@@ -2020,6 +2464,7 @@ public class OptionContract : Entity<OptionContractId>
             UnderlyingAsset = underlyingAsset,
             Type = type,
             ExerciseType = exerciseType,
+            Series = series,
             OriginalStrike = strike,
             CurrentStrike = strike,
             Expiration = expiration,
@@ -2034,6 +2479,7 @@ public class OptionContract : Entity<OptionContractId>
             option.Symbol,
             option.UnderlyingAsset,
             option.Type,
+            option.Series,
             option.CurrentStrike,
             option.Expiration,
             DateTime.UtcNow
@@ -2274,6 +2720,41 @@ public enum OptionStatus
     Exercised    // Exercido (futuro - para tracking)
 }
 
+/// <summary>
+/// Representa a série semanal de uma opção.
+/// Nomenclatura unificada: W1-W5 (onde W3 = mensal padrão = 3ª segunda-feira)
+/// </summary>
+public record OptionSeries
+{
+    public int WeekNumber { get; private init; }         // 1 a 5
+    public bool IsMonthlyStandard { get; private init; } // true quando W3 = mensal
+
+    private OptionSeries(int weekNumber, bool isMonthlyStandard)
+    {
+        if (weekNumber < 1 || weekNumber > 5)
+            throw new ArgumentException("Week number must be between 1 and 5");
+
+        WeekNumber = weekNumber;
+        IsMonthlyStandard = isMonthlyStandard;
+    }
+
+    // Factory Methods
+    public static OptionSeries Week1() => new(1, false);
+    public static OptionSeries Week2() => new(2, false);
+    public static OptionSeries MonthlyStandard() => new(3, true);  // W3 = 3ª segunda-feira
+    public static OptionSeries Week4() => new(4, false);
+    public static OptionSeries Week5() => new(5, false);
+
+    // Display Helpers
+    public string GetUnifiedName() => $"W{WeekNumber}";
+
+    public string GetTraditionalName() => IsMonthlyStandard
+        ? "Mensal"
+        : $"Semanal W{WeekNumber}";
+
+    public override string ToString() => GetUnifiedName();
+}
+
 public record OptionGreeks(
     decimal Delta,      // 0.0 to 1.0 (call) or -1.0 to 0.0 (put)
     decimal Gamma,      // Rate of change of delta
@@ -2298,6 +2779,7 @@ public record OptionContractCreated(
     string Symbol,
     Ticker UnderlyingAsset,
     OptionType Type,
+    OptionSeries Series,
     Money Strike,
     DateTime Expiration,
     DateTime OccurredAt
@@ -2335,6 +2817,61 @@ public record OptionExpired(
     string Symbol,
     DateTime Expiration,
     DateTime OccurredAt
+) : IDomainEvent;
+
+// Sync Events (Batch)
+public record OptionsDataSyncStarted(
+    DateTime StartedAt,
+    string Source  // "B3_API", "Manual", etc.
+) : IDomainEvent;
+
+public record OptionsDataSyncCompleted(
+    DateTime CompletedAt,
+    string Source,
+    int NewOptionsCreated,
+    int OptionsUpdated,
+    int OptionsExpired,
+    TimeSpan Duration
+) : IDomainEvent;
+
+public record NewOptionContractsDiscovered(
+    int Count,
+    Ticker UnderlyingAsset,
+    DateTime OccurredAt
+) : IDomainEvent;
+
+// Real-Time Streaming Events
+public record MarketDataStreamStarted(
+    DateTime StartedAt,
+    int SymbolCount,  // Quantos símbolos estão sendo monitorados
+    string FeedSource  // "B3_WEBSOCKET", "PROVIDER_API", etc.
+) : IDomainEvent;
+
+public record MarketDataStreamStopped(
+    DateTime StoppedAt,
+    string Reason,  // "MARKET_CLOSED", "ERROR", "MAINTENANCE", etc.
+    TimeSpan UpTime
+) : IDomainEvent;
+
+public record RealTimePriceReceived(
+    string Symbol,  // PETRH245 ou PETR4
+    Money NewPrice,
+    Money? OldPrice,
+    decimal ChangePercentage,
+    DateTime ReceivedAt,
+    int SubscriberCount  // Quantos clientes estão recebendo este update
+) : IDomainEvent;
+
+public record UserSubscribedToSymbol(
+    UserId UserId,
+    string Symbol,
+    DateTime SubscribedAt
+) : IDomainEvent;
+
+public record UserUnsubscribedFromSymbol(
+    UserId UserId,
+    string Symbol,
+    DateTime UnsubscribedAt
 ) : IDomainEvent;
 ```
 
@@ -2542,6 +3079,66 @@ public interface IBlackScholesService
         Money spotPrice,
         decimal riskFreeRate);
 }
+
+/// <summary>
+/// Domain Service para calcular a série semanal (W1-W5) de uma opção baseado na data de vencimento
+/// </summary>
+public interface IWeeklySeriesCalculator
+{
+    /// <summary>
+    /// Calcula a série semanal baseado na data de vencimento
+    /// W1 = 1ª segunda-feira do mês
+    /// W2 = 2ª segunda-feira do mês
+    /// W3 = 3ª segunda-feira do mês (MENSAL PADRÃO)
+    /// W4 = 4ª segunda-feira do mês
+    /// W5 = 5ª segunda-feira do mês (quando existe)
+    /// </summary>
+    OptionSeries CalculateSeries(DateTime expirationDate);
+
+    /// <summary>
+    /// Verifica se uma data é a 3ª segunda-feira do mês (mensal padrão da B3)
+    /// </summary>
+    bool IsMonthlyStandard(DateTime date);
+
+    /// <summary>
+    /// Calcula qual a N-ésima segunda-feira do mês (1-5)
+    /// </summary>
+    int GetMondayWeekOfMonth(DateTime date);
+}
+
+/// <summary>
+/// Domain Service para gerenciar throttling e cache de updates de preços em tempo real
+/// Evita sobrecarga de updates e garante performance
+/// </summary>
+public interface IMarketDataStreamService
+{
+    /// <summary>
+    /// Verifica se deve processar um update de preço (throttling)
+    /// Regra: máximo 1 update por símbolo a cada N segundos
+    /// </summary>
+    bool ShouldProcessPriceUpdate(string symbol, DateTime updateTime);
+
+    /// <summary>
+    /// Registra que um update foi processado (para throttling)
+    /// </summary>
+    void RecordPriceUpdate(string symbol, DateTime updateTime);
+
+    /// <summary>
+    /// Obtém último preço conhecido do cache (para evitar updates desnecessários)
+    /// </summary>
+    Money? GetCachedPrice(string symbol);
+
+    /// <summary>
+    /// Atualiza cache de preço
+    /// </summary>
+    void UpdateCachedPrice(string symbol, Money price);
+
+    /// <summary>
+    /// Verifica se mudança de preço é significativa (> threshold)
+    /// Evita broadcast de mudanças insignificantes (< 0.1%)
+    /// </summary>
+    bool IsPriceChangeSignificant(Money oldPrice, Money newPrice, decimal thresholdPercentage = 0.1m);
+}
 ```
 
 ---
@@ -2559,6 +3156,8 @@ public interface IOptionContractRepository
         Ticker underlyingAsset,
         OptionType? typeFilter = null,           // Call/Put
         ExerciseType? exerciseTypeFilter = null, // American/European
+        int[]? weekNumbers = null,               // W1-W5 filter (null = todas)
+        bool? monthlyStandardOnly = null,        // true = apenas W3 mensal, false = apenas semanais não-mensais, null = todas
         DateTime? expirationFrom = null,
         DateTime? expirationTo = null,
         Money? strikeFrom = null,
@@ -2582,8 +3181,17 @@ public interface IOptionContractRepository
         decimal maxSpreadPercentage = 5m,
         CancellationToken ct = default);
 
+    // Buscar opções que deveriam estar expiradas (para sync job)
+    Task<IEnumerable<OptionContract>> GetExpiredActiveOptionsAsync(
+        DateTime referenceDate,
+        CancellationToken ct);
+
     Task AddAsync(OptionContract option, CancellationToken ct);
     Task UpdateAsync(OptionContract option, CancellationToken ct);
+
+    // Bulk upsert para performance em sync jobs (cria se não existe, atualiza se existe)
+    Task BulkUpsertAsync(IEnumerable<OptionContract> options, CancellationToken ct);
+
     Task<int> CountActiveAsync(Ticker underlyingAsset, CancellationToken ct);
 }
 
@@ -2599,10 +3207,28 @@ public interface IUnderlyingAssetRepository
 
 **Queries Esperadas pelo DBA:**
 1. `OptionContract.GetBySymbolAsync` → Unique Index em Symbol
-2. `OptionContract.GetAvailableOptionsAsync` → Composite Index em (UnderlyingAsset, Status, Expiration)
+2. `OptionContract.GetAvailableOptionsAsync` → Composite Index em (UnderlyingAsset, Status, Expiration, Series.WeekNumber)
 3. `OptionContract.GetExpiringOptionsAsync` → Index em (Status, Expiration)
 4. `OptionContract.GetLiquidOptionsAsync` → Index em (UnderlyingAsset, Status) + cálculo de spread
 5. `UnderlyingAsset.GetBySymbolAsync` → Unique Index em Symbol
+
+**Exemplos de Filtros de Opções Semanais:**
+```csharp
+// Buscar apenas opções mensais (W3)
+var monthlyOptions = await repo.GetAvailableOptionsAsync(
+    ticker, monthlyStandardOnly: true);
+
+// Buscar apenas semanais não-mensais (W1, W2, W4, W5)
+var weeklyOptions = await repo.GetAvailableOptionsAsync(
+    ticker, monthlyStandardOnly: false);
+
+// Buscar W1 e W2 especificamente
+var earlyWeekOptions = await repo.GetAvailableOptionsAsync(
+    ticker, weekNumbers: new[] { 1, 2 });
+
+// Buscar todas (mensal + semanais)
+var allOptions = await repo.GetAvailableOptionsAsync(ticker);
+```
 
 ---
 
@@ -2708,6 +3334,204 @@ public record OptionContractDto(
 **Eventos Publicados por Market Data:**
 - `OptionStrikeAdjusted` → Strategy Planning pode alertar usuários com estratégias afetadas
 - `OptionExpired` → Strategy Planning pode marcar estratégias como fechadas
+- `OptionsDataSyncCompleted` → Pode notificar administradores sobre sync
+- `NewOptionContractsDiscovered` → Pode notificar traders sobre novas opções
+
+---
+
+### Market Data → B3 API Integration (External Service)
+
+**Mecanismo:** Anti-Corruption Layer (ACL) via IB3ApiClient
+
+**Interface Externa (Infrastructure Layer):**
+
+```csharp
+/// <summary>
+/// Cliente HTTP para integração com APIs de dados da B3 / provedores de market data
+/// Implementado na camada de Infrastructure com retry policies (Polly)
+/// </summary>
+public interface IB3ApiClient
+{
+    /// <summary>
+    /// Busca todas as opções listadas de um ativo subjacente
+    /// </summary>
+    Task<IEnumerable<B3OptionData>> GetOptionsForUnderlyingAsync(
+        string ticker,
+        CancellationToken ct);
+
+    /// <summary>
+    /// Busca todas as opções listadas (para sync completo)
+    /// </summary>
+    Task<IEnumerable<B3OptionData>> GetAllListedOptionsAsync(
+        CancellationToken ct);
+
+    /// <summary>
+    /// Busca dados atualizados de uma opção específica
+    /// </summary>
+    Task<B3OptionData?> GetOptionBySymbolAsync(
+        string symbol,
+        CancellationToken ct);
+
+    /// <summary>
+    /// Busca preço atual de um ativo subjacente
+    /// </summary>
+    Task<B3AssetPrice?> GetAssetPriceAsync(
+        string ticker,
+        CancellationToken ct);
+}
+
+/// <summary>
+/// DTO de resposta da API B3 (raw data)
+/// Mapeado para OptionContract pela camada de Application
+/// </summary>
+public record B3OptionData(
+    string Symbol,              // PETRH245
+    string UnderlyingTicker,    // PETR4
+    string OptionType,          // "CALL" | "PUT"
+    string ExerciseType,        // "AMERICAN" | "EUROPEAN"
+    decimal StrikePrice,
+    DateTime ExpirationDate,
+    int ContractSize,           // 100, 1, etc
+    decimal? BidPrice,
+    decimal? AskPrice,
+    decimal? LastPrice,
+    DateTime? LastTradeTime,
+    int? Volume,
+    int? OpenInterest,
+    decimal? ImpliedVolatility,
+    B3Greeks? Greeks
+);
+
+public record B3Greeks(
+    decimal Delta,
+    decimal Gamma,
+    decimal Vega,
+    decimal Theta,
+    decimal Rho
+);
+
+public record B3AssetPrice(
+    string Ticker,
+    string Name,
+    decimal CurrentPrice,
+    DateTime Timestamp
+);
+
+/// <summary>
+/// Cliente WebSocket para feed de preços em tempo real da B3
+/// Implementado na camada de Infrastructure com reconexão automática
+/// </summary>
+public interface IMarketDataFeedClient
+{
+    /// <summary>
+    /// Conecta ao feed WebSocket da B3
+    /// </summary>
+    Task ConnectAsync(CancellationToken ct);
+
+    /// <summary>
+    /// Desconecta do feed
+    /// </summary>
+    Task DisconnectAsync();
+
+    /// <summary>
+    /// Subscreve para receber updates de preço de símbolos específicos
+    /// </summary>
+    Task SubscribeToSymbolsAsync(IEnumerable<string> symbols, CancellationToken ct);
+
+    /// <summary>
+    /// Remove subscrição de símbolos
+    /// </summary>
+    Task UnsubscribeFromSymbolsAsync(IEnumerable<string> symbols, CancellationToken ct);
+
+    /// <summary>
+    /// Evento disparado quando novo preço é recebido do feed
+    /// </summary>
+    event EventHandler<MarketDataUpdate> OnPriceUpdate;
+
+    /// <summary>
+    /// Evento disparado quando conexão é perdida
+    /// </summary>
+    event EventHandler<string> OnDisconnected;
+
+    /// <summary>
+    /// Evento disparado quando reconectado
+    /// </summary>
+    event EventHandler OnReconnected;
+
+    /// <summary>
+    /// Status da conexão
+    /// </summary>
+    bool IsConnected { get; }
+
+    /// <summary>
+    /// Símbolos atualmente subscritos
+    /// </summary>
+    IReadOnlySet<string> SubscribedSymbols { get; }
+}
+
+/// <summary>
+/// Update de preço recebido do feed em tempo real
+/// </summary>
+public record MarketDataUpdate(
+    string Symbol,
+    decimal BidPrice,
+    decimal AskPrice,
+    decimal LastPrice,
+    int Volume,
+    DateTime Timestamp
+);
+```
+
+**Exemplo de Uso no Application Layer:**
+
+```csharp
+// UC-MarketData-01: SyncOptionsHandler usa IB3ApiClient
+var b3Options = await _b3ApiClient.GetAllListedOptionsAsync(ct);
+
+foreach (var b3Option in b3Options)
+{
+    // Calcular série semanal usando Domain Service
+    var series = _weeklySeriesCalculator.CalculateSeries(b3Option.ExpirationDate);
+
+    // Verificar se já existe
+    var existing = await _optionRepository.GetBySymbolAsync(b3Option.Symbol, ct);
+
+    if (existing == null)
+    {
+        // Criar novo OptionContract
+        var option = OptionContract.Create(
+            b3Option.Symbol,
+            Ticker.From(b3Option.UnderlyingTicker),
+            MapOptionType(b3Option.OptionType),
+            MapExerciseType(b3Option.ExerciseType),
+            series,  // <-- Série calculada aqui
+            Money.Brl(b3Option.StrikePrice),
+            b3Option.ExpirationDate,
+            b3Option.ContractSize
+        );
+
+        // Atualizar preços
+        option.UpdateMarketPrices(
+            Money.Brl(b3Option.BidPrice ?? 0),
+            Money.Brl(b3Option.AskPrice ?? 0),
+            Money.Brl(b3Option.LastPrice ?? 0),
+            b3Option.LastTradeTime,
+            b3Option.Volume,
+            b3Option.OpenInterest,
+            DateTime.UtcNow
+        );
+
+        await _optionRepository.AddAsync(option, ct);
+        newCount++;
+    }
+    else
+    {
+        // Atualizar preços existente
+        existing.UpdateMarketPrices(...);
+        updatedCount++;
+    }
+}
+```
 
 ---
 
@@ -3183,6 +4007,11 @@ public class CreateTemplateHandler : IRequestHandler<CreateTemplateCommand, Resu
             template = StrategyTemplate.CreateGlobal(
                 command.Name,
                 command.Description,
+                command.MarketView,
+                command.Objective,
+                command.RiskProfile,
+                command.IdealPriceRange,
+                command.DefenseGuidelines,
                 legs
             );
         }
@@ -3192,6 +4021,11 @@ public class CreateTemplateHandler : IRequestHandler<CreateTemplateCommand, Resu
                 command.Name,
                 command.Description,
                 command.UserId,
+                command.MarketView,
+                command.Objective,
+                command.RiskProfile,
+                command.IdealPriceRange,
+                command.DefenseGuidelines,
                 legs
             );
         }
@@ -3229,6 +4063,11 @@ public record CreateTemplateCommand(
     string Name,
     string Description,
     TemplateVisibility Visibility,
+    MarketView MarketView,
+    StrategyObjective Objective,
+    StrategyRiskProfile RiskProfile,
+    PriceRangeIdeal IdealPriceRange,
+    DefenseGuidelines DefenseGuidelines,
     List<TemplateLegDto> Legs
 ) : IRequest<Result<StrategyTemplateId>>;
 
@@ -3579,6 +4418,768 @@ public class StrategyCreatedEventHandler : INotificationHandler<StrategyCreated>
 
 ---
 
+### UC-MarketData-01: Sync Options from B3
+
+**Actor:** System (Background Job / Scheduled Task)
+**Trigger:** Scheduled task (daily at 19h30 after market closes) ou trigger manual por admin
+**Bounded Context:** Market Data
+
+**Objetivo:** Sincronizar lista de opções da B3, identificando novas séries (incluindo semanais W1-W5), atualizando preços/Greeks de existentes, e marcando expiradas automaticamente.
+
+**Fluxo:**
+
+```csharp
+public class SyncOptionsHandler : IRequestHandler<SyncOptionsCommand, Result<SyncStatistics>>
+{
+    private readonly IB3ApiClient _b3ApiClient;
+    private readonly IOptionContractRepository _optionRepository;
+    private readonly IUnderlyingAssetRepository _assetRepository;
+    private readonly IWeeklySeriesCalculator _weeklySeriesCalculator;
+    private readonly IDomainEventDispatcher _eventDispatcher;
+    private readonly ILogger<SyncOptionsHandler> _logger;
+
+    public async Task<Result<SyncStatistics>> Handle(SyncOptionsCommand command, CancellationToken ct)
+    {
+        var startTime = DateTime.UtcNow;
+        var stats = new SyncStatistics();
+
+        _logger.LogInformation("Starting options sync from {Source}", command.Source);
+
+        // 1. Publicar evento de início
+        await _eventDispatcher.DispatchAsync(
+            new OptionsDataSyncStarted(startTime, command.Source), ct);
+
+        try
+        {
+            // 2. Buscar todas as opções da B3 API
+            var b3Options = await _b3ApiClient.GetAllListedOptionsAsync(ct);
+            _logger.LogInformation("Fetched {Count} options from B3 API", b3Options.Count());
+
+            // 3. Processar cada opção da B3
+            foreach (var b3Option in b3Options)
+            {
+                try
+                {
+                    // Calcular série semanal (W1-W5) usando Domain Service
+                    var series = _weeklySeriesCalculator.CalculateSeries(b3Option.ExpirationDate);
+
+                    // Verificar se opção já existe no banco
+                    var existing = await _optionRepository.GetBySymbolAsync(b3Option.Symbol, ct);
+
+                    if (existing == null)
+                    {
+                        // CRIAR NOVA OPÇÃO
+                        var option = OptionContract.Create(
+                            b3Option.Symbol,
+                            Ticker.From(b3Option.UnderlyingTicker),
+                            MapOptionType(b3Option.OptionType),
+                            MapExerciseType(b3Option.ExerciseType),
+                            series,  // <-- Série W1-W5 calculada
+                            Money.Brl(b3Option.StrikePrice),
+                            b3Option.ExpirationDate,
+                            b3Option.ContractSize
+                        );
+
+                        // Atualizar preços de mercado
+                        if (b3Option.BidPrice.HasValue || b3Option.AskPrice.HasValue)
+                        {
+                            option.UpdateMarketPrices(
+                                b3Option.BidPrice.HasValue ? Money.Brl(b3Option.BidPrice.Value) : null,
+                                b3Option.AskPrice.HasValue ? Money.Brl(b3Option.AskPrice.Value) : null,
+                                b3Option.LastPrice.HasValue ? Money.Brl(b3Option.LastPrice.Value) : null,
+                                b3Option.LastTradeTime,
+                                b3Option.Volume,
+                                b3Option.OpenInterest,
+                                DateTime.UtcNow
+                            );
+                        }
+
+                        // Atualizar Greeks se disponíveis
+                        if (b3Option.Greeks != null && b3Option.ImpliedVolatility.HasValue)
+                        {
+                            var greeks = new OptionGreeks(
+                                b3Option.Greeks.Delta,
+                                b3Option.Greeks.Gamma,
+                                b3Option.Greeks.Vega,
+                                b3Option.Greeks.Theta,
+                                b3Option.Greeks.Rho
+                            );
+                            option.UpdateGreeks(b3Option.ImpliedVolatility.Value, greeks, DateTime.UtcNow);
+                        }
+
+                        await _optionRepository.AddAsync(option, ct);
+                        stats.NewOptionsCreated++;
+
+                        _logger.LogDebug("Created new option: {Symbol} ({Series})",
+                            b3Option.Symbol, series.GetUnifiedName());
+                    }
+                    else
+                    {
+                        // ATUALIZAR OPÇÃO EXISTENTE
+                        if (b3Option.BidPrice.HasValue || b3Option.AskPrice.HasValue)
+                        {
+                            existing.UpdateMarketPrices(
+                                b3Option.BidPrice.HasValue ? Money.Brl(b3Option.BidPrice.Value) : null,
+                                b3Option.AskPrice.HasValue ? Money.Brl(b3Option.AskPrice.Value) : null,
+                                b3Option.LastPrice.HasValue ? Money.Brl(b3Option.LastPrice.Value) : null,
+                                b3Option.LastTradeTime,
+                                b3Option.Volume,
+                                b3Option.OpenInterest,
+                                DateTime.UtcNow
+                            );
+                        }
+
+                        if (b3Option.Greeks != null && b3Option.ImpliedVolatility.HasValue)
+                        {
+                            var greeks = new OptionGreeks(
+                                b3Option.Greeks.Delta,
+                                b3Option.Greeks.Gamma,
+                                b3Option.Greeks.Vega,
+                                b3Option.Greeks.Theta,
+                                b3Option.Greeks.Rho
+                            );
+                            existing.UpdateGreeks(b3Option.ImpliedVolatility.Value, greeks, DateTime.UtcNow);
+                        }
+
+                        await _optionRepository.UpdateAsync(existing, ct);
+                        stats.OptionsUpdated++;
+                    }
+
+                    // Dispatch events para novas opções criadas
+                    foreach (var domainEvent in (existing ?? option).DomainEvents)
+                    {
+                        await _eventDispatcher.DispatchAsync(domainEvent, ct);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error processing option {Symbol}", b3Option.Symbol);
+                    // Continuar processando outras opções
+                }
+            }
+
+            // 4. Marcar opções expiradas
+            var expiredOptions = await _optionRepository.GetExpiredActiveOptionsAsync(
+                DateTime.UtcNow, ct);
+
+            foreach (var expired in expiredOptions)
+            {
+                expired.Expire();
+                await _optionRepository.UpdateAsync(expired, ct);
+                stats.OptionsExpired++;
+
+                foreach (var domainEvent in expired.DomainEvents)
+                {
+                    await _eventDispatcher.DispatchAsync(domainEvent, ct);
+                }
+            }
+
+            // 5. Publicar evento de conclusão
+            var duration = DateTime.UtcNow - startTime;
+            await _eventDispatcher.DispatchAsync(
+                new OptionsDataSyncCompleted(
+                    DateTime.UtcNow,
+                    command.Source,
+                    stats.NewOptionsCreated,
+                    stats.OptionsUpdated,
+                    stats.OptionsExpired,
+                    duration
+                ), ct);
+
+            _logger.LogInformation(
+                "Options sync completed: {New} new, {Updated} updated, {Expired} expired in {Duration}",
+                stats.NewOptionsCreated, stats.OptionsUpdated, stats.OptionsExpired, duration);
+
+            return Result<SyncStatistics>.Success(stats);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Options sync failed");
+            return Result<SyncStatistics>.Failure($"Sync failed: {ex.Message}");
+        }
+    }
+
+    private OptionType MapOptionType(string b3Type)
+        => b3Type.ToUpper() == "CALL" ? OptionType.Call : OptionType.Put;
+
+    private ExerciseType MapExerciseType(string b3Type)
+        => b3Type.ToUpper() == "AMERICAN" ? ExerciseType.American : ExerciseType.European;
+}
+
+public record SyncOptionsCommand(
+    string Source = "B3_API"  // "B3_API", "MANUAL", etc.
+) : IRequest<Result<SyncStatistics>>;
+
+public record SyncStatistics(
+    int NewOptionsCreated = 0,
+    int OptionsUpdated = 0,
+    int OptionsExpired = 0
+);
+```
+
+**Aggregates Envolvidos:**
+- OptionContract (create/modify - novas opções, atualizar preços/Greeks, expirar)
+- UnderlyingAsset (read-only - validar ticker)
+
+**Domain Events Gerados:**
+- `OptionsDataSyncStarted` - início do processo
+- `OptionContractCreated` - para cada nova opção descoberta
+- `OptionMarketPricesUpdated` - para cada opção atualizada
+- `OptionGreeksUpdated` - quando Greeks atualizados
+- `OptionExpired` - para cada opção expirada automaticamente
+- `OptionsDataSyncCompleted` - conclusão com estatísticas
+
+**Domain Services Utilizados:**
+- `IWeeklySeriesCalculator` - calcular W1-W5 baseado na data de vencimento
+
+**External Services:**
+- `IB3ApiClient` - buscar dados da B3 API (Infrastructure Layer)
+
+**Scheduled Job Configuration:**
+```csharp
+// Infrastructure/Jobs/OptionsSync Job.cs
+public class OptionsSyncJob : IHostedService
+{
+    private readonly IMediator _mediator;
+    private readonly ILogger<OptionsSyncJob> _logger;
+    private Timer? _timer;
+
+    public Task StartAsync(CancellationToken ct)
+    {
+        _logger.LogInformation("Options Sync Job started");
+
+        // Executar diariamente às 19h30 (30min após fechamento do mercado às 19h)
+        _timer = new Timer(DoWork, null, TimeSpan.Zero, TimeSpan.FromHours(24));
+
+        return Task.CompletedTask;
+    }
+
+    private async void DoWork(object? state)
+    {
+        try
+        {
+            _logger.LogInformation("Triggering scheduled options sync");
+            var result = await _mediator.Send(new SyncOptionsCommand("SCHEDULED_DAILY"));
+
+            if (result.IsSuccess)
+            {
+                _logger.LogInformation("Scheduled sync completed successfully");
+            }
+            else
+            {
+                _logger.LogError("Scheduled sync failed: {Error}", result.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Scheduled sync threw exception");
+        }
+    }
+
+    public Task StopAsync(CancellationToken ct)
+    {
+        _logger.LogInformation("Options Sync Job stopping");
+        _timer?.Change(Timeout.Infinite, 0);
+        _timer?.Dispose();
+        return Task.CompletedTask;
+    }
+}
+```
+
+**Retry Policy (Polly):**
+```csharp
+// Infrastructure/ExternalServices/B3Api/B3ApiClient.cs
+public class B3ApiClient : IB3ApiClient
+{
+    private readonly HttpClient _httpClient;
+    private readonly IAsyncPolicy<HttpResponseMessage> _retryPolicy;
+
+    public B3ApiClient(HttpClient httpClient)
+    {
+        _httpClient = httpClient;
+
+        // Retry 3x com backoff exponencial
+        _retryPolicy = Policy
+            .HandleResult<HttpResponseMessage>(r => !r.IsSuccessStatusCode)
+            .Or<HttpRequestException>()
+            .WaitAndRetryAsync(3, retryAttempt =>
+                TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+    }
+
+    public async Task<IEnumerable<B3OptionData>> GetAllListedOptionsAsync(CancellationToken ct)
+    {
+        var response = await _retryPolicy.ExecuteAsync(async () =>
+            await _httpClient.GetAsync("/api/options/all", ct));
+
+        response.EnsureSuccessStatusCode();
+        var content = await response.Content.ReadAsStringAsync(ct);
+        return JsonSerializer.Deserialize<List<B3OptionData>>(content) ?? new List<B3OptionData>();
+    }
+
+    // Outros métodos...
+}
+```
+
+---
+
+### UC-MarketData-02: Stream Real-Time Market Data
+
+**Actor:** System (Background Service) + Trader (via SignalR client)
+**Trigger:** Trader conecta ao SignalR Hub e subscreve símbolos de interesse
+**Bounded Context:** Market Data
+
+**Objetivo:** Fornecer preços em tempo real de opções e ativos subjacentes para traders com plano Pleno/Consultor, usando WebSocket/SignalR para baixa latência.
+
+**Pré-requisitos:**
+- User deve ter `RealtimeData: true` no plano (Pleno ou Consultor)
+- Market Data Feed Service deve estar conectado à B3
+- Horário de mercado (9h-18h em dias úteis)
+
+**Fluxo:**
+
+```csharp
+// ============================================
+// SIGNALR HUB (Frontend conecta aqui)
+// ============================================
+
+/// <summary>
+/// SignalR Hub para distribuição de preços em tempo real
+/// Clientes se conectam via WebSocket e subscrevem símbolos
+/// </summary>
+public class MarketDataHub : Hub
+{
+    private readonly IUserRepository _userRepository;
+    private readonly IMarketDataStreamService _streamService;
+    private readonly IDomainEventDispatcher _eventDispatcher;
+    private readonly ILogger<MarketDataHub> _logger;
+
+    // Grupos SignalR por símbolo (ex: grupo "PETRH245" contém todos os traders subscrevendo esta opção)
+    private const string SymbolGroupPrefix = "symbol_";
+
+    public override async Task OnConnectedAsync()
+    {
+        var userId = Context.User?.FindFirst("sub")?.Value;
+        _logger.LogInformation("User {UserId} connected to MarketDataHub", userId);
+
+        await base.OnConnectedAsync();
+    }
+
+    public override async Task OnDisconnectedAsync(Exception? exception)
+    {
+        var userId = Context.User?.FindFirst("sub")?.Value;
+        _logger.LogInformation("User {UserId} disconnected from MarketDataHub", userId);
+
+        // Cleanup: remover de todos os grupos
+        // SignalR faz isso automaticamente
+
+        await base.OnDisconnectedAsync(exception);
+    }
+
+    /// <summary>
+    /// Cliente subscreve para receber updates de um símbolo
+    /// </summary>
+    public async Task<SubscribeResult> SubscribeToSymbol(string symbol)
+    {
+        var userId = Context.User?.FindFirst("sub")?.Value;
+        if (string.IsNullOrEmpty(userId))
+            return SubscribeResult.Unauthorized("User not authenticated");
+
+        try
+        {
+            // 1. Validar plano do usuário
+            var user = await _userRepository.GetByIdAsync(UserId.From(userId), CancellationToken.None);
+            if (user == null)
+                return SubscribeResult.Unauthorized("User not found");
+
+            var hasRealtimeAccess = user.HasRealtimeDataAccess(); // verifica SubscriptionPlan.Features.RealtimeData
+            if (!hasRealtimeAccess)
+                return SubscribeResult.Forbidden("Your plan does not include real-time data. Upgrade to Pleno or Consultor.");
+
+            // 2. Adicionar ao grupo SignalR do símbolo
+            await Groups.AddToGroupAsync(Context.ConnectionId, GetSymbolGroup(symbol));
+
+            // 3. Publicar evento de domain
+            await _eventDispatcher.DispatchAsync(
+                new UserSubscribedToSymbol(user.Id, symbol, DateTime.UtcNow),
+                CancellationToken.None);
+
+            // 4. Enviar último preço conhecido (cache) imediatamente
+            var cachedPrice = _streamService.GetCachedPrice(symbol);
+            if (cachedPrice != null)
+            {
+                await Clients.Caller.SendAsync("PriceUpdate", new PriceUpdateDto(
+                    symbol,
+                    cachedPrice.Amount,
+                    0, // changePercentage desconhecido no cache
+                    DateTime.UtcNow
+                ));
+            }
+
+            _logger.LogInformation("User {UserId} subscribed to {Symbol}", userId, symbol);
+
+            return SubscribeResult.Success($"Subscribed to {symbol}");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error subscribing user {UserId} to {Symbol}", userId, symbol);
+            return SubscribeResult.Error($"Failed to subscribe: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Cliente remove subscrição de um símbolo
+    /// </summary>
+    public async Task<UnsubscribeResult> UnsubscribeFromSymbol(string symbol)
+    {
+        var userId = Context.User?.FindFirst("sub")?.Value;
+        if (string.IsNullOrEmpty(userId))
+            return UnsubscribeResult.Unauthorized("User not authenticated");
+
+        try
+        {
+            // Remover do grupo SignalR
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, GetSymbolGroup(symbol));
+
+            // Publicar evento
+            var user = await _userRepository.GetByIdAsync(UserId.From(userId), CancellationToken.None);
+            if (user != null)
+            {
+                await _eventDispatcher.DispatchAsync(
+                    new UserUnsubscribedFromSymbol(user.Id, symbol, DateTime.UtcNow),
+                    CancellationToken.None);
+            }
+
+            _logger.LogInformation("User {UserId} unsubscribed from {Symbol}", userId, symbol);
+
+            return UnsubscribeResult.Success($"Unsubscribed from {symbol}");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error unsubscribing user {UserId} from {Symbol}", userId, symbol);
+            return UnsubscribeResult.Error($"Failed to unsubscribe: {ex.Message}");
+        }
+    }
+
+    private static string GetSymbolGroup(string symbol) => $"{SymbolGroupPrefix}{symbol}";
+}
+
+// DTOs
+public record PriceUpdateDto(
+    string Symbol,
+    decimal Price,
+    decimal ChangePercentage,
+    DateTime Timestamp
+);
+
+public record SubscribeResult(bool IsSuccess, string Message, string? ErrorCode = null)
+{
+    public static SubscribeResult Success(string message) => new(true, message);
+    public static SubscribeResult Unauthorized(string message) => new(false, message, "UNAUTHORIZED");
+    public static SubscribeResult Forbidden(string message) => new(false, message, "FORBIDDEN");
+    public static SubscribeResult Error(string message) => new(false, message, "ERROR");
+}
+
+public record UnsubscribeResult(bool IsSuccess, string Message)
+{
+    public static UnsubscribeResult Success(string message) => new(true, message);
+    public static UnsubscribeResult Unauthorized(string message) => new(false, message);
+    public static UnsubscribeResult Error(string message) => new(false, message);
+}
+
+// ============================================
+// BACKGROUND SERVICE (Consome B3 WebSocket e distribui via SignalR)
+// ============================================
+
+/// <summary>
+/// Background Service que consome feed WebSocket da B3 e distribui
+/// preços em tempo real via SignalR para traders conectados
+/// </summary>
+public class MarketDataStreamService : BackgroundService
+{
+    private readonly IMarketDataFeedClient _feedClient;
+    private readonly IHubContext<MarketDataHub> _hubContext;
+    private readonly IMarketDataStreamService _streamService; // Domain Service (throttling)
+    private readonly IOptionContractRepository _optionRepository;
+    private readonly IUnderlyingAssetRepository _assetRepository;
+    private readonly IDomainEventDispatcher _eventDispatcher;
+    private readonly ILogger<MarketDataStreamService> _logger;
+
+    private DateTime _streamStartTime;
+    private readonly HashSet<string> _subscribedSymbols = new();
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        _logger.LogInformation("Market Data Stream Service starting...");
+
+        // Aguardar mercado abrir (9h)
+        await WaitForMarketOpenAsync(stoppingToken);
+
+        try
+        {
+            // 1. Conectar ao feed da B3
+            await _feedClient.ConnectAsync(stoppingToken);
+            _streamStartTime = DateTime.UtcNow;
+
+            // 2. Registrar event handlers
+            _feedClient.OnPriceUpdate += HandlePriceUpdate;
+            _feedClient.OnDisconnected += HandleDisconnected;
+            _feedClient.OnReconnected += HandleReconnected;
+
+            // 3. Subscrever símbolos de estratégias ativas
+            var activeSymbols = await GetActiveStrategySymbolsAsync(stoppingToken);
+            await _feedClient.SubscribeToSymbolsAsync(activeSymbols, stoppingToken);
+            _subscribedSymbols.UnionWith(activeSymbols);
+
+            _logger.LogInformation("Subscribed to {Count} symbols", activeSymbols.Count);
+
+            // Publicar evento de início
+            await _eventDispatcher.DispatchAsync(
+                new MarketDataStreamStarted(
+                    DateTime.UtcNow,
+                    _subscribedSymbols.Count,
+                    "B3_WEBSOCKET"
+                ),
+                stoppingToken);
+
+            // 4. Manter serviço rodando até fechamento do mercado (18h) ou cancelamento
+            while (!stoppingToken.IsCancellationRequested && IsMarketOpen())
+            {
+                await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Market Data Stream Service failed");
+        }
+        finally
+        {
+            // Cleanup
+            _feedClient.OnPriceUpdate -= HandlePriceUpdate;
+            _feedClient.OnDisconnected -= HandleDisconnected;
+            _feedClient.OnReconnected -= HandleReconnected;
+
+            await _feedClient.DisconnectAsync();
+
+            var upTime = DateTime.UtcNow - _streamStartTime;
+            await _eventDispatcher.DispatchAsync(
+                new MarketDataStreamStopped(
+                    DateTime.UtcNow,
+                    stoppingToken.IsCancellationRequested ? "STOPPED" : "MARKET_CLOSED",
+                    upTime
+                ),
+                CancellationToken.None);
+
+            _logger.LogInformation("Market Data Stream Service stopped. UpTime: {UpTime}", upTime);
+        }
+    }
+
+    private async void HandlePriceUpdate(object? sender, MarketDataUpdate update)
+    {
+        try
+        {
+            // 1. Aplicar throttling (max 1 update/segundo por símbolo)
+            if (!_streamService.ShouldProcessPriceUpdate(update.Symbol, update.Timestamp))
+            {
+                _logger.LogTrace("Throttled price update for {Symbol}", update.Symbol);
+                return;
+            }
+
+            // 2. Verificar se mudança é significativa (> 0.1%)
+            var cachedPrice = _streamService.GetCachedPrice(update.Symbol);
+            var newPrice = Money.Brl(update.LastPrice);
+
+            if (cachedPrice != null &&
+                !_streamService.IsPriceChangeSignificant(cachedPrice, newPrice, 0.1m))
+            {
+                _logger.LogTrace("Price change not significant for {Symbol}", update.Symbol);
+                return;
+            }
+
+            // 3. Atualizar cache
+            _streamService.UpdateCachedPrice(update.Symbol, newPrice);
+            _streamService.RecordPriceUpdate(update.Symbol, update.Timestamp);
+
+            // 4. Atualizar banco de dados (async fire-and-forget)
+            _ = Task.Run(async () =>
+            {
+                var option = await _optionRepository.GetBySymbolAsync(update.Symbol, CancellationToken.None);
+                if (option != null)
+                {
+                    option.UpdateMarketPrices(
+                        Money.Brl(update.BidPrice),
+                        Money.Brl(update.AskPrice),
+                        Money.Brl(update.LastPrice),
+                        update.Timestamp,
+                        update.Volume,
+                        null,
+                        update.Timestamp
+                    );
+                    await _optionRepository.UpdateAsync(option, CancellationToken.None);
+                }
+            });
+
+            // 5. Broadcast via SignalR para grupo do símbolo
+            var changePercentage = cachedPrice != null
+                ? ((newPrice.Amount - cachedPrice.Amount) / cachedPrice.Amount) * 100
+                : 0;
+
+            var subscriberCount = GetSubscriberCount(update.Symbol); // implementar contagem de conexões no grupo
+
+            await _hubContext.Clients
+                .Group($"symbol_{update.Symbol}")
+                .SendAsync("PriceUpdate", new PriceUpdateDto(
+                    update.Symbol,
+                    update.LastPrice,
+                    changePercentage,
+                    update.Timestamp
+                ));
+
+            // 6. Publicar evento de domain
+            await _eventDispatcher.DispatchAsync(
+                new RealTimePriceReceived(
+                    update.Symbol,
+                    newPrice,
+                    cachedPrice,
+                    changePercentage,
+                    update.Timestamp,
+                    subscriberCount
+                ),
+                CancellationToken.None);
+
+            _logger.LogDebug("Broadcasted price update for {Symbol}: {Price} ({Change:F2}%)",
+                update.Symbol, update.LastPrice, changePercentage);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error handling price update for {Symbol}", update.Symbol);
+        }
+    }
+
+    private void HandleDisconnected(object? sender, string reason)
+    {
+        _logger.LogWarning("Market data feed disconnected: {Reason}", reason);
+        // IMarketDataFeedClient deve ter reconexão automática
+    }
+
+    private void HandleReconnected(object? sender, EventArgs e)
+    {
+        _logger.LogInformation("Market data feed reconnected");
+
+        // Re-subscrever símbolos
+        Task.Run(async () =>
+        {
+            await _feedClient.SubscribeToSymbolsAsync(_subscribedSymbols, CancellationToken.None);
+        });
+    }
+
+    private async Task<List<string>> GetActiveStrategySymbolsAsync(CancellationToken ct)
+    {
+        // Buscar todas estratégias ativas (PaperTrading + Live)
+        // Extrair símbolos de opções + ativos subjacentes
+        // Retornar lista única
+
+        // Implementação simplificada (deve usar repository query)
+        var symbols = new List<string> { "PETR4", "VALE3", "PETRH245", "VALEH205" };
+        return symbols;
+    }
+
+    private bool IsMarketOpen()
+    {
+        var now = DateTime.Now;
+
+        // Verificar se é dia útil (segunda a sexta)
+        if (now.DayOfWeek == DayOfWeek.Saturday || now.DayOfWeek == DayOfWeek.Sunday)
+            return false;
+
+        // Verificar horário (9h às 18h)
+        var marketOpen = new TimeSpan(9, 0, 0);
+        var marketClose = new TimeSpan(18, 0, 0);
+
+        return now.TimeOfDay >= marketOpen && now.TimeOfDay <= marketClose;
+    }
+
+    private async Task WaitForMarketOpenAsync(CancellationToken ct)
+    {
+        while (!IsMarketOpen() && !ct.IsCancellationRequested)
+        {
+            _logger.LogInformation("Market is closed. Waiting...");
+            await Task.Delay(TimeSpan.FromMinutes(15), ct);
+        }
+    }
+
+    private int GetSubscriberCount(string symbol)
+    {
+        // Implementar usando IHubContext para contar conexões no grupo
+        // Por enquanto, retornar 0
+        return 0;
+    }
+}
+```
+
+**Aggregates Envolvidos:**
+- User (read-only - validar RealtimeData feature flag)
+- OptionContract (modify - atualizar preços em tempo real)
+- UnderlyingAsset (modify - atualizar preços em tempo real)
+
+**Domain Events Gerados:**
+- `MarketDataStreamStarted` - quando background service conecta ao feed
+- `MarketDataStreamStopped` - quando serviço para (mercado fecha ou erro)
+- `UserSubscribedToSymbol` - quando trader subscreve via SignalR
+- `UserUnsubscribedFromSymbol` - quando trader remove subscrição
+- `RealTimePriceReceived` - para cada update de preço significativo (> 0.1%)
+- `OptionMarketPricesUpdated` - quando banco de dados é atualizado
+
+**Domain Services Utilizados:**
+- `IMarketDataStreamService` - throttling, cache, e validação de mudanças significativas
+
+**External Services:**
+- `IMarketDataFeedClient` - WebSocket para feed da B3
+
+**Infrastructure:**
+- SignalR Hub (WebSocket para frontend)
+- Background Service (IHostedService)
+- Redis (cache distribuído de preços - opcional mas recomendado)
+
+**Rate Limiting:**
+- Throttling: max 1 update/segundo por símbolo
+- Mudança mínima: 0.1% (evita spam de updates insignificantes)
+- Validação de plano: apenas Pleno/Consultor
+
+**Client Usage (Frontend - JavaScript/TypeScript):**
+
+```typescript
+// Conectar ao SignalR Hub
+const connection = new signalR.HubConnectionBuilder()
+    .withUrl("/hubs/marketdata", { accessTokenFactory: () => getAuthToken() })
+    .withAutomaticReconnect()
+    .build();
+
+// Handler para updates de preço
+connection.on("PriceUpdate", (update: PriceUpdateDto) => {
+    console.log(`${update.symbol}: ${update.price} (${update.changePercentage}%)`);
+
+    // Atualizar UI
+    updatePriceDisplay(update.symbol, update.price, update.changePercentage);
+});
+
+// Conectar
+await connection.start();
+
+// Subscrever opção
+const result = await connection.invoke("SubscribeToSymbol", "PETRH245");
+if (!result.isSuccess) {
+    if (result.errorCode === "FORBIDDEN") {
+        showUpgradePrompt(); // Mostrar mensagem para upgrade de plano
+    }
+}
+
+// Desconectar ao sair
+await connection.invoke("UnsubscribeFromSymbol", "PETRH245");
+await connection.stop();
+```
+
+---
+
 ## 📊 Complexidade e Estimativas
 
 | Bounded Context | Aggregates | Entities | Value Objects | Repositories | Complexity |
@@ -3614,9 +5215,9 @@ public class StrategyCreatedEventHandler : INotificationHandler<StrategyCreated>
 
 - [x] Aggregates definidos com invariantes claros
 - [x] Boundaries dos aggregates respeitados (User, Plan, Config, Template, Strategy, Option, UnderlyingAsset separados)
-- [x] Domain Events identificados para integrações (**25+ eventos**)
+- [x] Domain Events identificados para integrações (**33+ eventos**)
 - [x] Repository interfaces definidas (7 repositórios)
-- [x] Use Cases mapeados (**11 use cases: 5 Admin + 6 Strategy/User**)
+- [x] Use Cases mapeados (**13 use cases: 4 Admin + 7 Strategy/User + 2 MarketData**)
 - [x] Validações de negócio no domínio (não na aplicação)
 - [x] Nomenclatura consistente (PT → EN conforme padrões)
 - [x] Admin management incluído (SubscriptionPlan, SystemConfig)
@@ -3626,6 +5227,16 @@ public class StrategyCreatedEventHandler : INotificationHandler<StrategyCreated>
 - [x] **Regras da B3 validadas (Puts europeias, ajustes de strike)**
 - [x] **Black-Scholes service definido (apenas europeias no EPIC-01)**
 - [x] **Integração Strategy Planning ↔ Market Data mapeada**
+- [x] **Opções semanais suportadas (W1-W5, W3 = mensal padrão)**
+- [x] **B3 API integration documentada (IB3ApiClient + sync job)**
+- [x] **UC-MarketData-01: Sincronização diária de opções da B3 (batch)**
+- [x] **UC-MarketData-02: Streaming de preços em tempo real (SignalR/WebSocket)**
+- [x] **Real-time data validado por plano (RealtimeData feature flag)**
+- [x] **Throttling e caching para performance de streaming**
+- [x] **Templates enriquecidos com MarketView, Objective, RiskProfile**
+- [x] **DefenseGuidelines para orientações de ajuste quando mercado inverte**
+- [x] **PriceRangeIdeal para indicar faixa ideal de preço do ativo**
+- [x] **Suporte a templates de hedge (HedgeTemplateId em DefenseGuidelines)**
 
 ---
 
