@@ -108,8 +108,10 @@
 ### Processo Principal 3: Execução e Monitoramento
 
 ```
-[Estratégia Ativada] → [Modo Selecionado: Paper Trading | Real] → [Posição Registrada (Real) / Performance Simulada (Paper)] → [Dados de Mercado Sincronizados] → [Performance Calculada] → [Alerta Disparado] → [Ajuste Executado] → [Posição Atualizada] → [Estratégia Promovida para Real (opcional, apenas Paper)]
+[Estratégia Validada] → [Paper Trading Iniciado | Estratégia Ativada Live] → [Posição Registrada (Real) / Performance Simulada (Paper)] → [Dados de Mercado Sincronizados] → [P&L Atualizado] → [Snapshot P&L Capturado] → [Alerta Disparado] → [Ajuste Executado (Perna Ajustada/Adicionada/Removida)] → [Posição Atualizada] → [Estratégia Encerrada]
 ```
+
+**Nota:** O conceito de "Modo Selecionado" foi substituído por **Status da Estratégia** (StrategyStatus): Draft → Validated → PaperTrading → Live → Closed. Paper trading e Live são status, não modos separados.
 
 **Eventos Detalhados:**
 
@@ -143,11 +145,17 @@
    - Data: preços opções, preço ativo subjacente, volatilidade implícita
    - Business Rule: Atualização tempo real para plano Pleno, aplica-se tanto para paper trading quanto real
 
-5. **Performance Calculada**
-   - Trigger: Dados de mercado atualizados
+5. **P&L Atualizado** (StrategyPnLUpdated)
+   - Trigger: Dados de mercado atualizados ou ajuste executado
    - Actor: Motor de performance
-   - Data: P&L atual (real ou simulado), P&L percentual, gregas (delta, gamma, theta, vega)
-   - Business Rule: Cálculo em tempo real para ambos os modos (paper e real), diferença é que paper usa preços hipotéticos de entrada
+   - Data: P&L atual (real ou simulado), P&L percentual, timestamp
+   - Business Rule: Cálculo em tempo real para estratégias em status PaperTrading ou Live. Não há distinção no cálculo - CurrentPnL serve para ambos contextos
+
+5a. **Snapshot P&L Capturado** (PnLSnapshotCaptured)
+   - Trigger: Captura periódica (diária, semanal, mensal), sob demanda, ou no encerramento
+   - Actor: Sistema
+   - Data: P&L value, P&L percentual, tipo snapshot (Daily/OnDemand/Weekly/Monthly/Closing), timestamp
+   - Business Rule: Snapshots são imutáveis após criação, formam histórico de P&L ao longo do tempo
 
 6. **Alerta Disparado**
    - Trigger: Condição de alerta atendida
@@ -155,23 +163,34 @@
    - Data: tipo alerta (margem, vencimento, conflito), severidade, mensagem, modo (paper/real)
    - Business Rule: **Real**: Chamada de margem, vencimento próximo (7 dias), conflitos entre posições. **Paper**: Apenas alertas informativos (sem obrigatoriedade)
 
-7. **Ajuste Executado**
+7. **Ajuste Executado** (manejo de estratégias ativas)
    - Trigger: Usuário decide ajustar estratégia
    - Actor: Trader
-   - Data: tipo ajuste (rolagem, hedge, rebalanceamento, encerramento parcial, encerramento total), novas pernas (se aplicável), modo (paper/real)
-   - Business Rule: **Real**: Cálculo automático de nova margem (se posição continuar aberta), histórico de P&L realizado (se encerramento). **Paper**: Apenas simulação de ajuste
+   - Data: tipo ajuste, pernas afetadas, status (PaperTrading/Live)
+   - Business Rule: Apenas estratégias PaperTrading ou Live podem ser ajustadas
+
+   Eventos específicos de ajuste:
+   - **Perna Ajustada** (StrategyLegAdjusted): Quantidade de perna existente foi alterada
+   - **Perna Adicionada** (StrategyLegAddedToActive): Nova perna adicionada à estratégia ativa
+   - **Perna Removida** (StrategyLegRemoved): Perna foi removida (mínimo 1 perna sempre mantida)
 
 8. **Posição Atualizada**
    - Trigger: Ajuste executado
    - Actor: Sistema
-   - Data: histórico de ajustes, nova configuração, modo (paper/real)
-   - Business Rule: Histórico completo mantido para ambos os modos
+   - Data: histórico de ajustes, nova configuração, status (PaperTrading/Live)
+   - Business Rule: Histórico completo mantido para ambos status
 
-9. **Estratégia Promovida para Real** (apenas Paper → Real)
-   - Trigger: Usuário decide promover estratégia de paper trading para real
+9. **Estratégia Encerrada** (StrategyClosed)
+   - Trigger: Trader decide encerrar estratégia ativa
    - Actor: Trader
-   - Data: estratégia ID, histórico de performance paper, preços atuais de mercado
-   - Business Rule: Margem disponível suficiente obrigatória, histórico paper preservado para referência, nova execução real iniciada com preços atuais
+   - Data: P&L final, P&L percentual final, motivo de encerramento (obrigatório), timestamp
+   - Business Rule: Apenas estratégias PaperTrading ou Live podem ser encerradas. Snapshot final (Closing) capturado automaticamente. Status muda para Closed
+
+10. **Estratégia Promovida para Real** (StrategyWentLive com flag wasPaperTrading=true)
+   - Trigger: Usuário decide promover estratégia de paper trading para live
+   - Actor: Trader
+   - Data: estratégia ID, histórico de performance paper preservado, preços atuais de mercado
+   - Business Rule: Margem disponível suficiente obrigatória, histórico paper preservado para referência, status muda de PaperTrading para Live
 
 ---
 
