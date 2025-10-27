@@ -111,6 +111,7 @@ services:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     volumes:
       - postgres_staging_data:/var/lib/postgresql/data
+      - ../../04-database/init-scripts:/docker-entrypoint-initdb.d
     logging:
       driver: "json-file"
       options:

@@ -230,6 +230,25 @@ Script para restore de backups do PostgreSQL.
 - Encoding: UTF-8
 - Locale: pt_BR.UTF-8
 
+**Usuários PostgreSQL (Princípio do Menor Privilégio):**
+
+| Usuário | Uso | Permissões | Connection String |
+|---------|-----|------------|-------------------|
+| `postgres` | **Admin (DBA apenas)** | Superuser - **NUNCA** usar na aplicação | N/A |
+| `mytrader_app` | **Aplicação .NET** | SELECT, INSERT, UPDATE, DELETE, CREATE (migrations) | ✅ Usar nas connection strings |
+| `mytrader_readonly` | **Analytics, Backups** | SELECT apenas | Apenas para leitura |
+
+⚠️ **IMPORTANTE - SEGURANÇA:**
+- A aplicação **NUNCA** deve usar o usuário `postgres`
+- Sempre usar `mytrader_app` nas connection strings
+- Violação do Princípio do Menor Privilégio = vulnerabilidade de segurança
+
+**Criação Automática dos Usuários:**
+Os usuários `mytrader_app` e `mytrader_readonly` são criados automaticamente pelo script:
+- `04-database/init-scripts/01-create-app-user.sql`
+
+Este script é executado na primeira inicialização do container PostgreSQL.
+
 ## Variáveis de Ambiente
 
 Todas as variáveis estão documentadas em `05-infra/configs/.env.example`.

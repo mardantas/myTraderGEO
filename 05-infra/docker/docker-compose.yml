@@ -16,7 +16,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
-      - ConnectionStrings__DefaultConnection=Host=database;Port=5432;Database=mytrader_dev;Username=postgres;Password=dev_password_123
+      - ConnectionStrings__DefaultConnection=Host=database;Port=5432;Database=mytrader_dev;Username=mytrader_app;Password=app_dev_password_123
       - JwtSettings__Secret=dev-secret-key-change-in-production-minimum-32-chars
       - JwtSettings__Issuer=myTraderGEO
       - JwtSettings__Audience=myTraderGEO
