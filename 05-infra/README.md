@@ -8,18 +8,20 @@ Configuração completa de infraestrutura Docker para os ambientes Development, 
 - **Frontend:** Vue 3 + TypeScript + Vite + Pinia + PrimeVue
 - **Database:** PostgreSQL 15
 - **Containerização:** Docker + Docker Compose
-- **Proxy/Load Balancer:** Nginx (production frontend)
+- **Web Server (Frontend):** Nginx (serve arquivos estáticos Vue.js em production)
+- **Reverse Proxy/Load Balancer:** Traefik v3.0 (HTTPS, SSL automático, load balancing - staging/production)
 
 ## Estrutura de Pastas
 
 ```
 05-infra/
 ├── configs/
-│   └── .env.example          # Template de variáveis de ambiente
+│   ├── .env.example          # Template de variáveis de ambiente
+│   └── traefik.yml           # Traefik static configuration
 ├── docker/
 │   ├── docker-compose.yml            # Development
-│   ├── docker-compose.staging.yml    # Staging
-│   └── docker-compose.production.yml # Production
+│   ├── docker-compose.staging.yml    # Staging + Traefik
+│   └── docker-compose.production.yml # Production + Traefik + Resource Limits
 ├── dockerfiles/
 │   ├── backend/
 │   │   ├── Dockerfile        # Backend production
@@ -427,25 +429,29 @@ docker push ghcr.io/seu-usuario/mytrader-api:v1.0.0
 
 ## Roadmap
 
-### Epic 1 (Atual - Discovery)
+### Epic 1 (Concluído - Discovery)
 - [x] Docker Compose para todos os ambientes
 - [x] Dockerfiles (dev e production)
 - [x] Script de deploy básico
 - [x] Health checks
 - [x] Logging strategy
+- [x] Traefik reverse proxy (staging + production)
+- [x] HTTPS com Let's Encrypt automático
+- [x] Nginx web server (frontend production)
 
 ### Epic 2 (Planning)
-- [ ] Scripts de backup/restore
-- [ ] Migrations automáticas
+- [ ] Scripts de backup/restore automatizados
+- [ ] Migrations automáticas no deploy
 - [ ] S3 integration para backups
 - [ ] Monitoring básico (Prometheus/Grafana)
+- [ ] Alerting (Alertmanager)
 
-### Epic 3+ (Implementation)
-- [ ] HTTPS com Let's Encrypt
-- [ ] Load balancer (Traefik/HAProxy)
+### Epic 3+ (Future - Scalability)
 - [ ] Kubernetes migration
-- [ ] Auto-scaling
+- [ ] Auto-scaling (horizontal pod autoscaling)
+- [ ] Multi-region deployment
 - [ ] Disaster recovery procedures
+- [ ] CDN integration (Cloudflare + S3)
 
 ## Documentação Relacionada
 
