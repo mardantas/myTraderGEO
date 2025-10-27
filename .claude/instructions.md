@@ -1,81 +1,39 @@
 # Custom Instructions for DDD/EDA Workflow
 
-## Markdown Formatting Standards
+## Markdown Formatting
 
-**CRITICAL:** All Markdown documents MUST use proper line breaks to ensure correct rendering across all Markdown parsers (GitHub, VS Code, GitLab, etc.).
+All Markdown documents must use proper line breaks for correct rendering across all parsers (GitHub, VS Code, GitLab, etc.).
 
-### Line Break Methods
+### Two Line Break Methods
 
-#### 1. Hard Break (Compact Format)
-**Usage:** Metadata sections in headers/footers (compact, machine-readable format)
+**1. Hard Break (Compact Metadata)**
 
-**Method:** Add **2 spaces** at the end of each line
+For metadata sections with multiple consecutive lines (headers/footers):
+- Add **2 spaces** at end of each line
+- Example:
+  ```markdown
+  **Projeto:** myTraderGEO
+  **Database:** PostgreSQL 15+
+  **Agent:** DBA Agent
+  **Status:** ✅ Active
+  ```
 
-**Example:**
-```markdown
-**Projeto:** [PROJECT_NAME]
-**Database:** PostgreSQL 15+
-**Responsible Agent:** DBA Agent
-**Last Updated:** 2025-10-27
-**Status:** ✅ Active
-```
+**2. Paragraph Break (Readable Content)**
 
-**Common locations:**
-- Document headers (project metadata)
-- Document footers (version info, dates)
-- Compact lists where vertical space matters
+For document body and content sections:
+- Use **blank lines** between sections/paragraphs
+- Lists, tables, code blocks use natural Markdown (no special formatting)
 
-#### 2. Paragraph Break (Readable Format)
-**Usage:** Content sections in document body (readable, human-friendly format)
+### Validation
 
-**Method:** Leave **blank line** between blocks
+**Before committing:**
+1. Open Markdown preview (Ctrl+Shift+V)
+2. Verify metadata appears one per line (not all together)
+3. Verify content sections have proper spacing
 
-**Example:**
-```markdown
-## Section Title
+### Template Comment
 
-First paragraph with detailed explanation of the concept.
-This continues on the same paragraph.
-
-Second paragraph starts after a blank line. This is much more
-readable for document content.
-
-- List items don't need special formatting
-- They naturally render correctly
-- Just use normal Markdown syntax
-```
-
-**Common locations:**
-- Section content
-- Between major blocks (sections, tables, code blocks)
-- Narrative text and explanations
-
-### When to Use Each Method
-
-| Format | Use Case | Line Break Method |
-|--------|----------|-------------------|
-| **Headers/Footers** | Metadata (compact) | 2 spaces at EOL |
-| **Body Content** | Narrative text (readable) | Blank lines |
-| **Lists** | Bullets, numbered | Natural Markdown (no special formatting) |
-| **Tables** | Tabular data | Natural Markdown (no special formatting) |
-| **Code blocks** | Code/commands | Natural Markdown (no special formatting) |
-
-### Validation Process
-
-**BEFORE committing any Markdown file:**
-
-1. **Open Preview in VS Code:** Right-click file → "Open Preview" (or `Ctrl+Shift+V`)
-2. **Check metadata sections:** Verify each metadata line appears on its own line
-3. **Check content sections:** Verify paragraphs have proper spacing
-4. **Common issues to spot:**
-   - ❌ Metadata running together: "Projeto: X Database: Y Agent: Z"
-   - ✅ Metadata on separate lines (one per line)
-   - ❌ Content sections too cramped (no breathing room)
-   - ✅ Content sections well-spaced with blank lines
-
-### Template Comment Block
-
-**Every new template file MUST include this comment at the top:**
+Every new template should include this comment at the top:
 
 ```markdown
 <!--
@@ -85,8 +43,6 @@ MARKDOWN FORMATTING:
 - Validate in Markdown preview before committing
 -->
 ```
-
-This comment serves as a reminder and guidance for anyone editing the template.
 
 ## Document Strategy
 
