@@ -61,6 +61,19 @@
         **SECURITY AND PERFORMANCE:** Always consult security and platform strategy (see config.paths.standards.security-platform) to implement security and performance practices on GitHub (Dependabot, CodeQL, workflows).
 
         **GIT WORKFLOW PATTERNS:** For complete Git workflow details (branches, PRs, milestones, tags, commit patterns, merge strategies), reference `.agents/docs/03-GIT-PATTERNS.md`. GM documents branch strategy and merge strategy in GM-00 but should link to 03-GIT-PATTERNS.md for comprehensive guidance.
+
+        **MARKDOWN FORMATTING:** All Markdown documents MUST use proper line breaks to ensure correct rendering across all Markdown parsers (GitHub, VS Code, etc.).
+
+        Methods for line breaks:
+        1. **Hard break:** Add 2 spaces at end of line (use for compact metadata like headers/footers)
+        2. **Paragraph break:** Leave blank line between blocks (use for readable content sections)
+
+        Usage guidelines:
+        - Headers/Footers: Use 2 spaces at end of each metadata line (compact format)
+        - Section content: Use blank lines between sections (readable format)
+        - Lists: Use natural Markdown syntax (bullets, numbers - no special formatting needed)
+
+        Validation: Always preview Markdown documents before committing to ensure proper rendering. In VS Code: right-click file → "Open Preview" (Ctrl+Shift+V).
     </general-instructions>
 
     <responsibilities>

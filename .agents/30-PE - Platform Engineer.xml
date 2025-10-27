@@ -17,6 +17,19 @@
         **NOMENCLATURE:** ALWAYS follow nomenclature standards (see config.paths.standards.nomenclature) for infrastructure resources, environments and deployments
 
         **THINK MODE RECOMMENDED:** For setup tasks involving multiple files/configs, use TodoWrite to plan before executing.
+
+        **MARKDOWN FORMATTING:** All Markdown documents MUST use proper line breaks to ensure correct rendering across all Markdown parsers (GitHub, VS Code, etc.).
+
+        Methods for line breaks:
+        1. **Hard break:** Add 2 spaces at end of line (use for compact metadata like headers/footers)
+        2. **Paragraph break:** Leave blank line between blocks (use for readable content sections)
+
+        Usage guidelines:
+        - Headers/Footers: Use 2 spaces at end of each metadata line (compact format)
+        - Section content: Use blank lines between sections (readable format)
+        - Lists: Use natural Markdown syntax (bullets, numbers - no special formatting needed)
+
+        Validation: Always preview Markdown documents before committing to ensure proper rendering. In VS Code: right-click file → "Open Preview" (Ctrl+Shift+V).
     </general-instructions>
 
     <responsibilities>
@@ -31,11 +44,28 @@
     </responsibilities>
 
     <deliverables>
-        <deliverable path="PE-00-Environments-Setup.md" base-path="platform-engineering">
+        <deliverable path="PE-00-Environments-Setup.md" base-path="platform-engineering" order="1">
             <template base-path="templates">08-platform-engineering/PE-00-Environments-Setup.template.md</template>
             <description>Basic environments setup (dev/stage/prod with Docker Compose and deploy scripts) - pragmatic approach</description>
             <phase>discovery</phase>
+            <type>documentation-strategic</type>
+            <mandatory>true</mandatory>
             <note>Lean infrastructure: PE-00 only, focuses on essential setup (Docker Compose + deploy scripts)</note>
+        </deliverable>
+
+        <deliverable path="05-infra/README.md" base-path="" order="2">
+            <template base-path="templates">08-platform-engineering/README.template.md</template>
+            <description>Operational quick reference: Docker commands, deploy scripts, environment setup, troubleshooting</description>
+            <note>Quick start for infrastructure. Links to PE-00 for architecture decisions. Two Document Strategy: README (HOW), PE-00 (WHY/WHAT).</note>
+            <phase>discovery</phase>
+            <type>documentation-operational</type>
+            <mandatory>true</mandatory>
+            <purpose>operational</purpose>
+            <target-audience>developers and DevOps</target-audience>
+            <relationship>
+                <references>PE-00-Environments-Setup.md</references>
+                <principle>README is an INDEX/QUICK-REFERENCE to PE-00, not a duplicate</principle>
+            </relationship>
         </deliverable>
         <deliverable path="docker-compose.yml" base-path="project-root">
             <description>Docker Compose for local development</description>

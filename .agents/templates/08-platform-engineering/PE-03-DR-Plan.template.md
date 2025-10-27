@@ -1,3 +1,10 @@
+<!--
+MARKDOWN FORMATTING:
+- Use 2 spaces at end of line for compact line breaks (metadata)
+- Use blank lines between sections for readability (content)
+- Validate in Markdown preview before committing
+-->
+
 # PE-03: Disaster Recovery Plan
 
 **Projeto:** [NOME-DO-PROJETO]
