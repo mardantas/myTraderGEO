@@ -308,11 +308,74 @@ Definir baseline de segurança essencial para myTraderGEO: OWASP Top 3 mitigatio
    - **Financial Data**: Access control via PostgreSQL row-level security (RLS)
    - **Backups**: Encrypted (pg_dump with encryption - see PE-00)
 
-6. **Checklist:**
+6. **Database User Segregation (Least Privilege)**
+
+   **Security Principle:** Application NEVER uses PostgreSQL superuser (`postgres`). Dedicated users with minimal permissions reduce attack surface.
+
+   **User Roles:**
+
+   | User | Purpose | Permissions | Usage |
+   |------|---------|-------------|-------|
+   | **postgres** | Database Administration | SUPERUSER (all privileges) | **DBA ONLY** - NEVER use in application connection string |
+   | **mytrader_app** | Application (.NET) | - SELECT, INSERT, UPDATE, DELETE (CRUD)<br>- USAGE on sequences<br>- CREATE TABLE (EF Core migrations)<br>- Limited to `mytrader_dev` database | Application connection string (`ConnectionStrings__DefaultConnection`) |
+   | **mytrader_readonly** | Analytics, Backups | - SELECT only<br>- Limited to `mytrader_dev` database | Read-only operations, BI tools, backup verification |
+
+   **Security Benefits:**
+
+   - ✅ **SQL Injection Mitigated:** Even if attacker gains SQL access via injection, cannot:
+     - Drop databases (`DROP DATABASE` blocked)
+     - Create superusers (`CREATE ROLE` blocked)
+     - Access system databases (`template0`, `template1`, `postgres` blocked)
+     - Execute administrative commands (`ALTER SYSTEM` blocked)
+   - ✅ **Defense in Depth:** Bug in application cannot cause catastrophic damage (limited to CRUD operations)
+   - ✅ **Audit Trail:** Clear separation between application actions vs administrative actions in logs
+   - ✅ **Compliance:** LGPD Art. 46 (technical security measures), SOC2/ISO27001 (RBAC)
+
+   **Implementation:**
+
+   ```sql
+   -- Script: 04-database/init-scripts/01-create-app-user.sql
+   -- Auto-executed on container startup via docker-entrypoint-initdb.d
+
+   -- Application user (CRUD + migrations)
+   CREATE USER mytrader_app WITH PASSWORD 'secret';
+   GRANT CONNECT ON DATABASE mytrader_dev TO mytrader_app;
+   GRANT USAGE ON SCHEMA public TO mytrader_app;
+   GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO mytrader_app;
+   GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO mytrader_app;
+   GRANT CREATE ON SCHEMA public TO mytrader_app; -- EF Core migrations
+
+   -- Read-only user (analytics, backups)
+   CREATE USER mytrader_readonly WITH PASSWORD 'secret';
+   GRANT CONNECT ON DATABASE mytrader_dev TO mytrader_readonly;
+   GRANT USAGE ON SCHEMA public TO mytrader_readonly;
+   GRANT SELECT ON ALL TABLES IN SCHEMA public TO mytrader_readonly;
+   ```
+
+   **Connection String (Application):**
+
+   ```yaml
+   # ❌ INSECURE (BEFORE):
+   ConnectionStrings__DefaultConnection=Host=database;Port=5432;Database=mytrader_dev;Username=postgres;Password=xxx
+
+   # ✅ SECURE (AFTER):
+   ConnectionStrings__DefaultConnection=Host=database;Port=5432;Database=mytrader_dev;Username=mytrader_app;Password=xxx
+   ```
+
+   **References:**
+   - [FEEDBACK-003](../00-feedback/FEEDBACK-003-DBA-PE-PostgreSQL-User-Security.md) - Security improvement implemented
+   - [OWASP Least Privilege](https://owasp.org/www-community/vulnerabilities/Least_Privilege_Violation)
+   - [CIS PostgreSQL Benchmark](https://www.cisecurity.org/benchmark/postgresql) - Section 2.1: Database User Segregation
+
+7. **Checklist:**
 
    - [x] HTTPS/TLS 1.3 enforced for all connections (Traefik + Let's Encrypt)
    - [x] Passwords hashed with PBKDF2/bcrypt (NEVER plaintext)
    - [x] Database connection string in `.env` (NEVER in code)
+   - [x] **Database user segregation implemented:**
+     - [x] Application uses `mytrader_app` (CRUD + CREATE TABLE only)
+     - [x] `postgres` superuser NEVER used in application connection string
+     - [x] Init script auto-creates users: `04-database/init-scripts/01-create-app-user.sql`
    - [x] API keys in `.env` (market data, B3, SMTP - NEVER in code)
    - [x] JWT secret min 32 characters, environment variable
    - [x] `.env` in `.gitignore`
@@ -1084,6 +1147,10 @@ To maintain simplicity for MVP and early epics, v1.0 **DOES NOT include:**
   - [x] Passwords hashed (PBKDF2 via PasswordHasher)
   - [x] Secrets in environment variables (`.env`)
   - [x] JWT secret min 32 characters
+  - [x] **Database user segregation (Least Privilege):**
+    - [x] Application uses `mytrader_app` (limited CRUD + CREATE TABLE)
+    - [x] `postgres` superuser restricted to DBA only
+    - [x] `mytrader_readonly` for analytics/backups (SELECT only)
 - [x] **A03 - Injection**
   - [x] SQL parametrizado (EF Core LINQ)
   - [x] Value Objects validate inputs
@@ -1120,6 +1187,11 @@ To maintain simplicity for MVP and early epics, v1.0 **DOES NOT include:**
 - [x] HTTPS enforced (Traefik + Let's Encrypt)
 - [x] Rate limiting configured (API: 100 req/s)
 - [x] Docker network isolation (database not exposed)
+- [x] **Database user segregation (Least Privilege):**
+  - [x] Application uses `mytrader_app` (CRUD + CREATE TABLE only)
+  - [x] `postgres` superuser restricted to DBA only
+  - [x] `mytrader_readonly` for analytics/backups (SELECT only)
+  - [x] Init script: `04-database/init-scripts/01-create-app-user.sql`
 - [x] Secrets management (environment variables)
 - [x] Cloudflare DDoS protection (basic)
 
