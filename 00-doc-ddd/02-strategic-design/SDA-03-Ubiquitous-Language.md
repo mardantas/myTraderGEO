@@ -323,7 +323,7 @@
 
 **Documentação (PT):**
 ```markdown
-**Estratégia**: Combinação de posições em opções que formam uma operação completa
+**Estratégia**: Combinação de posições em opções que formam uma operação completa  
 ```
 
 **Código (EN):**
@@ -352,7 +352,7 @@ namespace MyTraderGEO.StrategyPlanning.Domain.Aggregates
 
 **Documentação (PT):**
 ```markdown
-**Gregas**: Medidas de sensibilidade da opção (Delta, Gamma, Theta, Vega)
+**Gregas**: Medidas de sensibilidade da opção (Delta, Gamma, Theta, Vega)  
 ```
 
 **Código (EN):**
@@ -374,7 +374,7 @@ namespace MyTraderGEO.StrategyPlanning.Domain.ValueObjects
 
 **Documentação (PT):**
 ```markdown
-**Estratégia Criada**: Evento emitido quando nova estratégia é criada
+**Estratégia Criada**: Evento emitido quando nova estratégia é criada  
 ```
 
 **Código (EN):**
@@ -395,7 +395,7 @@ namespace MyTraderGEO.StrategyPlanning.Domain.Events
 
 **Documentação (PT):**
 ```markdown
-**Repositório de Estratégias**: Persistência e recuperação de estratégias
+**Repositório de Estratégias**: Persistência e recuperação de estratégias  
 ```
 
 **Código (EN):**

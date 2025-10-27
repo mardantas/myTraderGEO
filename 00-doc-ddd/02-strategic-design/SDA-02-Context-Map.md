@@ -573,7 +573,7 @@ graph TB
 - Como trader, quero receber alertas de eventos críticos (margem, vencimento, conflitos) - obrigatórios para real, informativos para paper
 - Como trader, quero ver alertas priorizados por severidade (baixa, média, alta, crítica)
 
-**Nota MVP**: No MVP, a execução de ordens é manual (trader registra ordens executadas na corretora Rico, XP, etc). Integração automática via datafeed provider e broker (ex: Nelógica, Cedro podem fazer ambos) está planejada para versões futuras (ver EPIC-07). Sistema permite configurar datafeed provider e broker separadamente
+**Nota MVP**: No MVP, a execução de ordens é manual (trader registra ordens executadas na corretora Rico, XP, etc). Integração automática via datafeed provider e broker (ex: Nelógica, Cedro podem fazer ambos) está planejada para versões futuras (ver EPIC-07). Sistema permite configurar datafeed provider e broker separadamente  
 
 ---
 
