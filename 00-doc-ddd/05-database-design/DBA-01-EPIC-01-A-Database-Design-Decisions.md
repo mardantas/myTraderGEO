@@ -18,6 +18,26 @@ Documentar as decisões de design do banco de dados para o **User Management Bou
 
 ---
 
+## 📖 Como Usar Esta Documentação
+
+**Este documento (DBA-01) é a REFERÊNCIA COMPLETA e ESTRATÉGICA:**
+- **Target:** Arquitetos, DBAs, tech leads, futuros mantenedores
+- **Conteúdo:** Decisões de design (POR QUÊ), trade-offs, justificativas técnicas, alternativas avaliadas
+- **Estilo:** Completo, detalhado, educacional, documentação DDD formal
+- **Quando consultar:** Para entender decisões arquiteturais, modificar schema, avaliar alternativas, onboarding de novos membros
+
+**Para EXECUÇÃO RÁPIDA de migrations, consulte:** [04-database/README.md](../../04-database/README.md)
+- **Target:** Desenvolvedores executando migrations, DevOps, troubleshooting operacional
+- **Conteúdo:** Comandos CLI, troubleshooting prático, validação de permissões, quick reference
+- **Estilo:** Minimalista, imperativo, orientado a tarefas
+- **Quando consultar:** Para executar migrations, testar permissões de usuários, resolver problemas operacionais
+
+**Princípio:** DBA-01 explica o **POR QUÊ** e **O QUÊ** (arquitetura), README explica o **COMO executar** (operacional).
+
+**Evitamos duplicação:** O README contém apenas comandos práticos e troubleshooting, não repete decisões de design.
+
+---
+
 ## 📊 Visão Geral do Schema
 
 ### Tabelas
@@ -543,6 +563,26 @@ VALUES (gen_random_uuid(), 'admin@mytradergeo.com', 'hash', 'Test', 'Test', 'Adm
 - Soft delete: `Status = 'Deleted'`
 - Anonimização: Procedure para limpar PII após período legal
 - Export: Query para extrair dados de um usuário (right to data portability)
+
+### 4. Database User Segregation (Least Privilege)
+
+**⚠️ IMPORTANTE:** A aplicação NUNCA deve usar o usuário `postgres` (superuser).
+
+**Implementação:**
+- [FEEDBACK-003 - PostgreSQL User Security](../00-feedback/FEEDBACK-003-DBA-PE-PostgreSQL-User-Security.md)
+  - Resolução: Segregação de usuários PostgreSQL
+  - Princípio do Menor Privilégio (Least Privilege)
+  - Usuários dedicados:
+    - `postgres`: Admin (DBA apenas) - SUPERUSER
+    - `mytrader_app`: Aplicação .NET - CRUD + CREATE TABLE (migrations)
+    - `mytrader_readonly`: Analytics/Backups - SELECT apenas
+  - Security benefits: SQL injection mitigado, defense in depth, compliance LGPD/SOC2
+
+**Guia Operacional:**
+- [04-database/README.md - Seção Usuários PostgreSQL](../../04-database/README.md#-usuários-postgresql-least-privilege)
+  - Connection strings seguras
+  - Como testar permissões
+  - Troubleshooting de usuários
 
 ---
 
