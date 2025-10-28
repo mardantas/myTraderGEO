@@ -84,6 +84,187 @@ Os usuários são criados automaticamente pelo script:
 
 ---
 
+## 🌐 Multi-Environment Password Strategy
+
+### Senhas por Ambiente
+
+⚠️ **CRÍTICO:** Init script (`01-create-app-user.sql`) usa senhas default apropriadas APENAS para **development**.
+
+Para **staging** e **production**, você DEVE alterar as senhas usando a migration `002_update_production_passwords.sql`.
+
+| Ambiente | Senha Padrão (Init Script) | Ação Requerida |
+|----------|---------------------------|----------------|
+| **Development** | `app_dev_password_123` | ✅ OK - Senha simples aceitável para dev local |
+| **Staging** | `app_dev_password_123` | ⚠️ **ALTERAR** - Usar senha forte via migration 002 |
+| **Production** | `app_dev_password_123` | 🔴 **ALTERAR OBRIGATÓRIO** - Usar senha forte via migration 002 |
+
+### Como Alterar Senhas (Staging/Production)
+
+**Arquivo:** [migrations/002_update_production_passwords.sql](migrations/002_update_production_passwords.sql)
+
+**Execução Recomendada (via environment variables):**
+
+```bash
+# 1. Definir senhas como variáveis de ambiente (não ficam no histórico bash)
+export DB_APP_PASSWORD="SuaSenhaForte123!@#"
+export DB_READONLY_PASSWORD="SuaSenhaReadonly456!@#"
+
+# 2. Executar migration passando variáveis
+psql -U postgres -d mytrader_staging \
+  -f 04-database/migrations/002_update_production_passwords.sql \
+  -v app_password="$DB_APP_PASSWORD" \
+  -v readonly_password="$DB_READONLY_PASSWORD"
+
+# 3. Atualizar .env.staging com novas senhas
+# ConnectionStrings__DefaultConnection=...;Password=$DB_APP_PASSWORD
+
+# 4. Reiniciar aplicação
+docker compose -f 05-infra/docker/docker-compose.staging.yml \
+  --env-file 05-infra/configs/.env.staging restart
+```
+
+**Execução Interativa (mais segura - senhas não aparecem):**
+
+```bash
+# 1. Conectar ao database
+psql -U postgres -d mytrader_staging
+
+# 2. Definir variáveis via prompt (senhas NÃO aparecem no terminal)
+\set app_password `read -s -p "App Password: " pwd; echo $pwd`
+\set readonly_password `read -s -p "Readonly Password: " pwd; echo $pwd`
+
+# 3. Executar migration
+\i 04-database/migrations/002_update_production_passwords.sql
+```
+
+### Requisitos de Senha (Staging/Production)
+
+**Senha FORTE obrigatória:**
+- ✅ Mínimo 16 caracteres
+- ✅ Maiúsculas + minúsculas + números + símbolos
+- ✅ Diferente entre staging e production
+- ✅ Armazenada em gerenciador de senhas (1Password, Bitwarden, etc)
+- ✅ Rotação trimestral recomendada
+
+**Exemplos de senhas FORTES:**
+```
+✅ K7#mP9$vL2@nQ8!xR4^wT6*yU3
+✅ Bx9#Ln2@Wp7$Mq5!Rt8^Ks4*Jv1
+❌ senha123
+❌ mytrader2024
+❌ app_dev_password_123 (apenas dev!)
+```
+
+### Integração com .env Strategy (PE-00)
+
+Conforme documentado em [PE-00-Environments-Setup.md](../00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md), cada ambiente tem seu próprio arquivo `.env`:
+
+```bash
+# .env.dev (Development - senhas simples OK)
+DB_APP_USER=mytrader_app
+DB_APP_PASSWORD=app_dev_password_123
+DB_READONLY_USER=mytrader_readonly
+DB_READONLY_PASSWORD=readonly_dev_password_123
+
+# .env.staging (Staging - senhas FORTES)
+DB_APP_USER=mytrader_app
+DB_APP_PASSWORD=<SENHA_FORTE_STAGING>  # Alterar via migration 002
+DB_READONLY_USER=mytrader_readonly
+DB_READONLY_PASSWORD=<SENHA_FORTE_READONLY_STAGING>
+
+# .env.production (Production - senhas MUITO FORTES)
+DB_APP_USER=mytrader_app
+DB_APP_PASSWORD=<SENHA_FORTE_PRODUCTION>  # Alterar via migration 002
+DB_READONLY_USER=mytrader_readonly
+DB_READONLY_PASSWORD=<SENHA_FORTE_READONLY_PRODUCTION>
+```
+
+**IMPORTANTE:** Senhas de staging e production devem ser DIFERENTES entre si.
+
+---
+
+## 🔒 Security Best Practices
+
+### 1. Princípio do Menor Privilégio (Least Privilege)
+
+✅ **DO:**
+- Usar `mytrader_app` para aplicação .NET
+- Usar `mytrader_readonly` para analytics/backups
+- Reservar `postgres` superuser APENAS para tarefas de DBA
+
+❌ **DON'T:**
+- NUNCA usar `postgres` na connection string da aplicação
+- NUNCA dar permissões de superuser para aplicação
+- NUNCA usar mesma senha em dev/staging/production
+
+### 2. Gestão de Credenciais
+
+✅ **DO:**
+- Armazenar senhas em gerenciador de senhas (1Password, Bitwarden)
+- Usar variáveis de ambiente para passar senhas (não hardcode)
+- Rotacionar senhas trimestralmente (production e staging)
+- Usar senhas DIFERENTES para cada ambiente
+
+❌ **DON'T:**
+- NUNCA commitar senhas reais no Git
+- NUNCA compartilhar senhas via Slack/Email/WhatsApp
+- NUNCA usar senhas fracas em staging/production
+- NUNCA reutilizar senhas entre ambientes
+
+### 3. Defense in Depth
+
+**Camadas de segurança implementadas:**
+
+| Camada | Proteção | Benefício |
+|--------|----------|-----------|
+| **Network** | Database não exposto à internet (apenas containers internos) | Atacante precisa comprometer container primeiro |
+| **Authentication** | Senhas fortes + usuários segregados | Credential stuffing mitigado |
+| **Authorization** | Least Privilege (CRUD apenas, sem DROP DATABASE) | SQL injection não pode causar dano catastrófico |
+| **Audit** | Logs separados por usuário (app vs admin) | Detecção de anomalias e troubleshooting |
+
+### 4. Compliance
+
+**LGPD (Lei Geral de Proteção de Dados):**
+- ✅ Art. 46, §1º - "medidas técnicas e administrativas aptas a proteger os dados"
+- ✅ Segregação de privilégios é "medida técnica essencial"
+- ✅ Senhas fortes em produção atendem requisito de proteção
+
+**SOC 2 / ISO 27001:**
+- ✅ Controle de acesso baseado em função (RBAC)
+- ✅ Auditoria de ações administrativas vs aplicação
+- ✅ Rotação de credenciais documentada
+
+### 5. Rotação de Senhas
+
+**Frequência Recomendada:**
+- **Production:** Trimestral (a cada 3 meses)
+- **Staging:** Semestral (a cada 6 meses)
+- **Development:** Não necessário (senha simples, ambiente local)
+
+**Procedimento de Rotação:**
+
+```bash
+# 1. Gerar nova senha forte (16+ caracteres)
+# 2. Executar migration 002 com nova senha
+export DB_APP_PASSWORD="<NOVA_SENHA>"
+psql -U postgres -d mytrader_prod -f 002_update_production_passwords.sql \
+  -v app_password="$DB_APP_PASSWORD" \
+  -v readonly_password="$DB_READONLY_PASSWORD"
+
+# 3. Atualizar .env.production
+# 4. Reiniciar aplicação
+docker compose -f docker-compose.production.yml \
+  --env-file .env.production restart
+
+# 5. Testar conectividade
+docker compose logs api | grep "Database connection established"
+
+# 6. Atualizar gerenciador de senhas
+# 7. Documentar rotação (data, quem executou)
+```
+
+---
+
 ## 🚀 Como Executar Migrations
 
 ### Ordem de Execução

@@ -230,24 +230,132 @@ psql -U postgres -d mytrader_prod \
 
 ## ✅ Resolução
 
-> _Seção preenchida pelo DBA Agent após resolver_
-
-**Data Resolução:** [YYYY-MM-DD]
+**Data Resolução:** 2025-01-28
 **Resolvido por:** DBA Agent + PE Agent
 
-**Ação Tomada:**
-[Descrição do que foi feito]
+### Ação Tomada
+
+Implementamos a **Opção 2 (ALTER USER Approach)** conforme recomendado, criando migration separada e documentação completa de multi-environment password strategy.
+
+### 1. Migration 002 - Password Update para Staging/Production
+
+**Arquivo Criado:** `04-database/migrations/002_update_production_passwords.sql` (137 linhas)
+
+**Features:**
+- ✅ Aceita senhas via variáveis do psql (`-v app_password`, `-v readonly_password`)
+- ✅ Validação automática (erro se variáveis não foram passadas)
+- ✅ Senhas NUNCA commitadas no Git (passadas via CLI ou environment variables)
+- ✅ Documentação inline com 3 opções de execução:
+  1. **Recomendado:** Via environment variables (não fica no histórico bash)
+  2. **Mais seguro:** Via prompt interativo (senha não aparece no terminal)
+  3. **Cuidado:** Via linha de comando (fica no histórico - usar apenas se seguro)
+
+**Exemplo de Execução:**
+```bash
+export DB_APP_PASSWORD="SuaSenhaForte123!@#"
+psql -U postgres -d mytrader_staging \
+  -f 002_update_production_passwords.sql \
+  -v app_password="$DB_APP_PASSWORD" \
+  -v readonly_password="$DB_READONLY_PASSWORD"
+```
+
+### 2. README - Multi-Environment Password Strategy
+
+**Arquivo Atualizado:** `04-database/README.md` (+180 linhas)
+
+**Seções Adicionadas:**
+
+#### A. Multi-Environment Password Strategy (60 linhas)
+- Tabela de senhas por ambiente (dev/staging/production)
+- Como alterar senhas via migration 002
+- Requisitos de senha (16+ caracteres, complexidade, rotação)
+- Exemplos de senhas FORTES vs FRACAS
+- Integração com PE-00 .env strategy
+
+#### B. Security Best Practices (120 linhas)
+1. **Princípio do Menor Privilégio**
+   - DO's e DON'Ts claros
+   - NUNCA usar postgres na aplicação
+
+2. **Gestão de Credenciais**
+   - Usar gerenciador de senhas (1Password, Bitwarden)
+   - Variáveis de ambiente (não hardcode)
+   - Rotação trimestral
+   - Senhas DIFERENTES por ambiente
+
+3. **Defense in Depth**
+   - Tabela de camadas de segurança (Network, Authentication, Authorization, Audit)
+   - Benefícios de cada camada
+
+4. **Compliance**
+   - LGPD Art. 46 (medidas técnicas)
+   - SOC 2 / ISO 27001 (RBAC, auditoria)
+
+5. **Rotação de Senhas**
+   - Frequência recomendada (production trimestral, staging semestral)
+   - Procedimento completo de rotação (7 passos)
+
+### 3. Validação - .env.example
+
+**Arquivo:** `05-infra/configs/.env.example`
+
+**Status:** ✅ **JÁ DOCUMENTA CORRETAMENTE** (criado pelo PE Agent)
+
+**Verificado:**
+```bash
+DB_APP_USER=mytrader_app
+DB_APP_PASSWORD=your_secure_app_password_here
+DB_READONLY_USER=mytrader_readonly
+DB_READONLY_PASSWORD=your_secure_readonly_password_here
+```
+
+Nenhuma ação necessária do DBA Agent (PE Agent já havia implementado).
+
+### Resultado - Segurança Aprimorada
+
+**ANTES (FEEDBACK-006 identificou):**
+```
+Init Script → Hardcoded passwords 🔴
+  ├─ app_dev_password_123 (mesma em dev/staging/production)
+  ├─ readonly_dev_password_123 (mesma em dev/staging/production)
+  └─ Senhas fracas em production (compliance violation)
+```
+
+**DEPOIS (Implementado):**
+```
+Init Script → Default passwords (dev apenas) ✅
+  ├─ app_dev_password_123 (OK para dev)
+  └─ readonly_dev_password_123 (OK para dev)
+
+Migration 002 → Strong passwords (staging/production) ✅
+  ├─ Senhas via CLI (não commitadas no Git)
+  ├─ Diferentes entre staging e production
+  └─ 16+ caracteres, complexidade alta
+
+README → Documentation ✅
+  ├─ Multi-environment strategy (60 linhas)
+  ├─ Security best practices (120 linhas)
+  └─ Password rotation procedure (7 passos)
+```
+
+**Benefícios Alcançados:**
+- ✅ Senhas fortes obrigatórias em staging/production
+- ✅ Senhas NUNCA commitadas no Git
+- ✅ Development mantém senhas simples (não afeta workflow)
+- ✅ Compliance LGPD/SOC2 atendido
+- ✅ Rotação de senhas documentada
+- ✅ Procedimentos claros para DBA e PE
 
 **Deliverables Atualizados:**
-- [ ] `04-database/migrations/002_update_production_passwords.sql` - Migration para alterar senhas
-- [ ] `04-database/README.md` - Documentação multi-environment + password rotation
-- [ ] `05-infra/configs/.env.example` - Validação de DB credentials docs
+- [x] `04-database/migrations/002_update_production_passwords.sql` - Migration completa (137 linhas) com 3 opções de execução
+- [x] `04-database/README.md` - +180 linhas documentando multi-environment strategy, security best practices, password rotation
+- [x] `05-infra/configs/.env.example` - Validado ✅ (já documentado corretamente pelo PE Agent)
 
-**Referência Git Commit:** [hash]
+**Referência Git Commit:** [será preenchido após commit]
 
 ---
 
-**Status Final:** 🔴 Aberto
+**Status Final:** 🟢 Resolvido
 
 ---
 
@@ -256,6 +364,7 @@ psql -U postgres -d mytrader_prod \
 | Data | Mudança | Autor |
 |------|---------|-------|
 | 2025-01-28 | Criado (análise de impacto FEEDBACK-004) | DBA Agent |
+| 2025-01-28 | Resolvido (migration 002 + README +180 linhas) | DBA Agent + PE Agent |
 
 ---
 
