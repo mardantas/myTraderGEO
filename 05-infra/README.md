@@ -54,6 +54,10 @@ This is a **quick reference guide** for executing infrastructure commands (Docke
 
 ### Servidor Remoto (Staging/Production)
 
+**Hostnames:**
+- **Staging:** `mytrader-stage`
+- **Production:** `mytrader-prod`
+
 **Convenção:** Arquivos de deploy ficam em `/home/mytrader/mytrader-app/`
 
 ```
@@ -71,7 +75,23 @@ This is a **quick reference guide** for executing infrastructure commands (Docke
 └── logs/                      # Aggregated logs (opcional)
 ```
 
-**Setup inicial do servidor:** Ver [PE-00 - Estrutura no Servidor Remoto](../00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md#estrutura-no-servidor-remoto-stagingproduction)
+**Pré-requisitos do Servidor:**
+
+Antes de realizar o primeiro deploy, o servidor precisa ter a infraestrutura base instalada:
+
+| Requisito | Versão Mínima | Status |
+|-----------|---------------|--------|
+| **OS** | Debian 12 (Bookworm) | Obrigatório |
+| **Docker Engine** | 27.0+ | Obrigatório |
+| **Docker Compose Plugin** | v2.0+ | Obrigatório |
+| **Firewall (UFW)** | Portas 22, 80, 443 | Obrigatório |
+| **Fail2ban** | Latest | Recomendado |
+| **User mytrader** | Grupos: mytrader + docker | Obrigatório |
+| **SSH Keys** | Ed25519 ou RSA 4096 | Obrigatório |
+| **NTP (chrony)** | Latest | Recomendado |
+| **Htpasswd** | apache2-utils | Obrigatório |
+
+**Setup inicial do servidor (passo a passo completo):** Ver [PE-00 - Setup Inicial do Servidor](../00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md#-setup-inicial-do-servidor-infraestrutura-base)
 
 ## Quick Start
 
@@ -582,4 +602,4 @@ Para questões sobre infraestrutura, consultar:
 
 **Última atualização:** 2025-10-28
 **Fase:** Discovery (Epic 1)
-**Status:** ✅ Infraestrutura base definida + Estrutura de servidor remoto documentada
+**Status:** ✅ Infraestrutura base definida + Setup completo do servidor documentado (Debian 12, Docker, UFW, fail2ban)

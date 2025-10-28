@@ -243,6 +243,463 @@ traefik.mytrader.com          A    203.0.113.20
 
 ---
 
+## 🖥️ Setup Inicial do Servidor (Infraestrutura Base)
+
+**Aplicável a:** Staging (`mytrader-stage`) e Production (`mytrader-prod`)
+**Provider:** Contabo VPS (ou qualquer VPS com Debian 12)
+**OS Required:** Debian 12 (Bookworm) - clean install
+
+Esta seção documenta o **setup completo do servidor do zero**, desde a instalação do sistema operacional até o servidor pronto para receber deploy. As instruções são genéricas para qualquer VPS com Debian 12.
+
+---
+
+### Pré-requisitos
+
+- **VPS provisionado** com Debian 12 (Bookworm) instalado
+- **Acesso root via SSH** (usuário root ou usuário com sudo)
+- **IP público fixo** atribuído ao servidor
+- **Domínio configurado** (DNS A records apontando para o IP do servidor)
+
+**Servidores:**
+- **Staging:** Hostname `mytrader-stage` (ex: IP 203.0.113.10)
+- **Production:** Hostname `mytrader-prod` (ex: IP 203.0.113.20)
+
+---
+
+### Etapa 0: Configuração do Hostname
+
+```bash
+# ===== EXECUTAR NO SERVIDOR VIA SSH (root ou sudo) =====
+
+# Definir hostname conforme ambiente
+# Para staging:
+sudo hostnamectl set-hostname mytrader-stage
+
+# OU para production:
+sudo hostnamectl set-hostname mytrader-prod
+
+# Verificar hostname configurado
+hostnamectl
+# Espera-se:
+#   Static hostname: mytrader-stage (ou mytrader-prod)
+#   Icon name: computer-vm
+#   Chassis: vm
+#   Operating System: Debian GNU/Linux 12 (bookworm)
+
+# Adicionar hostname ao /etc/hosts (opcional mas recomendado)
+echo "127.0.1.1 $(hostname)" | sudo tee -a /etc/hosts
+```
+
+---
+
+### Etapa 1: Atualização do Sistema
+
+```bash
+# Atualizar lista de pacotes
+sudo apt-get update
+
+# Atualizar todos os pacotes instalados
+sudo apt-get upgrade -y
+
+# Instalar ferramentas básicas
+sudo apt-get install -y \
+  ca-certificates \
+  curl \
+  gnupg \
+  lsb-release \
+  wget \
+  vim \
+  git \
+  tree \
+  htop
+```
+
+---
+
+### Etapa 2: Instalação Docker Engine (Debian 12)
+
+**Fonte oficial:** [https://docs.docker.com/engine/install/debian/](https://docs.docker.com/engine/install/debian/)
+
+```bash
+# Remover versões antigas (se existirem)
+sudo apt-get remove -y docker docker-engine docker.io containerd runc
+
+# Adicionar Docker GPG key
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+# Adicionar repositório Docker
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# Atualizar índice de pacotes
+sudo apt-get update
+
+# Instalar Docker Engine + Docker Compose Plugin
+sudo apt-get install -y \
+  docker-ce \
+  docker-ce-cli \
+  containerd.io \
+  docker-buildx-plugin \
+  docker-compose-plugin
+
+# Verificar instalação
+sudo docker --version
+# Esperado: Docker version 27.x.x, build ...
+
+sudo docker compose version
+# Esperado: Docker Compose version v2.x.x
+
+# Testar Docker (opcional)
+sudo docker run hello-world
+# Deve baixar imagem e exibir "Hello from Docker!"
+```
+
+---
+
+### Etapa 3: Configurar Firewall (UFW)
+
+```bash
+# Instalar UFW (Uncomplicated Firewall)
+sudo apt-get install -y ufw
+
+# Configurar regras padrão
+sudo ufw default deny incoming   # Bloquear tudo por padrão
+sudo ufw default allow outgoing  # Permitir saída
+
+# Permitir portas necessárias
+sudo ufw allow 22/tcp     # SSH (IMPORTANTE: testar antes de habilitar!)
+sudo ufw allow 80/tcp     # HTTP (Traefik - redirect para HTTPS)
+sudo ufw allow 443/tcp    # HTTPS (Traefik - aplicação)
+
+# ⚠️ CUIDADO: Antes de habilitar, TESTAR SSH em outra janela
+# Abrir nova janela SSH e verificar que consegue conectar
+
+# Habilitar firewall
+sudo ufw --force enable
+
+# Verificar status
+sudo ufw status verbose
+# Esperado:
+# Status: active
+# To                         Action      From
+# --                         ------      ----
+# 22/tcp                     ALLOW IN    Anywhere
+# 80/tcp                     ALLOW IN    Anywhere
+# 443/tcp                    ALLOW IN    Anywhere
+```
+
+**⚠️ IMPORTANTE:** Sempre manter uma sessão SSH aberta enquanto configura o firewall. Se houver erro na configuração e você perder acesso, precisará usar console do provedor (Contabo VNC, por exemplo).
+
+---
+
+### Etapa 4: Security Hardening
+
+```bash
+# Instalar fail2ban (proteção contra brute-force SSH)
+sudo apt-get install -y fail2ban
+
+# Habilitar e iniciar fail2ban
+sudo systemctl enable fail2ban
+sudo systemctl start fail2ban
+
+# Verificar status
+sudo fail2ban-client status
+# Esperado: Number of jail: 1
+# `- Jail list: sshd
+
+sudo fail2ban-client status sshd
+# Esperado: Currently banned: 0, Total banned: 0
+
+# Instalar ferramentas necessárias
+sudo apt-get install -y apache2-utils  # htpasswd (Traefik dashboard auth)
+sudo apt-get install -y chrony          # NTP client (sincronização de tempo)
+
+# Verificar htpasswd instalado
+htpasswd -v
+# Esperado: Usage: htpasswd ...
+
+# Configurar timezone (opcional, mas recomendado para logs)
+sudo timedatectl set-timezone America/Sao_Paulo
+
+# Verificar timezone
+timedatectl
+# Esperado: Time zone: America/Sao_Paulo (BRT, -0300)
+
+# Verificar sincronização NTP
+systemctl status chrony
+# Esperado: Active: active (running)
+```
+
+**Opcional - SSH Hardening (Recomendado para Production):**
+
+```bash
+# Backup do arquivo de configuração SSH
+sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
+
+# Editar configuração SSH (após configurar SSH keys)
+sudo nano /etc/ssh/sshd_config
+
+# Adicionar/alterar estas linhas:
+# PermitRootLogin no                # Desabilitar login root
+# PasswordAuthentication no         # Desabilitar password auth (apenas keys)
+# PubkeyAuthentication yes          # Habilitar key-based auth
+# Port 22                           # Manter porta 22 (ou mudar se necessário)
+
+# Reiniciar SSH (CUIDADO: apenas após configurar SSH keys!)
+# sudo systemctl restart sshd
+```
+
+---
+
+### Etapa 5: Criar Grupo e User mytrader
+
+```bash
+# Criar grupo mytrader
+sudo groupadd mytrader
+
+# Criar user mytrader com:
+# - Grupo primário: mytrader
+# - Grupo secundário: docker (para rodar Docker sem sudo)
+# - Shell: bash
+# - Home directory: /home/mytrader
+sudo useradd -m -s /bin/bash -g mytrader -G docker mytrader
+
+# Definir senha forte para o usuário
+sudo passwd mytrader
+# Inserir senha: [senha forte - mínimo 12 caracteres]
+
+# Verificar grupos do user
+id mytrader
+# Esperado: uid=1001(mytrader) gid=1001(mytrader) groups=1001(mytrader),999(docker)
+
+# Verificar que user pode executar Docker sem sudo
+sudo su - mytrader
+docker --version
+# Esperado: Docker version 27.x.x
+
+docker ps
+# Esperado: CONTAINER ID   IMAGE   COMMAND   CREATED   STATUS   PORTS   NAMES
+# (vazio, mas sem erro de permissão)
+
+exit  # Voltar para root/sudo
+```
+
+---
+
+### Etapa 6: Configurar SSH Key (Deploy Automatizado)
+
+```bash
+# Trocar para user mytrader
+sudo su - mytrader
+
+# Criar diretório SSH
+mkdir -p ~/.ssh
+chmod 700 ~/.ssh
+
+# Opção A: Gerar nova SSH key no servidor (se necessário)
+# ssh-keygen -t ed25519 -C "deploy@mytrader-$(hostname)" -f ~/.ssh/id_ed25519
+# # Não definir passphrase (para deploy automatizado)
+# cat ~/.ssh/id_ed25519.pub  # Copiar public key
+
+# Opção B: Adicionar public key existente (RECOMENDADO)
+# Copiar public key do CI/CD ou dev machine e colar abaixo:
+echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExample... deploy@mytrader" >> ~/.ssh/authorized_keys
+
+# Proteger arquivo authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+
+# Verificar conteúdo
+cat ~/.ssh/authorized_keys
+# Esperado: ssh-ed25519 AAAAC3Nza... deploy@mytrader
+
+# Sair do user mytrader
+exit
+```
+
+**Testar SSH key-based auth (de outra máquina):**
+
+```bash
+# Na máquina de deploy (dev ou CI/CD):
+ssh -i ~/.ssh/id_ed25519 mytrader@mytrader-stage
+# Deve conectar SEM pedir senha
+
+# Se funcionar, pode desabilitar password auth (ver Etapa 4 - SSH Hardening)
+```
+
+---
+
+### Etapa 7: Criar Estrutura de Diretórios
+
+```bash
+# Trocar para user mytrader
+sudo su - mytrader
+
+# Criar estrutura de diretórios do projeto
+mkdir -p ~/mytrader-app/app/configs
+mkdir -p ~/mytrader-app/backups/postgres
+mkdir -p ~/mytrader-app/scripts
+mkdir -p ~/mytrader-app/logs
+
+# Verificar estrutura criada
+tree ~/mytrader-app/ -L 3
+# Esperado:
+# /home/mytrader/mytrader-app/
+# ├── app/
+# │   └── configs/
+# ├── backups/
+# │   └── postgres/
+# ├── scripts/
+# └── logs/
+
+# Alternativa se tree não estiver instalado:
+ls -la ~/mytrader-app/
+find ~/mytrader-app/ -type d
+
+# Sair do user mytrader
+exit
+```
+
+---
+
+### Etapa 8: Criar .env Inicial
+
+```bash
+# Trocar para user mytrader
+sudo su - mytrader
+
+# Criar .env inicial (EDITAR COM SECRETS REAIS!)
+cat > ~/mytrader-app/app/.env << 'EOF'
+# ===== myTraderGEO Environment Configuration =====
+# ATENÇÃO: Este arquivo contém SECRETS - NUNCA versionar no Git!
+
+# Environment: staging ou production
+DOMAIN=staging.mytrader.com  # Ajustar: staging.mytrader.com OU mytrader.com
+ACME_EMAIL=admin@mytrader.com
+
+# PostgreSQL (MUDAR SENHAS!)
+POSTGRES_DB=mytrader
+POSTGRES_USER=mytrader_app
+POSTGRES_PASSWORD=CHANGE_ME_STRONG_PASSWORD_HERE_32CHARS_MIN
+
+# Traefik Dashboard (gerar com: htpasswd -nb admin password)
+TRAEFIK_DASHBOARD_AUTH=admin:$apr1$xyz123...CHANGE_ME
+EOF
+
+# Proteger secrets (read-only apenas para owner)
+chmod 600 ~/mytrader-app/app/.env
+
+# Verificar permissions
+ls -la ~/mytrader-app/app/.env
+# Esperado: -rw------- 1 mytrader mytrader ... .env
+
+# Editar .env com secrets reais
+nano ~/mytrader-app/app/.env
+# Alterar:
+# - DOMAIN (conforme ambiente)
+# - POSTGRES_PASSWORD (senha forte)
+# - TRAEFIK_DASHBOARD_AUTH (gerar com htpasswd - ver abaixo)
+
+# Sair do user mytrader
+exit
+```
+
+**Gerar senha para Traefik Dashboard:**
+
+```bash
+# No servidor (ou localmente):
+htpasswd -nb admin your_strong_password
+
+# Exemplo de resultado:
+# admin:$apr1$xyz123abc$AbCdEfGhIjKlMnOpQrStUv
+
+# Copiar o resultado COMPLETO e adicionar ao .env:
+# TRAEFIK_DASHBOARD_AUTH=admin:$apr1$xyz123abc$AbCdEfGhIjKlMnOpQrStUv
+```
+
+---
+
+### Etapa 9: Verificação Final
+
+```bash
+# ===== Verificar Docker =====
+sudo su - mytrader
+docker --version
+docker compose version
+docker ps  # Deve funcionar sem sudo
+exit
+
+# ===== Verificar estrutura de diretórios =====
+sudo su - mytrader
+tree ~/mytrader-app/ -L 2
+ls -la ~/mytrader-app/app/.env  # Deve existir com -rw-------
+exit
+
+# ===== Verificar hostname =====
+hostnamectl
+# Esperado: Static hostname: mytrader-stage (ou mytrader-prod)
+
+# ===== Verificar firewall =====
+sudo ufw status verbose
+# Esperado: Status: active, portas 22, 80, 443 permitidas
+
+# ===== Verificar fail2ban =====
+sudo fail2ban-client status sshd
+# Esperado: Status for the jail: sshd
+
+# ===== Verificar timezone =====
+timedatectl
+# Esperado: Time zone: America/Sao_Paulo
+
+# ===== Verificar NTP =====
+systemctl status chrony
+# Esperado: Active: active (running)
+
+# ===== Verificar user/grupos =====
+id mytrader
+# Esperado: groups=...(mytrader),...(docker)
+```
+
+**Checklist Final:**
+
+- [ ] Hostname configurado (`mytrader-stage` ou `mytrader-prod`)
+- [ ] Docker instalado e funcionando
+- [ ] Docker Compose Plugin instalado
+- [ ] Firewall (UFW) ativo com portas 22, 80, 443 permitidas
+- [ ] Fail2ban ativo e protegendo SSH
+- [ ] User `mytrader` criado com grupos corretos (mytrader + docker)
+- [ ] SSH key configurado para deploy automatizado
+- [ ] Estrutura de diretórios criada em `/home/mytrader/mytrader-app/`
+- [ ] Arquivo `.env` criado com secrets configurados
+- [ ] Timezone configurado (America/Sao_Paulo)
+- [ ] NTP (chrony) sincronizando tempo
+
+---
+
+### Próximos Passos
+
+Após completar este setup, o servidor está pronto para:
+
+1. ✅ **Receber deploy via `deploy.sh`** (copiar compose files e configs)
+2. ✅ **Rodar containers Docker** (mytrader-api, mytrader-frontend, postgres, traefik)
+3. ✅ **Gerar certificados SSL** via Let's Encrypt (Traefik automático)
+4. ✅ **Receber tráfego HTTPS** (porta 443)
+
+**Para realizar o primeiro deploy:**
+
+```bash
+# Na máquina de desenvolvimento:
+./05-infra/scripts/deploy.sh staging
+
+# Ou para production:
+./05-infra/scripts/deploy.sh production v1.0.0
+```
+
+---
+
 ### Estrutura no Servidor Remoto (Staging/Production)
 
 **Convenção de Diretórios no VPS:**

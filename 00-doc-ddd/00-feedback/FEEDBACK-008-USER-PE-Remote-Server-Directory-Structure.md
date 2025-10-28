@@ -12,9 +12,10 @@ MARKDOWN FORMATTING:
 ---
 
 **Data Abertura:** 2025-10-28
+**Data Reaberto:** 2025-10-28
 **Solicitante:** User (Marco)
 **Destinatário:** PE Agent
-**Status:** 🟢 Resolvido
+**Status:** 🟡 Em Andamento (Follow-up)
 
 **Tipo:**
 - [x] Melhoria (sugestão de enhancement)
@@ -62,6 +63,43 @@ Sem essa documentação:
 - ⚠️ Script `deploy.sh` pode usar paths inconsistentes
 - ⚠️ Troubleshooting fica difícil (onde estão os logs? configs?)
 - ⚠️ Backup/restore scripts não sabem quais diretórios incluir
+
+---
+
+## 🔄 Follow-up: Lacunas Identificadas (2025-10-28)
+
+Após revisão inicial da resolução, identificamos que o **setup inicial do servidor precisa incluir a infraestrutura base**:
+
+### O que está faltando:
+
+1. **Hostname do Servidor:**
+   - Definir hostnames padronizados: `mytrader-stage`, `mytrader-prod`
+   - Configuração via `hostnamectl`
+
+2. **Instalação Docker:**
+   - Docker Engine instalação (Debian 12)
+   - Docker Compose Plugin
+   - Verificação da instalação
+
+3. **Criação de Grupo mytrader:**
+   - Criar grupo `mytrader` (além do user)
+   - User `mytrader` com grupo primário `mytrader` + secundário `docker`
+
+4. **Firewall:**
+   - UFW configurado (portas 22, 80, 443)
+   - Deny by default, allow apenas necessário
+
+5. **Security Hardening:**
+   - Fail2ban (proteção SSH brute-force)
+   - SSH hardening (disable password auth, permitir apenas key-based)
+
+6. **Ferramentas Necessárias:**
+   - `htpasswd` (apache2-utils) - para Traefik dashboard auth
+   - `chrony` - NTP client para sincronização de tempo
+
+### Justificativa:
+
+Estas etapas são **pré-requisitos** para o servidor aceitar deploy. Sem Docker instalado, o servidor não consegue rodar os containers. Sem firewall, o servidor fica vulnerável. Sem NTP, certificados SSL podem falhar.
 
 ---
 
@@ -134,63 +172,224 @@ Sem essa documentação:
 
 ### Setup Inicial do Servidor (Primeira Vez)
 
-Documentar no PE-00:
+Documentar no PE-00 com as seguintes etapas:
+
+#### Etapa 0: Configuração do Hostname
 
 ```bash
 # ===== EXECUTAR NO SERVIDOR (via SSH root ou sudo) =====
 
-# 1. Criar user mytrader e adicionar ao grupo docker
-sudo useradd -m -s /bin/bash -G docker mytrader
-sudo passwd mytrader  # Definir senha
+# Definir hostname do servidor
+# Staging:
+sudo hostnamectl set-hostname mytrader-stage
 
-# 2. Configurar SSH key (para deploy automatizado)
+# Production:
+sudo hostnamectl set-hostname mytrader-prod
+
+# Verificar
+hostnamectl
+```
+
+#### Etapa 1: Instalação Docker Engine (Debian 12)
+
+```bash
+# Atualizar sistema
+sudo apt-get update
+sudo apt-get upgrade -y
+
+# Instalar dependências
+sudo apt-get install -y ca-certificates curl gnupg lsb-release
+
+# Adicionar Docker GPG key
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+# Adicionar repositório Docker
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# Instalar Docker Engine + Compose Plugin
+sudo apt-get update
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# Verificar instalação
+sudo docker --version
+sudo docker compose version
+```
+
+#### Etapa 2: Configurar Firewall (UFW)
+
+```bash
+# Instalar UFW (se não estiver instalado)
+sudo apt-get install -y ufw
+
+# Configurar regras
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow 22/tcp    # SSH
+sudo ufw allow 80/tcp    # HTTP (Traefik)
+sudo ufw allow 443/tcp   # HTTPS (Traefik)
+
+# Habilitar firewall (CUIDADO: testar SSH antes!)
+sudo ufw --force enable
+
+# Verificar status
+sudo ufw status verbose
+```
+
+#### Etapa 3: Security Hardening
+
+```bash
+# Instalar fail2ban (proteção SSH)
+sudo apt-get install -y fail2ban
+sudo systemctl enable fail2ban
+sudo systemctl start fail2ban
+
+# Verificar status
+sudo fail2ban-client status
+
+# Instalar ferramentas necessárias
+sudo apt-get install -y apache2-utils  # htpasswd para Traefik dashboard
+sudo apt-get install -y chrony          # NTP client
+
+# Configurar timezone (opcional)
+sudo timedatectl set-timezone America/Sao_Paulo
+```
+
+#### Etapa 4: Criar Grupo e User mytrader
+
+```bash
+# Criar grupo mytrader (se não existir)
+sudo groupadd mytrader
+
+# Criar user mytrader com grupo primário mytrader + secundário docker
+sudo useradd -m -s /bin/bash -g mytrader -G docker mytrader
+sudo passwd mytrader  # Definir senha forte
+
+# Verificar grupos do user
+id mytrader
+# Deve mostrar: uid=... gid=...(mytrader) groups=...(mytrader),...(docker)
+```
+
+#### Etapa 5: Configurar SSH Key (Deploy Automatizado)
+
+```bash
+# Trocar para user mytrader
 sudo su - mytrader
+
+# Criar diretório SSH
 mkdir -p ~/.ssh
 chmod 700 ~/.ssh
-# Copiar public key do CI/CD ou dev machine
-echo "ssh-ed25519 AAAA..." >> ~/.ssh/authorized_keys
-chmod 600 ~/.ssh/authorized_keys
-exit
 
-# 3. Criar estrutura de diretórios
+# Copiar public key do CI/CD ou dev machine
+# Opção A: Gerar nova key no servidor (se necessário)
+# ssh-keygen -t ed25519 -C "deploy@mytrader" -f ~/.ssh/id_ed25519
+
+# Opção B: Adicionar public key existente (recomendado)
+echo "ssh-ed25519 AAAAC3Nza... deploy@mytrader" >> ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+
+# Sair do user mytrader
+exit
+```
+
+#### Etapa 6: Criar Estrutura de Diretórios
+
+```bash
+# Trocar para user mytrader
 sudo su - mytrader
 mkdir -p ~/mytrader-app/app/configs
 mkdir -p ~/mytrader-app/backups/postgres
 mkdir -p ~/mytrader-app/scripts
 mkdir -p ~/mytrader-app/logs
 
-# 4. Criar .env inicial (editar com secrets reais)
+# Verificar estrutura criada
+tree ~/mytrader-app/ -L 3
+# Ou usar ls
+ls -la ~/mytrader-app/
+
+# Sair do user mytrader
+exit
+```
+
+#### Etapa 7: Criar .env Inicial
+
+```bash
+# Trocar para user mytrader
+sudo su - mytrader
+
+# Criar .env inicial (EDITAR COM SECRETS REAIS!)
 cat > ~/mytrader-app/app/.env << 'EOF'
 # Environment: staging (ou production)
-DOMAIN=staging.mytrader.com
+DOMAIN=staging.mytrader.com  # Ajustar: staging.mytrader.com ou mytrader.com
 ACME_EMAIL=admin@mytrader.com
 
-# PostgreSQL
+# PostgreSQL (MUDAR SENHAS!)
 POSTGRES_DB=mytrader
-POSTGRES_USER=mytrader
-POSTGRES_PASSWORD=CHANGE_ME_STRONG_PASSWORD
+POSTGRES_USER=mytrader_app
+POSTGRES_PASSWORD=CHANGE_ME_STRONG_PASSWORD_HERE
 
-# Traefik Dashboard
-TRAEFIK_DASHBOARD_AUTH=admin:$apr1$xyz...  # htpasswd -nb admin password
+# Traefik Dashboard (gerar com: htpasswd -nb admin password)
+TRAEFIK_DASHBOARD_AUTH=admin:$apr1$xyz...
 EOF
 
-chmod 600 ~/mytrader-app/app/.env  # Proteger secrets
+# Proteger secrets (read-only apenas para owner)
+chmod 600 ~/mytrader-app/app/.env
 
-# 5. Verificar estrutura
-tree ~/mytrader-app/
+# Verificar permissions
+ls -la ~/mytrader-app/app/.env
+# Deve mostrar: -rw------- mytrader mytrader .env
+
+# Sair do user mytrader
+exit
+```
+
+#### Etapa 8: Verificação Final
+
+```bash
+# Verificar Docker funcionando sem sudo
+sudo su - mytrader
+docker --version
+docker compose version
+docker ps  # Deve funcionar sem erro
+
+# Verificar estrutura completa
+tree ~/mytrader-app/ -L 3
+
+# Verificar hostname
+hostnamectl
+
+# Verificar firewall
+exit  # Voltar para root/sudo
+sudo ufw status verbose
+
+# Verificar fail2ban
+sudo fail2ban-client status sshd
 ```
 
 ### Atualizar deploy.sh
 
-Ajustar `05-infra/scripts/deploy.sh` para usar os paths corretos:
+Ajustar `05-infra/scripts/deploy.sh` para usar os paths e hostnames corretos:
 
 ```bash
 #!/bin/bash
 ENV=$1  # staging ou production
 
 SERVER_USER="mytrader"
-SERVER_HOST="..."  # Ajustar conforme ENV
 APP_DIR="mytrader-app/app"  # <-- Path padronizado
+
+# Definir hostname conforme ambiente
+if [ "$ENV" == "staging" ]; then
+  SERVER_HOST="mytrader-stage"
+elif [ "$ENV" == "production" ]; then
+  SERVER_HOST="mytrader-prod"
+else
+  echo "Ambiente inválido: $ENV"
+  exit 1
+fi
 
 # Copiar arquivos
 scp 05-infra/docker/docker-compose.$ENV.yml \
@@ -208,20 +407,40 @@ ssh $SERVER_USER@$SERVER_HOST << EOF
 EOF
 ```
 
+**Exemplos de uso:**
+
+```bash
+# Deploy para staging
+./05-infra/scripts/deploy.sh staging
+
+# Deploy para production
+./05-infra/scripts/deploy.sh production
+```
+
 ---
 
 ## 🎯 Critérios de Aceitação
 
-Para considerar o feedback resolvido:
+Para considerar o feedback completamente resolvido (incluindo follow-up):
 
-1. [ ] Estrutura de diretórios no servidor documentada em PE-00
-2. [ ] Path completo definido: `/home/mytrader/mytrader-app/`
-3. [ ] Convenção de user (`mytrader`) e ownership documentada
-4. [ ] Setup inicial do servidor documentado (passo a passo)
-5. [ ] Mapeamento repositório → servidor documentado (tabela)
-6. [ ] Permissions recomendadas documentadas (chmod/chown)
-7. [ ] deploy.sh atualizado para usar paths corretos (ou documentado para GM fazer)
-8. [ ] Subpastas explicadas (`app/`, `backups/`, `scripts/`, `logs/`)
+### Critérios Originais (Resolvidos):
+1. [x] Estrutura de diretórios no servidor documentada em PE-00
+2. [x] Path completo definido: `/home/mytrader/mytrader-app/`
+3. [x] Convenção de user (`mytrader`) e ownership documentada
+4. [x] Mapeamento repositório → servidor documentado (tabela)
+5. [x] Subpastas explicadas (`app/`, `backups/`, `scripts/`, `logs/`)
+
+### Critérios Follow-up (Infraestrutura Base):
+1. [ ] Hostnames padronizados documentados: `mytrader-stage`, `mytrader-prod`
+2. [ ] Instalação Docker Engine (Debian 12) documentada passo a passo
+3. [ ] Configuração firewall (UFW) documentada com regras necessárias
+4. [ ] Security hardening documentado (fail2ban, SSH, NTP)
+5. [ ] Criação grupo `mytrader` + user com grupos corretos documentada
+6. [ ] Setup inicial completo documentado no PE-00 (todas as etapas 0-8)
+7. [ ] Permissions recomendadas documentadas (chmod/chown)
+8. [ ] deploy.sh atualizado para usar paths e hostnames corretos
+9. [ ] 05-infra/README.md atualizado com pré-requisitos do servidor
+10. [ ] Verificação final documentada (Docker, firewall, fail2ban)
 
 ---
 
@@ -347,4 +566,6 @@ Documentei a estrutura de diretórios completa para servidores remotos (staging/
 | Data | Mudança | Autor |
 |------|---------|-------|
 | 2025-10-28 | Criado | User (Marco) |
-| 2025-10-28 | Resolvido - Estrutura de servidor remoto documentada em PE-00 e 05-infra/README.md | PE Agent |
+| 2025-10-28 | Resolução inicial - Estrutura de servidor remoto documentada em PE-00 e 05-infra/README.md | PE Agent |
+| 2025-10-28 | Reaberto (Follow-up) - Identificadas lacunas: instalação Docker, firewall, security hardening | PE Agent + User (Marco) |
+| 2025-10-28 | Expandido FEEDBACK com etapas 0-8 de setup completo (hostname, Docker, UFW, fail2ban, user/grupo, SSH, diretórios, .env, verificação) | PE Agent |
