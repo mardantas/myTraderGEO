@@ -7,9 +7,9 @@ MARKDOWN FORMATTING:
 
 # 05-infra - {PROJECT_NAME} Infrastructure
 
-**Projeto:** {PROJECT_NAME}
-**Stack:** {BACKEND_STACK} + {FRONTEND_STACK} + PostgreSQL + Docker
-**Responsible Agent:** PE Agent
+**Projeto:** {PROJECT_NAME}  
+**Stack:** {BACKEND_STACK} + {FRONTEND_STACK} + PostgreSQL + Docker  
+**Responsible Agent:** PE Agent  
 
 ---
 
@@ -17,11 +17,11 @@ MARKDOWN FORMATTING:
 
 This is a **quick reference guide** for executing infrastructure commands (Docker, deploy, environment setup). For strategic decisions, architecture details, and trade-offs, consult [PE-00-Environments-Setup.md](../00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md).
 
-**Document Separation:**
+**Document Separation:**  
 - **This README:** Commands and checklists (HOW to execute)
 - **PE-00:** Architecture decisions, justifications, and trade-offs (WHY and WHAT)
 
-**Principle:** README is an INDEX/QUICK-REFERENCE to PE-00, not a duplicate.
+**Principle:** README is an INDEX/QUICK-REFERENCE to PE-00, not a duplicate.  
 
 ---
 
@@ -88,7 +88,7 @@ docker compose -f 05-infra/docker/docker-compose.yml logs -f
 docker compose -f 05-infra/docker/docker-compose.yml down
 ```
 
-**Access:**
+**Access:**  
 - Frontend ({FRONTEND_FRAMEWORK} + Vite): http://localhost:5173
 - Backend API ({BACKEND_FRAMEWORK}): http://localhost:5000
 - Database (PostgreSQL): localhost:5432
@@ -184,7 +184,7 @@ docker compose -f 05-infra/docker/docker-compose.production.yml down
 
 ### Development
 
-**Characteristics:**
+**Characteristics:**  
 - Hot reload enabled (backend and frontend)
 - Mounted volumes for development
 - Detailed logs (Information level)
@@ -192,13 +192,13 @@ docker compose -f 05-infra/docker/docker-compose.production.yml down
 - JWT expiration: 60 minutes
 - No resource limits
 
-**Docker Compose:** `05-infra/docker/docker-compose.yml`
+**Docker Compose:** `05-infra/docker/docker-compose.yml`  
 
-**Dockerfiles:**
+**Dockerfiles:**  
 - Backend: `05-infra/dockerfiles/backend/Dockerfile.dev`
 - Frontend: `05-infra/dockerfiles/frontend/Dockerfile.dev`
 
-**Access:**
+**Access:**  
 - Frontend: http://localhost:5173 (Vite dev server)
 - Backend: http://localhost:5000
 - Database: localhost:5432
@@ -207,7 +207,7 @@ docker compose -f 05-infra/docker/docker-compose.production.yml down
 
 ### Staging
 
-**Characteristics:**
+**Characteristics:**  
 - Production build (optimized)
 - Traefik reverse proxy (HTTPS with Let's Encrypt staging)
 - Automated SSL certificates (staging CA)
@@ -215,13 +215,13 @@ docker compose -f 05-infra/docker/docker-compose.production.yml down
 - Logs: Warning level
 - JWT expiration: 30 minutes
 
-**Docker Compose:** `05-infra/docker/docker-compose.staging.yml`
+**Docker Compose:** `05-infra/docker/docker-compose.staging.yml`  
 
-**Dockerfiles:**
+**Dockerfiles:**  
 - Backend: `05-infra/dockerfiles/backend/Dockerfile`
 - Frontend: `05-infra/dockerfiles/frontend/Dockerfile` (Nginx)
 
-**Access:**
+**Access:**  
 - Frontend: https://staging.{domain}
 - Backend API: https://api-staging.{domain}
 - Traefik Dashboard: https://traefik-staging.{domain}
@@ -230,7 +230,7 @@ docker compose -f 05-infra/docker/docker-compose.production.yml down
 
 ### Production
 
-**Characteristics:**
+**Characteristics:**  
 - Production build (fully optimized)
 - Traefik reverse proxy (HTTPS with Let's Encrypt production)
 - Automated SSL certificates (trusted CA)
@@ -240,13 +240,13 @@ docker compose -f 05-infra/docker/docker-compose.production.yml down
 - Health checks configured
 - Auto-restart policies
 
-**Docker Compose:** `05-infra/docker/docker-compose.production.yml`
+**Docker Compose:** `05-infra/docker/docker-compose.production.yml`  
 
-**Dockerfiles:**
+**Dockerfiles:**  
 - Backend: `05-infra/dockerfiles/backend/Dockerfile`
 - Frontend: `05-infra/dockerfiles/frontend/Dockerfile` (Nginx)
 
-**Access:**
+**Access:**  
 - Frontend: https://{domain}
 - Backend API: https://api.{domain}
 - Traefik Dashboard: https://traefik.{domain} (restricted)
@@ -257,9 +257,9 @@ docker compose -f 05-infra/docker/docker-compose.production.yml down
 
 ### Development
 
-**File:** `05-infra/configs/.env` (local, gitignored)
+**File:** `05-infra/configs/.env` (local, gitignored)  
 
-**Required Variables:**
+**Required Variables:**  
 ```bash
 # Database
 DB_HOST=database
@@ -281,15 +281,15 @@ SMTP_PASSWORD=your_mailtrap_password
 
 ### Staging/Production
 
-**Storage:** GitHub Secrets (Settings → Secrets and variables → Actions)
+**Storage:** GitHub Secrets (Settings → Secrets and variables → Actions)  
 
-**Required Secrets:**
+**Required Secrets:**  
 - `DB_PASSWORD_STAGING` / `DB_PASSWORD_PRODUCTION`
 - `JWT_SECRET_STAGING` / `JWT_SECRET_PRODUCTION`
 - `SMTP_PASSWORD_STAGING` / `SMTP_PASSWORD_PRODUCTION`
 - `CLOUDFLARE_API_TOKEN` (for DNS validation - optional)
 
-**Deployment:** Secrets injected via GitHub Actions workflow or manual `docker compose` with `--env-file`
+**Deployment:** Secrets injected via GitHub Actions workflow or manual `docker compose` with `--env-file`  
 
 ---
 
@@ -373,9 +373,9 @@ This section connects operational README with strategic documentation.
 
 ### Problem: Container fails to start
 
-**Symptom:** `docker compose up` fails with error
+**Symptom:** `docker compose up` fails with error  
 
-**Common Causes & Solutions:**
+**Common Causes & Solutions:**  
 
 1. **Port already in use:**
    ```bash
@@ -400,9 +400,9 @@ This section connects operational README with strategic documentation.
 
 ### Problem: Database connection refused
 
-**Symptom:** Application cannot connect to database
+**Symptom:** Application cannot connect to database  
 
-**Solution:**
+**Solution:**  
 ```bash
 # 1. Check if database container is running
 docker compose ps
@@ -423,9 +423,9 @@ docker compose up -d
 
 ### Problem: Traefik SSL certificate not issued
 
-**Symptom:** HTTPS not working, browser shows insecure warning
+**Symptom:** HTTPS not working, browser shows insecure warning  
 
-**Solution:**
+**Solution:**  
 ```bash
 # 1. Check Traefik logs
 docker compose logs traefik
@@ -445,11 +445,11 @@ cat 05-infra/configs/traefik.yml | grep email
 
 ### Problem: Hot reload not working (development)
 
-**Symptom:** Code changes not reflected in running application
+**Symptom:** Code changes not reflected in running application  
 
-**Solution:**
+**Solution:**  
 
-**Backend:**
+**Backend:**  
 ```bash
 # 1. Verify volume mount in docker-compose.yml
 docker compose config | grep -A 5 "api:"
@@ -461,7 +461,7 @@ docker compose logs api | grep -i "watch\|reload"
 docker compose restart api
 ```
 
-**Frontend:**
+**Frontend:**  
 ```bash
 # 1. Verify volume mount
 docker compose config | grep -A 5 "web:"
@@ -477,6 +477,51 @@ docker compose restart web
 
 ---
 
+## 🪟 Windows Development
+
+### Prerequisites
+
+- **Docker Desktop for Windows** (WSL2 backend enabled)
+- **Git for Windows** (includes Git Bash)
+- **Windows 10/11** with WSL2 configured
+
+### Running Bash Scripts
+
+All deployment and operational scripts use Bash. On Windows, use one of these options:
+
+**Option 1: Git Bash (Recommended)**
+```bash
+bash ./05-infra/scripts/deploy.sh staging
+bash ./05-infra/scripts/backup-database.sh staging
+```
+
+**Option 2: WSL2**
+```bash
+wsl bash ./05-infra/scripts/deploy.sh staging
+```
+
+### Named Volumes Storage
+
+Docker Desktop stores named volumes in WSL2 filesystem:
+```
+\\wsl$\docker-desktop-data\data\docker\volumes\
+```
+
+**Benefits:**  
+- Optimized performance (60x faster than bind mounts for databases)
+- Works identically across Windows/Linux/Mac
+- Automatically managed by Docker (no manual intervention needed)
+
+### Development Notes
+
+- **Hot reload works** via bind mounts (WSL2 file watching)
+- **No backups needed** in development (recreate with migrations + seeds)
+- **Reset database:** `docker compose down -v && docker compose up -d`
+
+For detailed Windows configuration and troubleshooting, see [PE-00-Environments-Setup.md](../00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md#-desenvolvimento-no-windows).
+
+---
+
 **PE Agent** - {PROJECT_NAME} Platform Engineering
-**Last Updated:** {YYYY-MM-DD}
-**Status:** ⏳ {Status}
+**Last Updated:** {YYYY-MM-DD}  
+**Status:** ⏳ {Status}  

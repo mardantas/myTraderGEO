@@ -7,8 +7,8 @@ MARKDOWN FORMATTING:
 
 # SDA-03-Ubiquitous-Language.md
 
-**Projeto:** [PROJECT_NAME]
-**Data:** [YYYY-MM-DD]
+**Projeto:** [PROJECT_NAME]  
+**Data:** [YYYY-MM-DD]  
 
 ---
 

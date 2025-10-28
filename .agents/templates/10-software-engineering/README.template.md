@@ -7,10 +7,10 @@ MARKDOWN FORMATTING:
 
 # 02-backend - {PROJECT_NAME} Backend API
 
-**Projeto:** {PROJECT_NAME}
-**Stack:** {BACKEND_STACK} (e.g., .NET 8 + ASP.NET Core + Entity Framework Core)
-**Architecture:** Clean Architecture + DDD
-**Responsible Agent:** SE Agent
+**Projeto:** {PROJECT_NAME}  
+**Stack:** {BACKEND_STACK} (e.g., .NET 8 + ASP.NET Core + Entity Framework Core)  
+**Architecture:** Clean Architecture + DDD  
+**Responsible Agent:** SE Agent  
 
 ---
 
@@ -18,11 +18,11 @@ MARKDOWN FORMATTING:
 
 This is a **quick reference guide** for building, running, and debugging the backend API. For strategic implementation decisions, domain model details, and architectural patterns, consult [SE-01-{EpicName}-Implementation-Report.md](../00-doc-ddd/04-tactical-design/SE-01-{EpicName}-Implementation-Report.md).
 
-**Document Separation:**
+**Document Separation:**  
 - **This README:** Commands and checklists (HOW to execute)
 - **SE-01:** Implementation decisions, patterns, and trade-offs (WHY and WHAT)
 
-**Principle:** README is an INDEX/QUICK-REFERENCE to SE-01, not a duplicate.
+**Principle:** README is an INDEX/QUICK-REFERENCE to SE-01, not a duplicate.  
 
 ---
 
@@ -107,7 +107,7 @@ cp .env.example .env
 nano src/Api/appsettings.Development.json
 ```
 
-**Required Configuration:**
+**Required Configuration:**  
 - Database connection string
 - JWT secret (min 32 characters)
 - CORS origins (frontend URL)
@@ -132,7 +132,7 @@ docker compose -f ../05-infra/docker/docker-compose.yml exec api {MIGRATION_COMM
 docker compose -f ../05-infra/docker/docker-compose.yml up api -d
 ```
 
-**Access:**
+**Access:**  
 - API: http://localhost:5000
 - Swagger UI: http://localhost:5000/swagger
 
@@ -234,7 +234,7 @@ docker run -p 5000:8080 --env-file ../05-infra/configs/.env {project}-api:latest
 
 ### Unit Tests
 
-**Coverage Target:** ≥70% on Domain layer
+**Coverage Target:** ≥70% on Domain layer  
 
 ```bash
 # Run all unit tests
@@ -272,7 +272,7 @@ docker compose -f ../05-infra/docker/docker-compose.test.yml up -d database
 
 ### VS Code
 
-**Launch Configuration (`.vscode/launch.json`):**
+**Launch Configuration (`.vscode/launch.json`):**  
 
 ```json
 {
@@ -318,71 +318,71 @@ docker ps | grep api
 
 ### Domain Layer (`src/Domain/`)
 
-**Responsibility:** Business logic, invariants, domain rules
+**Responsibility:** Business logic, invariants, domain rules  
 
-**Contains:**
+**Contains:**  
 - Aggregates (Aggregate Roots + Entities)
 - Value Objects (Email, Money, etc.)
 - Domain Events
 - Repository Interfaces (contracts only)
 
-**Key Patterns:**
+**Key Patterns:**  
 - Aggregate Pattern (consistency boundaries)
 - Value Object Pattern (immutability)
 - Domain Events (loose coupling)
 - Specification Pattern (complex business rules)
 
-**See:** [SE-01 - Domain Layer Section](../00-doc-ddd/04-tactical-design/SE-01-{EpicName}-Implementation-Report.md#domain-layer)
+**See:** [SE-01 - Domain Layer Section](../00-doc-ddd/04-tactical-design/SE-01-{EpicName}-Implementation-Report.md#domain-layer)  
 
 ### Application Layer (`src/Application/`)
 
-**Responsibility:** Orchestration, use cases, business workflows
+**Responsibility:** Orchestration, use cases, business workflows  
 
-**Contains:**
+**Contains:**  
 - Commands (write operations)
 - Queries (read operations)
 - Command/Query Handlers (CQRS pattern)
 - Application Services (orchestration)
 
-**Key Patterns:**
+**Key Patterns:**  
 - CQRS (Command Query Responsibility Segregation)
 - Mediator Pattern (MediatR library)
 - Unit of Work Pattern (transaction management)
 
-**See:** [SE-01 - Application Layer Section](../00-doc-ddd/04-tactical-design/SE-01-{EpicName}-Implementation-Report.md#application-layer)
+**See:** [SE-01 - Application Layer Section](../00-doc-ddd/04-tactical-design/SE-01-{EpicName}-Implementation-Report.md#application-layer)  
 
 ### Infrastructure Layer (`src/Infrastructure/`)
 
-**Responsibility:** Technical implementations, external dependencies
+**Responsibility:** Technical implementations, external dependencies  
 
-**Contains:**
+**Contains:**  
 - EF Core DbContext
 - Repository Implementations
 - Migrations
 - External service integrations (email, SMS, etc.)
 
-**Key Patterns:**
+**Key Patterns:**  
 - Repository Pattern (data access abstraction)
 - Dependency Injection (loose coupling)
 
-**See:** [SE-01 - Infrastructure Layer Section](../00-doc-ddd/04-tactical-design/SE-01-{EpicName}-Implementation-Report.md#infrastructure-layer)
+**See:** [SE-01 - Infrastructure Layer Section](../00-doc-ddd/04-tactical-design/SE-01-{EpicName}-Implementation-Report.md#infrastructure-layer)  
 
 ### API Layer (`src/Api/`)
 
-**Responsibility:** HTTP endpoints, DTOs, middleware, API concerns
+**Responsibility:** HTTP endpoints, DTOs, middleware, API concerns  
 
-**Contains:**
+**Contains:**  
 - Controllers (REST endpoints)
 - DTOs (Data Transfer Objects)
 - Middleware (auth, logging, error handling)
 - OpenAPI/Swagger configuration
 
-**Key Patterns:**
+**Key Patterns:**  
 - RESTful API (resource-based)
 - DTO Pattern (decoupling API from domain)
 - Middleware Pipeline (cross-cutting concerns)
 
-**See:** [SE-01 - API Layer Section](../00-doc-ddd/04-tactical-design/SE-01-{EpicName}-Implementation-Report.md#api-layer)
+**See:** [SE-01 - API Layer Section](../00-doc-ddd/04-tactical-design/SE-01-{EpicName}-Implementation-Report.md#api-layer)  
 
 ---
 
@@ -422,9 +422,9 @@ This section connects operational README with strategic documentation.
 
 ### Problem: Build fails with dependency errors
 
-**Symptom:** `{BUILD_ERROR_EXAMPLE}`
+**Symptom:** `{BUILD_ERROR_EXAMPLE}`  
 
-**Solution:**
+**Solution:**  
 ```bash
 # Clear package cache
 {CLEAR_CACHE_COMMAND}  # e.g., dotnet clean && dotnet nuget locals all --clear
@@ -438,9 +438,9 @@ This section connects operational README with strategic documentation.
 
 ### Problem: Cannot connect to database
 
-**Symptom:** `Unable to connect to database` error
+**Symptom:** `Unable to connect to database` error  
 
-**Solution:**
+**Solution:**  
 ```bash
 # 1. Check if database container is running
 docker compose -f ../05-infra/docker/docker-compose.yml ps database
@@ -457,9 +457,9 @@ docker compose logs database
 
 ### Problem: Migrations fail
 
-**Symptom:** `Migration failed` error
+**Symptom:** `Migration failed` error  
 
-**Solution:**
+**Solution:**  
 ```bash
 # 1. Check if migration already applied
 {MIGRATION_LIST_COMMAND}  # e.g., dotnet ef migrations list
@@ -477,9 +477,9 @@ docker compose logs database
 
 ### Problem: Hot reload not working
 
-**Symptom:** Code changes not reflected
+**Symptom:** Code changes not reflected  
 
-**Solution:**
+**Solution:**  
 ```bash
 # 1. Ensure using watch mode
 {WATCH_COMMAND}
@@ -494,9 +494,9 @@ sudo sysctl fs.inotify.max_user_watches=524288
 
 ### Problem: Tests fail with "Database locked"
 
-**Symptom:** Integration tests fail with database lock errors
+**Symptom:** Integration tests fail with database lock errors  
 
-**Solution:**
+**Solution:**  
 ```bash
 # Use in-memory database for tests
 # Or: Use separate test database per test class
@@ -508,5 +508,5 @@ sudo sysctl fs.inotify.max_user_watches=524288
 ---
 
 **SE Agent** - {PROJECT_NAME} Backend Engineering
-**Last Updated:** {YYYY-MM-DD}
-**Status:** ⏳ {Status}
+**Last Updated:** {YYYY-MM-DD}  
+**Status:** ⏳ {Status}  

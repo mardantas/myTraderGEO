@@ -7,17 +7,17 @@ MARKDOWN FORMATTING:
 
 # PE-EPIC-[N]-[EpicName]-Performance-Checkpoint
 
-**Epic:** [Epic Number and Name]
-**Reviewer:** PE (Platform Engineer)
-**Date:** [YYYY-MM-DD]
-**Duration:** 15-30 min
-**Status:** ✅ Approved / ⚠️ Issues Found / 🔴 Critical Issues
+**Epic:** [Epic Number and Name]  
+**Reviewer:** PE (Platform Engineer)  
+**Date:** [YYYY-MM-DD]  
+**Duration:** 15-30 min  
+**Status:** ✅ Approved / ⚠️ Issues Found / 🔴 Critical Issues  
 
 ---
 
 ## 🎯 Checkpoint Scope
 
-**Triggered by:**
+**Triggered by:**  
 - [ ] Critical performance path introduced (real-time calculations)
 - [ ] Complex database queries (>3 JOINs)
 - [ ] Epic 4+ (post-MVP stability)
@@ -36,13 +36,13 @@ MARKDOWN FORMATTING:
 | Indexes on FK/query filters | ✅ / ⚠️ / 🔴 | [Missing indexes if any] |
 | Queries <100ms | ✅ / ⚠️ / 🔴 | [Slow queries if any] |
 
-**N+1 Queries Found:**
+**N+1 Queries Found:**  
 ```
 [List files and line numbers if found]
 Example: StrategyRepository.cs:45 - Loading Legs without .Include()
 ```
 
-**Missing Indexes:**
+**Missing Indexes:**  
 ```sql
 -- Suggested indexes
 CREATE INDEX IX_Strategies_UserId ON Strategies(UserId);
@@ -59,7 +59,7 @@ CREATE INDEX IX_StrategyLegs_StrategyId ON StrategyLegs(StrategyId);
 | I/O operations are async | ✅ / ⚠️ / 🔴 | [Details] |
 | Async all the way | ✅ / ⚠️ / 🔴 | [Details] |
 
-**Deadlock Risks Found:**
+**Deadlock Risks Found:**  
 ```
 [List files with .Result/.Wait()]
 Example: StrategyService.cs:78 - using .Result (deadlock risk)
@@ -75,7 +75,7 @@ Example: StrategyService.cs:78 - using .Result (deadlock risk)
 | Cache invalidation clear | ✅ / ⚠️ / 🔴 | [Details] |
 | Cache expiration configured | ✅ / ⚠️ / 🔴 | [Details] |
 
-**Caching Recommendations:**
+**Caching Recommendations:**  
 ```
 - Market data (Greeks, prices): Redis, 5-min expiration
 - User preferences: In-Memory, 1-hour expiration
@@ -106,11 +106,11 @@ Example: StrategyService.cs:78 - using .Result (deadlock risk)
 
 ## 🔄 Feedback Created
 
-**Critical Issues → FEEDBACK to SE/DBA:**
+**Critical Issues → FEEDBACK to SE/DBA:**  
 - [ ] FEEDBACK-[NNN]-PE-SE-[issue-title].md
 - [ ] FEEDBACK-[NNN]-PE-DBA-[issue-title].md
 
-**Blocking Deploy:** ☐ Yes ☑ No
+**Blocking Deploy:** ☐ Yes ☑ No  
 
 ---
 
@@ -120,16 +120,16 @@ Example: StrategyService.cs:78 - using .Result (deadlock risk)
 - **⚠️ Issues Found:** Non-blocking issues, feedback created for SE/DBA
 - **🔴 Critical Issues:** Blocking issues, must fix before QAE testing
 
-**Summary:** [Brief summary of checkpoint result]
+**Summary:** [Brief summary of checkpoint result]  
 
 ---
 
-**Next Steps:**
+**Next Steps:**  
 - [ ] SE addresses feedback (if any)
 - [ ] DBA addresses feedback (if any)
 - [ ] Epic proceeds to QAE Quality Gate
 
 ---
 
-**Template Version:** 1.0
-**Last Updated:** 2025-10-10
+**Template Version:** 1.0  
+**Last Updated:** 2025-10-10  

@@ -7,10 +7,10 @@ MARKDOWN FORMATTING:
 
 # GM-00-GitHub-Setup.md
 
-**Projeto:** [PROJECT_NAME]
-**Data:** [YYYY-MM-DD]
-**GitHub Manager:** GM Agent (v1.0)
-**Repository:** [GITHUB_OWNER]/[REPO_NAME]
+**Projeto:** [PROJECT_NAME]  
+**Data:** [YYYY-MM-DD]  
+**GitHub Manager:** GM Agent (v1.0)  
+**Repository:** [GITHUB_OWNER]/[REPO_NAME]  
 
 ---
 
@@ -18,7 +18,7 @@ MARKDOWN FORMATTING:
 
 Documentar a configuração do GitHub para o projeto: templates pré-existentes (workflow), workflows CI/CD customizados (stack), labels via script, e automação de milestones/epic issues por épico.
 
-**Versão 1.0 - Philosophy:**
+**Versão 1.0 - Philosophy:**  
 - ✅ **Automate HIGH ROI tasks:**
   - **Discovery (1x):** Labels via script, CI/CD workflows files, Dependabot config, helper scripts
   - **Per Epic (Nx):** Milestones + Epic issues (executed automatically by GM on Day 2)
@@ -29,21 +29,21 @@ Documentar a configuração do GitHub para o projeto: templates pré-existentes 
 
 ## 📖 Como Usar Esta Documentação
 
-**Este documento (GM-00) é a REFERÊNCIA COMPLETA e ESTRATÉGICA:**
+**Este documento (GM-00) é a REFERÊNCIA COMPLETA e ESTRATÉGICA:**  
 - **Target:** Team leads, arquitetos, futuros mantenedores
 - **Conteúdo:** Justificativas (POR QUÊ cada decisão), detalhes técnicos completos (O QUÊ foi configurado), integrações com SDA/PE, limitações do GitHub Free e estratégias de mitigação
 - **Estilo:** Completo, detalhado, educacional, documentação DDD formal
 - **Quando consultar:** Para entender estratégia, tomar decisões arquiteturais, modificar configurações
 
-**Para EXECUÇÃO RÁPIDA de tarefas, consulte:** [03-github-manager/README.md](../../03-github-manager/README.md)
+**Para EXECUÇÃO RÁPIDA de tarefas, consulte:** [03-github-manager/README.md](../../03-github-manager/README.md)  
 - **Target:** Desenvolvedores executando tarefas do dia-a-dia
 - **Conteúdo:** Comandos CLI, checklists de execução, quick start, **links para seções deste documento para detalhes**
 - **Estilo:** Minimalista, imperativo, quick reference, focado em comandos
 - **Quando consultar:** Para executar setup, verificar status, troubleshooting rápido
 
-**Princípio:** GM-00 explica o **POR QUÊ** e **O QUÊ**, README explica o **COMO executar**.
+**Princípio:** GM-00 explica o **POR QUÊ** e **O QUÊ**, README explica o **COMO executar**.  
 
-**Evitamos duplicação:** O README contém apenas comandos e links para seções específicas deste documento, não repete explicações.
+**Evitamos duplicação:** O README contém apenas comandos e links para seções específicas deste documento, não repete explicações.  
 
 ---
 
@@ -53,7 +53,7 @@ Os seguintes recursos **já existem** no projeto (copiados do workflow template 
 
 ### 📋 Issue Templates
 
-**Localização:** [.github/ISSUE_TEMPLATE/](.github/ISSUE_TEMPLATE/)
+**Localização:** [.github/ISSUE_TEMPLATE/](.github/ISSUE_TEMPLATE/)  
 
 Templates disponíveis:
 
@@ -65,15 +65,15 @@ Templates disponíveis:
 | `40-user-story.yml` | User stories | User stories (se usar metodologia ágil) |
 | `99-bug.yml` | Bug reports | Reportar bugs |
 
-**Status:** ✅ **Prontos para uso** (não criados pelo GM, apenas documentados)
+**Status:** ✅ **Prontos para uso** (não criados pelo GM, apenas documentados)  
 
 ---
 
 ### 🔀 Pull Request Template
 
-**Localização:** [.github/PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE.md)
+**Localização:** [.github/PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE.md)  
 
-**Contém:**
+**Contém:**  
 - Descrição das mudanças
 - Epic/Issue relacionado
 - Agent responsável
@@ -82,7 +82,7 @@ Templates disponíveis:
 - Checklist de qualidade (nomenclature, docs, migrations)
 - Screenshots (se UI)
 
-**Status:** ✅ **Pronto para uso** (não criado pelo GM, apenas documentado)
+**Status:** ✅ **Pronto para uso** (não criado pelo GM, apenas documentado)  
 
 ---
 
@@ -90,16 +90,16 @@ Templates disponíveis:
 
 ### 🏷️ Labels
 
-**Localização:** Criadas via script [03-github-manager/setup-labels.sh](../../../03-github-manager/setup-labels.sh)
+**Localização:** Criadas via script [03-github-manager/setup-labels.sh](../../../03-github-manager/setup-labels.sh)  
 
-**Executar:**
+**Executar:**  
 ```bash
 cd 03-github-manager
 chmod +x setup-labels.sh
 ./setup-labels.sh
 ```
 
-**Labels criadas:**
+**Labels criadas:**  
 
 #### Agents (Quem está trabalhando)
 - `agent:SDA`, `agent:UXD`, `agent:DE`, `agent:DBA`, `agent:SE`, `agent:FE`, `agent:QAE`, `agent:GM`, `agent:PE`, `agent:SEC`
@@ -128,7 +128,7 @@ chmod +x setup-labels.sh
 #### Phase
 - `phase:discovery`, `phase:iteration`
 
-**Verificar:**
+**Verificar:**  
 ```bash
 gh label list --repo [OWNER]/[REPO]
 ```
@@ -137,18 +137,18 @@ gh label list --repo [OWNER]/[REPO]
 
 ### 🎯 Milestones
 
-**Abordagem:** ✅ Criar **sob demanda** (um por vez, quando iniciar cada épico)
+**Abordagem:** ✅ Criar **sob demanda** (um por vez, quando iniciar cada épico)  
 
-**Por quê sob demanda:**
+**Por quê sob demanda:**  
 - Baixa frequência (5-10 milestones total no projeto)
 - GitHub UI é rápido (30s cada)
 - Milestones podem mudar (prioridades, datas) - criar apenas quando necessário
 - **Criar incrementalmente:** M0 no Discovery, M1 quando iniciar EPIC-01, M2 quando iniciar EPIC-02, etc
 - **NÃO criar todos de uma vez** - épicos futuros podem mudar completamente
 
-**Script auxiliar criado:** [03-github-manager/scripts/create-milestone.sh](../../../03-github-manager/scripts/create-milestone.sh) ⚙️ ON-DEMAND TOOL
+**Script auxiliar criado:** [03-github-manager/scripts/create-milestone.sh](../../../03-github-manager/scripts/create-milestone.sh) ⚙️ ON-DEMAND TOOL  
 
-**Milestones Planejados (conforme SDA-01 épicos):**
+**Milestones Planejados (conforme SDA-01 épicos):**  
 
 | Milestone | Descrição | Due Date | Issues Estimadas |
 |-----------|-----------|----------|------------------|
@@ -160,7 +160,7 @@ gh label list --repo [OWNER]/[REPO]
 
 ---
 
-**Como usar (quando iniciar um épico):**
+**Como usar (quando iniciar um épico):**  
 
 1. **Quando iniciar EPIC-01** → Criar M1 (opção 1, 2 ou 3 abaixo)
 2. **Quando iniciar EPIC-02** → Criar M2 (opção 1, 2 ou 3 abaixo)
@@ -168,7 +168,7 @@ gh label list --repo [OWNER]/[REPO]
 
 ---
 
-**Como criar (Opção 1 - GitHub UI - Mais simples):**
+**Como criar (Opção 1 - GitHub UI - Mais simples):**  
 ```
 GitHub UI → Issues → Milestones → New Milestone
 → Title: M1: [EPIC_1_NAME]
@@ -177,7 +177,7 @@ GitHub UI → Issues → Milestones → New Milestone
 → Create milestone
 ```
 
-**Como criar (Opção 2 - Script auxiliar - Mais rápido):**
+**Como criar (Opção 2 - Script auxiliar - Mais rápido):**  
 ```bash
 # M1: Primeiro Épico
 ./03-github-manager/scripts/create-milestone.sh \
@@ -194,7 +194,7 @@ GitHub UI → Issues → Milestones → New Milestone
   "2026-04-30"
 ```
 
-**Como criar (Opção 3 - GitHub CLI direto - Mais customizável):**
+**Como criar (Opção 3 - GitHub CLI direto - Mais customizável):**  
 
 ```bash
 # M0: Discovery Foundation
@@ -220,10 +220,10 @@ gh api repos/[OWNER]/[REPO]/milestones -X POST \
 # Repetir para M3, M4, M5...
 ```
 
-**Formato de due_on:** ISO 8601 format (`YYYY-MM-DDTHH:MM:SSZ`)
+**Formato de due_on:** ISO 8601 format (`YYYY-MM-DDTHH:MM:SSZ`)  
 - Exemplo: `2025-12-31T23:59:59Z` (31 Dec 2025, 23:59:59 UTC)
 
-**Verificar milestones criadas:**
+**Verificar milestones criadas:**  
 ```bash
 gh api repos/[OWNER]/[REPO]/milestones
 ```
@@ -232,30 +232,30 @@ gh api repos/[OWNER]/[REPO]/milestones
 
 ### 🎯 Epic Issues
 
-**Localização do Template:** [.github/ISSUE_TEMPLATE/10-epic.yml](.github/ISSUE_TEMPLATE/10-epic.yml)
+**Localização do Template:** [.github/ISSUE_TEMPLATE/10-epic.yml](.github/ISSUE_TEMPLATE/10-epic.yml)  
 
-**Abordagem:** ✅ Criar **sob demanda** (um por vez, após milestone criado e DE-01 completo)
+**Abordagem:** ✅ Criar **sob demanda** (um por vez, após milestone criado e DE-01 completo)  
 
-**Opções disponíveis:**
+**Opções disponíveis:**  
 1. **GitHub Form** (preferencial) - UX melhor, validação automática, 2min
 2. **Script auxiliar** - Rápido, gera template base para editar depois
 3. **CLI direto** - Customização total, requer copy-paste
 
-**Quando criar:**
+**Quando criar:**  
 - ✅ **APÓS** milestone correspondente criado (M1, M2, etc)
 - ✅ **APÓS** DE-01-{EpicName}-Domain-Model.md estar completo
 - ✅ **Um por vez** (não criar todos os épicos de uma vez)
 
-**Execução Automática (Per Epic - Day 2):**
+**Execução Automática (Per Epic - Day 2):**  
 - ⚙️ **GM executa `create-milestone.sh` automaticamente** quando executado por épico
 - ⚙️ **GM executa `create-epic-issue.sh` automaticamente** quando executado por épico
 - ⚠️ **User customiza epic issue** com detalhes completos do DE-01 (1min)
 
-**Script auxiliar criado:** [03-github-manager/scripts/create-epic-issue.sh](../../../03-github-manager/scripts/create-epic-issue.sh) ⚙️ AUTO-EXECUTED BY GM
+**Script auxiliar criado:** [03-github-manager/scripts/create-epic-issue.sh](../../../03-github-manager/scripts/create-epic-issue.sh) ⚙️ AUTO-EXECUTED BY GM  
 
 ---
 
-**Epic Issues Planejadas (conforme SDA-01):**
+**Epic Issues Planejadas (conforme SDA-01):**  
 
 | Issue # | Epic | Milestone | Bounded Contexts | Prioridade | Status |
 |---------|------|-----------|------------------|------------|--------|
@@ -266,7 +266,7 @@ gh api repos/[OWNER]/[REPO]/milestones
 
 ---
 
-**Como criar (Opção 1 - GitHub Form - Preferencial):**
+**Como criar (Opção 1 - GitHub Form - Preferencial):**  
 ```
 GitHub UI → New Issue → 🎯 Epic Issue
 → Preencher formulário (2min) com dados do DE-01:
@@ -281,7 +281,7 @@ GitHub UI → New Issue → 🎯 Epic Issue
 → Submit → Issue criada!
 ```
 
-**Como criar (Opção 2 - Script auxiliar - Rápido):**
+**Como criar (Opção 2 - Script auxiliar - Rápido):**  
 ```bash
 # EPIC-01: Primeiro Épico (após DE-01 completo)
 ./03-github-manager/scripts/create-epic-issue.sh \
@@ -299,7 +299,7 @@ GitHub UI → New Issue → 🎯 Epic Issue
 #   - Preencher objectives, acceptance criteria do DE-01
 ```
 
-**Como criar (Opção 3 - GitHub CLI direto - Customizável):**
+**Como criar (Opção 3 - GitHub CLI direto - Customizável):**  
 
 ```bash
 # EPIC-01: Primeiro Épico (exemplo completo)
@@ -310,9 +310,9 @@ gh issue create --repo [OWNER]/[REPO] \
   --body "$(cat <<'EOF'
 ## 📋 Epic Overview
 
-**Epic Number:** 01
-**Epic Name:** [EPIC_1_NAME]
-**Business Value:** [From DE-01: Why this epic is important]
+**Epic Number:** 01  
+**Epic Name:** [EPIC_1_NAME]  
+**Business Value:** [From DE-01: Why this epic is important]  
 
 ## 🎯 Bounded Contexts Involved
 
@@ -380,7 +380,7 @@ gh issue create --repo [OWNER]/[REPO] \
 
 ---
 
-**Related Documents:**
+**Related Documents:**  
 - DE-01: [Link to domain model when available]
 - SDA-01: [Link to event storming](00-doc-ddd/02-strategic-design/SDA-01-Event-Storming.md)
 - SDA-02: [Link to context map](00-doc-ddd/02-strategic-design/SDA-02-Context-Map.md)
@@ -399,7 +399,7 @@ gh issue create --repo [OWNER]/[REPO] \
 # Repetir para EPIC-03, EPIC-04...
 ```
 
-**Assign to milestone após criação (se não feito no create):**
+**Assign to milestone após criação (se não feito no create):**  
 ```bash
 # Get milestone number
 MILESTONE_NUMBER=$(gh api repos/[OWNER]/[REPO]/milestones | jq -r '.[] | select(.title=="M1: [EPIC_1_NAME]") | .number')
@@ -408,7 +408,7 @@ MILESTONE_NUMBER=$(gh api repos/[OWNER]/[REPO]/milestones | jq -r '.[] | select(
 gh issue edit [ISSUE_NUMBER] --milestone $MILESTONE_NUMBER --repo [OWNER]/[REPO]
 ```
 
-**Verificar epic issues criadas:**
+**Verificar epic issues criadas:**  
 ```bash
 # List all epic issues
 gh issue list --label "epic" --repo [OWNER]/[REPO]
@@ -419,7 +419,7 @@ gh issue view [ISSUE_NUMBER] --repo [OWNER]/[REPO]
 
 ---
 
-**Template contém (quando usar GitHub Form):**
+**Template contém (quando usar GitHub Form):**  
 - Epic number, name input fields
 - Milestone dropdown (options customizadas com epics do projeto)
 - Priority dropdown (high, medium, low)
@@ -428,7 +428,7 @@ gh issue view [ISSUE_NUMBER] --repo [OWNER]/[REPO]
 - Deliverables checklist (checkboxes por agent: DE, DBA, SE, FE, QAE, PE, SEC)
 - Definition of Done (checkboxes)
 
-**Recomendação:**
+**Recomendação:**  
 - **GitHub Form** para primeiro epic (aprender estrutura, 2min)
 - **CLI** para epics subsequentes (mais rápido quando conhece estrutura, copy-paste)
 
@@ -436,20 +436,20 @@ gh issue view [ISSUE_NUMBER] --repo [OWNER]/[REPO]
 
 ### ⚙️ CI/CD Workflows
 
-**Localização:** `.github/workflows/` (criados pelo GM, customizados baseado em PE-00 stack)
+**Localização:** `.github/workflows/` (criados pelo GM, customizados baseado em PE-00 stack)  
 
 #### Backend CI Pipeline
 
-**Arquivo:** [.github/workflows/ci-backend.yml](.github/workflows/ci-backend.yml)
+**Arquivo:** [.github/workflows/ci-backend.yml](.github/workflows/ci-backend.yml)  
 
-**Stack:** [From PE-00: e.g., .NET 8.0]
+**Stack:** [From PE-00: e.g., .NET 8.0]  
 
-**Triggers:**
+**Triggers:**  
 - Push para `develop`, `main`
 - Pull requests para `develop`, `main`
 - Apenas quando arquivos em `02-backend/` mudam
 
-**Jobs:**
+**Jobs:**  
 1. **build-and-test**
    - Setup .NET [VERSION from PE-00]
    - Restore dependencies
@@ -462,22 +462,22 @@ gh issue view [ISSUE_NUMBER] --repo [OWNER]/[REPO]
    - Build Docker image
    - Cache layers para performance
 
-**Status checks:** ✅ Required before merge (discipline-based, GitHub Free)
+**Status checks:** ✅ Required before merge (discipline-based, GitHub Free)  
 
 ---
 
 #### Frontend CI Pipeline
 
-**Arquivo:** [.github/workflows/ci-frontend.yml](.github/workflows/ci-frontend.yml)
+**Arquivo:** [.github/workflows/ci-frontend.yml](.github/workflows/ci-frontend.yml)  
 
-**Stack:** [From PE-00: e.g., React 18 + Vite, Node 20.x, npm]
+**Stack:** [From PE-00: e.g., React 18 + Vite, Node 20.x, npm]  
 
-**Triggers:**
+**Triggers:**  
 - Push para `develop`, `main`
 - Pull requests para `develop`, `main`
 - Apenas quando arquivos em `01-frontend/` mudam
 
-**Jobs:**
+**Jobs:**  
 1. **build-and-test**
    - Setup Node.js [VERSION from PE-00]
    - Install dependencies ([PACKAGE_MANAGER from PE-00: npm/yarn/pnpm])
@@ -491,21 +491,21 @@ gh issue view [ISSUE_NUMBER] --repo [OWNER]/[REPO]
    - Build Docker image
    - Cache layers para performance
 
-**Status checks:** ✅ Required before merge (discipline-based, GitHub Free)
+**Status checks:** ✅ Required before merge (discipline-based, GitHub Free)  
 
 ---
 
 #### Security Scanning
 
-**Arquivo:** [.github/workflows/security.yml](.github/workflows/security.yml)
+**Arquivo:** [.github/workflows/security.yml](.github/workflows/security.yml)  
 
-**Triggers:**
+**Triggers:**  
 - Push para `main`, `develop`
 - Pull requests
 - Schedule: Semanal (Sundays, 00:00 UTC)
 - Manual dispatch
 
-**Jobs:**
+**Jobs:**  
 1. **CodeQL Analysis**
    - Languages: [From PE-00: e.g., csharp, javascript-typescript]
    - Security-extended queries
@@ -523,15 +523,15 @@ gh issue view [ISSUE_NUMBER] --repo [OWNER]/[REPO]
    - Weekly full scan
    - HTML report gerado
 
-**Reports:** Disponíveis na aba Security do GitHub
+**Reports:** Disponíveis na aba Security do GitHub  
 
 ---
 
 #### Dependabot Configuration
 
-**Arquivo:** [.github/dependabot.yml](.github/dependabot.yml)
+**Arquivo:** [.github/dependabot.yml](.github/dependabot.yml)  
 
-**Package ecosystems:** [From PE-00 stack]
+**Package ecosystems:** [From PE-00 stack]  
 
 | Ecosystem | Directory | Schedule | Notes |
 |-----------|-----------|----------|-------|
@@ -539,7 +539,7 @@ gh issue view [ISSUE_NUMBER] --repo [OWNER]/[REPO]
 | `npm` | `/01-frontend` | Weekly (Mondays, 09:00) | Node packages, ignora major de React/Vite |
 | `github-actions` | `/` | Weekly (Mondays, 09:00) | GitHub Actions versions |
 
-**Configuration:**
+**Configuration:**  
 - Open PRs limit: 5 per ecosystem
 - Auto-reviewers: [GITHUB_USERNAME]
 - Labels: `dependencies`, `backend`/`frontend`, `security`
@@ -549,16 +549,16 @@ gh issue view [ISSUE_NUMBER] --repo [OWNER]/[REPO]
 
 #### CD Staging Pipeline (Opcional)
 
-**Arquivo:** [.github/workflows/cd-staging.yml](.github/workflows/cd-staging.yml)
+**Arquivo:** [.github/workflows/cd-staging.yml](.github/workflows/cd-staging.yml)  
 
-**Triggers:**
+**Triggers:**  
 - Push para `develop`
 - Manual dispatch
 
-**Environments:**
+**Environments:**  
 - **Staging:** [STAGING_URL from PE-00]
 
-**Jobs:**
+**Jobs:**  
 1. **deploy-backend**
    - Build + Publish
    - Run migrations
@@ -573,13 +573,13 @@ gh issue view [ISSUE_NUMBER] --repo [OWNER]/[REPO]
 3. **notify**
    - Slack/Discord/Email notification (optional)
 
-**Status:** ⚠️ **Requires customization** (deployment target from PE-00)
+**Status:** ⚠️ **Requires customization** (deployment target from PE-00)  
 
 ---
 
 ## 🔒 3. Branch Strategy (GitHub Free)
 
-**⚠️ GitHub Free Limitation:** Branch protection rules não disponíveis.
+**⚠️ GitHub Free Limitation:** Branch protection rules não disponíveis.  
 
 ### Estratégia Discipline-Based
 
@@ -588,7 +588,7 @@ gh issue view [ISSUE_NUMBER] --repo [OWNER]/[REPO]
 feature/* → develop → main
 ```
 
-**Regras (aplicadas manualmente):**
+**Regras (aplicadas manualmente):**  
 - ❌ **NUNCA** push direto para `main` ou `develop`
 - ✅ **SEMPRE** criar PR para merge
 - ✅ **SEMPRE** verificar CI status checks antes de merge
@@ -606,7 +606,7 @@ hotfix/[critical]              # Production hotfixes
 
 #### Git Hooks Locais (Opcional - Prevenção)
 
-**Localização:** [03-github-manager/pre-push-hook.sh](../../../03-github-manager/pre-push-hook.sh) (se criado)
+**Localização:** [03-github-manager/pre-push-hook.sh](../../../03-github-manager/pre-push-hook.sh) (se criado)  
 
 Previne push acidental para `main`:
 ```bash
@@ -614,13 +614,13 @@ cp 03-github-manager/pre-push-hook.sh .git/hooks/pre-push
 chmod +x .git/hooks/pre-push
 ```
 
-**Nota:** Git hooks são locais (cada dev precisa configurar).
+**Nota:** Git hooks são locais (cada dev precisa configurar).  
 
 ---
 
 ### Semantic Versioning
 
-**Format:** `vMAJOR.MINOR.PATCH`
+**Format:** `vMAJOR.MINOR.PATCH`  
 
 | Tipo | Exemplo | Quando |
 |------|---------|--------|
@@ -628,7 +628,7 @@ chmod +x .git/hooks/pre-push
 | **MINOR** | v1.1.0 | New features (backward compatible) |
 | **PATCH** | v1.0.1 | Bug fixes |
 
-**Tagging:**
+**Tagging:**  
 ```bash
 # Após merge em main
 git tag -a v1.0.0 -m "Release v1.0.0: [Epic Name]"
@@ -712,7 +712,7 @@ gh run view [RUN_ID] --repo [OWNER]/[REPO]
 
 ### Per Epic (Por Iteração - Sob Demanda)
 
-**Quando:** Ao iniciar cada novo épico (após DE-01 completo)
+**Quando:** Ao iniciar cada novo épico (após DE-01 completo)  
 
 - [ ] **Milestone criado** ⚙️ ON-DEMAND (um por vez)
   - [ ] Opção 1: GitHub UI (30s)
@@ -789,6 +789,6 @@ CI/CD workflows customizados com:
 
 ---
 
-**GitHub Setup Version:** 1.0
-**Status:** ✅ **Executado e validado**
-**Última atualização:** [YYYY-MM-DD]
+**GitHub Setup Version:** 1.0  
+**Status:** ✅ **Executado e validado**  
+**Última atualização:** [YYYY-MM-DD]  

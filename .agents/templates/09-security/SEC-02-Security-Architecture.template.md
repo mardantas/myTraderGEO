@@ -7,10 +7,10 @@ MARKDOWN FORMATTING:
 
 # SEC-02: Security Architecture Review
 
-**Projeto:** [NOME-DO-PROJETO]
-**Data:** [DATA]
-**Security Specialist:** [NOME]
-**Versão:** 1.0
+**Projeto:** [NOME-DO-PROJETO]  
+**Data:** [DATA]  
+**Security Specialist:** [NOME]  
+**Versão:** 1.0  
 
 ---
 
@@ -144,19 +144,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 ```
 
-**Token Expiry:**
+**Token Expiry:**  
 - Access Token: 15 minutos
 - Refresh Token: 7 dias
 - Rotation obrigatória
 
-**MFA:**
+**MFA:**  
 - [ ] TOTP (Google Authenticator, Authy)
 - [ ] SMS backup (opcional)
 - [ ] Recovery codes
 
 ### Authorization Strategy
 
-**Domain-Level Authorization (Aggregates):**
+**Domain-Level Authorization (Aggregates):**  
 
 ```csharp
 // OrderAggregate.cs
@@ -177,7 +177,7 @@ public class Order : AggregateRoot
 }
 ```
 
-**API-Level Authorization (Policies):**
+**API-Level Authorization (Policies):**  
 
 ```csharp
 // Program.cs
@@ -384,7 +384,7 @@ var connectionString = JObject.Parse(secretResponse.SecretString)["connection_st
 builder.Configuration["ConnectionStrings:Default"] = connectionString;
 ```
 
-**Secrets Rotation:**
+**Secrets Rotation:**  
 - [ ] Database passwords: rotação a cada 90 dias
 - [ ] API keys: rotação a cada 180 dias
 - [ ] JWT signing keys: rotação a cada 30 dias
@@ -437,7 +437,7 @@ logs:
 
 ---
 
-**Próximos Passos:**
+**Próximos Passos:**  
 1. SEC-03: Compliance Report (LGPD, SOC2, PCI-DSS)
 2. SEC-04: Executar Penetration Test
 3. SEC-05: Incident Response Plan

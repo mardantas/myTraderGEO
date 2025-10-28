@@ -7,10 +7,10 @@ MARKDOWN FORMATTING:
 
 # PE-00 - Environments Setup
 
-**Agent:** PE (Platform Engineer)
-**Phase:** Discovery (1x)
-**Scope:** Basic environments with Docker Compose and deploy scripts
-**Version:** 3.0 (Simplified)
+**Agent:** PE (Platform Engineer)  
+**Phase:** Discovery (1x)  
+**Scope:** Basic environments with Docker Compose and deploy scripts  
+**Version:** 3.0 (Simplified)  
 
 ---
 
@@ -42,12 +42,12 @@ Configurar ambientes básicos (dev, staging, production) com Docker Compose e sc
 
 ### Hosting Strategy
 
-**Selected Approach:** [Choose one]
+**Selected Approach:** [Choose one]  
 - [ ] Single VPS (Contabo, DigitalOcean, Linode)
 - [ ] Cloud Platform (AWS, Azure, GCP) - básico
 - [ ] Managed Container Service (AWS ECS, Azure Container Instances)
 
-**Justification:** [Why this choice fits small/medium project needs]
+**Justification:** [Why this choice fits small/medium project needs]  
 
 ---
 
@@ -55,7 +55,7 @@ Configurar ambientes básicos (dev, staging, production) com Docker Compose e sc
 
 ### Development Environment
 
-**File:** `docker-compose.dev.yml`
+**File:** `docker-compose.dev.yml`  
 
 ```yaml
 version: '3.8'
@@ -113,7 +113,7 @@ volumes:
 
 ### Staging Environment
 
-**File:** `docker-compose.staging.yml`
+**File:** `docker-compose.staging.yml`  
 
 ```yaml
 version: '3.8'
@@ -163,7 +163,7 @@ volumes:
 
 ### Production Environment
 
-**File:** `docker-compose.prod.yml`
+**File:** `docker-compose.prod.yml`  
 
 ```yaml
 version: '3.8'
@@ -223,7 +223,7 @@ volumes:
 
 ### deploy.sh
 
-**Location:** Project root
+**Location:** Project root  
 
 ```bash
 #!/bin/bash
@@ -293,7 +293,7 @@ echo "🎉 Deployment to $ENVIRONMENT completed successfully!"
 
 ### rollback.sh
 
-**Location:** Project root
+**Location:** Project root  
 
 ```bash
 #!/bin/bash
@@ -330,7 +330,7 @@ echo "✅ Rollback completed!"
 
 ### .env.example
 
-**Location:** Project root
+**Location:** Project root  
 
 ```bash
 # Project
@@ -373,7 +373,7 @@ Create these files (DO NOT commit to git):
 - `.env.staging` (staging server)
 - `.env.production` (production server)
 
-**Add to .gitignore:**
+**Add to .gitignore:**  
 ```
 .env
 .env.dev
@@ -413,7 +413,7 @@ docker-compose logs --tail=100 api
 
 ### API Health Endpoint
 
-**Implementation Required:** `GET /health`
+**Implementation Required:** `GET /health`  
 
 ```csharp
 // Example: ASP.NET Core
@@ -425,7 +425,7 @@ app.MapGet("/health", () =>
 
 ### Health Check Script
 
-**Location:** `scripts/health-check.sh`
+**Location:** `scripts/health-check.sh`  
 
 ```bash
 #!/bin/bash
@@ -452,7 +452,7 @@ fi
 
 ### Database Backup Script
 
-**Location:** `scripts/backup-db.sh`
+**Location:** `scripts/backup-db.sh`  
 
 ```bash
 #!/bin/bash
@@ -479,11 +479,11 @@ ls -t $BACKUP_DIR/${ENVIRONMENT}_*.sql | tail -n +8 | xargs rm -f
 
 ### Backup Schedule
 
-**Recommended:**
+**Recommended:**  
 - **Staging:** Manual backups before major changes
 - **Production:** Daily backups (cron job or manual)
 
-**Cron example (production):**
+**Cron example (production):**  
 ```cron
 0 2 * * * /path/to/scripts/backup-db.sh production
 ```
@@ -494,7 +494,7 @@ ls -t $BACKUP_DIR/${ENVIRONMENT}_*.sql | tail -n +8 | xargs rm -f
 
 ### GitHub Actions Workflow
 
-**Location:** `.github/workflows/deploy.yml`
+**Location:** `.github/workflows/deploy.yml`  
 
 ```yaml
 name: Deploy
@@ -527,6 +527,71 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
 ```
+
+---
+
+## 🪟 Desenvolvimento no Windows
+
+### Executando Scripts Bash no Windows
+
+Este projeto usa **scripts Bash** (`deploy.sh`, `rollback.sh`, `backup-db.sh`, etc.) para automação. No Windows, existem duas formas de executar esses scripts:
+
+**Opção 1: Git Bash (Recomendado)**
+```bash
+# Git Bash vem incluído no Git for Windows
+bash ./deploy.sh staging
+bash ./scripts/backup-db.sh staging
+```
+
+**Opção 2: WSL2**
+```bash
+# Docker Desktop usa WSL2 como backend, então você pode usar:
+wsl bash ./deploy.sh staging
+```
+
+### Named Volumes e Desempenho
+
+Docker Desktop no Windows armazena **named volumes** no sistema de arquivos do WSL2:
+```
+\\wsl$\docker-desktop-data\data\docker\volumes\
+```
+
+**Vantagens:**  
+- ✅ Performance otimizada (60x mais rápido que bind mounts para databases)
+- ✅ Funciona identicamente em Windows/Linux/Mac
+- ✅ Docker gerencia automaticamente (não precisa gerenciamento manual)
+
+**Bind mounts** para código-fonte (hot reload) continuam funcionando normalmente:
+```yaml
+volumes:
+  - ./02-backend:/app  # Hot reload funciona via WSL2 file watching
+  - ./01-frontend:/app # Hot reload funciona via WSL2 file watching
+```
+
+### Backups em Development
+
+**Não há necessidade de backups** no ambiente de desenvolvimento:
+- Dados são efêmeros e podem ser recriados com migrations + seed data
+- Para resetar o banco: `docker compose down -v && docker compose up -d`
+- Git já versiona migrations e seed data
+
+**Backups são importantes apenas em staging/production** (ver seção "Backup Strategy").
+
+### Pré-requisitos Windows
+
+- **Docker Desktop for Windows** (com WSL2 backend habilitado)
+- **Git for Windows** (inclui Git Bash)
+- **Windows 10/11** com WSL2 configurado
+
+### Troubleshooting Windows
+
+**Problema: Hot reload não funciona**
+- Solução: Certifique-se que Docker Desktop está usando WSL2 backend (não Hyper-V)
+- Verificar: Docker Desktop → Settings → General → "Use the WSL 2 based engine"
+
+**Problema: Performance lenta**
+- Solução: Manter o projeto dentro do filesystem WSL2 (`\\wsl$\Ubuntu\home\user\projects\`) ao invés de `C:\Users\...`
+- Alternativa: Se precisar manter em `C:\`, usar named volumes para databases (já configurado nos templates)
 
 ---
 
@@ -585,7 +650,7 @@ Para manter a simplicidade em projetos small/medium, v1.0 **NÃO inclui**:
 - ❌ **VPC/Network complexo**
 - ❌ **Load Balancer gerenciado** (usar reverse proxy se necessário)
 
-**Quando adicionar:** Quando escalar para enterprise ou tiver >100k usuários.
+**Quando adicionar:** Quando escalar para enterprise ou tiver >100k usuários.  
 
 ---
 
@@ -597,5 +662,5 @@ Para manter a simplicidade em projetos small/medium, v1.0 **NÃO inclui**:
 
 ---
 
-**Template Version:** 3.0
-**Last Updated:** 2025-10-08
+**Template Version:** 3.0  
+**Last Updated:** 2025-10-08  

@@ -7,20 +7,20 @@ MARKDOWN FORMATTING:
 
 # DBA-01-[EpicName]-Schema-Review.md
 
-**Projeto:** [PROJECT_NAME]
-**Épico:** [Epic Name]
-**Data:** [YYYY-MM-DD]
-**Reviewer:** DBA Agent
+**Projeto:** [PROJECT_NAME]  
+**Épico:** [Epic Name]  
+**Data:** [YYYY-MM-DD]  
+**Reviewer:** DBA Agent  
 
 ---
 
 ## 🎯 Contexto
 
-**Épico:** [Epic Name]
-**Bounded Contexts:** [BC1, BC2, BC3]
-**Schema Criado Por:** DE Agent (EF Core migrations)
+**Épico:** [Epic Name]  
+**Bounded Contexts:** [BC1, BC2, BC3]  
+**Schema Criado Por:** DE Agent (EF Core migrations)  
 
-**Objetivo:** Validar schema, sugerir otimizações, definir indexing strategy
+**Objetivo:** Validar schema, sugerir otimizações, definir indexing strategy  
 
 ---
 
@@ -32,10 +32,10 @@ MARKDOWN FORMATTING:
 
 ##### Tabela: `[TableName]`
 
-**Aggregate:** [AggregateName]
-**Purpose:** [O que armazena]
+**Aggregate:** [AggregateName]  
+**Purpose:** [O que armazena]  
 
-**Colunas:**
+**Colunas:**  
 
 | Column | Type | Nullable | PK/FK | Description |
 |--------|------|----------|-------|-------------|
@@ -46,7 +46,7 @@ MARKDOWN FORMATTING:
 | `UpdatedAt` | DATETIME | NULL | - | Última atualização |
 | `Version` | INT | NOT NULL | - | Concurrency control |
 
-**Review:**
+**Review:**  
 
 | Aspecto | Status | Comentário |
 |---------|--------|------------|
@@ -55,7 +55,7 @@ MARKDOWN FORMATTING:
 | **Nullable** | ✅ OK | Nullability correta |
 | **Constraints** | ⚠️ Sugestão | Adicionar CHECK constraint em Status |
 
-**Sugestões:**
+**Sugestões:**  
 1. Reduzir `Name VARCHAR(200)` → `VARCHAR(100)` (economiza espaço)
 2. Adicionar constraint: `CHECK (Status IN ('Active', 'Inactive', 'Pending'))`
 3. Considerar index em `Status` (queries frequentes por status)
@@ -64,10 +64,10 @@ MARKDOWN FORMATTING:
 
 ##### Tabela: `[ChildTable]` (Child Entity)
 
-**Parent:** `[TableName]`
-**Relationship:** One-to-Many
+**Parent:** `[TableName]`  
+**Relationship:** One-to-Many  
 
-**Colunas:**
+**Colunas:**  
 
 | Column | Type | Nullable | PK/FK | Description |
 |--------|------|----------|-------|-------------|
@@ -76,14 +76,14 @@ MARKDOWN FORMATTING:
 | `Property` | VARCHAR(100) | NOT NULL | - | Alguma propriedade |
 | `CreatedAt` | DATETIME | NOT NULL | - | Data criação |
 
-**Review:**
+**Review:**  
 
 | Aspecto | Status | Comentário |
 |---------|--------|------------|
 | **Foreign Key** | ✅ OK | FK com ON DELETE CASCADE configurado |
 | **Index em FK** | ⚠️ FALTA | **CRÍTICO:** Adicionar index em `[Parent]Id` |
 
-**Sugestões:**
+**Sugestões:**  
 1. **CRIAR INDEX:** `IX_[ChildTable]_[Parent]Id` em `[Parent]Id` (performance crítica)
 2. Considerar index composto se queries filtram por `[Parent]Id + Status`
 
@@ -107,7 +107,7 @@ MARKDOWN FORMATTING:
 | `[ChildTable]` | `IX_[Child]_ParentId` | `[Parent]Id` | NONCLUSTERED | **CRÍTICO:** FK lookup |
 | `[ChildTable]` | `IX_[Child]_Parent_Status` | `[Parent]Id, Status` | NONCLUSTERED COVERING | Query composta frequente |
 
-**Prioridade:**
+**Prioridade:**  
 - 🔴 **Alta:** `IX_[Child]_ParentId` (blocking FK queries)
 - 🟡 **Média:** `IX_[Table]_Status` (performance improvement)
 - 🟢 **Baixa:** `IX_[Table]_CreatedAt` (nice to have)
@@ -146,17 +146,17 @@ CHECK (UpdatedAt IS NULL OR UpdatedAt >= CreatedAt);
 
 ### [BC1] ↔ [BC2]
 
-**Estratégia:** Separate schemas, NO foreign keys between BCs
+**Estratégia:** Separate schemas, NO foreign keys between BCs  
 
-**Schemas:**
+**Schemas:**  
 - `[BC1]`: Schema `[BC1Name]`
 - `[BC2]`: Schema `[BC2Name]`
 
-**Integração:**
+**Integração:**  
 - Via Domain Events (aplicação)
 - Via Materialized Views (read model) se necessário
 
-**❌ NÃO FAZER:**
+**❌ NÃO FAZER:**  
 - Foreign Keys entre schemas de BCs diferentes
 - Joins diretos entre tabelas de BCs diferentes
 
@@ -166,13 +166,13 @@ CHECK (UpdatedAt IS NULL OR UpdatedAt >= CreatedAt);
 
 ### Concurrency Control
 
-**Estratégia:** Optimistic Concurrency (EF Core)
+**Estratégia:** Optimistic Concurrency (EF Core)  
 
-**Implementação:**
+**Implementação:**  
 - Coluna `Version` (ROWVERSION/TIMESTAMP) em tabelas principais
 - EF Core tracked entities com concurrency token
 
-**Validação:**
+**Validação:**  
 ```sql
 -- Verificar se Version está configurado
 SELECT TABLE_NAME, COLUMN_NAME
@@ -185,7 +185,7 @@ WHERE COLUMN_NAME = 'Version'
 
 ### Data Integrity
 
-**Validações Necessárias:**
+**Validações Necessárias:**  
 
 | Table | Validation | Type | Status |
 |-------|------------|------|--------|
@@ -202,7 +202,7 @@ WHERE COLUMN_NAME = 'Version'
 - `[ChildTable]`: ~[N*10] records/month (10 children per parent)
 
 ### Partitioning Strategy (Future)
-**Quando considerar:**
+**Quando considerar:**  
 - `[Table]` > 10M records
 - Queries por time range (particionar por `CreatedAt`)
 
@@ -214,9 +214,9 @@ WHERE COLUMN_NAME = 'Version'
 
 ### DE Migration: `[MigrationName]`
 
-**Arquivo:** `02-backend/src/Infrastructure/Persistence/Migrations/[timestamp]_[MigrationName].cs`
+**Arquivo:** `02-backend/src/Infrastructure/Persistence/Migrations/[timestamp]_[MigrationName].cs`  
 
-**Review:**
+**Review:**  
 
 | Aspecto | Status | Comentário |
 |---------|--------|------------|
@@ -226,7 +226,7 @@ WHERE COLUMN_NAME = 'Version'
 | **Constraints** | ⚠️ FALTA | CHECK constraints não implementados |
 | **Seed Data** | ✅ N/A | Não aplicável para este epic |
 
-**Ação para DE:**
+**Ação para DE:**  
 Criar migration adicional com:
 1. Indexes sugeridos
 2. CHECK constraints
@@ -273,7 +273,7 @@ Criar migration adicional com:
 ### Priority 3 - Opcional (Performance)
 5. 🟢 **Criar indexes:** Compostos para queries complexas
 
-**Migration Sugerida:**
+**Migration Sugerida:**  
 
 ```csharp
 public partial class Add[Epic]Indexes : Migration
@@ -330,7 +330,7 @@ public override void Up(MigrationBuilder mb)
 }
 ```
 
-**Consequência:** Aplicação antiga para (procura coluna `OldName` que não existe mais)
+**Consequência:** Aplicação antiga para (procura coluna `OldName` que não existe mais)  
 
 ---
 
@@ -349,7 +349,7 @@ public override void Down(MigrationBuilder mb)
     mb.DropColumn("NewName", "Users");  // ✅ Safe rollback
 }
 ```
-**Deploy 1:** App antiga ainda funciona (ignora `NewName`)
+**Deploy 1:** App antiga ainda funciona (ignora `NewName`)  
 
 ---
 
@@ -366,7 +366,7 @@ public override void Down(MigrationBuilder mb)
     mb.Sql("UPDATE Users SET OldName = NewName WHERE OldName IS NULL");
 }
 ```
-**Deploy 2:** App atualizada usa `NewName`, app antiga usa `OldName` (ambas funcionam)
+**Deploy 2:** App atualizada usa `NewName`, app antiga usa `OldName` (ambas funcionam)  
 
 ---
 
@@ -384,7 +384,7 @@ public override void Down(MigrationBuilder mb)
     mb.Sql("UPDATE Users SET OldName = NewName");  // ⚠️ Rollback possível mas dados podem estar desatualizados
 }
 ```
-**Deploy 3:** App antiga não existe mais, seguro remover `OldName`
+**Deploy 3:** App antiga não existe mais, seguro remover `OldName`  
 
 ---
 
@@ -392,7 +392,7 @@ public override void Down(MigrationBuilder mb)
 
 #### 1. Adding Columns
 
-**✅ SAFE:**
+**✅ SAFE:**  
 ```csharp
 // Nullable ou com default value
 mb.AddColumn<string>("Email", "Users", nullable: true);
@@ -400,19 +400,19 @@ mb.AddColumn<string>("Email", "Users", nullable: true);
 mb.AddColumn<string>("Email", "Users", nullable: false, defaultValue: "");
 ```
 
-**❌ UNSAFE:**
+**❌ UNSAFE:**  
 ```csharp
 // NOT NULL sem default em tabela com dados
 mb.AddColumn<string>("Email", "Users", nullable: false);  // ❌ Falha se Users tem linhas!
 ```
 
-**Rollback:** `DropColumn` sempre funciona (mas dados perdidos)
+**Rollback:** `DropColumn` sempre funciona (mas dados perdidos)  
 
 ---
 
 #### 2. Dropping Columns
 
-**⚠️ CUIDADO:** Não pode recuperar dados perdidos
+**⚠️ CUIDADO:** Não pode recuperar dados perdidos  
 
 ```csharp
 public override void Up(MigrationBuilder mb)
@@ -427,7 +427,7 @@ public override void Down(MigrationBuilder mb)
 }
 ```
 
-**Safe approach:**
+**Safe approach:**  
 1. Deprecate código que usa a coluna (comentar/remover)
 2. Aguardar 2 sprints (garantir que app antiga não existe mais)
 3. Então drop coluna
@@ -460,12 +460,12 @@ mb.RenameColumn("QuantityNew", "Orders", "Quantity");
 
 #### 5. Adding NOT NULL Constraints
 
-**❌ UNSAFE:**
+**❌ UNSAFE:**  
 ```csharp
 mb.AddColumn<string>("Email", "Users", nullable: false);  // Quebra!
 ```
 
-**✅ SAFE (2 steps):**
+**✅ SAFE (2 steps):**  
 ```csharp
 // Migration 1: Adicionar nullable
 mb.AddColumn<string>("Email", "Users", nullable: true, defaultValue: "");
@@ -540,8 +540,8 @@ curl https://api.prod/health
 ## 🔄 Backup & Recovery (MVP Básico)
 
 ### RTO/RPO para MVP
-**RTO (Recovery Time Objective):** 2 horas
-**RPO (Recovery Point Objective):** 30 minutos
+**RTO (Recovery Time Objective):** 2 horas  
+**RPO (Recovery Point Objective):** 30 minutos  
 
 ### Estratégia de Backup MVP
 ```yaml
@@ -563,7 +563,7 @@ backup-strategy:
 - [ ] Backup restaurado com sucesso em ambiente de teste?
 - [ ] Procedimento de restore documentado?
 
-**⚠️ Para Produção:** Considerar geo-replication e DR secundário quando tiver usuários reais.
+**⚠️ Para Produção:** Considerar geo-replication e DR secundário quando tiver usuários reais.  
 
 ---
 
@@ -608,7 +608,7 @@ END
 
 ### Deadlock Prevention BÁSICO
 
-**Regra:** Sempre adquirir locks na MESMA ORDEM
+**Regra:** Sempre adquirir locks na MESMA ORDEM  
 
 ```sql
 -- ✅ CORRETO: Lock Strategy → depois StrategyLeg
@@ -620,27 +620,27 @@ COMMIT;
 -- ❌ ERRADO: Lock StrategyLeg → depois Strategy (pode deadlock)
 ```
 
-**Dica:** Manter transações curtas (<100ms), não fazer chamadas externas dentro de transaction.
+**Dica:** Manter transações curtas (<100ms), não fazer chamadas externas dentro de transaction.  
 
 ---
 
 ## 📝 Notas Finais
 
-**Schema Quality Score:** [X]/10
+**Schema Quality Score:** [X]/10  
 
-**Approval Status:**
+**Approval Status:**  
 - [ ] ✅ **APPROVED** - Schema pronto para produção
 - [x] ⚠️ **APPROVED WITH CHANGES** - Implementar ações Priority 1
 - [ ] ❌ **REJECTED** - Redesign necessário
 
-**Checklist MVP:**
+**Checklist MVP:**  
 - [ ] Backup strategy configurado
 - [ ] Data retention policy documentado
 - [ ] Transaction isolation definido para operações críticas
 - [ ] Indexes em todas FK
 - [ ] Concurrency control (Version column)
 
-**Next Steps:**
+**Next Steps:**  
 1. DE implementa ações Priority 1 (indexes, constraints)
 2. Configurar backup automático
 3. Re-review após migration

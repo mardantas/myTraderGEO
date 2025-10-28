@@ -7,10 +7,10 @@ MARKDOWN FORMATTING:
 
 # PE-03: Disaster Recovery Plan
 
-**Projeto:** [NOME-DO-PROJETO]
-**Data:** [DATA]
-**Platform Engineer:** [NOME]
-**Versão:** 1.0
+**Projeto:** [NOME-DO-PROJETO]  
+**Data:** [DATA]  
+**Platform Engineer:** [NOME]  
+**Versão:** 1.0  
 
 ---
 
@@ -104,9 +104,9 @@ velero restore create --from-backup daily-backup-20251006
 
 ### Checklist de DR Drill
 
-**Frequência:** Mensal (primeira sexta-feira do mês)
-**Duração:** 2-3 horas
-**Responsável:** Platform Engineer + DBA
+**Frequência:** Mensal (primeira sexta-feira do mês)  
+**Duração:** 2-3 horas  
+**Responsável:** Platform Engineer + DBA  
 
 #### Passos:
 
@@ -143,8 +143,8 @@ velero restore create --from-backup daily-backup-20251006
 
 ### Scenario 1: Database Corruption
 
-**Detection:** Query errors, data inconsistency alerts
-**Response:**
+**Detection:** Query errors, data inconsistency alerts  
+**Response:**  
 1. Stop writes to database (read-only mode)
 2. Identify last known good backup
 3. Restore from backup to new instance
@@ -152,7 +152,7 @@ velero restore create --from-backup daily-backup-20251006
 5. Switch DNS/connection string to restored instance
 6. Resume writes
 
-**Post-Incident:**
+**Post-Incident:**  
 - Root cause analysis
 - Update backup strategy if needed
 
@@ -160,14 +160,14 @@ velero restore create --from-backup daily-backup-20251006
 
 ### Scenario 2: Entire Region Failure (AWS/Azure/GCP)
 
-**Detection:** Multiple availability zone failures
-**Response:**
+**Detection:** Multiple availability zone failures  
+**Response:**  
 1. Failover to secondary region (if multi-region)
 2. Or restore from cross-region backup
 3. Update DNS to point to new region
 4. Communicate downtime to users
 
-**Post-Incident:**
+**Post-Incident:**  
 - Implement multi-region if not exists
 - Review RTO/RPO targets
 
@@ -207,7 +207,7 @@ resource "aws_cloudwatch_metric_alarm" "backup_failure" {
 
 ---
 
-**Próximos Passos:**
+**Próximos Passos:**  
 1. PE-04: Configurar Production Deployment (Blue-Green)
 2. Executar primeiro DR drill
 3. Documentar lições aprendidas

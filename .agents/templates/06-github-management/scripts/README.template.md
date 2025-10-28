@@ -56,32 +56,32 @@ This is a **quick reference guide** for executing GitHub setup tasks. For strate
 ## 📦 Files in This Directory
 
 ### `setup-labels.sh`
-**Purpose:** Creates 41 GitHub labels (agents, BCs, epics, types, priorities, status)
-**Execute:** Once during Discovery phase
-**Usage:**
+**Purpose:** Creates 41 GitHub labels (agents, BCs, epics, types, priorities, status)  
+**Execute:** Once during Discovery phase  
+**Usage:**  
 ```bash
 bash 03-github-manager/scripts/setup-labels.sh
 ```
 
-**Verify:**
+**Verify:**  
 ```bash
 gh label list --repo [OWNER]/[REPO]
 ```
 
-**See GM-00 for:** Complete label list and justifications
+**See GM-00 for:** Complete label list and justifications  
 
 ---
 
 ### `create-milestone.sh`
-**Purpose:** Creates a milestone on-demand (one at a time, when starting an epic)
-**Execute:** Automatically by GM on Day 2 of each epic iteration
-**Manual Usage (if needed):**
+**Purpose:** Creates a milestone on-demand (one at a time, when starting an epic)  
+**Execute:** Automatically by GM on Day 2 of each epic iteration  
+**Manual Usage (if needed):**  
 ```bash
 bash 03-github-manager/scripts/create-milestone.sh \
   <number> "<title>" "<description>" "<due-date-YYYY-MM-DD>"
 ```
 
-**Examples:**
+**Examples:**  
 ```bash
 # M0: Discovery (no due date)
 bash 03-github-manager/scripts/create-milestone.sh \
@@ -92,62 +92,62 @@ bash 03-github-manager/scripts/create-milestone.sh \
   1 "EPIC-01 - Name" "Description" "2026-02-28"
 ```
 
-**Verify:**
+**Verify:**  
 ```bash
 gh api repos/[OWNER]/[REPO]/milestones
 ```
 
-**See GM-00 for:** Complete milestone strategy
+**See GM-00 for:** Complete milestone strategy  
 
 ---
 
 ### `create-epic-issue.sh`
-**Purpose:** Creates an epic issue on-demand (after DE-01 complete)
-**Execute:** Automatically by GM on Day 2 of each epic iteration
-**Manual Usage (if needed):**
+**Purpose:** Creates an epic issue on-demand (after DE-01 complete)  
+**Execute:** Automatically by GM on Day 2 of each epic iteration  
+**Manual Usage (if needed):**  
 ```bash
 bash 03-github-manager/scripts/create-epic-issue.sh \
   <epic-number> "<milestone-title>"
 ```
 
-**Examples:**
+**Examples:**  
 ```bash
 # EPIC-01 (after DE-01-EPIC-01-*.md complete)
 bash 03-github-manager/scripts/create-epic-issue.sh \
   1 "M1: EPIC-01 - Name"
 ```
 
-**⚠️ IMPORTANT:**
+**⚠️ IMPORTANT:**  
 - Script creates base template automatically
 - **User MUST edit issue after creation** to add complete DE-01 details
 - GM guides user on what to customize (1min)
 
-**Verify:**
+**Verify:**  
 ```bash
 gh issue list --label epic --repo [OWNER]/[REPO]
 ```
 
-**See GM-00 for:** Complete epic issue structure
+**See GM-00 for:** Complete epic issue structure  
 
 ---
 
 ### `create-epic-full.sh` ⭐ **NEW - RECOMMENDED**
-**Purpose:** Creates COMPLETE epic setup: milestone + epic issue + all agent issues (all at once)
-**Execute:** When starting a new epic (after DE-01 complete)
-**Usage:**
+**Purpose:** Creates COMPLETE epic setup: milestone + epic issue + all agent issues (all at once)  
+**Execute:** When starting a new epic (after DE-01 complete)  
+**Usage:**  
 ```bash
 bash 03-github-manager/scripts/create-epic-full.sh \
   <epic-number> "<epic-name>" "<due-date-YYYY-MM-DD>"
 ```
 
-**Examples:**
+**Examples:**  
 ```bash
 # EPIC-01
 bash 03-github-manager/scripts/create-epic-full.sh \
   1 "Criar Estratégia Bull Call Spread" "2026-02-28"
 ```
 
-**What it creates:**
+**What it creates:**  
 1. Milestone M1
 2. Issue: [EPIC-01] Epic Name (parent)
 3. Issue: DE - Domain Model
@@ -157,38 +157,38 @@ bash 03-github-manager/scripts/create-epic-full.sh \
 7. Issue: FE - Frontend Implementation
 8. Issue: QAE - Quality Gate
 
-**✅ Advantages:**
+**✅ Advantages:**  
 - Saves ~15min vs creating issues manually
 - Ensures consistency (all issues follow same pattern)
 - All issues linked to milestone automatically
 - Agent labels applied automatically
 
-**⚠️ Note:** Still need to customize epic issue with DE-01 details
+**⚠️ Note:** Still need to customize epic issue with DE-01 details  
 
-**Verify:**
+**Verify:**  
 ```bash
 gh issue list --milestone "M1: EPIC-01" --repo [OWNER]/[REPO]
 ```
 
-**See GM-00 for:** Complete epic workflow and customization
+**See GM-00 for:** Complete epic workflow and customization  
 
 ---
 
 ### `start-work-on-issue.sh` ⭐ **NEW - RECOMMENDED**
-**Purpose:** Automates starting work on an issue (branch + commit + PR)
-**Execute:** When you're ready to start working on a specific issue
-**Usage:**
+**Purpose:** Automates starting work on an issue (branch + commit + PR)  
+**Execute:** When you're ready to start working on a specific issue  
+**Usage:**  
 ```bash
 bash 03-github-manager/scripts/start-work-on-issue.sh <issue-number>
 ```
 
-**Examples:**
+**Examples:**  
 ```bash
 # Start work on issue #6 (DE: Domain Model)
 bash 03-github-manager/scripts/start-work-on-issue.sh 6
 ```
 
-**What it does:**
+**What it does:**  
 1. Fetches issue info (title, milestone, labels)
 2. Generates branch name (feature/epic-01-de-domain-model)
 3. Creates and checks out branch
@@ -196,23 +196,23 @@ bash 03-github-manager/scripts/start-work-on-issue.sh 6
 5. Pushes branch to origin
 6. Creates draft PR linked to issue
 
-**✅ Advantages:**
+**✅ Advantages:**  
 - Saves ~3min vs manual setup
 - Ensures correct branch naming (kebab-case, with epic number)
 - Initial commit follows 03-GIT-PATTERNS.md standard
 - PR automatically linked to issue
 
-**When ready for review:**
+**When ready for review:**  
 ```bash
 gh pr ready  # Mark PR as ready for review
 ```
 
-**When approved:**
+**When approved:**  
 ```bash
 gh pr merge --merge --delete-branch
 ```
 
-**See 03-GIT-PATTERNS.md for:** Complete Git workflow details
+**See 03-GIT-PATTERNS.md for:** Complete Git workflow details  
 
 ---
 
@@ -242,7 +242,7 @@ gh api repos/[OWNER]/[REPO]/milestones -X POST \
 # GitHub UI: Issues → Milestones → New Milestone (30s)
 ```
 
-**See GM-00 for:** Complete examples for all milestones (M0-M7)
+**See GM-00 for:** Complete examples for all milestones (M0-M7)  
 
 ### Issues
 ```bash
@@ -277,7 +277,7 @@ gh issue list --state closed --search "closed:>=2025-10-10" --repo [OWNER]/[REPO
 gh issue list --state closed --milestone "M1: EPIC-01" --repo [OWNER]/[REPO]
 ```
 
-**See GM-00 for:** Complete metrics guide and interpretation
+**See GM-00 for:** Complete metrics guide and interpretation  
 
 ---
 
@@ -285,7 +285,7 @@ gh issue list --state closed --milestone "M1: EPIC-01" --repo [OWNER]/[REPO]
 
 ### When: GM executes on Day 2 of each epic iteration (after DE-01 complete)
 
-**GM automatically:**
+**GM automatically:**  
 1. ✅ Reads DE-01-EPIC-{N}-{Name}-Domain-Model.md
 2. ✅ Executes `create-milestone.sh` → Milestone M{N} created
 3. ✅ Executes `create-epic-issue.sh` → Epic issue created with base template
@@ -355,7 +355,7 @@ GitHub → Issues → Milestones → New Milestone
 GitHub → New Issue → Select "🎯 Epic Issue" template
 ```
 
-**Details:** [GM-00 Epic Issues](../00-doc-ddd/07-github-management/GM-00-GitHub-Setup.md#epic-issues)
+**Details:** [GM-00 Epic Issues](../00-doc-ddd/07-github-management/GM-00-GitHub-Setup.md#epic-issues)  
    - **Details:** [GM-00 Issue Strategy](../00-doc-ddd/07-github-management/GM-00-GitHub-Setup.md#issue-strategy)
 
 ---
@@ -382,7 +382,7 @@ bugfix/123-fix-margin-calculation
 hotfix/critical-security-patch
 ```
 
-**See GM-00 for:** Complete branch strategy and merge workflow
+**See GM-00 for:** Complete branch strategy and merge workflow  
 
 ---
 
@@ -406,7 +406,7 @@ gh release create v1.0.0 \
   --notes "Release notes here"
 ```
 
-**See GM-00 for:** Semantic versioning strategy and examples
+**See GM-00 for:** Semantic versioning strategy and examples  
 
 ---
 
@@ -430,7 +430,7 @@ Check:
 2. Triggers configured correctly
 3. GitHub Actions enabled in repo settings
 
-**See GM-00 for:** Complete troubleshooting guide
+**See GM-00 for:** Complete troubleshooting guide  
 
 ---
 
@@ -448,6 +448,6 @@ Other references:
 
 ---
 
-**Project:** [PROJECT_NAME]
-**Version:** 1.0
-**Last Updated:** [DATE]
+**Project:** [PROJECT_NAME]  
+**Version:** 1.0  
+**Last Updated:** [DATE]  

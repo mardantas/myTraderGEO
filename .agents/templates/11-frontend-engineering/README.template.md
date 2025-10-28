@@ -7,10 +7,10 @@ MARKDOWN FORMATTING:
 
 # 01-frontend - {PROJECT_NAME} Frontend Application
 
-**Projeto:** {PROJECT_NAME}
-**Stack:** {FRONTEND_STACK} (e.g., Vue 3 + TypeScript + Vite + Pinia + PrimeVue)
-**Architecture:** Component-based + State Management
-**Responsible Agent:** FE Agent
+**Projeto:** {PROJECT_NAME}  
+**Stack:** {FRONTEND_STACK} (e.g., Vue 3 + TypeScript + Vite + Pinia + PrimeVue)  
+**Architecture:** Component-based + State Management  
+**Responsible Agent:** FE Agent  
 
 ---
 
@@ -18,11 +18,11 @@ MARKDOWN FORMATTING:
 
 This is a **quick reference guide** for building, running, and debugging the frontend application. For strategic UI/UX decisions, component design details, and architectural patterns, consult [FE-01-{EpicName}-Implementation-Report.md](../00-doc-ddd/06-frontend-design/FE-01-{EpicName}-Implementation-Report.md) and [UXD-01-{EpicName}-Wireframes.md](../00-doc-ddd/03-ux-design/UXD-01-{EpicName}-Wireframes.md).
 
-**Document Separation:**
+**Document Separation:**  
 - **This README:** Commands and checklists (HOW to execute)
 - **FE-01 / UXD-01:** Design decisions, UI patterns, and trade-offs (WHY and WHAT)
 
-**Principle:** README is an INDEX/QUICK-REFERENCE, not a duplicate.
+**Principle:** README is an INDEX/QUICK-REFERENCE, not a duplicate.  
 
 ---
 
@@ -112,7 +112,7 @@ cp .env.example .env
 nano .env
 ```
 
-**Required Variables:**
+**Required Variables:**  
 ```bash
 VITE_API_BASE_URL=http://localhost:5000
 VITE_APP_TITLE={PROJECT_NAME}
@@ -129,7 +129,7 @@ npm run dev
 docker compose -f ../05-infra/docker/docker-compose.yml up web -d
 ```
 
-**Access:**
+**Access:**  
 - Frontend: http://localhost:5173
 - Hot Reload: Enabled (auto-refresh on code changes)
 
@@ -214,7 +214,7 @@ npm run build
 # Output: dist/ directory (ready to deploy)
 ```
 
-**Build Optimizations:**
+**Build Optimizations:**  
 - Code splitting (lazy loading)
 - Tree shaking (remove unused code)
 - Minification (smaller bundle size)
@@ -246,7 +246,7 @@ docker compose -f ../05-infra/docker/docker-compose.production.yml up -d web
 
 ### Unit Tests (Components, Stores)
 
-**Coverage Target:** ≥60% on critical components
+**Coverage Target:** ≥60% on critical components  
 
 ```bash
 # Run all unit tests
@@ -297,7 +297,7 @@ npm run dev
 
 ### VS Code
 
-**Launch Configuration (`.vscode/launch.json`):**
+**Launch Configuration (`.vscode/launch.json`):**  
 
 ```json
 {
@@ -315,7 +315,7 @@ npm run dev
 }
 ```
 
-**Steps:**
+**Steps:**  
 1. Start dev server: `npm run dev`
 2. Press F5 in VS Code
 3. Set breakpoints in `.vue` or `.ts` files
@@ -546,9 +546,9 @@ This section connects operational README with strategic documentation.
 
 ### Problem: Dev server fails to start
 
-**Symptom:** `npm run dev` fails with error
+**Symptom:** `npm run dev` fails with error  
 
-**Solution:**
+**Solution:**  
 ```bash
 # 1. Clear node_modules and reinstall
 rm -rf node_modules package-lock.json
@@ -564,9 +564,9 @@ npm run dev -- --port 3000
 
 ### Problem: Build fails with TypeScript errors
 
-**Symptom:** `npm run build` fails with type errors
+**Symptom:** `npm run build` fails with type errors  
 
-**Solution:**
+**Solution:**  
 ```bash
 # 1. Run type check
 npm run type-check
@@ -581,9 +581,9 @@ npm run build
 
 ### Problem: API requests fail with CORS error
 
-**Symptom:** Console shows `CORS policy: No 'Access-Control-Allow-Origin' header`
+**Symptom:** Console shows `CORS policy: No 'Access-Control-Allow-Origin' header`  
 
-**Solution:**
+**Solution:**  
 ```bash
 # 1. Verify API is running
 curl http://localhost:5000/health
@@ -603,9 +603,9 @@ export default defineConfig({
 
 ### Problem: Components not hot-reloading
 
-**Symptom:** Code changes not reflected in browser
+**Symptom:** Code changes not reflected in browser  
 
-**Solution:**
+**Solution:**  
 ```bash
 # 1. Check if dev server is running in watch mode
 npm run dev
@@ -622,9 +622,9 @@ sudo sysctl fs.inotify.max_user_watches=524288
 
 ### Problem: Large bundle size
 
-**Symptom:** `npm run build` generates large dist/ files (>1MB)
+**Symptom:** `npm run build` generates large dist/ files (>1MB)  
 
-**Solution:**
+**Solution:**  
 ```bash
 # 1. Analyze bundle
 npm run build -- --mode analyze
@@ -647,5 +647,5 @@ const routes = [
 ---
 
 **FE Agent** - {PROJECT_NAME} Frontend Engineering
-**Last Updated:** {YYYY-MM-DD}
-**Status:** ⏳ {Status}
+**Last Updated:** {YYYY-MM-DD}  
+**Status:** ⏳ {Status}  

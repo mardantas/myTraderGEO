@@ -7,9 +7,9 @@ MARKDOWN FORMATTING:
 
 # UXD-02-Wireframes.md
 
-**Projeto:** [PROJECT_NAME]
-**Data:** [YYYY-MM-DD]
-**Designer:** UXD Agent
+**Projeto:** [PROJECT_NAME]  
+**Data:** [YYYY-MM-DD]  
+**Designer:** UXD Agent  
 
 ---
 
@@ -21,7 +21,7 @@ Definir wireframes (low-fidelity) das telas críticas do sistema, especificando 
 
 ## 📐 Convenções
 
-**Símbolos:**
+**Símbolos:**  
 ```
 [Button]       - Botão clicável
 [Input]        - Campo de entrada
@@ -40,11 +40,11 @@ Definir wireframes (low-fidelity) das telas críticas do sistema, especificando 
 
 #### Tela: [Nome da Tela]
 
-**URL/Route:** `/[route]`
-**Acesso:** [Quem pode acessar]
-**Objetivo:** [O que o usuário faz aqui]
+**URL/Route:** `/[route]`  
+**Acesso:** [Quem pode acessar]  
+**Objetivo:** [O que o usuário faz aqui]  
 
-**Layout:**
+**Layout:**  
 
 ```
 +----------------------------------------------------------+
@@ -73,7 +73,7 @@ Definir wireframes (low-fidelity) das telas críticas do sistema, especificando 
 +----------------------------------------------------------+
 ```
 
-**Componentes:**
+**Componentes:**  
 1. **Header:** Logo + Navegação + User menu
 2. **Breadcrumb:** Navegação contextual
 3. **Action Bar:** Título + botões de ação primária
@@ -81,13 +81,13 @@ Definir wireframes (low-fidelity) das telas críticas do sistema, especificando 
 5. **Content List:** Lista/Grid de items
 6. **Pagination:** Navegação entre páginas
 
-**Interações:**
+**Interações:**  
 - Click em [+ Novo]: Abre modal/navegação para criar novo item
 - Click em {Edit}: Edita item inline ou modal
 - Click em {Del}: Confirmação + delete
 - Buscar: Filtra lista em tempo real
 
-**Estados:**
+**Estados:**  
 - Loading: Skeleton/spinner enquanto carrega
 - Empty: Mensagem "Nenhum item encontrado"
 - Error: Mensagem de erro clara
@@ -96,7 +96,7 @@ Definir wireframes (low-fidelity) das telas críticas do sistema, especificando 
 
 #### Tela: [Outra Tela do BC]
 
-**URL/Route:** `/[route]`
+**URL/Route:** `/[route]`  
 
 ```
 +----------------------------------------------------------+
@@ -136,7 +136,7 @@ graph LR
 
 ### Adaptações Mobile
 
-**[Tela Principal]:**
+**[Tela Principal]:**  
 - Navegação: Hamburger menu
 - Tabela: Card list vertical
 - Filtros: Bottom sheet

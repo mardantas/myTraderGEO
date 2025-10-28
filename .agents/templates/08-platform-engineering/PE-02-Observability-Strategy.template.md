@@ -7,10 +7,10 @@ MARKDOWN FORMATTING:
 
 # PE-02: Observability Strategy
 
-**Projeto:** [NOME-DO-PROJETO]
-**Data:** [DATA]
-**Platform Engineer:** [NOME]
-**Versão:** 1.0
+**Projeto:** [NOME-DO-PROJETO]  
+**Data:** [DATA]  
+**Platform Engineer:** [NOME]  
+**Versão:** 1.0  
 
 ---
 

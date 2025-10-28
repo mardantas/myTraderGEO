@@ -1,9 +1,9 @@
 # UXD-01 - [EpicName] - Wireframes
 
-**Agent:** UXD (User Experience Designer)
-**Phase:** Iteration (per epic)
-**Epic:** [EPIC_NAME]
-**Version:** 3.0 (Simplified)
+**Agent:** UXD (User Experience Designer)  
+**Phase:** Iteration (per epic)  
+**Epic:** [EPIC_NAME]  
+**Version:** 3.0 (Simplified)  
 
 ---
 
@@ -45,26 +45,26 @@ Criar wireframes específicos para o épico **[EPIC_NAME]**, detalhando as telas
 
 ### Use Case 1: [USE_CASE_NAME]
 
-**Actor:** [User Role]
+**Actor:** [User Role]  
 
-**Goal:** [What the user wants to achieve]
+**Goal:** [What the user wants to achieve]  
 
-**Preconditions:**
+**Preconditions:**  
 - [Condition 1]
 - [Condition 2]
 
-**Main Flow:**
+**Main Flow:**  
 1. User [action 1]
 2. System [response 1]
 3. User [action 2]
 4. System [response 2]
 5. Success message displayed
 
-**Alternative Flows:**
+**Alternative Flows:**  
 - **Alt 1:** [Error scenario - e.g., validation failure]
 - **Alt 2:** [Edge case - e.g., empty state]
 
-**Postconditions:**
+**Postconditions:**  
 - [Result 1]
 - [Result 2]
 
@@ -100,7 +100,7 @@ Start
 [Screen 2: Form with Error Messages]
 ```
 
-**Flow Description:**
+**Flow Description:**  
 1. **Entry:** User lands on [Screen 1]
 2. **Action:** User clicks [Button/Link]
 3. **Navigation:** System navigates to [Screen 2]
@@ -114,11 +114,11 @@ Start
 
 ### Screen 1: [SCREEN_NAME] - List View
 
-**Purpose:** Display list of [entities] and allow filtering/searching
+**Purpose:** Display list of [entities] and allow filtering/searching  
 
-**URL:** `/[path]` (e.g., `/strategies`)
+**URL:** `/[path]` (e.g., `/strategies`)  
 
-**Layout:**
+**Layout:**  
 ```
 ┌─────────────────────────────────────────────────┐
 │  [Logo]   Search [________] [+ Create New]      │ ← Header (Top Nav)
@@ -142,7 +142,7 @@ Start
 └─────────────────────────────────────────────────┘
 ```
 
-**Components Used:**
+**Components Used:**  
 - Top Navigation (from UXD-00)
 - Breadcrumbs (from UXD-00)
 - Filters (Select dropdowns)
@@ -151,12 +151,12 @@ Start
 - Secondary Button: "Edit"
 - Pagination
 
-**States:**
+**States:**  
 - **Empty State:** "No strategies found. Create your first strategy."
 - **Loading State:** Skeleton table rows
 - **Error State:** "Failed to load strategies. [Retry]"
 
-**Interactions:**
+**Interactions:**  
 - **Search:** Filters table in real-time (debounced)
 - **Filter dropdowns:** Applies on change or "Apply" button
 - **[+ Create New] button:** Navigates to Screen 2
@@ -167,11 +167,11 @@ Start
 
 ### Screen 2: [SCREEN_NAME] - Creation Form
 
-**Purpose:** Create new [entity]
+**Purpose:** Create new [entity]  
 
-**URL:** `/[path]/new` (e.g., `/strategies/new`)
+**URL:** `/[path]/new` (e.g., `/strategies/new`)  
 
-**Layout:**
+**Layout:**  
 ```
 ┌─────────────────────────────────────────────────┐
 │  [Logo]   [User Profile]                        │ ← Header
@@ -199,7 +199,7 @@ Start
 └─────────────────────────────────────────────────┘
 ```
 
-**Components Used:**
+**Components Used:**  
 - Form (from UXD-00)
 - Text Input (Name, Description)
 - Select Dropdown (Type)
@@ -207,18 +207,18 @@ Start
 - Primary Button: "Create Strategy"
 - Secondary Button: "Cancel"
 
-**Validation:**
+**Validation:**  
 - **Name:** Required, max 100 characters
 - **Type:** Required
 - **Quantity:** Required, > 0
 
-**States:**
+**States:**  
 - **Default:** Empty form
 - **Validation Error:** Red border on invalid fields, error message below
 - **Submitting:** Button disabled, loading spinner
 - **Success:** Redirect to Screen 3 (detail view) with success toast
 
-**Interactions:**
+**Interactions:**  
 - **[Cancel] button:** Navigates back to Screen 1 (with confirmation if form dirty)
 - **[Create Strategy] button:** Validates → API call → Success/Error handling
 - **Field blur:** Validates individual field (on blur)
@@ -227,11 +227,11 @@ Start
 
 ### Screen 3: [SCREEN_NAME] - Detail View
 
-**Purpose:** View details of [entity]
+**Purpose:** View details of [entity]  
 
-**URL:** `/[path]/{id}` (e.g., `/strategies/123`)
+**URL:** `/[path]/{id}` (e.g., `/strategies/123`)  
 
-**Layout:**
+**Layout:**  
 ```
 ┌─────────────────────────────────────────────────┐
 │  [Logo]   [User Profile]                        │ ← Header
@@ -261,19 +261,19 @@ Start
 └─────────────────────────────────────────────────┘
 ```
 
-**Components Used:**
+**Components Used:**  
 - Card (from UXD-00)
 - Badge (status indicator)
 - Table (positions)
 - Secondary Button: "Edit"
 - Danger Button: "Delete"
 
-**States:**
+**States:**  
 - **Loading:** Skeleton for card + table
 - **Error:** "Failed to load strategy. [Retry]"
 - **Empty Positions:** "No positions yet. [Add Position]"
 
-**Interactions:**
+**Interactions:**  
 - **[Edit] button:** Navigates to Screen 4 (edit form)
 - **[Delete] button:** Opens confirmation modal → API call → Navigate to Screen 1
 - **Position row click:** Navigate to position detail (if applicable)
@@ -282,11 +282,11 @@ Start
 
 ### Screen 4: [SCREEN_NAME] - Edit Form
 
-**Purpose:** Edit existing [entity]
+**Purpose:** Edit existing [entity]  
 
-**URL:** `/[path]/{id}/edit` (e.g., `/strategies/123/edit`)
+**URL:** `/[path]/{id}/edit` (e.g., `/strategies/123/edit`)  
 
-**Layout:**
+**Layout:**  
 ```
 [Similar to Screen 2, but with pre-filled values]
 
@@ -305,11 +305,11 @@ Start
 └─────────────────────────────────────────────────┘
 ```
 
-**Components Used:**
+**Components Used:**  
 - Same as Screen 2 (form components)
 - Primary Button: "Save Changes"
 
-**Interactions:**
+**Interactions:**  
 - **[Cancel] button:** Navigate back to Screen 3 (with confirmation if dirty)
 - **[Save Changes] button:** Validates → API call → Navigate to Screen 3 with success toast
 
@@ -317,11 +317,11 @@ Start
 
 ### Screen 5: [SCREEN_NAME] - Delete Confirmation Modal
 
-**Purpose:** Confirm deletion of [entity]
+**Purpose:** Confirm deletion of [entity]  
 
-**Triggered by:** Delete button on Screen 3
+**Triggered by:** Delete button on Screen 3  
 
-**Layout:**
+**Layout:**  
 ```
 ┌─────────────────────────────────────────┐
 │  Delete Strategy?                       │ ← Modal Header
@@ -334,12 +334,12 @@ Start
 └─────────────────────────────────────────┘
 ```
 
-**Components Used:**
+**Components Used:**  
 - Modal (from UXD-00)
 - Danger Button: "Delete"
 - Secondary Button: "Cancel"
 
-**Interactions:**
+**Interactions:**  
 - **[Cancel] button:** Close modal
 - **[Delete] button:** API call → Navigate to Screen 1 with success toast
 - **Click outside modal:** Close modal
@@ -372,23 +372,23 @@ List all UI components used in this epic's wireframes:
 
 ### Mobile Adaptations (< 600px)
 
-**Screen 1 (List View):**
+**Screen 1 (List View):**  
 - Table becomes card list (vertical stack)
 - Filters collapse into drawer
 - Search bar full width
 
-**Screen 2 (Form):**
+**Screen 2 (Form):**  
 - Form fields full width
 - Buttons stack vertically
 
-**Screen 3 (Detail View):**
+**Screen 3 (Detail View):**  
 - Positions table scrolls horizontally
 - Edit/Delete buttons stack vertically
 
-**Screen 4 (Edit Form):**
+**Screen 4 (Edit Form):**  
 - Same as Screen 2
 
-**Screen 5 (Modal):**
+**Screen 5 (Modal):**  
 - Modal full width (90% of screen)
 
 ---
@@ -456,18 +456,18 @@ List all UI components used in this epic's wireframes:
 
 ## 🚀 Handoff to Frontend Engineer (FE)
 
-**What FE receives (Day 7):**
+**What FE receives (Day 7):**  
 - ✅ This wireframes document (UXD-01)
 - ✅ Design foundations (UXD-00)
 - ✅ APIs from SE (backend endpoints ready)
 
-**FE Implementation (Days 7-9):**
+**FE Implementation (Days 7-9):**  
 - Implement screens based on wireframes
 - Use components from design foundations
 - Integrate with backend APIs
 - Implement validation, error handling, loading states
 
-**Collaboration Points:**
+**Collaboration Points:**  
 - FE can ask UXD clarification questions
 - If wireframe is ambiguous, FE creates feedback: `FEEDBACK-[ID]`
 
@@ -482,7 +482,7 @@ List all UI components used in this epic's wireframes:
 
 ---
 
-**Template Version:** 3.0
-**Last Updated:** 2025-10-08
-**Parallel Work:** SE implements backend (Days 3-6) while UXD creates wireframes
-**Next:** FE implements UI (Days 7-9) based on these wireframes
+**Template Version:** 3.0  
+**Last Updated:** 2025-10-08  
+**Parallel Work:** SE implements backend (Days 3-6) while UXD creates wireframes  
+**Next:** FE implements UI (Days 7-9) based on these wireframes  

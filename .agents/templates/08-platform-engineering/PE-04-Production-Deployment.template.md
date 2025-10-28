@@ -7,10 +7,10 @@ MARKDOWN FORMATTING:
 
 # PE-04: Production Deployment
 
-**Projeto:** [NOME-DO-PROJETO]
-**Data:** [DATA]
-**Platform Engineer:** [NOME]
-**Versão:** 1.0
+**Projeto:** [NOME-DO-PROJETO]  
+**Data:** [DATA]  
+**Platform Engineer:** [NOME]  
+**Versão:** 1.0  
 
 ---
 
@@ -361,7 +361,7 @@ echo "✅ All smoke tests passed"
 
 ---
 
-**Checklist de Deploy Produção:**
+**Checklist de Deploy Produção:**  
 
 - [ ] 1. Deploy GREEN (nova versão)
 - [ ] 2. Smoke tests (GREEN isolado)

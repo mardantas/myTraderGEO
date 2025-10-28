@@ -7,10 +7,10 @@ MARKDOWN FORMATTING:
 
 # UXD-00 - Design Foundations
 
-**Agent:** UXD (User Experience Designer)
-**Phase:** Discovery (1x)
-**Scope:** Design foundations for the entire system
-**Version:** 3.0 (Simplified)
+**Agent:** UXD (User Experience Designer)  
+**Phase:** Discovery (1x)  
+**Scope:** Design foundations for the entire system  
+**Version:** 3.0 (Simplified)  
 
 ---
 
@@ -104,17 +104,17 @@ Estabelecer as fundações do design para todo o sistema: cores, tipografia, com
 
 ### Font Families
 
-**Primary Font:** [Font Name] (e.g., Inter, Roboto, Open Sans)
+**Primary Font:** [Font Name] (e.g., Inter, Roboto, Open Sans)  
 - **Usage:** Body text, UI elements
 - **Weights:** 400 (Regular), 500 (Medium), 700 (Bold)
 - **Source:** [Google Fonts / System Font]
 
-**Heading Font:** [Font Name] (e.g., Poppins, Montserrat)
+**Heading Font:** [Font Name] (e.g., Poppins, Montserrat)  
 - **Usage:** Headings (H1-H6)
 - **Weights:** 600 (SemiBold), 700 (Bold)
 - **Source:** [Google Fonts / System Font]
 
-**Monospace Font:** [Font Name] (e.g., Fira Code, JetBrains Mono)
+**Monospace Font:** [Font Name] (e.g., Fira Code, JetBrains Mono)  
 - **Usage:** Code snippets, data displays
 - **Weights:** 400 (Regular)
 - **Source:** [Google Fonts / System Font]
@@ -187,7 +187,7 @@ body { font-family: var(--font-primary); font-size: var(--font-size-body); }
 - Border Radius: 4px
 - Padding: 10px 24px
 
-**Sizes:**
+**Sizes:**  
 - Small: padding 6px 16px, font-size 12px
 - Medium: padding 10px 24px, font-size 14px
 - Large: padding 14px 32px, font-size 16px
@@ -318,7 +318,7 @@ body { font-family: var(--font-primary); font-size: var(--font-size-body); }
 
 ### Top Navigation Bar
 
-**Desktop:**
+**Desktop:**  
 - Height: 64px
 - Logo: Left (max height 40px)
 - Menu Items: Center or Left after logo
@@ -326,7 +326,7 @@ body { font-family: var(--font-primary); font-size: var(--font-size-body); }
 - Background: White
 - Box Shadow: 0 1px 3px rgba(0,0,0,0.1)
 
-**Mobile:**
+**Mobile:**  
 - Height: 56px
 - Hamburger menu: Left
 - Logo: Center
@@ -334,13 +334,13 @@ body { font-family: var(--font-primary); font-size: var(--font-size-body); }
 
 ### Sidebar Navigation (if applicable)
 
-**Desktop:**
+**Desktop:**  
 - Width: 240px (collapsed: 64px)
 - Position: Fixed left
 - Menu items: Icon + Label
 - Active item: Background `var(--color-primary)` 10%, border-left `var(--color-primary)` 4px
 
-**Mobile:**
+**Mobile:**  
 - Drawer: slides from left
 - Overlay: background rgba(0,0,0,0.5)
 
@@ -447,19 +447,19 @@ body { font-family: var(--font-primary); font-size: var(--font-size-body); }
 
 ### Icon Library
 
-**Selected Library:** [Choose one]
+**Selected Library:** [Choose one]  
 - [ ] Material Icons (Google)
 - [ ] Heroicons (Tailwind)
 - [ ] Feather Icons
 - [ ] Font Awesome
 - [ ] Custom SVG icons
 
-**Icon Sizes:**
+**Icon Sizes:**  
 - Small: 16px × 16px
 - Medium: 24px × 24px (default)
 - Large: 32px × 32px
 
-**Common Icons:**
+**Common Icons:**  
 - Navigation: home, search, menu, close, chevron-down, chevron-right
 - Actions: edit, delete, add, save, cancel, refresh
 - Status: check-circle (success), alert-triangle (warning), x-circle (error), info-circle (info)
@@ -554,6 +554,6 @@ body { font-family: var(--font-primary); font-size: var(--font-size-body); }
 
 ---
 
-**Template Version:** 3.0
-**Last Updated:** 2025-10-08
-**Next Document:** UXD-01-[EpicName]-Wireframes (per epic)
+**Template Version:** 3.0  
+**Last Updated:** 2025-10-08  
+**Next Document:** UXD-01-[EpicName]-Wireframes (per epic)  

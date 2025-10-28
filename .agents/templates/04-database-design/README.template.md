@@ -7,9 +7,9 @@ MARKDOWN FORMATTING:
 
 # 04-database - Database Scripts & Migrations
 
-**Projeto:** {PROJECT_NAME}
-**Database:** PostgreSQL 15+
-**Responsible Agent:** DBA Agent
+**Projeto:** {PROJECT_NAME}  
+**Database:** PostgreSQL 15+  
+**Responsible Agent:** DBA Agent  
 
 ---
 
@@ -17,11 +17,11 @@ MARKDOWN FORMATTING:
 
 This is a **quick reference guide** for executing database migrations and managing database users. For strategic decisions, database design details, and trade-offs, consult [DBA-01-{EpicName}-Database-Design-Decisions.md](../00-doc-ddd/05-database-design/DBA-01-{EpicName}-Database-Design-Decisions.md).
 
-**Document Separation:**
+**Document Separation:**  
 - **This README:** Commands and checklists (HOW to execute)
 - **DBA-01:** Design decisions, justifications, and trade-offs (WHY and WHAT)
 
-**Principle:** README is an INDEX/QUICK-REFERENCE to DBA-01, not a duplicate.
+**Principle:** README is an INDEX/QUICK-REFERENCE to DBA-01, not a duplicate.  
 
 ---
 
@@ -95,11 +95,11 @@ ConnectionStrings__ReadOnlyConnection=Host=database;Port=5432;Database={project}
 
 Users are created automatically by the script:
 
-**File:** [init-scripts/01-create-app-user.sql](init-scripts/01-create-app-user.sql)
+**File:** [init-scripts/01-create-app-user.sql](init-scripts/01-create-app-user.sql)  
 
-**Execution:** Automatic on first PostgreSQL container initialization via `/docker-entrypoint-initdb.d/`
+**Execution:** Automatic on first PostgreSQL container initialization via `/docker-entrypoint-initdb.d/`  
 
-**Idempotency:** ✅ Yes (uses `IF NOT EXISTS` - safe to re-execute)
+**Idempotency:** ✅ Yes (uses `IF NOT EXISTS` - safe to re-execute)  
 
 ---
 
@@ -107,7 +107,7 @@ Users are created automatically by the script:
 
 ### Execution Order
 
-**⚠️ IMPORTANT:** Execute in correct order to avoid dependency errors.
+**⚠️ IMPORTANT:** Execute in correct order to avoid dependency errors.  
 
 ```bash
 # 1. Init Scripts (automatic on first time)
@@ -290,11 +290,11 @@ This section connects operational README with strategic documentation.
 
 ### Problem: Init script did not execute
 
-**Symptom:** Users `{project}_app` and `{project}_readonly` do not exist
+**Symptom:** Users `{project}_app` and `{project}_readonly` do not exist  
 
-**Cause:** PostgreSQL volume already existed (init scripts only execute on first time)
+**Cause:** PostgreSQL volume already existed (init scripts only execute on first time)  
 
-**Solution:**
+**Solution:**  
 ```bash
 # 1. Stop container
 docker compose down
@@ -311,11 +311,11 @@ docker compose logs database | grep "Creating application users"
 
 ### Problem: Permission denied when executing migration
 
-**Symptom:** `ERROR: permission denied for schema public`
+**Symptom:** `ERROR: permission denied for schema public`  
 
-**Cause:** Connected with wrong user or user does not have permissions
+**Cause:** Connected with wrong user or user does not have permissions  
 
-**Solution:**
+**Solution:**  
 ```bash
 # Check current user
 \conninfo
@@ -329,11 +329,11 @@ docker compose exec database psql -U postgres -d {project}_dev -f /docker-entryp
 
 ### Problem: .NET application cannot connect to database
 
-**Symptom:** `Npgsql.NpgsqlException: password authentication failed for user "{project}_app"`
+**Symptom:** `Npgsql.NpgsqlException: password authentication failed for user "{project}_app"`  
 
-**Cause:** Incorrect password in `.env` or connection string
+**Cause:** Incorrect password in `.env` or connection string  
 
-**Solution:**
+**Solution:**  
 ```bash
 # 1. Verify connection string in .env
 cat 05-infra/configs/.env | grep ConnectionStrings__DefaultConnection
@@ -348,5 +348,5 @@ docker compose restart api
 ---
 
 **DBA Agent** - {PROJECT_NAME} Database Management
-**Last Updated:** {YYYY-MM-DD}
-**Status:** ⏳ {Epic Status}
+**Last Updated:** {YYYY-MM-DD}  
+**Status:** ⏳ {Epic Status}  
