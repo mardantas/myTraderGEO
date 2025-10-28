@@ -189,12 +189,13 @@ Realizei análise completa de compatibilidade Docker Compose vs Docker Swarm vs 
    - **Path 3 (Enterprise):** Kubernetes (EKS/GKE/AKS)
 
 **Deliverables Atualizados:**
-- [x] PE-00-Environments-Setup.md - Seção "🚀 Scaling Strategy & Orchestration" adicionada (~250 linhas)
-  - Current Approach justificado (Docker Compose para MVP)
-  - Decision Matrix com thresholds claros
-  - 3 Migration Paths documentados com custos e esforços
-  - Docker Compose → Swarm compatibility reference
-  - Recommendation Summary (phased approach)
+- [x] PE-00-Environments-Setup.md - Seção "🚀 Estratégia de Escalabilidade e Orquestração" adicionada (~250 linhas)
+  - Abordagem Atual justificada (Docker Compose para MVP)
+  - Matriz de Decisão com thresholds claros
+  - 3 Caminhos de Migração documentados com custos e esforços
+  - Referência de compatibilidade Docker Compose → Swarm
+  - Resumo da Recomendação (phased approach)
+  - **Nomenclatura corrigida:** Títulos de seções traduzidos para português (aderente ao padrão 02-Nomenclature-Standards.md)
 
 **Decisão Final:**
 
@@ -231,3 +232,4 @@ Realizei análise completa de compatibilidade Docker Compose vs Docker Swarm vs 
 |------|---------|-------|
 | 2025-10-28 | Criado | User (Marco) |
 | 2025-10-28 | Resolvido - Seção "Scaling Strategy" adicionada ao PE-00 | PE Agent |
+| 2025-10-28 | Correção de nomenclatura - Títulos traduzidos para português | PE Agent |

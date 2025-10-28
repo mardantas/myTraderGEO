@@ -471,9 +471,9 @@ Docker Desktop armazena named volumes no filesystem WSL2:
 
 ---
 
-## 🚀 Scaling Strategy & Orchestration
+## 🚀 Estratégia de Escalabilidade e Orquestração
 
-### Current Approach: Docker Compose Standalone
+### Abordagem Atual: Docker Compose Standalone
 
 **Why Docker Compose (not Swarm/K8s for MVP)?**
 
@@ -484,7 +484,7 @@ Docker Desktop armazena named volumes no filesystem WSL2:
 - ✅ **Menor Complexidade Operacional:** Time pequeno (1-3 pessoas) consegue gerenciar sem SRE dedicado
 - ✅ **Pragmatismo:** YAGNI (You Aren't Gonna Need It) - implementar HA/auto-scaling prematuramente é over-engineering
 
-**Suitable for:**
+**Adequado para:**
 
 - 👍 MVP e validação de mercado (primeiros 6-12 meses)
 - 👍 Até 10-50k usuários simultâneos (dependendo da carga por requisição)
@@ -492,7 +492,7 @@ Docker Desktop armazena named volumes no filesystem WSL2:
 - 👍 Orçamento limitado (startup/projeto pessoal)
 - 👍 Time pequeno sem experiência em orquestração
 
-**Limitations:**
+**Limitações:**
 
 - ⚠️ **Single-host:** Se servidor cai, aplicação fica indisponível (mitigado com 2 servidores: staging + production separados)
 - ⚠️ **Escalabilidade Horizontal Limitada:** Difícil adicionar réplicas de API (possível mas manual)
@@ -502,7 +502,7 @@ Docker Desktop armazena named volumes no filesystem WSL2:
 
 ---
 
-### When to Migrate: Decision Matrix
+### Quando Migrar: Matriz de Decisão
 
 **Migre para orquestração quando atingir QUALQUER um destes thresholds:**
 
@@ -526,9 +526,9 @@ Docker Desktop armazena named volumes no filesystem WSL2:
 
 ---
 
-### Migration Paths
+### Caminhos de Migração
 
-#### Path 1: Managed Cloud Services (Recomendado se houver crescimento)
+#### Caminho 1: Serviços de Nuvem Gerenciada (Recomendado se houver crescimento)
 
 **Quando:** 10k-50k usuários, SLA 99%+, $10k-100k MRR
 
@@ -561,7 +561,7 @@ Docker Desktop armazena named volumes no filesystem WSL2:
 
 ---
 
-#### Path 2: Docker Swarm (Opcional - Menos Recomendado)
+#### Caminho 2: Docker Swarm (Opcional - Menos Recomendado)
 
 **Quando:** Crescimento moderado mas quer manter self-hosted, team tem experiência Docker
 
@@ -631,7 +631,7 @@ services:
 
 ---
 
-#### Path 3: Kubernetes (Enterprise Scale)
+#### Caminho 3: Kubernetes (Escala Enterprise)
 
 **Quando:** >50k usuários, SLA 99.9%+, $100k+ MRR, multi-região necessária
 
@@ -674,7 +674,7 @@ services:
 
 ---
 
-### Recommendation Summary
+### Resumo da Recomendação
 
 **Estratégia Recomendada (Phased Approach):**
 
@@ -702,7 +702,7 @@ Phase 3: Scale (Se explodir)
 
 ---
 
-### Docker Compose → Swarm Compatibility Reference
+### Referência de Compatibilidade: Docker Compose → Swarm
 
 **Se no futuro decidir migrar para Swarm, estas são as incompatibilidades atuais:**
 
