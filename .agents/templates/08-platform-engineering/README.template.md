@@ -68,24 +68,24 @@ This is a **quick reference guide** for executing infrastructure commands (Docke
 ### 1. Configure Environment Variables
 
 ```bash
-# Copy template
-cp 05-infra/configs/.env.example 05-infra/configs/.env
+# Copy template for development
+cp 05-infra/configs/.env.example 05-infra/configs/.env.dev
 
-# Edit .env with your credentials
-nano 05-infra/configs/.env
+# Edit .env.dev with your credentials
+nano 05-infra/configs/.env.dev
 ```
 
 ### 2. Development - Start Local Environment
 
 ```bash
 # Start all services
-docker compose -f 05-infra/docker/docker-compose.yml up -d
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev up -d
 
 # View logs
-docker compose -f 05-infra/docker/docker-compose.yml logs -f
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev logs -f
 
 # Stop services
-docker compose -f 05-infra/docker/docker-compose.yml down
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev down
 ```
 
 **Access:**  
@@ -117,33 +117,33 @@ docker compose -f 05-infra/docker/docker-compose.yml down
 
 ```bash
 # Start all services
-docker compose -f 05-infra/docker/docker-compose.yml up -d
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev up -d
 
 # Start specific service
-docker compose -f 05-infra/docker/docker-compose.yml up -d database
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev up -d database
 
 # View logs (all services)
-docker compose logs -f
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev logs -f
 
 # View logs (specific service)
-docker compose logs -f api
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev logs -f api
 
 # Restart service
-docker compose restart api
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev restart api
 
 # Stop all services
-docker compose down
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev down
 
 # Stop and remove volumes (⚠️ WARNING: deletes data!)
-docker compose down -v
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev down -v
 
 # Rebuild image (after Dockerfile changes)
-docker compose build api
-docker compose up -d api
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev build api
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev up -d api
 
 # Execute command in running container
-docker compose exec api bash
-docker compose exec database psql -U {project}_app -d {project}_dev
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev exec api bash
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev exec database psql -U {project}_app -d {project}_dev
 ```
 
 ### Staging
@@ -153,13 +153,13 @@ docker compose exec database psql -U {project}_app -d {project}_dev
 ./05-infra/scripts/deploy.sh staging latest
 
 # View logs
-docker compose -f 05-infra/docker/docker-compose.staging.yml logs -f
+docker compose -f 05-infra/docker/docker-compose.staging.yml --env-file 05-infra/configs/.env.staging logs -f
 
 # Restart service
-docker compose -f 05-infra/docker/docker-compose.staging.yml restart api
+docker compose -f 05-infra/docker/docker-compose.staging.yml --env-file 05-infra/configs/.env.staging restart api
 
 # Stop
-docker compose -f 05-infra/docker/docker-compose.staging.yml down
+docker compose -f 05-infra/docker/docker-compose.staging.yml --env-file 05-infra/configs/.env.staging down
 ```
 
 ### Production
@@ -169,13 +169,13 @@ docker compose -f 05-infra/docker/docker-compose.staging.yml down
 ./05-infra/scripts/deploy.sh production v1.0.0
 
 # View logs
-docker compose -f 05-infra/docker/docker-compose.production.yml logs -f
+docker compose -f 05-infra/docker/docker-compose.production.yml --env-file 05-infra/configs/.env.production logs -f
 
 # Health check
 curl https://{domain}/health
 
 # Stop (with confirmation)
-docker compose -f 05-infra/docker/docker-compose.production.yml down
+docker compose -f 05-infra/docker/docker-compose.production.yml --env-file 05-infra/configs/.env.production down
 ```
 
 ---
@@ -221,16 +221,20 @@ docker compose -f 05-infra/docker/docker-compose.production.yml down
 - Backend: `05-infra/dockerfiles/backend/Dockerfile`
 - Frontend: `05-infra/dockerfiles/frontend/Dockerfile` (Nginx)
 
-**Access:**  
+**Access:**
 - Frontend: https://staging.{domain}
 - Backend API: https://api-staging.{domain}
 - Traefik Dashboard: https://traefik-staging.{domain}
+  - User: `admin`
+  - Password: `change_me` (change in `.env.staging`)
+
+**Note:** All traffic is routed through Traefik (automatic HTTPS with Let's Encrypt staging CA).
 
 ---
 
 ### Production
 
-**Characteristics:**  
+**Characteristics:**
 - Production build (fully optimized)
 - Traefik reverse proxy (HTTPS with Let's Encrypt production)
 - Automated SSL certificates (trusted CA)
@@ -240,16 +244,21 @@ docker compose -f 05-infra/docker/docker-compose.production.yml down
 - Health checks configured
 - Auto-restart policies
 
-**Docker Compose:** `05-infra/docker/docker-compose.production.yml`  
+**Docker Compose:** `05-infra/docker/docker-compose.production.yml`
 
-**Dockerfiles:**  
+**Dockerfiles:**
 - Backend: `05-infra/dockerfiles/backend/Dockerfile`
 - Frontend: `05-infra/dockerfiles/frontend/Dockerfile` (Nginx)
 
-**Access:**  
+**Access:**
 - Frontend: https://{domain}
 - Backend API: https://api.{domain}
-- Traefik Dashboard: https://traefik.{domain} (restricted)
+- Traefik Dashboard: https://traefik.{domain}
+  - User: `admin`
+  - Password: configured in `.env.production`
+  - **IP Whitelist:** Configure `YOUR_IP_ADDRESS` in `.env.production` for security
+
+**Note:** All traffic is routed through Traefik (automatic HTTPS with Let's Encrypt trusted CA).
 
 ---
 
@@ -257,9 +266,9 @@ docker compose -f 05-infra/docker/docker-compose.production.yml down
 
 ### Development
 
-**File:** `05-infra/configs/.env` (local, gitignored)  
+**File:** `05-infra/configs/.env.dev` (local, gitignored)
 
-**Required Variables:**  
+**Required Variables:**
 ```bash
 # Database
 DB_HOST=database
@@ -281,13 +290,15 @@ SMTP_PASSWORD=your_mailtrap_password
 
 ### Staging/Production
 
-**Storage:** GitHub Secrets (Settings → Secrets and variables → Actions)  
+**Storage:** GitHub Secrets (Settings → Secrets and variables → Actions)
 
-**Required Secrets:**  
+**Required Secrets:**
 - `DB_PASSWORD_STAGING` / `DB_PASSWORD_PRODUCTION`
 - `JWT_SECRET_STAGING` / `JWT_SECRET_PRODUCTION`
 - `SMTP_PASSWORD_STAGING` / `SMTP_PASSWORD_PRODUCTION`
-- `CLOUDFLARE_API_TOKEN` (for DNS validation - optional)
+- `LETSENCRYPT_EMAIL` - Email for Let's Encrypt SSL certificates
+- `DOMAIN` - Your domain (e.g., `example.com`)
+- `YOUR_IP_ADDRESS` - Your IP for Traefik Dashboard whitelist (production only)
 
 **Deployment:** Secrets injected via GitHub Actions workflow or manual `docker compose` with `--env-file`  
 
@@ -388,8 +399,8 @@ This section connects operational README with strategic documentation.
 
 2. **Missing .env file:**
    ```bash
-   # Copy example
-   cp 05-infra/configs/.env.example 05-infra/configs/.env
+   # Copy example for development
+   cp 05-infra/configs/.env.example 05-infra/configs/.env.dev
    ```
 
 3. **Docker daemon not running:**
@@ -410,8 +421,8 @@ docker compose ps
 # 2. Check database logs
 docker compose logs database
 
-# 3. Verify connection string in .env
-cat 05-infra/configs/.env | grep DB_
+# 3. Verify connection string in .env.dev
+cat 05-infra/configs/.env.dev | grep DB_
 
 # 4. Test connection manually
 docker compose exec database psql -U {project}_app -d {project}_dev -c "SELECT 1;"

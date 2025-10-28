@@ -36,7 +36,7 @@ Configurar ambientes básicos (dev, staging, production) com Docker Compose e sc
 
 | Environment | Purpose | Infrastructure | Deploy Method |
 |-------------|---------|----------------|---------------|
-| **Development** | Local development | Docker Compose | `docker-compose up` |
+| **Development** | Local development | Docker Compose | `docker-compose -f docker-compose.dev.yml --env-file .env.dev up` |
 | **Staging** | Pre-production testing | [SERVER/CLOUD] | `./deploy.sh staging` |
 | **Production** | Live users | [SERVER/CLOUD] | `./deploy.sh production` |
 
@@ -111,42 +111,163 @@ volumes:
   postgres_data:
 ```
 
-### Staging Environment
+---
 
-**File:** `docker-compose.staging.yml`  
+## 🔀 Traefik Reverse Proxy (Staging + Production)
+
+### Por Que Traefik?
+
+**Traefik v3.0** é usado em **staging e production** (não em development) para:
+
+1. **SSL Automático (Let's Encrypt)**
+   - Certificados HTTPS automáticos
+   - Staging: usa Let's Encrypt staging CA (não polui rate limits)
+   - Production: usa Let's Encrypt production CA (certificados trusted)
+
+2. **Routing Declarativo**
+   - Configuração via labels Docker (simples)
+   - Não precisa editar arquivos nginx.conf complexos
+   - Auto-discovery de serviços
+
+3. **Load Balancing Nativo**
+   - Preparado para escalar horizontalmente
+   - Múltiplas réplicas do mesmo serviço
+
+4. **Dashboard de Monitoramento**
+   - Interface web para visualizar rotas e serviços
+   - Útil para troubleshooting
+
+### Quando NÃO Usar Traefik
+
+**Development (localhost):**
+- ❌ Sem domínio real → sem SSL necessário
+- ❌ Acesso direto via `localhost:5173`, `localhost:5000` é mais simples
+- ❌ Hot reload funciona melhor sem proxy reverso
+
+### Traefik Configuration
+
+**File:** `05-infra/configs/traefik.yml`
+
+```yaml
+# Traefik Static Configuration
+# Docs: https://doc.traefik.io/traefik/
+
+api:
+  dashboard: true  # Enable web dashboard
+  insecure: false  # Require authentication (configure in docker-compose)
+
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
+
+  websecure:
+    address: ":443"
+    http:
+      tls:
+        certResolver: letsencrypt
+
+certificatesResolvers:
+  # Let's Encrypt Staging (for testing - doesn't hit rate limits)
+  letsencrypt-staging:
+    acme:
+      email: ${LETSENCRYPT_EMAIL}
+      storage: /letsencrypt/acme.json
+      caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+      httpChallenge:
+        entryPoint: web
+
+  # Let's Encrypt Production (for production - trusted certificates)
+  letsencrypt:
+    acme:
+      email: ${LETSENCRYPT_EMAIL}
+      storage: /letsencrypt/acme.json
+      httpChallenge:
+        entryPoint: web
+
+providers:
+  docker:
+    exposedByDefault: false  # Only expose services with traefik.enable=true
+```
+
+### Docker Compose with Traefik (Staging)
+
+**File:** `docker-compose.staging.yml`
 
 ```yaml
 version: '3.8'
 
 services:
+  # Traefik Reverse Proxy
+  traefik:
+    image: traefik:v3.0
+    command:
+      - "--configFile=/etc/traefik/traefik.yml"
+      - "--certificatesresolvers.letsencrypt.acme.email=${LETSENCRYPT_EMAIL}"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./05-infra/configs/traefik.yml:/etc/traefik/traefik.yml:ro
+      - traefik-letsencrypt:/letsencrypt
+    networks:
+      - web
+    restart: unless-stopped
+    labels:
+      # Traefik Dashboard
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik-staging.${DOMAIN}`)"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.tls.certresolver=letsencrypt-staging"
+      - "traefik.http.routers.traefik.service=api@internal"
+      # Basic Auth (user: admin, password: change_me)
+      - "traefik.http.routers.traefik.middlewares=auth"
+      - "traefik.http.middlewares.auth.basicauth.users=admin:$$apr1$$8EVjn/nj$$GiLUZqcbueTFeD23SuB6x0"
+
+  # Backend API
   api:
     image: ${DOCKER_REGISTRY}/api:staging
-    ports:
-      - "5000:5000"
     environment:
       - ASPNETCORE_ENVIRONMENT=Staging
       - DATABASE_URL=${DATABASE_URL_STAGING}
       - JWT_SECRET=${JWT_SECRET}
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
+    depends_on:
+      - database
+    networks:
+      - web
+      - backend
     restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api-staging.rule=Host(`api-staging.${DOMAIN}`)"
+      - "traefik.http.routers.api-staging.entrypoints=websecure"
+      - "traefik.http.routers.api-staging.tls.certresolver=letsencrypt-staging"
+      - "traefik.http.services.api-staging.loadbalancer.server.port=5000"
 
+  # Frontend
   frontend:
     image: ${DOCKER_REGISTRY}/frontend:staging
-    ports:
-      - "3000:3000"
     environment:
-      - VITE_API_URL=${API_URL_STAGING}
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
+      - VITE_API_URL=https://api-staging.${DOMAIN}
+    depends_on:
+      - api
+    networks:
+      - web
     restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend-staging.rule=Host(`staging.${DOMAIN}`)"
+      - "traefik.http.routers.frontend-staging.entrypoints=websecure"
+      - "traefik.http.routers.frontend-staging.tls.certresolver=letsencrypt-staging"
+      - "traefik.http.services.frontend-staging.loadbalancer.server.port=80"
 
+  # Database
   database:
     image: postgres:15-alpine
     environment:
@@ -155,54 +276,100 @@ services:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     volumes:
       - postgres_staging_data:/var/lib/postgresql/data
+    networks:
+      - backend
     restart: unless-stopped
+
+networks:
+  web:
+    driver: bridge
+  backend:
+    driver: bridge
 
 volumes:
   postgres_staging_data:
+  traefik-letsencrypt:
 ```
 
-### Production Environment
+### Docker Compose with Traefik (Production)
 
-**File:** `docker-compose.prod.yml`  
+**File:** `docker-compose.prod.yml`
 
 ```yaml
 version: '3.8'
 
 services:
+  # Traefik Reverse Proxy
+  traefik:
+    image: traefik:v3.0
+    command:
+      - "--configFile=/etc/traefik/traefik.yml"
+      - "--certificatesresolvers.letsencrypt.acme.email=${LETSENCRYPT_EMAIL}"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./05-infra/configs/traefik.yml:/etc/traefik/traefik.yml:ro
+      - traefik-letsencrypt:/letsencrypt
+    networks:
+      - web
+    restart: always
+    labels:
+      # Traefik Dashboard (Production - IP whitelist recommended)
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN}`)"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.traefik.service=api@internal"
+      # Basic Auth + IP Whitelist (configure YOUR_IP_ADDRESS)
+      - "traefik.http.routers.traefik.middlewares=auth,ipwhitelist"
+      - "traefik.http.middlewares.auth.basicauth.users=admin:$$apr1$$8EVjn/nj$$GiLUZqcbueTFeD23SuB6x0"
+      - "traefik.http.middlewares.ipwhitelist.ipwhitelist.sourcerange=${YOUR_IP_ADDRESS}/32"
+
+  # Backend API
   api:
     image: ${DOCKER_REGISTRY}/api:${VERSION}
-    ports:
-      - "5000:5000"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - DATABASE_URL=${DATABASE_URL_PROD}
       - JWT_SECRET=${JWT_SECRET_PROD}
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "5"
+    depends_on:
+      - database
+    networks:
+      - web
+      - backend
     restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api-prod.rule=Host(`api.${DOMAIN}`)"
+      - "traefik.http.routers.api-prod.entrypoints=websecure"
+      - "traefik.http.routers.api-prod.tls.certresolver=letsencrypt"
+      - "traefik.http.services.api-prod.loadbalancer.server.port=5000"
 
+  # Frontend
   frontend:
     image: ${DOCKER_REGISTRY}/frontend:${VERSION}
-    ports:
-      - "80:80"
-      - "443:443"
     environment:
-      - VITE_API_URL=${API_URL_PROD}
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "5"
+      - VITE_API_URL=https://api.${DOMAIN}
+    depends_on:
+      - api
+    networks:
+      - web
     restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend-prod.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.frontend-prod.entrypoints=websecure"
+      - "traefik.http.routers.frontend-prod.tls.certresolver=letsencrypt"
+      - "traefik.http.services.frontend-prod.loadbalancer.server.port=80"
 
+  # Database
   database:
     image: postgres:15-alpine
     environment:
@@ -211,10 +378,76 @@ services:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     volumes:
       - postgres_prod_data:/var/lib/postgresql/data
+    networks:
+      - backend
     restart: always
+
+networks:
+  web:
+    driver: bridge
+  backend:
+    driver: bridge
 
 volumes:
   postgres_prod_data:
+  traefik-letsencrypt:
+```
+
+### Acesso aos Serviços
+
+#### Staging
+- **Frontend:** https://staging.{DOMAIN}
+- **Backend API:** https://api-staging.{DOMAIN}
+- **Traefik Dashboard:** https://traefik-staging.{DOMAIN} (user: `admin`, pwd: `change_me`)
+
+#### Production
+- **Frontend:** https://{DOMAIN}
+- **Backend API:** https://api.{DOMAIN}
+- **Traefik Dashboard:** https://traefik.{DOMAIN} (IP whitelist + basic auth)
+
+### Troubleshooting Traefik
+
+**Problema: SSL certificate not issued**
+
+```bash
+# 1. Check Traefik logs
+docker compose logs traefik
+
+# 2. Verify DNS points to server
+nslookup {DOMAIN}
+
+# 3. Check if ports 80/443 are open
+curl -I http://{DOMAIN}
+
+# 4. Verify email in .env (for Let's Encrypt)
+cat .env.staging | grep LETSENCRYPT_EMAIL
+
+# 5. Check acme.json permissions
+docker exec traefik ls -la /letsencrypt/acme.json
+# Should be 600 (rw-------)
+
+# 6. Staging: Check if using Let's Encrypt staging CA
+docker compose logs traefik | grep "acme-staging"
+
+# 7. Production: Ensure using production CA (not staging)
+docker compose logs traefik | grep "acme-v02.api.letsencrypt.org"
+```
+
+**Problema: Service not accessible**
+
+```bash
+# 1. Check if service is registered in Traefik
+docker compose exec traefik wget -O- http://localhost:8080/api/http/routers
+
+# 2. Verify labels are correct
+docker compose config | grep -A 10 "labels:"
+
+# 3. Check if service is in correct network
+docker compose exec traefik ping api
+docker compose exec traefik ping frontend
+
+# 4. Verify traefik.enable=true label
+docker inspect {container_name} | grep traefik.enable
 ```
 
 ---
@@ -269,12 +502,12 @@ fi
 
 # Deploy to server
 echo "🚢 Deploying containers..."
-docker-compose -f docker-compose.$ENVIRONMENT.yml down
-docker-compose -f docker-compose.$ENVIRONMENT.yml up -d
+docker-compose -f docker-compose.$ENVIRONMENT.yml --env-file .env.$ENVIRONMENT down
+docker-compose -f docker-compose.$ENVIRONMENT.yml --env-file .env.$ENVIRONMENT up -d
 
 # Run migrations
 echo "🗄️  Running database migrations..."
-docker-compose -f docker-compose.$ENVIRONMENT.yml exec -T api dotnet ef database update
+docker-compose -f docker-compose.$ENVIRONMENT.yml --env-file .env.$ENVIRONMENT exec -T api dotnet ef database update
 
 # Health check
 echo "🏥 Running health checks..."
@@ -318,8 +551,8 @@ export $(cat ".env.$ENVIRONMENT" | xargs)
 export VERSION=$PREVIOUS_VERSION
 
 # Deploy previous version
-docker-compose -f docker-compose.$ENVIRONMENT.yml down
-docker-compose -f docker-compose.$ENVIRONMENT.yml up -d
+docker-compose -f docker-compose.$ENVIRONMENT.yml --env-file .env.$ENVIRONMENT down
+docker-compose -f docker-compose.$ENVIRONMENT.yml --env-file .env.$ENVIRONMENT up -d
 
 echo "✅ Rollback completed!"
 ```
@@ -340,6 +573,13 @@ VERSION=1.0.0
 # Docker Registry (optional - for remote deployments)
 DOCKER_REGISTRY=
 
+# Domain (for Traefik SSL certificates - staging/production only)
+DOMAIN=tradergeo.com
+LETSENCRYPT_EMAIL=admin@tradergeo.com
+
+# IP Whitelist (for Traefik Dashboard - production only)
+YOUR_IP_ADDRESS=203.0.113.0
+
 # Database
 DB_NAME=tradergeo
 DB_USER=postgres
@@ -351,8 +591,8 @@ DATABASE_URL_STAGING=postgresql://${DB_USER}:${DB_PASSWORD}@staging-db-host:5432
 DATABASE_URL_PROD=postgresql://${DB_USER}:${DB_PASSWORD}@prod-db-host:5432/${DB_NAME_PROD}
 
 # API URLs
-API_URL_STAGING=https://staging-api.tradergeo.com
-API_URL_PROD=https://api.tradergeo.com
+API_URL_STAGING=https://api-staging.${DOMAIN}
+API_URL_PROD=https://api.${DOMAIN}
 
 # Secrets (CHANGE IN PRODUCTION!)
 JWT_SECRET=CHANGE_ME_MINIMUM_32_CHARACTERS
@@ -373,12 +613,22 @@ Create these files (DO NOT commit to git):
 - `.env.staging` (staging server)
 - `.env.production` (production server)
 
-**Add to .gitignore:**  
+**Add to .gitignore:**
 ```
-.env
-.env.dev
-.env.staging
-.env.production
+.env*
+!.env.example
+```
+
+**Usage:**
+```bash
+# Development
+docker-compose -f docker-compose.dev.yml --env-file .env.dev up
+
+# Staging
+docker-compose -f docker-compose.staging.yml --env-file .env.staging up
+
+# Production
+docker-compose -f docker-compose.production.yml --env-file .env.production up
 ```
 
 ---
@@ -395,16 +645,16 @@ All containers configured with JSON logging:
 
 ```bash
 # View logs (development)
-docker-compose logs -f api
-docker-compose logs -f frontend
+docker-compose -f docker-compose.dev.yml --env-file .env.dev logs -f api
+docker-compose -f docker-compose.dev.yml --env-file .env.dev logs -f frontend
 
 # View logs (staging/production)
-docker-compose -f docker-compose.staging.yml logs -f api
-docker-compose -f docker-compose.production.yml logs -f api
+docker-compose -f docker-compose.staging.yml --env-file .env.staging logs -f api
+docker-compose -f docker-compose.production.yml --env-file .env.production logs -f api
 
 # Filter by time
-docker-compose logs --since 30m api
-docker-compose logs --tail=100 api
+docker-compose -f docker-compose.dev.yml --env-file .env.dev logs --since 30m api
+docker-compose -f docker-compose.dev.yml --env-file .env.dev logs --tail=100 api
 ```
 
 ---
@@ -599,21 +849,31 @@ volumes:
 
 ### Development Environment
 - [ ] `docker-compose.dev.yml` criado
-- [ ] `docker-compose up` funciona localmente
+- [ ] `.env.dev` configurado
+- [ ] `docker-compose -f docker-compose.dev.yml --env-file .env.dev up` funciona localmente
 - [ ] API responde em `http://localhost:5000/health`
 - [ ] Frontend carrega em `http://localhost:3000`
 - [ ] Database conecta corretamente
 
 ### Staging Environment
-- [ ] `docker-compose.staging.yml` criado
-- [ ] `.env.staging` configurado (secrets corretos)
+- [ ] `docker-compose.staging.yml` criado com Traefik
+- [ ] `.env.staging` configurado (secrets corretos, DOMAIN e LETSENCRYPT_EMAIL)
+- [ ] `05-infra/configs/traefik.yml` criado
+- [ ] Traefik Dashboard acessível em https://traefik-staging.{DOMAIN}
+- [ ] Frontend acessível via HTTPS em https://staging.{DOMAIN}
+- [ ] Backend API acessível via HTTPS em https://api-staging.{DOMAIN}
 - [ ] `./deploy.sh staging` funciona
 - [ ] Health check passa
-- [ ] Logs acessíveis via `docker-compose logs`
+- [ ] Logs acessíveis via `docker-compose -f docker-compose.staging.yml --env-file .env.staging logs`
 
 ### Production Environment
-- [ ] `docker-compose.prod.yml` criado
-- [ ] `.env.production` configurado (secrets fortes)
+- [ ] `docker-compose.prod.yml` criado com Traefik
+- [ ] `.env.production` configurado (secrets fortes, DOMAIN, LETSENCRYPT_EMAIL, YOUR_IP_ADDRESS)
+- [ ] `05-infra/configs/traefik.yml` criado
+- [ ] Traefik Dashboard acessível em https://traefik.{DOMAIN} (IP whitelist + basic auth)
+- [ ] Frontend acessível via HTTPS em https://{DOMAIN}
+- [ ] Backend API acessível via HTTPS em https://api.{DOMAIN}
+- [ ] SSL certificates issued by Let's Encrypt (trusted CA)
 - [ ] `./deploy.sh production` funciona
 - [ ] Health check passa
 - [ ] Rollback testado (`./rollback.sh production [version]`)
