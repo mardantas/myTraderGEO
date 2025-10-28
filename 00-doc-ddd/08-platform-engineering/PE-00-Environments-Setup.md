@@ -103,8 +103,10 @@ Configurar ambientes básicos (dev, staging, production) com Docker Compose e sc
 | Environment | Purpose | Infrastructure | Deploy Method | Database |
 |-------------|---------|----------------|---------------|----------|
 | **Development** | Local development | Docker Compose (localhost) | `docker compose up` | PostgreSQL container |
-| **Staging** | Pre-production testing | VPS / Cloud | `./deploy.sh staging` | PostgreSQL managed/container |
-| **Production** | Live users | VPS / Cloud | `./deploy.sh production` | PostgreSQL managed |
+| **Staging** | Pre-production testing | VPS / Cloud | `./deploy.sh staging` | PostgreSQL container |
+| **Production** | Live users | VPS / Cloud | `./deploy.sh production` | PostgreSQL container* |
+
+> \*PostgreSQL roda em container via Docker Compose para MVP. Migrar para managed database (AWS RDS / Azure Database / Cloud SQL) quando escalar para Managed Cloud (>10k usuários, conforme seção "Estratégia de Escalabilidade").
 
 ### Hosting Strategy
 
