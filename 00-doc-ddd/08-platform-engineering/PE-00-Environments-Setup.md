@@ -471,6 +471,261 @@ Docker Desktop armazena named volumes no filesystem WSL2:
 
 ---
 
+## 🚀 Scaling Strategy & Orchestration
+
+### Current Approach: Docker Compose Standalone
+
+**Why Docker Compose (not Swarm/K8s for MVP)?**
+
+- ✅ **Simplicidade:** Comandos simples (`docker compose up`), debugging direto, logs centralizados
+- ✅ **Custo:** Um único servidor por ambiente ($30-60/mês total) vs cluster ($150+/mês)
+- ✅ **Desenvolvimento Rápido:** Deploy manual aceitável para MVP, sem overhead de orquestração
+- ✅ **Adequado para Scale Inicial:** Suporta até 10-50k usuários simultâneos com escalabilidade vertical
+- ✅ **Menor Complexidade Operacional:** Time pequeno (1-3 pessoas) consegue gerenciar sem SRE dedicado
+- ✅ **Pragmatismo:** YAGNI (You Aren't Gonna Need It) - implementar HA/auto-scaling prematuramente é over-engineering
+
+**Suitable for:**
+
+- 👍 MVP e validação de mercado (primeiros 6-12 meses)
+- 👍 Até 10-50k usuários simultâneos (dependendo da carga por requisição)
+- 👍 SLA informal de 95-98% (downtime aceitável de alguns minutos para deploys)
+- 👍 Orçamento limitado (startup/projeto pessoal)
+- 👍 Time pequeno sem experiência em orquestração
+
+**Limitations:**
+
+- ⚠️ **Single-host:** Se servidor cai, aplicação fica indisponível (mitigado com 2 servidores: staging + production separados)
+- ⚠️ **Escalabilidade Horizontal Limitada:** Difícil adicionar réplicas de API (possível mas manual)
+- ⚠️ **Zero-downtime Deploy:** Difícil implementar (requires blue-green ou rolling deploys manuais)
+- ⚠️ **Auto-healing Básico:** Depende apenas de `restart: unless-stopped` (não reconstrói nodes falhados)
+- ⚠️ **Load Balancing Manual:** Traefik faz LB entre containers no mesmo host, mas não cross-host
+
+---
+
+### When to Migrate: Decision Matrix
+
+**Migre para orquestração quando atingir QUALQUER um destes thresholds:**
+
+| Metric | Docker Compose | Managed Cloud | Kubernetes |
+|--------|----------------|---------------|------------|
+| **Usuários Simultâneos** | <10k | 10k-50k | >50k |
+| **SLA Target** | 95-98% | 99%+ | 99.9%+ |
+| **Downtime Aceitável** | Alguns minutos | <5 min | <1 min |
+| **Custo Mensal** | $30-60 | $100-300 | $500+ |
+| **Team Size** | 1-3 pessoas | 3-5 pessoas | 5+ pessoas (com SRE) |
+| **Revenue** | Pre-revenue/MVP | $10k-100k MRR | $100k+ MRR |
+| **Deploy Frequency** | Semanal/Mensal | Diário | Múltiplos/dia |
+
+**Sinais que é hora de migrar:**
+
+- 🔴 **Downtime frequente** por saturação de recursos (CPU/RAM constantemente >80%)
+- 🔴 **Reclamações de usuários** sobre indisponibilidade ou lentidão
+- 🔴 **Crescimento rápido** (duplicação de usuários a cada 2-3 meses)
+- 🔴 **Requisitos de SLA** contratuais (clientes enterprise exigem 99%+)
+- 🔴 **Necessidade de multi-região** (latência para usuários geograficamente distribuídos)
+
+---
+
+### Migration Paths
+
+#### Path 1: Managed Cloud Services (Recomendado se houver crescimento)
+
+**Quando:** 10k-50k usuários, SLA 99%+, $10k-100k MRR
+
+**Opções:**
+
+| Provider | Service | Custo | Vantagens | Desvantagens |
+|----------|---------|-------|-----------|---------------|
+| **AWS** | ECS Fargate | $100-300/mês | Managed, integração AWS, sem nodes | Vendor lock-in, complexidade IAM |
+| **Azure** | Container Instances | $80-250/mês | Integração Azure, .NET nativo | Menos features que ECS |
+| **Google Cloud** | Cloud Run | $50-200/mês | Mais simples, pay-per-use | Limitações de runtime |
+| **DigitalOcean** | App Platform | $60-150/mês | Mais simples, bom custo/benefício | Menos features enterprise |
+
+**Esforço de Migração:** 2-4 semanas (setup, testes, migração de dados, DNS cutover)
+
+**Mudanças Necessárias:**
+
+- ✅ Docker Compose files praticamente idênticos (mínimas adaptações)
+- ✅ CI/CD ajustado (deploy via AWS CLI / gcloud / az)
+- ✅ Secrets management (AWS Secrets Manager / Azure Key Vault)
+- ✅ Database migrado para managed (RDS / Azure Database / Cloud SQL)
+- ⚠️ Custos aumentam mas SLA e operação melhoram significativamente
+
+**Benefícios:**
+
+- ✅ Auto-scaling automático (horizontal pod autoscaling)
+- ✅ Load balancing nativo
+- ✅ Health checks e auto-healing
+- ✅ Managed control plane (sem gestão de cluster)
+- ✅ Integração nativa com monitoramento (CloudWatch, Azure Monitor, Stackdriver)
+
+---
+
+#### Path 2: Docker Swarm (Opcional - Menos Recomendado)
+
+**Quando:** Crescimento moderado mas quer manter self-hosted, team tem experiência Docker
+
+**Requisitos:**
+
+- Cluster mínimo: 3 manager nodes + 2 worker nodes (5 VPS = $100-150/mês)
+- Setup: Docker Swarm init + overlay network + shared storage (NFS/GlusterFS)
+
+**Esforço de Migração:** 1-2 semanas (setup cluster, converter compose files, testes)
+
+**Mudanças Necessárias nos Compose Files:**
+
+```yaml
+# ❌ Docker Compose (atual)
+services:
+  api:
+    restart: unless-stopped
+    container_name: mytrader-api
+    depends_on:
+      database:
+        condition: service_healthy
+
+# ✅ Docker Swarm
+services:
+  api:
+    deploy:
+      mode: replicated
+      replicas: 3
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: stop-first
+      placement:
+        constraints:
+          - node.labels.env == production
+    # Remove: container_name (Swarm gerencia nomes)
+    # Simplify: depends_on (sem conditions)
+```
+
+**Principais Incompatibilidades Atuais:**
+
+1. **`restart: unless-stopped`** → Substituir por `deploy.restart_policy`
+2. **`container_name:`** → Remover (Swarm gerencia nomes automaticamente)
+3. **`depends_on: { condition: service_healthy }`** → Simplificar (Swarm não suporta conditions)
+4. **Labels** → Mover de `labels:` para `deploy.labels:` (para Traefik)
+5. **Bind mounts relativos** (`../configs/traefik.yml`) → Converter para `configs:` nativo do Swarm ou NFS volume
+
+**Vantagens:**
+
+- ✅ Multi-host nativo do Docker (sem aprender Kubernetes)
+- ✅ Rolling updates automáticos (`docker service update`)
+- ✅ Service discovery e load balancing nativo
+- ✅ Secrets management (`docker secret`)
+
+**Desvantagens:**
+
+- ❌ Comunidade menor que Kubernetes
+- ❌ Menos tooling e integrações (vs K8s)
+- ❌ Complexidade operacional (gestão de cluster manual)
+- ❌ **NÃO recomendado:** Se for orquestração, melhor ir direto para managed cloud ou K8s
+
+**Decisão:** ⚠️ **Swarm é "meio-termo" não recomendado** - se crescer, pular direto para Managed Cloud (Path 1)
+
+---
+
+#### Path 3: Kubernetes (Enterprise Scale)
+
+**Quando:** >50k usuários, SLA 99.9%+, $100k+ MRR, multi-região necessária
+
+**Opções:**
+
+| Provider | Service | Custo | Recomendação |
+|----------|---------|-------|--------------|
+| **AWS** | EKS | $500-2000/mês | Melhor integração AWS, maduro |
+| **Azure** | AKS | $400-1800/mês | Melhor integração Azure, .NET nativo |
+| **Google Cloud** | GKE | $400-1500/mês | Melhor Kubernetes experience, Google expertise |
+| **DigitalOcean** | DOKS | $300-1000/mês | Mais simples, menor custo |
+
+**Esforço de Migração:** 2-3 meses (conversão para Helm charts, CI/CD, observability, treinamento)
+
+**Mudanças Necessárias:**
+
+- 🔄 Converter Docker Compose para Kubernetes manifests (YAML) ou Helm charts
+- 🔄 Implementar Ingress Controller (Traefik/Nginx Ingress/Istio)
+- 🔄 ConfigMaps e Secrets para configuração
+- 🔄 Persistent Volumes para databases (ou migrar para managed DB)
+- 🔄 HPA (Horizontal Pod Autoscaler) para auto-scaling
+- 🔄 Service Mesh (Istio/Linkerd) para observability avançada
+
+**Benefícios:**
+
+- ✅ Auto-scaling avançado (HPA, VPA, Cluster Autoscaler)
+- ✅ Multi-região e multi-cloud nativo
+- ✅ Ecosystem rico (Helm, Operators, Service Mesh)
+- ✅ Rolling updates zero-downtime nativos
+- ✅ Self-healing robusto
+- ✅ GitOps (ArgoCD, Flux) para declarative deployments
+
+**Desvantagens:**
+
+- ❌ **Complexidade extrema** (curva de aprendizado íngreme)
+- ❌ **Requer SRE team** (gestão de cluster, troubleshooting, upgrades)
+- ❌ **Custo alto** (nodes + control plane + tooling)
+
+**Decisão:** ✅ **Kubernetes é a escolha para scale enterprise** (mas apenas quando realmente necessário)
+
+---
+
+### Recommendation Summary
+
+**Estratégia Recomendada (Phased Approach):**
+
+```
+Phase 1: MVP (Atual)
+├─ Docker Compose standalone
+├─ 2 VPS (staging + production)
+├─ $30-60/mês
+└─ ✅ MANTER até 10k usuários
+
+Phase 2: Growth (Se crescer)
+├─ AWS ECS / Cloud Run / Azure Container Instances
+├─ Managed services (RDS, CloudWatch, Secrets Manager)
+├─ $100-300/mês
+└─ ✅ MIGRAR quando: >10k usuários OU SLA 99%+ necessário
+
+Phase 3: Scale (Se explodir)
+├─ Kubernetes (EKS/GKE/AKS)
+├─ Multi-região, service mesh, GitOps
+├─ $500+/mês + SRE team
+└─ ✅ MIGRAR quando: >50k usuários OU $100k+ MRR
+```
+
+**Princípio:** **Start simple, scale when needed** (não fazer over-engineering prematuro)
+
+---
+
+### Docker Compose → Swarm Compatibility Reference
+
+**Se no futuro decidir migrar para Swarm, estas são as incompatibilidades atuais:**
+
+| Docker Compose (Atual) | Docker Swarm | Esforço |
+|------------------------|--------------|---------|
+| `restart: unless-stopped` | `deploy.restart_policy.condition: on-failure` | Fácil (buscar/substituir) |
+| `container_name: foo` | ❌ Remover (Swarm gerencia) | Fácil |
+| `depends_on: { condition: ... }` | Simplificar ou remover | Médio |
+| `labels: [...]` | `deploy.labels: [...]` (Traefik) | Fácil |
+| Bind mounts relativos | `configs:` ou NFS volume | Médio |
+| `version: '3.8'` | `version: '3.8'` (compatível) | N/A |
+
+**Tempo estimado para conversão:** 4-8 horas (assumindo conhecimento de Swarm)
+**Tempo estimado para setup cluster:** 1-2 dias (3 managers + 2 workers + NFS + testes)
+
+**Referência:** [Docker Compose → Swarm migration guide](https://docs.docker.com/engine/swarm/stack-deploy/)
+
+---
+
+**Decisão Final (FEEDBACK-007):** ✅ **MANTER Docker Compose** para MVP, documentar path de migração futuro conforme thresholds atingidos
+
+---
+
 ## ✅ PE Definition of Done Checklist
 
 ### Infrastructure

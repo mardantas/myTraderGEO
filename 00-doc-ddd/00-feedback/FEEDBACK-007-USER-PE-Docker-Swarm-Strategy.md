@@ -14,7 +14,7 @@ MARKDOWN FORMATTING:
 **Data Abertura:** 2025-10-28  
 **Solicitante:** User (Marco)  
 **Destinatário:** PE Agent  
-**Status:** 🔴 Aberto
+**Status:** 🟢 Resolvido
 
 **Tipo:**
 - [x] Melhoria (sugestão de enhancement)
@@ -159,29 +159,69 @@ Para considerar o feedback resolvido:
 
 ## ✅ Resolução
 
-> _Seção a ser preenchida pelo PE Agent após resolver_
-
-**Data Resolução:** [YYYY-MM-DD]  
+**Data Resolução:** 2025-10-28  
 **Resolvido por:** PE Agent  
 
 **Ação Tomada:**
-[Descrição da análise e documentação]
+
+Realizei análise completa de compatibilidade Docker Compose vs Docker Swarm vs Kubernetes e documentei estratégia de scaling no PE-00-Environments-Setup.md.
+
+**Análise Realizada:**
+
+1. **Docker Compose vs Swarm Compatibility:**
+   - Identificadas 5 incompatibilidades principais (`restart`, `container_name`, `depends_on`, `labels`, bind mounts)
+   - Esforço de migração estimado: 1-2 semanas (4-8h conversão + 1-2 dias setup cluster)
+   - Custo: $30-60/mês (atual) → $100-150/mês (Swarm 5-node cluster)
+
+2. **Viabilidade de Migração:**
+   - **Swarm:** Possível mas não recomendado (meio-termo com pouco ROI)
+   - **Managed Cloud:** Melhor opção se crescer (ECS/Cloud Run/ACI)
+   - **Kubernetes:** Apenas para scale enterprise (>50k usuários)
+
+3. **Decision Matrix Definido:**
+   - Docker Compose: <10k usuários, SLA 95-98%, $30-60/mês
+   - Managed Cloud: 10k-50k usuários, SLA 99%+, $100-300/mês
+   - Kubernetes: >50k usuários, SLA 99.9%+, $500+/mês
+
+4. **Migration Paths Documentados:**
+   - **Path 1 (Recomendado):** Managed Cloud (AWS ECS, Cloud Run, Azure CI)
+   - **Path 2 (Opcional):** Docker Swarm (não recomendado - melhor pular)
+   - **Path 3 (Enterprise):** Kubernetes (EKS/GKE/AKS)
 
 **Deliverables Atualizados:**
-- [ ] PE-00-Environments-Setup.md - Seção "Scaling Strategy" adicionada
-- [ ] 05-infra/README.md - Links para scaling strategy (se aplicável)
+- [x] PE-00-Environments-Setup.md - Seção "🚀 Scaling Strategy & Orchestration" adicionada (~250 linhas)
+  - Current Approach justificado (Docker Compose para MVP)
+  - Decision Matrix com thresholds claros
+  - 3 Migration Paths documentados com custos e esforços
+  - Docker Compose → Swarm compatibility reference
+  - Recommendation Summary (phased approach)
 
 **Decisão Final:**
-[Docker Compose mantido porque...]
+
+✅ **MANTER Docker Compose** para MVP pelos seguintes motivos:
+- Simplicidade operacional (comandos simples, debugging direto)
+- Custo adequado ($30-60/mês vs $150+/mês para cluster)
+- Adequado para até 10-50k usuários simultâneos
+- Time pequeno (1-3 pessoas) consegue gerenciar
+- Pragmatismo: YAGNI (implementar HA prematuramente é over-engineering)
 
 **Path de Migração Futuro:**
-[Quando migrar e para onde]
 
-**Referência Git Commit:** [hash]  
+**Migrar quando atingir thresholds:**
+- >10k usuários simultâneos OU
+- SLA 99%+ necessário OU
+- Downtime frequente por saturação OU
+- Requisitos de SLA contratuais (clientes enterprise)
+
+**Opção recomendada:** AWS ECS / Google Cloud Run / Azure Container Instances (Path 1 - Managed Cloud)  
+
+**Não recomendado:** Docker Swarm (complexidade sem ROI suficiente)  
+
+**Referência Git Commit:** [será adicionado após commit]  
 
 ---
 
-**Status Final:** 🔴 Aberto
+**Status Final:** 🟢 Resolvido
 
 ---
 
@@ -190,3 +230,4 @@ Para considerar o feedback resolvido:
 | Data | Mudança | Autor |
 |------|---------|-------|
 | 2025-10-28 | Criado | User (Marco) |
+| 2025-10-28 | Resolvido - Seção "Scaling Strategy" adicionada ao PE-00 | PE Agent |
