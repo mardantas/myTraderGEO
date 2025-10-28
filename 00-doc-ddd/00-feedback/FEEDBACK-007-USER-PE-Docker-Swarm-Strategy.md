@@ -217,7 +217,7 @@ Realizei análise completa de compatibilidade Docker Compose vs Docker Swarm vs 
 
 **Não recomendado:** Docker Swarm (complexidade sem ROI suficiente)  
 
-**Referência Git Commit:** [será adicionado após commit]  
+**Referência Git Commit:** 60ef042  
 
 ---
 
