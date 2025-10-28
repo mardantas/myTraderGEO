@@ -27,6 +27,8 @@ This is a **quick reference guide** for executing infrastructure commands (Docke
 
 ## Estrutura de Pastas
 
+### Repositório Git (05-infra/)
+
 ```
 05-infra/
 ├── configs/
@@ -49,6 +51,27 @@ This is a **quick reference guide** for executing infrastructure commands (Docke
     ├── backup-database.sh    # Backup do banco (TODO)
     └── restore-database.sh   # Restore do banco (TODO)
 ```
+
+### Servidor Remoto (Staging/Production)
+
+**Convenção:** Arquivos de deploy ficam em `/home/mytrader/mytrader-app/`
+
+```
+/home/mytrader/mytrader-app/
+├── app/                       # Deploy artifacts
+│   ├── docker-compose.yml     # Copiado de 05-infra/docker/docker-compose.{env}.yml
+│   ├── .env                   # Secrets (criado manualmente, NÃO versionado)
+│   └── configs/
+│       └── traefik.yml        # Copiado de 05-infra/configs/traefik.yml
+├── backups/                   # Database backups
+│   └── postgres/
+├── scripts/                   # Helper scripts
+│   ├── backup-db.sh
+│   └── restore-db.sh
+└── logs/                      # Aggregated logs (opcional)
+```
+
+**Setup inicial do servidor:** Ver [PE-00 - Estrutura no Servidor Remoto](../00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md#estrutura-no-servidor-remoto-stagingproduction)
 
 ## Quick Start
 
@@ -557,6 +580,6 @@ Para questões sobre infraestrutura, consultar:
 
 ---
 
-**Última atualização:** 2025-10-14
+**Última atualização:** 2025-10-28
 **Fase:** Discovery (Epic 1)
-**Status:** ✅ Infraestrutura base definida
+**Status:** ✅ Infraestrutura base definida + Estrutura de servidor remoto documentada

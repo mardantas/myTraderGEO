@@ -14,7 +14,7 @@ MARKDOWN FORMATTING:
 **Data Abertura:** 2025-10-28
 **Solicitante:** User (Marco)
 **Destinatário:** PE Agent
-**Status:** 🔴 Aberto
+**Status:** 🟢 Resolvido
 
 **Tipo:**
 - [x] Melhoria (sugestão de enhancement)
@@ -268,8 +268,83 @@ Adicionar nova seção **"Estrutura no Servidor Remoto (Staging/Production)"** a
 
 ---
 
+## ✅ Resolução
+
+**Data Resolução:** 2025-10-28
+**Resolvido por:** PE Agent
+
+**Ação Tomada:**
+
+Documentei a estrutura de diretórios completa para servidores remotos (staging/production) e padronizei as convenções de deploy.
+
+**Estrutura Definida:**
+
+```
+/home/mytrader/mytrader-app/
+├── app/                       # Deploy artifacts (docker-compose, .env, configs)
+├── backups/                   # Database backups
+├── scripts/                   # Helper scripts (backup, restore, monitoring)
+└── logs/                      # Aggregated logs (opcional)
+```
+
+**Deliverables Atualizados:**
+
+1. **PE-00-Environments-Setup.md:**
+   - [x] Adicionada seção "Estrutura no Servidor Remoto (Staging/Production)" após "Estrutura de Arquivos"
+   - [x] Documentado path completo: `/home/mytrader/mytrader-app/`
+   - [x] Documentado user dedicado `mytrader` com grupo `docker`
+   - [x] Setup inicial do servidor passo a passo (criar user, SSH keys, diretórios, .env)
+   - [x] Tabela de mapeamento repositório → servidor
+   - [x] Explicação de named volumes Docker (`/var/lib/docker/volumes/`)
+   - [x] Permissions recomendadas (chmod 600 para .env, ownership mytrader:docker)
+   - [x] Benefícios da convenção documentados (clareza, consistência, troubleshooting)
+   - [x] Deploy workflow resumido
+
+2. **05-infra/README.md:**
+   - [x] Adicionada subseção "Servidor Remoto (Staging/Production)" em "Estrutura de Pastas"
+   - [x] Estrutura de diretórios documentada
+   - [x] Referência para PE-00 para instruções detalhadas
+   - [x] Última atualização: 2025-10-28
+
+3. **05-infra/scripts/deploy.sh:**
+   - [ ] Atualização de paths fica documentada para GM Agent implementar (CI/CD integration)
+   - [ ] Convenção definida: `APP_DIR="mytrader-app/app"`
+   - [ ] SSH com user `mytrader` para deploy
+
+**Critérios de Aceitação Atendidos:**
+
+- [x] Estrutura de diretórios no servidor documentada em PE-00
+- [x] Path completo definido: `/home/mytrader/mytrader-app/`
+- [x] Convenção de user (`mytrader`) e ownership documentada
+- [x] Setup inicial do servidor documentado (passo a passo)
+- [x] Mapeamento repositório → servidor documentado (tabela)
+- [x] Permissions recomendadas documentadas (chmod/chown)
+- [x] deploy.sh paths definidos (implementação fica para GM Agent)
+- [x] Subpastas explicadas (`app/`, `backups/`, `scripts/`, `logs/`)
+
+**Justificativa da Estrutura:**
+
+- ✅ **User dedicado `mytrader`:** Isolamento de segurança (não root, não deploy genérico)
+- ✅ **Ownership automático:** Tudo pertence ao user `mytrader:docker`, sem necessidade de `sudo`
+- ✅ **Pasta projeto `mytrader-app/`:** Isola tudo do projeto myTraderGEO
+- ✅ **Subpasta `app/`:** Contém apenas arquivos de deploy (compose, env, configs)
+- ✅ **Escalável:** Permite adicionar `mytrader-monitoring/`, `mytrader-analytics/` no futuro
+- ✅ **Named volumes:** PostgreSQL data fica em Docker volumes gerenciados
+
+**Próximos Passos (Opcional):**
+
+- GM Agent pode implementar deploy.sh com paths definidos quando configurar CI/CD
+- Scripts de backup (backup-database.sh) usarão `/home/mytrader/mytrader-app/backups/`
+
+---
+
+**Status Final:** 🟢 Resolvido
+
+---
+
 ## 📝 Histórico
 
 | Data | Mudança | Autor |
 |------|---------|-------|
 | 2025-10-28 | Criado | User (Marco) |
+| 2025-10-28 | Resolvido - Estrutura de servidor remoto documentada em PE-00 e 05-infra/README.md | PE Agent |

@@ -243,6 +243,179 @@ traefik.mytrader.com          A    203.0.113.20
 
 ---
 
+### Estrutura no Servidor Remoto (Staging/Production)
+
+**Convenção de Diretórios no VPS:**
+
+Os arquivos de configuração e deploy ficam em um diretório dedicado no servidor remoto, separado do código-fonte e com ownership do user `mytrader`.
+
+```
+/home/mytrader/mytrader-app/
+├── app/                       # Deploy artifacts (docker-compose + configs)
+│   ├── docker-compose.yml     # Copiado de 05-infra/docker/docker-compose.{env}.yml
+│   ├── .env                   # Secrets (criado manualmente, NÃO versionado no Git)
+│   └── configs/
+│       └── traefik.yml        # Copiado de 05-infra/configs/traefik.yml
+│
+├── backups/                   # Database backups (gerados por scripts)
+│   └── postgres/
+│       ├── 2025-10-28.sql.gz
+│       └── 2025-10-27.sql.gz
+│
+├── scripts/                   # Helper scripts (backup, restore, monitoring)
+│   ├── backup-db.sh
+│   ├── restore-db.sh
+│   └── health-check.sh
+│
+└── logs/                      # Aggregated logs (opcional, se não usar Docker logs)
+    ├── deploy-history.log
+    └── app/
+```
+
+**Justificativa da Estrutura:**
+
+- ✅ **User dedicado `mytrader`:** Isolamento de segurança (não root, não deploy genérico)
+- ✅ **Ownership automático:** Tudo pertence ao user `mytrader:docker`, sem necessidade de `sudo`
+- ✅ **Pasta projeto `mytrader-app/`:** Isola tudo do projeto myTraderGEO em uma pasta
+- ✅ **Subpasta `app/`:** Contém apenas arquivos de deploy (compose, env, configs)
+- ✅ **Escalável:** Permite adicionar `mytrader-monitoring/`, `mytrader-analytics/` no futuro
+- ✅ **Named volumes:** PostgreSQL data fica em Docker volumes gerenciados (`/var/lib/docker/volumes/`)
+
+**Mapeamento Repositório → Servidor:**
+
+| Arquivo no Repositório Git | Destino no Servidor | Criado por |
+|----------------------------|---------------------|------------|
+| `05-infra/docker/docker-compose.staging.yml` | `/home/mytrader/mytrader-app/app/docker-compose.yml` | `deploy.sh` (scp) |
+| `05-infra/docker/docker-compose.production.yml` | `/home/mytrader/mytrader-app/app/docker-compose.yml` | `deploy.sh` (scp) |
+| `05-infra/configs/traefik.yml` | `/home/mytrader/mytrader-app/app/configs/traefik.yml` | `deploy.sh` (scp) |
+| `05-infra/configs/.env.example` | `/home/mytrader/mytrader-app/app/.env` | **Manual** (primeira vez) |
+| `05-infra/scripts/backup-database.sh` | `/home/mytrader/mytrader-app/scripts/backup-db.sh` | Manual ou `deploy.sh` |
+| `05-infra/scripts/restore-database.sh` | `/home/mytrader/mytrader-app/scripts/restore-db.sh` | Manual ou `deploy.sh` |
+
+**Setup Inicial do Servidor (Primeira Vez):**
+
+Execute estes comandos **uma vez** em cada servidor (staging e production) para preparar a infraestrutura:
+
+```bash
+# ===== EXECUTAR NO SERVIDOR VIA SSH (root ou sudo) =====
+
+# 1. Criar user mytrader e adicionar ao grupo docker
+sudo useradd -m -s /bin/bash -G docker mytrader
+sudo passwd mytrader  # Definir senha forte
+
+# 2. Configurar SSH key para deploy automatizado (CI/CD ou dev machine)
+sudo su - mytrader
+mkdir -p ~/.ssh
+chmod 700 ~/.ssh
+
+# Copiar public key (exemplo com ssh-ed25519)
+# Opção A: Gerar key no servidor (se não tiver)
+# ssh-keygen -t ed25519 -C "deploy@mytrader" -f ~/.ssh/id_ed25519
+# Opção B: Copiar public key existente do CI/CD
+echo "ssh-ed25519 AAAAC3Nza... deploy@mytrader" >> ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+exit
+
+# 3. Login como mytrader e criar estrutura de diretórios
+sudo su - mytrader
+mkdir -p ~/mytrader-app/app/configs
+mkdir -p ~/mytrader-app/backups/postgres
+mkdir -p ~/mytrader-app/scripts
+mkdir -p ~/mytrader-app/logs
+
+# 4. Criar .env inicial (EDITAR COM SECRETS REAIS!)
+cat > ~/mytrader-app/app/.env << 'EOF'
+# Environment: staging (ou production)
+DOMAIN=staging.mytrader.com  # Ajustar conforme ambiente
+ACME_EMAIL=admin@mytrader.com
+
+# PostgreSQL (MUDAR SENHA!)
+POSTGRES_DB=mytrader
+POSTGRES_USER=mytrader
+POSTGRES_PASSWORD=CHANGE_ME_STRONG_PASSWORD_HERE
+
+# Traefik Dashboard (gerar com: htpasswd -nb admin password)
+TRAEFIK_DASHBOARD_AUTH=admin:$apr1$xyz...
+EOF
+
+chmod 600 ~/mytrader-app/app/.env  # Proteger secrets (read-only para owner)
+
+# 5. Verificar estrutura criada
+tree ~/mytrader-app/ -L 3
+# /home/mytrader/mytrader-app/
+# ├── app/
+# │   ├── .env
+# │   └── configs/
+# ├── backups/
+# │   └── postgres/
+# ├── scripts/
+# └── logs/
+
+# 6. Verificar permissions
+ls -la ~/mytrader-app/
+# drwxr-xr-x mytrader docker mytrader-app/
+# drwx------ mytrader docker app/  (apenas owner pode acessar)
+
+exit
+```
+
+**Gerar Senha para Traefik Dashboard:**
+
+```bash
+# No servidor (ou localmente)
+htpasswd -nb admin your_strong_password
+
+# Resultado (copiar para .env):
+# admin:$apr1$xyz123abc...
+# Adicionar ao .env:
+# TRAEFIK_DASHBOARD_AUTH=admin:$apr1$xyz123abc...
+```
+
+**Named Volumes (Gerenciados pelo Docker):**
+
+Os dados persistentes (PostgreSQL, SSL certificates) ficam em **Docker named volumes**, gerenciados automaticamente:
+
+```bash
+# Localização real no servidor:
+/var/lib/docker/volumes/
+├── mytrader_postgres_data/    # PostgreSQL database files
+├── mytrader_letsencrypt/      # Traefik SSL certificates (acme.json)
+└── mytrader_logs/             # Application logs (se configurado)
+
+# Comandos úteis:
+docker volume ls                              # Listar todos os volumes
+docker volume inspect mytrader_postgres_data  # Ver path real e metadata
+docker volume prune                           # Remover volumes não usados (CUIDADO!)
+```
+
+**Benefícios desta Convenção:**
+
+1. ✅ **Clareza:** Qualquer desenvolvedor sabe onde estão os arquivos (`~/mytrader-app/app/`)
+2. ✅ **Consistência:** Staging e production seguem exatamente a mesma estrutura
+3. ✅ **Troubleshooting:** Fácil localizar logs, configs, backups
+4. ✅ **Automation:** Scripts de deploy/backup conhecem paths exatos
+5. ✅ **Onboarding:** Novos membros do time entendem estrutura rapidamente
+6. ✅ **Disaster Recovery:** Backup sabe quais diretórios incluir
+7. ✅ **Segurança:** Isolamento por user + permissions Unix padrão
+
+**Deploy Workflow (Resumo):**
+
+```bash
+# Local (dev machine):
+./05-infra/scripts/deploy.sh staging
+# ↓
+# Script copia arquivos via SCP:
+#   docker-compose.staging.yml → /home/mytrader/mytrader-app/app/docker-compose.yml
+#   traefik.yml → /home/mytrader/mytrader-app/app/configs/traefik.yml
+# ↓
+# Script executa via SSH:
+#   cd ~/mytrader-app/app
+#   docker compose pull
+#   docker compose up -d
+```
+
+---
+
 ## 🚀 Quick Start
 
 **Para instruções detalhadas de Getting Started, consulte:** [`05-infra/README.md#quick-start`](../../05-infra/README.md#quick-start)  
