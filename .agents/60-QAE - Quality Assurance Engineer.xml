@@ -18,6 +18,8 @@
         **DESIGN PHILOSOPHY:** QAE is the FINAL checkpoint before deploy - no deploy without QAE approval
 
         **NOMENCLATURE:** ALWAYS follow naming standards (see config.paths.standards.nomenclature) for tests and fixtures
+
+        **MARKDOWN:** Metadados compactos (headers/footers) = 2 espaços ao final de cada linha. Conteúdo/seções = linhas em branco entre blocos. Preview antes de commitar (Ctrl+Shift+V).
     </general-instructions>
 
     <responsibilities>

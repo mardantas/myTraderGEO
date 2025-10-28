@@ -1,8 +1,15 @@
+<!--
+MARKDOWN FORMATTING:
+- Use 2 spaces at end of line for compact line breaks (metadata)
+- Use blank lines between sections for readability (content)
+- Validate in Markdown preview before committing
+-->
+
 # UXD-01-User-Flows.md
 
-**Projeto:** [PROJECT_NAME]
-**Data:** [YYYY-MM-DD]
-**Designer:** UXD Agent
+**Projeto:** [PROJECT_NAME]  
+**Data:** [YYYY-MM-DD]  
+**Designer:** UXD Agent  
 
 ---
 
@@ -16,9 +23,9 @@ Mapear as jornadas principais dos usuários através do sistema, identificando p
 
 ### Persona 1: [Nome da Persona]
 
-**Perfil:** [Descrição breve]
-**Objetivos:** [O que quer alcançar]
-**Pain Points:** [Problemas atuais]
+**Perfil:** [Descrição breve]  
+**Objetivos:** [O que quer alcançar]  
+**Pain Points:** [Problemas atuais]  
 
 ### Persona 2: [Outra Persona]
 ...
@@ -29,11 +36,11 @@ Mapear as jornadas principais dos usuários através do sistema, identificando p
 
 ### Flow 1: [Nome da Jornada]
 
-**Persona:** [Qual persona]
-**Objetivo:** [O que o usuário quer fazer]
-**Bounded Contexts Envolvidos:** [BC1, BC2, BC3]
+**Persona:** [Qual persona]  
+**Objetivo:** [O que o usuário quer fazer]  
+**Bounded Contexts Envolvidos:** [BC1, BC2, BC3]  
 
-**Fluxo:**
+**Fluxo:**  
 
 ```mermaid
 flowchart TD
@@ -46,7 +53,7 @@ flowchart TD
     E --> End([Fim])
 ```
 
-**Passos Detalhados:**
+**Passos Detalhados:**  
 
 1. **[Passo 1]**
    - Screen: [Nome da tela]
@@ -57,7 +64,7 @@ flowchart TD
 2. **[Passo 2]**
    - ...
 
-**Exceções/Erros:**
+**Exceções/Erros:**  
 - [Cenário de erro 1] → [Tratamento]
 - [Cenário de erro 2] → [Tratamento]
 
@@ -65,9 +72,9 @@ flowchart TD
 
 ### Flow 2: [Outra Jornada]
 
-**Persona:** [Qual persona]
-**Objetivo:** [Objetivo]
-**Bounded Contexts:** [BCs]
+**Persona:** [Qual persona]  
+**Objetivo:** [Objetivo]  
+**Bounded Contexts:** [BCs]  
 
 ```mermaid
 flowchart TD
@@ -80,9 +87,9 @@ flowchart TD
 
 ### Navegação: [BC1] → [BC2]
 
-**Trigger:** [O que causa navegação]
-**Dados Transferidos:** [Quais dados passam entre BCs]
-**Estado Mantido:** [O que precisa ser preservado]
+**Trigger:** [O que causa navegação]  
+**Dados Transferidos:** [Quais dados passam entre BCs]  
+**Estado Mantido:** [O que precisa ser preservado]  
 
 ---
 

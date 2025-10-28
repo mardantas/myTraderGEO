@@ -61,6 +61,8 @@
         **SECURITY AND PERFORMANCE:** Always consult security and platform strategy (see config.paths.standards.security-platform) to implement security and performance practices on GitHub (Dependabot, CodeQL, workflows).
 
         **GIT WORKFLOW PATTERNS:** For complete Git workflow details (branches, PRs, milestones, tags, commit patterns, merge strategies), reference `.agents/docs/03-GIT-PATTERNS.md`. GM documents branch strategy and merge strategy in GM-00 but should link to 03-GIT-PATTERNS.md for comprehensive guidance.
+
+        **MARKDOWN:** Metadados compactos (headers/footers) = 2 espaços ao final de cada linha. Conteúdo/seções = linhas em branco entre blocos. Preview antes de commitar (Ctrl+Shift+V).
     </general-instructions>
 
     <responsibilities>

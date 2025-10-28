@@ -1,16 +1,23 @@
+<!--
+MARKDOWN FORMATTING:
+- Use 2 spaces at end of line for compact line breaks (metadata)
+- Use blank lines between sections for readability (content)
+- Validate in Markdown preview before committing
+-->
+
 # SDA-01-Event-Storming.md
 
-**Projeto:** [PROJECT_NAME]
-**Data:** [YYYY-MM-DD]
-**Facilitador:** SDA Agent
+**Projeto:** [PROJECT_NAME]  
+**Data:** [YYYY-MM-DD]  
+**Facilitador:** SDA Agent  
 
 ---
 
 ## 📋 Contexto do Workshop
 
-**Duração:** [horas]
-**Participantes:** [Product Owner, Domain Experts, etc]
-**Business Scope:** [Descrição breve do domínio]
+**Duração:** [horas]  
+**Participantes:** [Product Owner, Domain Experts, etc]  
+**Business Scope:** [Descrição breve do domínio]  
 
 ---
 
@@ -31,7 +38,7 @@
 [Evento 1] → [Evento 2] → [Evento 3] → [Evento 4]
 ```
 
-**Eventos Detalhados:**
+**Eventos Detalhados:**  
 
 1. **[Nome do Evento]**
    - Trigger: [O que dispara]
@@ -48,13 +55,13 @@
 
 ### 1. [Nome do Contexto] (Core/Supporting/Generic)
 
-**Responsabilidade:** [O que faz]
+**Responsabilidade:** [O que faz]  
 
-**Eventos deste contexto:**
+**Eventos deste contexto:**  
 - [Evento 1]
 - [Evento 2]
 
-**Complexidade:** [Alta | Média | Baixa]
+**Complexidade:** [Alta | Média | Baixa]  
 
 ### 2. [Outro Contexto]
 ...

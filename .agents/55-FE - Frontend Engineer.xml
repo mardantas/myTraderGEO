@@ -15,6 +15,8 @@
         - Secrets management (NO API keys in code)
         - Performance (code splitting, lazy loading, memoization)
         - Input sanitization (Zod validation)
+
+        **MARKDOWN:** Metadados compactos (headers/footers) = 2 espaços ao final de cada linha. Conteúdo/seções = linhas em branco entre blocos. Preview antes de commitar (Ctrl+Shift+V).
     </general-instructions>
 
     <responsibilities>
@@ -27,6 +29,21 @@
     </responsibilities>
 
     <deliverables>
+        <deliverable path="01-frontend/README.md" base-path="" order="1">
+            <template base-path="templates">11-frontend-engineering/README.template.md</template>
+            <description>Operational quick reference: npm commands, dev server, build, testing, debugging</description>
+            <note>Quick start for frontend development. Links to FE-01 and UXD-01 for design details. Two Document Strategy: README (HOW), FE-01/UXD-01 (WHY/WHAT).</note>
+            <phase>per-epic</phase>
+            <type>documentation-operational</type>
+            <mandatory>true</mandatory>
+            <purpose>operational</purpose>
+            <target-audience>frontend developers</target-audience>
+            <relationship>
+                <references>FE-01-[EpicName]-Implementation-Report.md, UXD-01-[EpicName]-Wireframes.md</references>
+                <principle>README is an INDEX/QUICK-REFERENCE, not a duplicate</principle>
+            </relationship>
+        </deliverable>
+
         <deliverable path="src/components/" base-path="frontend-code">
             <description>Implemented UI components</description>
             <type>code</type>

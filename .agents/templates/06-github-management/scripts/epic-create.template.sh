@@ -205,11 +205,11 @@ fi
 EPIC_BODY=$(cat <<EOF
 ## 📋 Epic Overview
 
-**Epic Number:** ${EPIC_NUM_PADDED}
-**Epic Name:** ${EPIC_NAME}
-**Milestone:** ${MILESTONE_TITLE}
+**Epic Number:** ${EPIC_NUM_PADDED}  
+**Epic Name:** ${EPIC_NAME}  
+**Milestone:** ${MILESTONE_TITLE}  
 
-**Bounded Contexts:**
+**Bounded Contexts:**  
 ${BCS_SECTION}
 
 ---
@@ -266,15 +266,15 @@ DE_BODY="## 📋 Task: Domain Model
 
 Create domain model for EPIC-${EPIC_NUM_PADDED}: ${EPIC_NAME}
 
-**Deliverable:** \`00-doc-ddd/04-tactical-design/DE-01-EPIC-${EPIC_NUM_PADDED}-${EPIC_NAME// /-}-Domain-Model.md\`
+**Deliverable:** \`00-doc-ddd/04-tactical-design/DE-01-EPIC-${EPIC_NUM_PADDED}-${EPIC_NAME// /-}-Domain-Model.md\`  
 
-**Checklist:**
+**Checklist:**  
 - [ ] Aggregates identified
 - [ ] Domain events defined
 - [ ] Business rules documented
 - [ ] Use cases specified
 
-**Ref:** Epic issue (will be linked automatically)
+**Ref:** Epic issue (will be linked automatically)  
 
 🤖 Generated with GM"
 
@@ -282,15 +282,15 @@ DBA_BODY="## 📋 Task: Schema Review
 
 Review schema for EPIC-${EPIC_NUM_PADDED}: ${EPIC_NAME}
 
-**Deliverable:** \`00-doc-ddd/05-database-design/DBA-01-EPIC-${EPIC_NUM_PADDED}-Schema-Review.md\`
+**Deliverable:** \`00-doc-ddd/05-database-design/DBA-01-EPIC-${EPIC_NUM_PADDED}-Schema-Review.md\`  
 
-**Checklist:**
+**Checklist:**  
 - [ ] EF Core migrations created
 - [ ] Indexes defined
 - [ ] Constraints validated
 - [ ] Performance review
 
-**Depends on:** DE domain model
+**Depends on:** DE domain model  
 
 🤖 Generated with GM"
 
@@ -298,7 +298,7 @@ SE_BODY="## 📋 Task: Backend Implementation
 
 Implement backend for EPIC-${EPIC_NUM_PADDED}: ${EPIC_NAME}
 
-**Checklist:**
+**Checklist:**  
 - [ ] Domain layer (aggregates, entities, VOs)
 - [ ] Application layer (commands, handlers)
 - [ ] Infrastructure (repositories)
@@ -306,7 +306,7 @@ Implement backend for EPIC-${EPIC_NUM_PADDED}: ${EPIC_NAME}
 - [ ] Unit tests (>80%)
 - [ ] Integration tests
 
-**Depends on:** DE + DBA
+**Depends on:** DE + DBA  
 
 🤖 Generated with GM"
 
@@ -314,15 +314,15 @@ UXD_BODY="## 📋 Task: Wireframes
 
 Create wireframes for EPIC-${EPIC_NUM_PADDED}: ${EPIC_NAME}
 
-**Deliverable:** \`00-doc-ddd/03-ux-design/UXD-01-EPIC-${EPIC_NUM_PADDED}-Wireframes.md\`
+**Deliverable:** \`00-doc-ddd/03-ux-design/UXD-01-EPIC-${EPIC_NUM_PADDED}-Wireframes.md\`  
 
-**Checklist:**
+**Checklist:**  
 - [ ] User flows
 - [ ] Wireframes (desktop + mobile)
 - [ ] Component breakdown
 - [ ] States (loading, success, error)
 
-**Depends on:** DE domain model
+**Depends on:** DE domain model  
 
 🤖 Generated with GM"
 
@@ -330,14 +330,14 @@ FE_BODY="## 📋 Task: Frontend Implementation
 
 Implement frontend for EPIC-${EPIC_NUM_PADDED}: ${EPIC_NAME}
 
-**Checklist:**
+**Checklist:**  
 - [ ] Components implemented
 - [ ] Stores (Pinia)
 - [ ] API integration
 - [ ] Responsive design
 - [ ] Unit tests (Vitest)
 
-**Depends on:** SE (API) + UXD (wireframes)
+**Depends on:** SE (API) + UXD (wireframes)  
 
 🤖 Generated with GM"
 
@@ -345,9 +345,9 @@ QAE_BODY="## 📋 Task: Quality Gate
 
 Execute quality gate for EPIC-${EPIC_NUM_PADDED}: ${EPIC_NAME}
 
-**Deliverable:** \`00-doc-ddd/06-quality-assurance/QAE-01-EPIC-${EPIC_NUM_PADDED}-Quality-Gate.md\`
+**Deliverable:** \`00-doc-ddd/06-quality-assurance/QAE-01-EPIC-${EPIC_NUM_PADDED}-Quality-Gate.md\`  
 
-**Checklist:**
+**Checklist:**  
 - [ ] E2E tests (Playwright)
 - [ ] Smoke tests (staging)
 - [ ] Performance baseline

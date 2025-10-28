@@ -14,6 +14,8 @@
         **NOMENCLATURE:** ALWAYS follow naming standards (see config.paths.standards.nomenclature) for component and route names
 
         **ACCESSIBILITY AND SECURITY:** Consider WCAG 2.1 AA and frontend security standards (XSS, CSRF) according to security strategy (see config.paths.standards.security-platform, UXD and FE sections).
+
+        **MARKDOWN:** Metadados compactos (headers/footers) = 2 espaços ao final de cada linha. Conteúdo/seções = linhas em branco entre blocos. Preview antes de commitar (Ctrl+Shift+V).
     </general-instructions>
 
     <responsibilities>

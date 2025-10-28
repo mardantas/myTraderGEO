@@ -1,7 +1,14 @@
+<!--
+MARKDOWN FORMATTING:
+- Use 2 spaces at end of line for compact line breaks (metadata)
+- Use blank lines between sections for readability (content)
+- Validate in Markdown preview before committing
+-->
+
 # SDA-03-Ubiquitous-Language.md
 
-**Projeto:** [PROJECT_NAME]
-**Data:** [YYYY-MM-DD]
+**Projeto:** [PROJECT_NAME]  
+**Data:** [YYYY-MM-DD]  
 
 ---
 

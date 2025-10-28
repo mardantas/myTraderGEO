@@ -17,6 +17,8 @@
         **NOMENCLATURE:** ALWAYS follow nomenclature standards (see config.paths.standards.nomenclature) for infrastructure resources, environments and deployments
 
         **THINK MODE RECOMMENDED:** For setup tasks involving multiple files/configs, use TodoWrite to plan before executing.
+
+        **MARKDOWN:** Metadados compactos (headers/footers) = 2 espaços ao final de cada linha. Conteúdo/seções = linhas em branco entre blocos. Preview antes de commitar (Ctrl+Shift+V).
     </general-instructions>
 
     <responsibilities>
@@ -31,11 +33,28 @@
     </responsibilities>
 
     <deliverables>
-        <deliverable path="PE-00-Environments-Setup.md" base-path="platform-engineering">
+        <deliverable path="PE-00-Environments-Setup.md" base-path="platform-engineering" order="1">
             <template base-path="templates">08-platform-engineering/PE-00-Environments-Setup.template.md</template>
             <description>Basic environments setup (dev/stage/prod with Docker Compose and deploy scripts) - pragmatic approach</description>
             <phase>discovery</phase>
+            <type>documentation-strategic</type>
+            <mandatory>true</mandatory>
             <note>Lean infrastructure: PE-00 only, focuses on essential setup (Docker Compose + deploy scripts)</note>
+        </deliverable>
+
+        <deliverable path="05-infra/README.md" base-path="" order="2">
+            <template base-path="templates">08-platform-engineering/README.template.md</template>
+            <description>Operational quick reference: Docker commands, deploy scripts, environment setup, troubleshooting</description>
+            <note>Quick start for infrastructure. Links to PE-00 for architecture decisions. Two Document Strategy: README (HOW), PE-00 (WHY/WHAT).</note>
+            <phase>discovery</phase>
+            <type>documentation-operational</type>
+            <mandatory>true</mandatory>
+            <purpose>operational</purpose>
+            <target-audience>developers and DevOps</target-audience>
+            <relationship>
+                <references>PE-00-Environments-Setup.md</references>
+                <principle>README is an INDEX/QUICK-REFERENCE to PE-00, not a duplicate</principle>
+            </relationship>
         </deliverable>
         <deliverable path="docker-compose.yml" base-path="project-root">
             <description>Docker Compose for local development</description>
@@ -57,6 +76,11 @@
             <description>Environment variables template (secrets management)</description>
             <type>config</type>
         </deliverable>
+        <deliverable path="05-infra/configs/traefik.yml" base-path="">
+            <description>Traefik static configuration (reverse proxy + automatic HTTPS for staging/production)</description>
+            <type>config</type>
+            <note>Traefik v3.0 for staging/production only (not used in development). Provides automatic SSL certificates via Let's Encrypt.</note>
+        </deliverable>
     </deliverables>
 
     <predecessors>
@@ -77,7 +101,9 @@
         <essential-check>Database setup documented and working</essential-check>
         <essential-check>Secrets management configured (.env files, no hardcoded secrets)</essential-check>
         <essential-check>Basic logging functional (can see application logs)</essential-check>
-        <essential-check>HTTPS configured (SSL certificates)</essential-check>
+        <essential-check>Traefik configured for staging/production (automatic HTTPS with Let's Encrypt)</essential-check>
+        <essential-check>SSL certificates issued successfully and HTTPS accessible</essential-check>
+        <essential-check>Traefik dashboard accessible and secured (basic auth + IP whitelist)</essential-check>
     </quality-checklist>
 
     <definition-of-done>
@@ -86,21 +112,24 @@
             <criterion>Database configured (PostgreSQL container or managed service)</criterion>
             <criterion>Deploy script created and tested (can deploy to staging/production)</criterion>
             <criterion>.env.example file created with all required environment variables</criterion>
+            <criterion>Traefik reverse proxy configured with automatic SSL (staging + production)</criterion>
+            <criterion>Traefik static configuration (traefik.yml) created with Let's Encrypt setup</criterion>
         </criteria>
 
         <criteria type="basics">
             <criterion>Secrets management configured (environment variables, no hardcoded secrets)</criterion>
             <criterion>Basic logging functional (can view application logs)</criterion>
             <criterion>Health checks configured (liveness endpoints)</criterion>
-            <criterion>HTTPS configured (SSL certificates - Let's Encrypt or cloud provider)</criterion>
+            <criterion>HTTPS configured via Traefik with Let's Encrypt automatic SSL (staging uses staging CA, production uses trusted CA)</criterion>
             <criterion>Database backup script created (daily cron job or equivalent)</criterion>
         </criteria>
 
         <criteria type="documentation">
-            <criterion>PE-00-Environments-Setup.md created with setup instructions</criterion>
+            <criterion>PE-00-Environments-Setup.md created with setup instructions including Traefik configuration</criterion>
             <criterion>Deploy process documented (how to deploy to staging/production)</criterion>
-            <criterion>Environment variables documented in .env.example</criterion>
+            <criterion>Environment variables documented in .env.example (including LETSENCRYPT_EMAIL, DOMAIN)</criterion>
             <criterion>Database backup/restore procedure documented</criterion>
+            <criterion>Traefik setup documented (configuration, routing, SSL certificates, dashboard access)</criterion>
         </criteria>
 
         <criteria type="validation">
@@ -108,10 +137,12 @@
             <criterion>SE/FE can start development (environments ready)</criterion>
             <criterion>Can deploy a simple "Hello World" application to staging</criterion>
             <criterion>Database connection tested from application</criterion>
+            <criterion>HTTPS accessible on staging/production via Traefik (automatic SSL working)</criterion>
+            <criterion>Traefik dashboard accessible and secured (basic auth + IP whitelist for production)</criterion>
         </criteria>
 
         <exit-condition>
-            Basic infrastructure ready when: Docker Compose working AND deploy script functional AND database accessible AND SE/FE can start coding
+            Basic infrastructure ready when: Docker Compose working AND deploy script functional AND database accessible AND Traefik routing with HTTPS working (staging/production) AND SE/FE can start coding
         </exit-condition>
 
         <note>Pragmatic infrastructure: focuses on essentials (Docker Compose + deploy scripts). Advanced features (IaC, full observability, DR, Blue-Green) can be added when needed.</note>

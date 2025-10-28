@@ -1,16 +1,23 @@
+<!--
+MARKDOWN FORMATTING:
+- Use 2 spaces at end of line for compact line breaks (metadata)
+- Use blank lines between sections for readability (content)
+- Validate in Markdown preview before committing
+-->
+
 # SEC-EPIC-[N]-[EpicName]-Security-Checkpoint
 
-**Epic:** [Epic Number and Name]
-**Reviewer:** SEC (Security Specialist)
-**Date:** [YYYY-MM-DD]
-**Duration:** 15-30 min
-**Status:** ✅ Approved / ⚠️ Issues Found / 🔴 Critical Issues
+**Epic:** [Epic Number and Name]  
+**Reviewer:** SEC (Security Specialist)  
+**Date:** [YYYY-MM-DD]  
+**Duration:** 15-30 min  
+**Status:** ✅ Approved / ⚠️ Issues Found / 🔴 Critical Issues  
 
 ---
 
 ## 🎯 Checkpoint Scope
 
-**Triggered by:**
+**Triggered by:**  
 - [ ] Epic handles sensitive data (PII, credentials, financial)
 - [ ] Authentication/authorization logic introduced
 - [ ] Epic 4+ (post-MVP stability)
@@ -31,7 +38,7 @@
 | Admin roles properly enforced | ✅ / ⚠️ / 🔴 | [Details] |
 | API endpoints have [Authorize] | ✅ / ⚠️ / 🔴 | [Missing authorization if any] |
 
-**Issues Found:**
+**Issues Found:**  
 ```
 [List files and line numbers]
 Example: StrategyController.cs:45 - Missing [Authorize] attribute
@@ -47,7 +54,7 @@ Example: Strategy.cs:78 - No ownership check in Close() method
 | Passwords hashed (BCrypt/Argon2) | ✅ / ⚠️ / 🔴 / N/A | [Hashing algorithm] |
 | Secrets in env vars (not code) | ✅ / ⚠️ / 🔴 | [Details] |
 
-**Sensitive Data Identified:**
+**Sensitive Data Identified:**  
 ```
 - User email/phone: [Encryption status]
 - API keys: [Storage method]
@@ -63,7 +70,7 @@ Example: Strategy.cs:78 - No ownership check in Close() method
 | Input validation in Value Objects | ✅ / ⚠️ / 🔴 | [VOs validated] |
 | DTOs have validation attributes | ✅ / ⚠️ / 🔴 | [FluentValidation checked] |
 
-**Injection Risks Found:**
+**Injection Risks Found:**  
 ```
 [List files with raw SQL or string concatenation]
 Example: StrategyRepository.cs:120 - Raw SQL with string interpolation
@@ -80,7 +87,7 @@ Example: StrategyRepository.cs:120 - Raw SQL with string interpolation
 | Business rule validation in aggregates | ✅ / ⚠️ / 🔴 | [Invariants checked] |
 | Frontend: XSS prevention | ✅ / ⚠️ / 🔴 / N/A | [React auto-escapes] |
 
-**Validation Gaps:**
+**Validation Gaps:**  
 ```
 [List missing validations]
 Example: CreateStrategyRequest.Name - Missing [MaxLength(100)]
@@ -99,7 +106,7 @@ Example: Strike Value Object - No validation for negative values
 | Sensitive operations require re-auth | ✅ / ⚠️ / 🔴 / N/A | [Details] |
 | CORS properly configured | ✅ / ⚠️ / 🔴 | [AllowOrigins checked] |
 
-**Authentication Issues:**
+**Authentication Issues:**  
 ```
 [List files with auth issues]
 Example: Startup.cs - CORS allows all origins (security risk)
@@ -117,7 +124,7 @@ Example: Strategy.Close() - No user validation
 | .env in .gitignore | ✅ / ⚠️ / 🔴 | [Verified] |
 | Connection strings in appsettings | ✅ / ⚠️ / 🔴 | [Checked] |
 
-**Secrets Exposed:**
+**Secrets Exposed:**  
 ```
 [List hardcoded secrets if found]
 Example: appsettings.json - Database password hardcoded (should be env var)
@@ -151,12 +158,12 @@ Example: appsettings.json - Database password hardcoded (should be env var)
 
 ## 🔄 Feedback Created
 
-**Critical Issues → FEEDBACK to SE/DE/FE:**
+**Critical Issues → FEEDBACK to SE/DE/FE:**  
 - [ ] FEEDBACK-[NNN]-SEC-SE-[issue-title].md
 - [ ] FEEDBACK-[NNN]-SEC-DE-[issue-title].md
 - [ ] FEEDBACK-[NNN]-SEC-FE-[issue-title].md
 
-**Blocking Deploy:** ☐ Yes ☑ No
+**Blocking Deploy:** ☐ Yes ☑ No  
 
 ---
 
@@ -166,7 +173,7 @@ Example: appsettings.json - Database password hardcoded (should be env var)
 |--------|--------|-------------|------------|-------|
 | [Threat description] | High/Medium/Low | High/Medium/Low | [Mitigation] | SE/DE/FE |
 
-**Example:**
+**Example:**  
 | Threat | Impact | Probability | Mitigation | Owner |
 |--------|--------|-------------|------------|-------|
 | User can delete other users' strategies | High | Medium | Add ownership check in Strategy.Delete() | DE |
@@ -179,34 +186,34 @@ Example: appsettings.json - Database password hardcoded (should be env var)
 - **⚠️ Issues Found:** Non-blocking issues, feedback created for SE/DE/FE
 - **🔴 Critical Issues:** Blocking issues, must fix before QAE testing
 
-**Summary:** [Brief summary of checkpoint result]
+**Summary:** [Brief summary of checkpoint result]  
 
-**Security Score:** [0-100] based on OWASP Top 3 coverage
+**Security Score:** [0-100] based on OWASP Top 3 coverage  
 
 ---
 
 ## 📋 Remediation Actions
 
-**Immediate (Before QAE):**
+**Immediate (Before QAE):**  
 - [ ] [Action 1]
 - [ ] [Action 2]
 
-**Short-term (Epic N+1):**
+**Short-term (Epic N+1):**  
 - [ ] [Action 1]
 - [ ] [Action 2]
 
-**Long-term (Production):**
+**Long-term (Production):**  
 - [ ] [Action 1]
 - [ ] [Action 2]
 
 ---
 
-**Next Steps:**
+**Next Steps:**  
 - [ ] SE/DE/FE addresses feedback (if any)
 - [ ] Security issues resolved
 - [ ] Epic proceeds to QAE Quality Gate
 
 ---
 
-**Template Version:** 1.0
-**Last Updated:** 2025-10-10
+**Template Version:** 1.0  
+**Last Updated:** 2025-10-10  

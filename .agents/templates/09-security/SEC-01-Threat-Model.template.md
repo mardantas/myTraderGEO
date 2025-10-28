@@ -1,9 +1,16 @@
+<!--
+MARKDOWN FORMATTING:
+- Use 2 spaces at end of line for compact line breaks (metadata)
+- Use blank lines between sections for readability (content)
+- Validate in Markdown preview before committing
+-->
+
 # SEC-01: Threat Model
 
-**Projeto:** [NOME-DO-PROJETO]
-**Data:** [DATA]
-**Security Specialist:** [NOME]
-**Versão:** 1.0
+**Projeto:** [NOME-DO-PROJETO]  
+**Data:** [DATA]  
+**Security Specialist:** [NOME]  
+**Versão:** 1.0  
 
 ---
 
@@ -124,7 +131,7 @@ Threat Modeling completo usando **STRIDE** para identificar ameaças e definir m
 
 ---
 
-**Próximos Passos:**
+**Próximos Passos:**  
 1. SEC-02: Security Architecture Review
 2. SEC-04: Executar Penetration Test
 3. Implementar mitigações de ameaças CRÍTICAS
