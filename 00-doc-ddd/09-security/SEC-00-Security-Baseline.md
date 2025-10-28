@@ -1,9 +1,9 @@
 # SEC-00 - Security Baseline
 
-**Agent:** SEC (Security Specialist)
-**Phase:** Discovery (1x)
-**Scope:** Essential security baseline for small/medium projects
-**Version:** 1.0
+**Agent:** SEC (Security Specialist)  
+**Phase:** Discovery (1x)  
+**Scope:** Essential security baseline for small/medium projects  
+**Version:** 1.0  
 
 ---
 
@@ -64,7 +64,7 @@ Definir baseline de segurança essencial para myTraderGEO: OWASP Top 3 mitigatio
 
 ### A01 - Broken Access Control
 
-**Risk:** Users accessing data/functions they shouldn't (e.g., User A views User B's portfolio, User executes trades for another user, Trader escalates to Admin)
+**Risk:** Users accessing data/functions they shouldn't (e.g., User A views User B's portfolio, User executes trades for another user, Trader escalates to Admin)  
 
 **Mitigations:**
 
@@ -194,7 +194,7 @@ Definir baseline de segurança essencial para myTraderGEO: OWASP Top 3 mitigatio
 
 ### A02 - Cryptographic Failures
 
-**Risk:** Sensitive data exposed (plaintext passwords, unencrypted traffic, API keys in code, financial data leakage)
+**Risk:** Sensitive data exposed (plaintext passwords, unencrypted traffic, API keys in code, financial data leakage)  
 
 **Mitigations:**
 
@@ -386,7 +386,7 @@ Definir baseline de segurança essencial para myTraderGEO: OWASP Top 3 mitigatio
 
 ### A03 - Injection
 
-**Risk:** SQL injection, NoSQL injection, command injection, API parameter tampering
+**Risk:** SQL injection, NoSQL injection, command injection, API parameter tampering  
 
 **Mitigations:**
 
@@ -770,7 +770,7 @@ Definir baseline de segurança essencial para myTraderGEO: OWASP Top 3 mitigatio
 
 ### Authentication
 
-**Method:** JWT (JSON Web Tokens)
+**Method:** JWT (JSON Web Tokens)  
 
 **Algorithm:**
 - [x] **HS256** (Symmetric - v1.0 implementation)
@@ -817,7 +817,7 @@ Definir baseline de segurança essencial para myTraderGEO: OWASP Top 3 mitigatio
 
 ### Authorization
 
-**Strategy:** Domain-Level Authorization (Aggregates validate permissions)
+**Strategy:** Domain-Level Authorization (Aggregates validate permissions)  
 
 **Pattern:**
 ```csharp
@@ -1005,7 +1005,7 @@ var result = hasher.VerifyHashedPassword(user, hash, providedPassword);
 
 ### Secrets Management
 
-**Approach:** Environment Variables (v1.0 Simplified)
+**Approach:** Environment Variables (v1.0 Simplified)  
 
 **What goes in `.env`:**
 - Database connection strings
@@ -1102,7 +1102,7 @@ _logger.LogInformation("GDPR data export",
 - [ ] RealTradeLargeVolume (>R$100k in single trade) → Email to Risk team
 - [ ] ConsultantUnauthorizedAccess (consultant accessing non-client portfolio) → Email to Security team
 
-**Implementation:** Can be added post-launch when monitoring infrastructure is in place (EPIC-03 or later).
+**Implementation:** Can be added post-launch when monitoring infrastructure is in place (EPIC-03 or later).  
 
 ---
 
@@ -1209,8 +1209,8 @@ To maintain simplicity for MVP and early epics, v1.0 **DOES NOT include:**
 
 ---
 
-**SEC-00 Status:** ✅ **COMPLETO**
-**Version:** 1.0
-**Last Updated:** 2025-10-16
-**Focus:** Pragmatic security baseline for myTraderGEO MVP (financial trading platform)
-**Next Steps:** GM-00 (CI/CD + GitHub setup) can execute in parallel or after SEC-00
+**SEC-00 Status:** ✅ **COMPLETO**  
+**Version:** 1.0  
+**Last Updated:** 2025-10-16  
+**Focus:** Pragmatic security baseline for myTraderGEO MVP (financial trading platform)  
+**Next Steps:** GM-00 (CI/CD + GitHub setup) can execute in parallel or after SEC-00  

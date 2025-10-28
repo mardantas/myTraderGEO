@@ -11,10 +11,10 @@ MARKDOWN FORMATTING:
 
 ---
 
-**Data Abertura:** 2025-01-28
-**Solicitante:** DBA Agent (análise de impacto de FEEDBACK-004)
-**Destinatário:** DBA Agent + PE Agent
-**Status:** 🔴 Aberto
+**Data Abertura:** 2025-01-28  
+**Solicitante:** DBA Agent (análise de impacto de FEEDBACK-004)  
+**Destinatário:** DBA Agent + PE Agent  
+**Status:** 🔴 Aberto  
 
 **Tipo:**
 - [x] Correção (deliverable já entregue precisa ajuste)
@@ -37,9 +37,9 @@ Durante análise de impacto dos FEEDBACKs 003, 004 e 005 nos deliverables do DBA
 
 ### Problema Principal: Hardcoded Passwords no Init Script
 
-**Arquivo:** `04-database/init-scripts/01-create-app-user.sql`
+**Arquivo:** `04-database/init-scripts/01-create-app-user.sql`  
 
-**Linhas 41 e 90:** Senhas de desenvolvimento hardcoded no script SQL
+**Linhas 41 e 90:** Senhas de desenvolvimento hardcoded no script SQL  
 
 ```sql
 -- Linha 41 - HARDCODED DEV PASSWORD!
@@ -90,7 +90,7 @@ O init script do DBA foi criado ANTES desta estratégia estar consolidada (FEEDB
 - [ ] `04-database/README.md` - Falta documentação de multi-environment strategy
 - [ ] Docker Compose files - Validar se passam environment vars para init script
 
-**Esforço estimado:** 2 horas (DBA + PE)
+**Esforço estimado:** 2 horas (DBA + PE)  
 **Risco:** 🟡 Médio (segurança + deployment consistency)
 
 ---
@@ -159,7 +159,7 @@ DB_READONLY_PASSWORD=CHANGE_ME_READONLY_PASSWORD  # staging/production
 
 #### Opção 2: PostgreSQL `ALTER USER` Approach (Mais Simples)
 
-**Abordagem:** Init script cria usuários com senhas default, depois altera via migration
+**Abordagem:** Init script cria usuários com senhas default, depois altera via migration  
 
 **DBA Agent:**
 
@@ -230,8 +230,8 @@ psql -U postgres -d mytrader_prod \
 
 ## ✅ Resolução
 
-**Data Resolução:** 2025-01-28
-**Resolvido por:** DBA Agent + PE Agent
+**Data Resolução:** 2025-01-28  
+**Resolvido por:** DBA Agent + PE Agent  
 
 ### Ação Tomada
 
@@ -239,7 +239,7 @@ Implementamos a **Opção 2 (ALTER USER Approach)** conforme recomendado, criand
 
 ### 1. Migration 002 - Password Update para Staging/Production
 
-**Arquivo Criado:** `04-database/migrations/002_update_production_passwords.sql` (137 linhas)
+**Arquivo Criado:** `04-database/migrations/002_update_production_passwords.sql` (137 linhas)  
 
 **Features:**
 - ✅ Aceita senhas via variáveis do psql (`-v app_password`, `-v readonly_password`)
@@ -261,7 +261,7 @@ psql -U postgres -d mytrader_staging \
 
 ### 2. README - Multi-Environment Password Strategy
 
-**Arquivo Atualizado:** `04-database/README.md` (+180 linhas)
+**Arquivo Atualizado:** `04-database/README.md` (+180 linhas)  
 
 **Seções Adicionadas:**
 
@@ -297,9 +297,9 @@ psql -U postgres -d mytrader_staging \
 
 ### 3. Validação - .env.example
 
-**Arquivo:** `05-infra/configs/.env.example`
+**Arquivo:** `05-infra/configs/.env.example`  
 
-**Status:** ✅ **JÁ DOCUMENTA CORRETAMENTE** (criado pelo PE Agent)
+**Status:** ✅ **JÁ DOCUMENTA CORRETAMENTE** (criado pelo PE Agent)  
 
 **Verificado:**
 ```bash
@@ -351,7 +351,7 @@ README → Documentation ✅
 - [x] `04-database/README.md` - +180 linhas documentando multi-environment strategy, security best practices, password rotation
 - [x] `05-infra/configs/.env.example` - Validado ✅ (já documentado corretamente pelo PE Agent)
 
-**Referência Git Commit:** [será preenchido após commit]
+**Referência Git Commit:** [será preenchido após commit]  
 
 ---
 

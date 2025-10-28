@@ -2,10 +2,10 @@
 
 ---
 
-**Data Abertura:** 2025-10-26
-**Solicitante:** DBA Agent + Usuário Marco
-**Destinatário:** PE Agent + DBA Agent
-**Status:** 🟢 Resolvido
+**Data Abertura:** 2025-10-26  
+**Solicitante:** DBA Agent + Usuário Marco  
+**Destinatário:** PE Agent + DBA Agent  
+**Status:** 🟢 Resolvido  
 
 **Tipo:**
 - [x] Correção (deliverable já entregue precisa ajuste)
@@ -78,7 +78,7 @@ Durante revisão do schema do banco (EPIC-01-A), o usuário questionou se o uso 
 - [ ] Documentação de deployment
 - [ ] Procedures de backup/restore
 
-**Esforço estimado:** 2-3 horas (DBA + PE)
+**Esforço estimado:** 2-3 horas (DBA + PE)  
 **Risco:** 🔴 Alto (vulnerabilidade de segurança ativa)
 
 ---
@@ -89,7 +89,7 @@ Durante revisão do schema do banco (EPIC-01-A), o usuário questionou se o uso 
 
 #### 1. **DBA Agent** - Criar Script de Inicialização
 
-**Arquivo:** `04-database/init-scripts/01-create-app-user.sql`
+**Arquivo:** `04-database/init-scripts/01-create-app-user.sql`  
 
 ```sql
 -- Criar usuário para aplicação (permissões limitadas)
@@ -163,7 +163,7 @@ Adicionar seção no `05-infra/README.md`:
 
 ### Princípio do Menor Privilégio (Least Privilege)
 
-**Definição:** Cada componente deve ter apenas as permissões necessárias para suas funções.
+**Definição:** Cada componente deve ter apenas as permissões necessárias para suas funções.  
 
 **Aplicação ao PostgreSQL:**
 - ✅ **mytrader_app**: CRUD + CREATE TABLE (para migrations)
@@ -278,8 +278,8 @@ curl http://localhost:5000/api/users
 
 ## ✅ Resolução
 
-**Data Resolução:** 2025-10-26
-**Resolvido por:** PE Agent + DBA Agent
+**Data Resolução:** 2025-10-26  
+**Resolvido por:** PE Agent + DBA Agent  
 
 **Ação Tomada:**
 
@@ -287,7 +287,7 @@ Implementamos o Princípio do Menor Privilégio criando usuários dedicados do P
 
 ### 1. **DBA Agent** - Criou Script de Inicialização
 
-**Arquivo:** `04-database/init-scripts/01-create-app-user.sql`
+**Arquivo:** `04-database/init-scripts/01-create-app-user.sql`  
 
 Criado script que cria automaticamente 2 usuários:
 - **mytrader_app**: Usuário para aplicação com permissões CRUD + CREATE TABLE
@@ -368,7 +368,7 @@ Adicionada seção no README com tabela explicativa:
 - [x] `05-infra/configs/.env.example` - 3 sets de credenciais segregados
 - [x] `05-infra/README.md` - Seção "Usuários PostgreSQL" com tabela e warnings
 
-**Referência Git Commit:** a748551
+**Referência Git Commit:** a748551  
 
 ---
 

@@ -1,10 +1,10 @@
 # DBA-01-EPIC-01-A-Database-Design-Decisions.md
 
-**Projeto:** myTraderGEO
-**Épico:** EPIC-01-A - User Management
-**Data:** 2025-10-26
-**Engineer:** DBA Agent
-**Database:** PostgreSQL 14+
+**Projeto:** myTraderGEO  
+**Épico:** EPIC-01-A - User Management  
+**Data:** 2025-10-26  
+**Engineer:** DBA Agent  
+**Database:** PostgreSQL 14+  
 
 ---
 
@@ -26,15 +26,15 @@ Documentar as decisões de design do banco de dados para o **User Management Bou
 - **Estilo:** Completo, detalhado, educacional, documentação DDD formal
 - **Quando consultar:** Para entender decisões arquiteturais, modificar schema, avaliar alternativas, onboarding de novos membros
 
-**Para EXECUÇÃO RÁPIDA de migrations, consulte:** [04-database/README.md](../../04-database/README.md)
+**Para EXECUÇÃO RÁPIDA de migrations, consulte:** [04-database/README.md](../../04-database/README.md)  
 - **Target:** Desenvolvedores executando migrations, DevOps, troubleshooting operacional
 - **Conteúdo:** Comandos CLI, troubleshooting prático, validação de permissões, quick reference
 - **Estilo:** Minimalista, imperativo, orientado a tarefas
 - **Quando consultar:** Para executar migrations, testar permissões de usuários, resolver problemas operacionais
 
-**Princípio:** DBA-01 explica o **POR QUÊ** e **O QUÊ** (arquitetura), README explica o **COMO executar** (operacional).
+**Princípio:** DBA-01 explica o **POR QUÊ** e **O QUÊ** (arquitetura), README explica o **COMO executar** (operacional).  
 
-**Evitamos duplicação:** O README contém apenas comandos práticos e troubleshooting, não repete decisões de design.
+**Evitamos duplicação:** O README contém apenas comandos práticos e troubleshooting, não repete decisões de design.  
 
 ---
 
@@ -138,7 +138,7 @@ CREATE INDEX IX_Users_CustomFees_GIN ON Users USING GIN(CustomFees);
 
 ### 2. Enums: VARCHAR vs INT
 
-**Decisão:** VARCHAR para todos os enums
+**Decisão:** VARCHAR para todos os enums  
 
 **Aplicado em:**
 - `UserRole` → `Users.Role` (VARCHAR) - "Trader", "Moderator", "Administrator"
@@ -336,7 +336,7 @@ CONSTRAINT FK_SystemConfigs_UpdatedBy
 
 ### 6. Singleton Pattern (SystemConfigs)
 
-**Estratégia:** ID fixo + constraint de aplicação
+**Estratégia:** ID fixo + constraint de aplicação  
 
 ```sql
 -- Sempre usar este ID
@@ -386,7 +386,7 @@ public static readonly SystemConfigId SingletonId =
 
 #### 8.1 Decisão: UUID vs BIGINT para Primary Keys
 
-**Escolha:** UUID v4 (mantido)
+**Escolha:** UUID v4 (mantido)  
 
 **Alternativas Avaliadas:**
 
@@ -566,7 +566,7 @@ VALUES (gen_random_uuid(), 'admin@mytradergeo.com', 'hash', 'Test', 'Test', 'Adm
 
 ### 4. Database User Segregation (Least Privilege)
 
-**⚠️ IMPORTANTE:** A aplicação NUNCA deve usar o usuário `postgres` (superuser).
+**⚠️ IMPORTANTE:** A aplicação NUNCA deve usar o usuário `postgres` (superuser).  
 
 **Implementação:**
 - [FEEDBACK-003 - PostgreSQL User Security](../00-feedback/FEEDBACK-003-DBA-PE-PostgreSQL-User-Security.md)

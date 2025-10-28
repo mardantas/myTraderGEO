@@ -11,10 +11,10 @@ MARKDOWN FORMATTING:
 
 ---
 
-**Data Abertura:** 2025-01-27
-**Solicitante:** User (Marco)
-**Destinatário:** PE Agent
-**Status:** 🔴 Aberto
+**Data Abertura:** 2025-01-27  
+**Solicitante:** User (Marco)  
+**Destinatário:** PE Agent  
+**Status:** 🔴 Aberto  
 
 **Tipo:**
 - [x] Correção (deliverable já entregue precisa ajuste)
@@ -99,7 +99,7 @@ Agora, com a maturidade da metodologia e templates, é necessário verificar se:
 - [x] 05-infra/scripts/backup-database.sh (criar ou documentar)
 - [x] 05-infra/scripts/restore-database.sh (criar ou documentar)
 
-**Esforço estimado:** 4-6 horas (auditoria + correções)
+**Esforço estimado:** 4-6 horas (auditoria + correções)  
 **Risco:** 🟡 Médio (trabalho já feito pode precisar ajustes significativos)
 
 ---
@@ -180,8 +180,8 @@ Para considerar o feedback resolvido, o PE Agent deve:
 
 ## ✅ Resolução
 
-**Data Resolução:** 2025-01-28
-**Resolvido por:** PE Agent
+**Data Resolução:** 2025-01-28  
+**Resolvido por:** PE Agent  
 
 ### Ação Tomada
 
@@ -236,7 +236,7 @@ Realizou-se auditoria completa dos deliverables de infraestrutura contra a espec
 5. **Windows Support:** Docker Desktop + Git Bash recomendado, WSL2 como alternativa
 6. **Named Volumes:** Database usa named volumes (~60x performance vs bind mounts no Windows)
 
-**Referência Git Commit:** `651cc55`
+**Referência Git Commit:** `651cc55`  
 
 ---
 

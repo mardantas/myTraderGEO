@@ -2,10 +2,10 @@
 
 ---
 
-**Data Abertura:** 2025-10-24<br>
-**Solicitante:** DE Agent (Domain Engineer)<br>
-**Destinatário:** SDA Agent (Strategic Domain Analyst)<br>
-**Status:** 🔴 Aberto
+**Data Abertura:** 2025-10-24  
+**Solicitante:** DE Agent (Domain Engineer)  
+**Destinatário:** SDA Agent (Strategic Domain Analyst)  
+**Status:** 🔴 Aberto  
 
 **Tipo:**
 - [x] Correção (deliverable já entregue precisa ajuste)
@@ -13,7 +13,7 @@
 - [ ] Dúvida (esclarecimento necessário)
 - [ ] Novo Requisito (mudança de escopo)
 
-**Urgência:** 🔴 Alta
+**Urgência:** 🔴 Alta  
 
 **Deliverable(s) Afetado(s):**
 - SDA-03-Ubiquitous-Language.md (principal)
@@ -28,7 +28,7 @@ Durante a implementação do modelo tático para EPIC-01 (Criação e Análise d
 
 O documento DE-01-EPIC-01-CreateStrategy-Domain-Model.md implementou conceitos, termos e eventos que não existem no SDA-03, criando desalinhamento entre strategic design e tactical design.
 
-**Total de mudanças necessárias:** ~40 novos termos + 5 termos atualizados + 2 termos removidos = **48 mudanças** distribuídas em 3 Bounded Contexts (Strategy Planning, Market Data, User Management).
+**Total de mudanças necessárias:** ~40 novos termos + 5 termos atualizados + 2 termos removidos = **48 mudanças** distribuídas em 3 Bounded Contexts (Strategy Planning, Market Data, User Management).  
 
 ### Contexto
 
@@ -55,9 +55,9 @@ Principais divergências identificadas:
 - [ ] SDA-02-Context-Map.md (verificar se relacionamentos BC mudaram)
 - [ ] SDA-01-Event-Storming.md (verificar se novos eventos afetam fluxos)
 
-**Esforço estimado:** 1-2 dias de trabalho
+**Esforço estimado:** 1-2 dias de trabalho  
 
-**Risco:** 🔴 Alto
+**Risco:** 🔴 Alto  
 
 **Justificativa do risco:**
 - Próximos épicos (EPIC-02 Trade Execution, EPIC-03 Risk Management) dependem dos termos corretos
@@ -133,8 +133,8 @@ Principais seções:
 
 > _Seção preenchida pelo agent destinatário após resolver_
 
-**Data Resolução:** 2025-10-24
-**Resolvido por:** SDA Agent
+**Data Resolução:** 2025-10-24  
+**Resolvido por:** SDA Agent  
 
 **Ação Tomada:**
 Sincronização completa da Linguagem Ubíqua com modelo de domínio do DE-01-EPIC-01. Total de 48 mudanças distribuídas em 3 Bounded Contexts.
@@ -159,11 +159,11 @@ Sincronização completa da Linguagem Ubíqua com modelo de domínio do DE-01-EP
   - Adicionados eventos: StrategyValidated, StrategyPnLUpdated, PnLSnapshotCaptured, StrategyLegAdjusted, StrategyLegAddedToActive, StrategyLegRemoved, StrategyClosed
   - Removida referência a "Modo Selecionado", substituído por StrategyStatus
 
-**Referência Git Commit:** b963c75
+**Referência Git Commit:** b963c75  
 
 ---
 
-**Status Final:** 🟢 Resolvido
+**Status Final:** 🟢 Resolvido  
 
 ---
 

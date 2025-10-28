@@ -1,8 +1,8 @@
 # SDA-02-Context-Map.md
 
-**Projeto:** myTraderGEO
-**Data:** 2025-10-12
-**Versão:** 1.0
+**Projeto:** myTraderGEO  
+**Data:** 2025-10-12  
+**Versão:** 1.0  
 
 ---
 
@@ -31,13 +31,13 @@
 
 ### 1. Strategy Planning - **Core Domain**
 
-**Responsabilidade:** Gestão do catálogo de estratégias (templates globais do sistema + templates pessoais do trader com controle de visibilidade), criação de estratégias baseadas em templates ou do zero, análise e simulação. Suporta estratégias com opções, ações ou combinações (estratégias mistas)
+**Responsabilidade:** Gestão do catálogo de estratégias (templates globais do sistema + templates pessoais do trader com controle de visibilidade), criação de estratégias baseadas em templates ou do zero, análise e simulação. Suporta estratégias com opções, ações ou combinações (estratégias mistas)  
 
-**Complexidade:** Alta
+**Complexidade:** Alta  
 
-**Justificativa da Classificação:** Diferencial competitivo principal - templates definem **estrutura/topologia** (não valores absolutos), sistema de referências relativas para strikes (ATM, ATM±X%, distâncias), algoritmos de instanciação (template → estratégia real), cálculos de margem, rentabilidade, gregas (opções), análise de risco adaptada. Catálogo unificado com visibilidade (global/pessoal)
+**Justificativa da Classificação:** Diferencial competitivo principal - templates definem **estrutura/topologia** (não valores absolutos), sistema de referências relativas para strikes (ATM, ATM±X%, distâncias), algoritmos de instanciação (template → estratégia real), cálculos de margem, rentabilidade, gregas (opções), análise de risco adaptada. Catálogo unificado com visibilidade (global/pessoal)  
 
-**Decisão Estratégica:** Build internamente (domínio rico, regras complexas de transformação template → estratégia)
+**Decisão Estratégica:** Build internamente (domínio rico, regras complexas de transformação template → estratégia)  
 
 **Entidades Principais:**
 - `StrategyCatalog` (catálogo unificado com templates globais + pessoais)
@@ -59,13 +59,13 @@
 
 ### 2. Trade Execution - **Core Domain**
 
-**Responsabilidade:** Execução, monitoramento em tempo real e ajuste de estratégias ativas (real e paper trading)
+**Responsabilidade:** Execução, monitoramento em tempo real e ajuste de estratégias ativas (real e paper trading)  
 
-**Complexidade:** Alta
+**Complexidade:** Alta  
 
-**Justificativa da Classificação:** Diferencial - suporte a paper trading (acompanhamento hipotético) e real, lógica de ajustes dinâmicos (rolagem, hedge, rebalanceamento, encerramento), promoção de paper para real
+**Justificativa da Classificação:** Diferencial - suporte a paper trading (acompanhamento hipotético) e real, lógica de ajustes dinâmicos (rolagem, hedge, rebalanceamento, encerramento), promoção de paper para real  
 
-**Decisão Estratégica:** Build internamente (futuro: integração API brokers via ACL)
+**Decisão Estratégica:** Build internamente (futuro: integração API brokers via ACL)  
 
 **Entidades Principais:**
 - `ActiveStrategy` (estratégia ativa - status indica se é paper trading ou live)
@@ -73,43 +73,43 @@
 - `PaperPosition` (posição simulada com preços hipotéticos)
 - `RealPosition` (posição real executada)
 
-**Nota:** O conceito de ExecutionMode foi substituído por StrategyStatus no Strategy Planning BC. Paper trading e Live são status da estratégia, não modos de execução separados.
+**Nota:** O conceito de ExecutionMode foi substituído por StrategyStatus no Strategy Planning BC. Paper trading e Live são status da estratégia, não modos de execução separados.  
 
 ---
 
 ### 3. Risk Management - **Core Domain**
 
-**Responsabilidade:** Gestão de risco, detecção automática de conflitos, limites operacionais e alertas inteligentes
+**Responsabilidade:** Gestão de risco, detecção automática de conflitos, limites operacionais e alertas inteligentes  
 
-**Complexidade:** Alta
+**Complexidade:** Alta  
 
-**Justificativa da Classificação:** Diferencial competitivo - algoritmo proprietário de detecção de conflitos entre estratégias, personalização de limites por perfil
+**Justificativa da Classificação:** Diferencial competitivo - algoritmo proprietário de detecção de conflitos entre estratégias, personalização de limites por perfil  
 
-**Decisão Estratégica:** Build internamente (lógica complexa de domínio)
+**Decisão Estratégica:** Build internamente (lógica complexa de domínio)  
 
 ---
 
 ### 4. Market Data - **Supporting Domain**
 
-**Responsabilidade:** Sincronização de dados de mercado (preços, volatilidade, gregas) em tempo real ou batch
+**Responsabilidade:** Sincronização de dados de mercado (preços, volatilidade, gregas) em tempo real ou batch  
 
-**Complexidade:** Média
+**Complexidade:** Média  
 
-**Justificativa da Classificação:** Necessário mas commodity - dados são externos (B3, provedores)
+**Justificativa da Classificação:** Necessário mas commodity - dados são externos (B3, provedores)  
 
-**Decisão Estratégica:** Adaptar providers com ACL (proteger domínio de mudanças externas)
+**Decisão Estratégica:** Adaptar providers com ACL (proteger domínio de mudanças externas)  
 
 ---
 
 ### 5. Asset Management - **Supporting Domain**
 
-**Responsabilidade:** Gestão da carteira de ativos (ações, índices, saldo) e carteira de opções (posições ativas) do trader, integração com B3, controle de garantias e custo médio
+**Responsabilidade:** Gestão da carteira de ativos (ações, índices, saldo) e carteira de opções (posições ativas) do trader, integração com B3, controle de garantias e custo médio  
 
-**Complexidade:** Média
+**Complexidade:** Média  
 
-**Justificativa da Classificação:** Suporte necessário mas não diferencial - sincronização com sistema externo (B3) para gestão de ativos e opções
+**Justificativa da Classificação:** Suporte necessário mas não diferencial - sincronização com sistema externo (B3) para gestão de ativos e opções  
 
-**Decisão Estratégica:** Build simples com ACL para B3 API
+**Decisão Estratégica:** Build simples com ACL para B3 API  
 
 **Entidades Principais:**
 - `AssetPortfolio` (carteira de ativos - ações, índices, saldo)
@@ -119,7 +119,7 @@
 
 ### 6. User Management - **Generic Domain**
 
-**Responsabilidade:** Cadastro, autenticação, autorização, gestão de roles e planos de assinatura
+**Responsabilidade:** Cadastro, autenticação, autorização, gestão de roles e planos de assinatura  
 
 **Entidades Principais:**
 - `User` (usuário do sistema com plan override e custom fees)
@@ -140,23 +140,23 @@
 - **Pleno**: Funcionalidades avançadas (dados real-time, alertas avançados)
 - **Consultor**: Herda todos recursos do Pleno + ferramentas de consultoria (gestão de clientes, compartilhamento privado)
 
-**Complexidade:** Baixa
+**Complexidade:** Baixa  
 
-**Justificativa da Classificação:** Commodity - autenticação/autorização são soluções prontas no mercado
+**Justificativa da Classificação:** Commodity - autenticação/autorização são soluções prontas no mercado  
 
-**Decisão Estratégica:** Adaptar Auth0/Keycloak + custom attributes (role, subscription plan, risk profile)
+**Decisão Estratégica:** Adaptar Auth0/Keycloak + custom attributes (role, subscription plan, risk profile)  
 
 ---
 
 ### 7. Community & Sharing - **Supporting Domain**
 
-**Responsabilidade:** Chat da comunidade, compartilhamento público de estratégias, exportação para redes sociais, moderação de conteúdo e compliance regulatório
+**Responsabilidade:** Chat da comunidade, compartilhamento público de estratégias, exportação para redes sociais, moderação de conteúdo e compliance regulatório  
 
-**Complexidade:** Média
+**Complexidade:** Média  
 
-**Justificativa da Classificação:** Suporte para engajamento da comunidade com responsabilidades de moderação e compliance (mercado financeiro regulado)
+**Justificativa da Classificação:** Suporte para engajamento da comunidade com responsabilidades de moderação e compliance (mercado financeiro regulado)  
 
-**Decisão Estratégica:** Build simples para chat/compartilhamento + sistema de moderação (fila, denúncias, aprovação/rejeição) para compliance
+**Decisão Estratégica:** Build simples para chat/compartilhamento + sistema de moderação (fila, denúncias, aprovação/rejeição) para compliance  
 
 **Entidades Principais:**
 - `Content` (conteúdo compartilhado: mensagem, estratégia pública)
@@ -169,25 +169,25 @@
 
 ### 8. Consultant Services - **Supporting Domain**
 
-**Responsabilidade:** Gestão de carteira de clientes por consultores, orientação e execução de operações para clientes (consultor também tem acesso a todas funcionalidades do Pleno para suas próprias estratégias)
+**Responsabilidade:** Gestão de carteira de clientes por consultores, orientação e execução de operações para clientes (consultor também tem acesso a todas funcionalidades do Pleno para suas próprias estratégias)  
 
-**Complexidade:** Média
+**Complexidade:** Média  
 
-**Justificativa da Classificação:** Suporte para modelo de negócio consultor, regras específicas de relacionamento consultor-cliente
+**Justificativa da Classificação:** Suporte para modelo de negócio consultor, regras específicas de relacionamento consultor-cliente  
 
-**Decisão Estratégica:** Build simples (CRUD + permissões + rastreamento)
+**Decisão Estratégica:** Build simples (CRUD + permissões + rastreamento)  
 
 ---
 
 ### 9. Analytics & AI - **Generic Domain** (Futuro)
 
-**Responsabilidade:** Backtesting, sugestões de IA, análise avançada de mercado
+**Responsabilidade:** Backtesting, sugestões de IA, análise avançada de mercado  
 
-**Complexidade:** Alta (mas genérica)
+**Complexidade:** Alta (mas genérica)  
 
-**Justificativa da Classificação:** Funcionalidade avançada mas pode usar bibliotecas ML e backtesting existentes
+**Justificativa da Classificação:** Funcionalidade avançada mas pode usar bibliotecas ML e backtesting existentes  
 
-**Decisão Estratégica:** Adaptar bibliotecas (pandas, scikit-learn, backtrader) + custom logic
+**Decisão Estratégica:** Adaptar bibliotecas (pandas, scikit-learn, backtrader) + custom logic  
 
 ---
 
@@ -517,8 +517,8 @@ graph TB
 - **Market Data**: preços e volatilidade
 - **Risk Management**: validação de limites
 
-**Valor de Negócio:** Alto (funcionalidade core, diferencial competitivo)
-**Prioridade:** 1 (MVP essencial)
+**Valor de Negócio:** Alto (funcionalidade core, diferencial competitivo)  
+**Prioridade:** 1 (MVP essencial)  
 
 **User Stories:**
 
@@ -553,8 +553,8 @@ graph TB
 - **Market Data**: dados em tempo real
 - **Risk Management**: alertas e limites
 
-**Valor de Negócio:** Alto (funcionalidade core)
-**Prioridade:** 2 (após EPIC-01)
+**Valor de Negócio:** Alto (funcionalidade core)  
+**Prioridade:** 2 (após EPIC-01)  
 
 **User Stories:**
 
@@ -585,8 +585,8 @@ graph TB
 - **User Management**: perfil de risco
 - **Trade Execution**: posições ativas
 
-**Valor de Negócio:** Alto (diferencial competitivo - detecção automática de conflitos)
-**Prioridade:** 3
+**Valor de Negócio:** Alto (diferencial competitivo - detecção automática de conflitos)  
+**Prioridade:** 3  
 
 **User Stories:**
 
@@ -616,8 +616,8 @@ graph TB
 - **Strategy Planning**: estratégias públicas
 - **User Management**: usuários e permissões
 
-**Valor de Negócio:** Médio (engajamento e retenção)
-**Prioridade:** 4
+**Valor de Negócio:** Médio (engajamento e retenção)  
+**Prioridade:** 4  
 
 **User Stories:**
 
@@ -646,8 +646,8 @@ graph TB
 - **Strategy Planning**: compartilhamento de estratégias
 - **User Management**: plano consultor
 
-**Valor de Negócio:** Médio (novo modelo de receita)
-**Prioridade:** 5
+**Valor de Negócio:** Médio (novo modelo de receita)  
+**Prioridade:** 5  
 
 **User Stories:**
 
@@ -672,8 +672,8 @@ graph TB
 - **Market Data**: dados históricos
 - **Strategy Planning**: estratégias para teste
 
-**Valor de Negócio:** Alto (diferencial futuro)
-**Prioridade:** 6 (pós-MVP)
+**Valor de Negócio:** Alto (diferencial futuro)  
+**Prioridade:** 6 (pós-MVP)  
 
 **User Stories:**
 
@@ -697,8 +697,8 @@ graph TB
 - **Strategy Planning**: estratégias para automação
 - **Risk Management**: validação pré-execução
 
-**Valor de Negócio:** Alto (diferencial futuro, automação completa)
-**Prioridade:** 7 (pós-MVP)
+**Valor de Negócio:** Alto (diferencial futuro, automação completa)  
+**Prioridade:** 7 (pós-MVP)  
 
 **User Stories:**
 
@@ -761,4 +761,4 @@ Embora Market Data seja Supporting (commodity), mantemos como BC separado por:
 - **Trade Execution**: ordens e posições reais
 - **Asset Management**: carteira de ativos, carteira de opções, saldos e posições financeiras
 
-**Ação:** SEC (Security Specialist) deve validar controles de acesso e criptografia por BC.
+**Ação:** SEC (Security Specialist) deve validar controles de acesso e criptografia por BC.  

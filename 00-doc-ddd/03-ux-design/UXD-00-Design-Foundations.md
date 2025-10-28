@@ -297,7 +297,7 @@ body {
 - **Disabled:** Background `var(--color-text-disabled)`, opacity 0.5, cursor not-allowed
 - **Focus:** Outline 2px solid `var(--color-primary)`, offset 2px
 
-**Usage:** Ações principais (Criar Estratégia, Ativar, Salvar)
+**Usage:** Ações principais (Criar Estratégia, Ativar, Salvar)  
 
 #### Secondary Button
 - **Background:** Transparent
@@ -309,7 +309,7 @@ body {
 - **Hover:** Background `var(--color-primary)` 8% opacity
 - **Active:** Background `var(--color-primary)` 12% opacity
 
-**Usage:** Ações secundárias (Cancelar, Voltar, Exportar)
+**Usage:** Ações secundárias (Cancelar, Voltar, Exportar)  
 
 #### Danger Button
 - **Background:** `var(--color-danger)` (#EF4444)
@@ -319,7 +319,7 @@ body {
 - **Font:** Inter Medium (500), 14px
 - **Hover:** Background darker (#DC2626)
 
-**Usage:** Ações destrutivas (Excluir, Encerrar Estratégia, Remover)
+**Usage:** Ações destrutivas (Excluir, Encerrar Estratégia, Remover)  
 
 #### Success Button
 - **Background:** `var(--color-success)` (#10B981)
@@ -328,7 +328,7 @@ body {
 - **Padding:** 10px 20px
 - **Font:** Inter Medium (500), 14px
 
-**Usage:** Confirmações positivas (Aprovar Conteúdo, Confirmar Lucro)
+**Usage:** Confirmações positivas (Aprovar Conteúdo, Confirmar Lucro)  
 
 #### Icon Button
 - **Size:** 36px × 36px (square)
@@ -338,7 +338,7 @@ body {
 - **Background:** Transparent
 - **Hover:** Background `var(--color-surface-dark)`
 
-**Usage:** Ações rápidas (Editar, Deletar, Refresh, Settings)
+**Usage:** Ações rápidas (Editar, Deletar, Refresh, Settings)  
 
 ### Input Fields
 
@@ -507,7 +507,7 @@ body {
 - **Title:** Inter SemiBold (600), 14px, color `var(--color-success)` (darker)
 - **Message:** Inter Regular (400), 14px
 
-**Usage:** Estratégia criada com sucesso, Ordem executada
+**Usage:** Estratégia criada com sucesso, Ordem executada  
 
 #### Warning Alert
 - **Background:** `var(--color-warning-light)` (#FEF3C7)
@@ -515,7 +515,7 @@ body {
 - **Border Left:** 4px solid `var(--color-warning)`
 - **Icon:** Heroicon exclamation-triangle (20px)
 
-**Usage:** Alerta de margem próxima ao limite, Vencimento em 3 dias
+**Usage:** Alerta de margem próxima ao limite, Vencimento em 3 dias  
 
 #### Error Alert
 - **Background:** `var(--color-danger-light)` (#FEE2E2)
@@ -523,7 +523,7 @@ body {
 - **Border Left:** 4px solid `var(--color-danger)`
 - **Icon:** Heroicon x-circle (20px)
 
-**Usage:** Margem call crítica, Erro na execução, Estratégia rejeitada
+**Usage:** Margem call crítica, Erro na execução, Estratégia rejeitada  
 
 #### Info Alert
 - **Background:** `var(--color-info-light)` (#DBEAFE)
@@ -531,7 +531,7 @@ body {
 - **Border Left:** 4px solid `var(--color-info)`
 - **Icon:** Heroicon information-circle (20px)
 
-**Usage:** Informações gerais, Tips, Novidades
+**Usage:** Informações gerais, Tips, Novidades  
 
 #### Alert with Action
 - **Close Button:** Icon button (X) top-right
@@ -671,7 +671,7 @@ PETR4  R$ 32,45  +2.35% ↑
   - Notifications bell (with counter badge)
   - User avatar + dropdown
 
-**Active Item:** Border-bottom 3px solid `var(--color-primary)`, font weight 600
+**Active Item:** Border-bottom 3px solid `var(--color-primary)`, font weight 600  
 
 #### Mobile (<1024px)
 - **Height:** 56px
@@ -683,7 +683,7 @@ PETR4  R$ 32,45  +2.35% ↑
 
 ### Sidebar Navigation (Desktop)
 
-**Note:** Sidebar optional, use if app becomes very dense. For MVP, top nav sufficient.
+**Note:** Sidebar optional, use if app becomes very dense. For MVP, top nav sufficient.  
 
 #### Collapsed Sidebar (64px width)
 - **Position:** Fixed left
@@ -930,7 +930,7 @@ Dashboard > Estratégias > Criar Estratégia > Instanciar Template
 
 ### Icon Library
 
-**Selected Library:** Heroicons v2 (Tailwind ecosystem)
+**Selected Library:** Heroicons v2 (Tailwind ecosystem)  
 - **Source:** https://heroicons.com
 - **License:** MIT (free, open source)
 - **Variants:** Outline (default, 24px), Solid (filled, 20px/24px), Mini (20px)
@@ -1074,7 +1074,7 @@ Dashboard > Estratégias > Criar Estratégia > Instanciar Template
 
 ### Illustrations
 
-**Style:** Minimal, line-based, professional
+**Style:** Minimal, line-based, professional  
 - **Source:** unDraw (https://undraw.co) or custom
 - **Color Scheme:** Match primary palette (blues, greens)
 - **Usage:**
@@ -1144,9 +1144,9 @@ Dashboard > Estratégias > Criar Estratégia > Instanciar Template
 - Below field, aligned left
 - If multiple errors, stack vertically
 
-**Color:** `var(--color-danger)` (#EF4444)
+**Color:** `var(--color-danger)` (#EF4444)  
 
-**Font:** Inter Regular (400), 12px
+**Font:** Inter Regular (400), 12px  
 
 ### Form Buttons
 
@@ -1215,7 +1215,7 @@ Dashboard > Estratégias > Criar Estratégia > Instanciar Template
 - Focus on user flows and screen interactions
 - Work in parallel with SE (Software Engineer) during epic implementation
 
-**First Epic to Wireframe:** EPIC-01 (Criação e Análise de Estratégias)
+**First Epic to Wireframe:** EPIC-01 (Criação e Análise de Estratégias)  
 
 ### 3. Validation
 
@@ -1265,11 +1265,11 @@ Dashboard > Estratégias > Criar Estratégia > Instanciar Template
 
 ---
 
-**Document Version:** 1.0
-**Date Created:** 2025-10-14
-**Last Updated:** 2025-10-14
-**Next Document:** UXD-01-[EpicName]-Wireframes (per epic)
-**Status:** ✅ Complete - Ready for FE Implementation
+**Document Version:** 1.0  
+**Date Created:** 2025-10-14  
+**Last Updated:** 2025-10-14  
+**Next Document:** UXD-01-[EpicName]-Wireframes (per epic)  
+**Status:** ✅ Complete - Ready for FE Implementation  
 
 ---
 

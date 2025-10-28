@@ -23,7 +23,7 @@
 
 Configurar ambientes básicos (dev, staging, production) com Docker Compose e scripts de deploy simples para a plataforma de trading myTraderGEO.
 
-**Filosofia:** Pragmatic infrastructure - essencial para começar desenvolvimento rapidamente e deploy incremental por épico.
+**Filosofia:** Pragmatic infrastructure - essencial para começar desenvolvimento rapidamente e deploy incremental por épico.  
 
 ---
 
@@ -108,7 +108,7 @@ Configurar ambientes básicos (dev, staging, production) com Docker Compose e sc
 
 ### Hosting Strategy
 
-**Selected Approach:** Single VPS (inicialmente) com migração futura para Cloud
+**Selected Approach:** Single VPS (inicialmente) com migração futura para Cloud  
 
 **Justificativa:**
 - ✅ **Custo-benefício** para MVP e primeiros épicos
@@ -197,7 +197,7 @@ traefik.mytrader.com          A    203.0.113.20
 
 ## 🏗️ Infraestrutura Física
 
-**Todos os arquivos de configuração e scripts estão implementados em:** [`05-infra/`](../../05-infra/)
+**Todos os arquivos de configuração e scripts estão implementados em:** [`05-infra/`](../../05-infra/)  
 
 ### Estrutura de Arquivos
 
@@ -243,7 +243,7 @@ traefik.mytrader.com          A    203.0.113.20
 
 ## 🚀 Quick Start
 
-**Para instruções detalhadas de Getting Started, consulte:** [`05-infra/README.md#quick-start`](../../05-infra/README.md#quick-start)
+**Para instruções detalhadas de Getting Started, consulte:** [`05-infra/README.md#quick-start`](../../05-infra/README.md#quick-start)  
 
 ### Desenvolvimento Local (Resumo)
 
@@ -277,7 +277,7 @@ docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs
 
 ## 📊 Monitoring & Logging
 
-**Para detalhes completos, consulte:** [`05-infra/README.md#logging`](../../05-infra/README.md#logging)
+**Para detalhes completos, consulte:** [`05-infra/README.md#logging`](../../05-infra/README.md#logging)  
 
 ### Logging Strategy (Resumo)
 
@@ -315,7 +315,7 @@ Traefik v3.0 (Reverse Proxy + Let's Encrypt)
 
 ### Traefik + Let's Encrypt (Automático)
 
-**Implementado:** `05-infra/configs/traefik.yml` + Docker Compose labels
+**Implementado:** `05-infra/configs/traefik.yml` + Docker Compose labels  
 
 **Funcionalidades:**
 - ✅ HTTP → HTTPS redirect automático
@@ -325,7 +325,7 @@ Traefik v3.0 (Reverse Proxy + Let's Encrypt)
 - ✅ Dashboard protegido com Basic Auth
 - ✅ WebSocket support (SignalR)
 
-**Configuração Traefik:** `05-infra/configs/traefik.yml`
+**Configuração Traefik:** `05-infra/configs/traefik.yml`  
 
 ```yaml
 # Entry Points
@@ -400,9 +400,9 @@ labels:
 
 ### Traefik Dashboard
 
-**Acesso:** `https://traefik.${DOMAIN}` (exemplo: traefik.mytrader.com)
+**Acesso:** `https://traefik.${DOMAIN}` (exemplo: traefik.mytrader.com)  
 
-**Autenticação:** Basic Auth (configurado via `.env`)
+**Autenticação:** Basic Auth (configurado via `.env`)  
 
 ```bash
 # Gerar senha para dashboard
@@ -555,8 +555,8 @@ Docker Desktop armazena named volumes no filesystem WSL2:
 
 ---
 
-**PE-00 Status:** ✅ **COMPLETO**
-**Stack Definido:** .NET 8 + Vue 3 + TypeScript + PostgreSQL 15
-**Ambientes:** Docker Compose (dev/staging/production)
-**Deploy:** Scripts bash (semi-automatizado)
-**Próximo:** GM-00, SEC-00, QAE-00 podem executar em paralelo
+**PE-00 Status:** ✅ **COMPLETO**  
+**Stack Definido:** .NET 8 + Vue 3 + TypeScript + PostgreSQL 15  
+**Ambientes:** Docker Compose (dev/staging/production)  
+**Deploy:** Scripts bash (semi-automatizado)  
+**Próximo:** GM-00, SEC-00, QAE-00 podem executar em paralelo  

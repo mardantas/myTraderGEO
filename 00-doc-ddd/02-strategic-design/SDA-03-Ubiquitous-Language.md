@@ -1,8 +1,8 @@
 # SDA-03-Ubiquitous-Language.md
 
-**Projeto:** myTraderGEO
-**Data:** 2025-10-12
-**Versão:** 1.0
+**Projeto:** myTraderGEO  
+**Data:** 2025-10-12  
+**Versão:** 1.0  
 
 ---
 
@@ -504,9 +504,9 @@ namespace MyTraderGEO.StrategyPlanning.Domain.Interfaces
 - [x] Consultant Services (6 termos)
 - [x] Analytics & AI (10 termos)
 
-**Total:** 146 termos + 4 termos compartilhados = **150 termos**
+**Total:** 146 termos + 4 termos compartilhados = **150 termos**  
 
 ---
 
-**Status:** Completo e pronto para uso
-**Próxima revisão:** Após feedback de UXD e DE
+**Status:** Completo e pronto para uso  
+**Próxima revisão:** Após feedback de UXD e DE  

@@ -1,17 +1,17 @@
 # DE-01-EPIC-01-B-Strategy-Templates-Domain-Model.md
 
-**Projeto:** myTraderGEO
-**Épico:** EPIC-01-B - Strategy Templates (segmento do EPIC-01)
-**Data:** 2025-10-25
-**Engineer:** DE Agent
+**Projeto:** myTraderGEO  
+**Épico:** EPIC-01-B - Strategy Templates (segmento do EPIC-01)  
+**Data:** 2025-10-25  
+**Engineer:** DE Agent  
 
 ---
 
 ## 🎯 Contexto do Sub-Épico
 
-**Nome do Sub-Épico:** Strategy Templates
+**Nome do Sub-Épico:** Strategy Templates  
 
-**Bounded Context:** Strategy Planning
+**Bounded Context:** Strategy Planning  
 
 **Objetivo:**
 Modelar o catálogo de templates de estratégias (globais do sistema + pessoais do trader) com strikes relativos, topologias, caracterizações (MarketView, Objective, RiskProfile) e orientações de defesa/ajuste. Templates definem estrutura/topologia com referências relativas (ATM, ATM±X%, vencimentos relativos).
@@ -27,7 +27,7 @@ Modelar o catálogo de templates de estratégias (globais do sistema + pessoais 
 ### Strategy Planning BC
 
 #### [Aggregate: StrategyTemplate](#4-strategytemplate-aggregate-root)
-**Responsabilidade:** Templates com strikes relativos + caracterização e orientações
+**Responsabilidade:** Templates com strikes relativos + caracterização e orientações  
 
 **Entities:**
   - TemplateLeg
@@ -48,7 +48,7 @@ Modelar o catálogo de templates de estratégias (globais do sistema + pessoais 
 
 ## 4. StrategyTemplate (Aggregate Root)
 
-**Responsabilidade:** Gerenciar templates de estratégias com strikes relativos e topologia
+**Responsabilidade:** Gerenciar templates de estratégias com strikes relativos e topologia  
 
 **Invariantes (Business Rules):**
 1. Name deve ser único para o usuário (templates pessoais) ou global (templates do sistema)
@@ -468,7 +468,7 @@ public record TemplateLegRemoved(
 
 ### User Management → Strategy Planning Integration
 
-**Mecanismo:** API de leitura (queries) + validação síncrona
+**Mecanismo:** API de leitura (queries) + validação síncrona  
 
 **Fluxo de Validação de Limite:**
 ```
@@ -488,7 +488,7 @@ public record TemplateLegRemoved(
 
 ### Strategy Planning → Market Data Integration
 
-**Mecanismo:** Queries diretas (read-only) via repositories
+**Mecanismo:** Queries diretas (read-only) via repositories  
 
 **Fluxo de Instanciação de Template (ATUALIZADO):**
 ```
@@ -573,7 +573,7 @@ public record OptionContractDto(
 
 ### Market Data → B3 API Integration (External Service)
 
-**Mecanismo:** Anti-Corruption Layer (ACL) via IB3ApiClient
+**Mecanismo:** Anti-Corruption Layer (ACL) via IB3ApiClient  
 
 **Interface Externa (Infrastructure Layer):**
 
@@ -769,7 +769,7 @@ foreach (var b3Option in b3Options)
 
 ### Strategy Planning → Risk Management Integration
 
-**Mecanismo:** Domain Events
+**Mecanismo:** Domain Events  
 
 **Eventos Publicados por Strategy Planning:**
 - `StrategyCreated` → Risk Management calcula risk score
@@ -793,9 +793,9 @@ foreach (var b3Option in b3Options)
 
 ### UC-Strategy-01: Create Template
 
-**Actor:** Trader ou Administrator
-**Trigger:** Usuário cria template de estratégia
-**Bounded Context:** Strategy Planning
+**Actor:** Trader ou Administrator  
+**Trigger:** Usuário cria template de estratégia  
+**Bounded Context:** Strategy Planning  
 
 **Fluxo:**
 
@@ -913,7 +913,7 @@ public record TemplateLegDto(
 |-----------------|------------|----------|---------------|--------------|------------|
 | Strategy Planning (StrategyTemplate apenas) | 1 (StrategyTemplate) | 2 (StrategyTemplate + TemplateLeg) | 12 | 1 | Média |
 
-**Nota:** Strategy aggregate será modelado em EPIC-01-C
+**Nota:** Strategy aggregate será modelado em EPIC-01-C  
 
 **Estimativa de Implementação:**
 - **StrategyTemplate: ~1 dia (DBA: 0.5 dia, SE: 0.5 dia)**

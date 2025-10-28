@@ -1,9 +1,9 @@
 # SDA-01-Event-Storming.md
 
-**Projeto:** myTraderGEO
-**Data:** 2025-10-12
-**Facilitador:** SDA Agent
-**Versão:** 1.0
+**Projeto:** myTraderGEO  
+**Data:** 2025-10-12  
+**Facilitador:** SDA Agent  
+**Versão:** 1.0  
 
 ---
 
@@ -101,7 +101,7 @@
    - Data: risco teórico, score de risco, compatibilidade com perfil, tipo de estratégia
    - Business Rule: Limites por perfil de usuário. Risco considera tipo de instrumento (ação tem risco diferente de opção)
 
-**Próximo passo:** Estratégia pode ser ativada para execução (Processo 3)
+**Próximo passo:** Estratégia pode ser ativada para execução (Processo 3)  
 
 ---
 
@@ -111,7 +111,7 @@
 [Estratégia Validada] → [Paper Trading Iniciado | Estratégia Ativada Live] → [Posição Registrada (Real) / Performance Simulada (Paper)] → [Dados de Mercado Sincronizados] → [P&L Atualizado] → [Snapshot P&L Capturado] → [Alerta Disparado] → [Ajuste Executado (Perna Ajustada/Adicionada/Removida)] → [Posição Atualizada] → [Estratégia Encerrada]
 ```
 
-**Nota:** O conceito de "Modo Selecionado" foi substituído por **Status da Estratégia** (StrategyStatus): Draft → Validated → PaperTrading → Live → Closed. Paper trading e Live são status, não modos separados.
+**Nota:** O conceito de "Modo Selecionado" foi substituído por **Status da Estratégia** (StrategyStatus): Draft → Validated → PaperTrading → Live → Closed. Paper trading e Live são status, não modos separados.  
 
 **Eventos Detalhados:**
 
@@ -376,7 +376,7 @@
 
 ### 1. **User Management** (Generic)
 
-**Responsabilidade:** Gerenciar cadastro, autenticação, autorização, roles (Trader, Administrator), perfis de risco e planos de assinatura
+**Responsabilidade:** Gerenciar cadastro, autenticação, autorização, roles (Trader, Administrator), perfis de risco e planos de assinatura  
 
 **Eventos deste contexto:**
 - Usuário Cadastrado
@@ -394,15 +394,15 @@
 - Pleno (acesso ilimitado, dados real-time)
 - Consultor (ferramentas de consultoria)
 
-**Complexidade:** Baixa
+**Complexidade:** Baixa  
 
-**Dados Sensíveis:** Email, senha, dados pessoais (LGPD)
+**Dados Sensíveis:** Email, senha, dados pessoais (LGPD)  
 
 ---
 
 ### 2. **Strategy Planning** (Core Domain)
 
-**Responsabilidade:** Gestão do catálogo de estratégias (templates globais do sistema + templates pessoais do trader), criação, análise e simulação de estratégias com opções, ações ou combinações (estratégias mistas)
+**Responsabilidade:** Gestão do catálogo de estratégias (templates globais do sistema + templates pessoais do trader), criação, análise e simulação de estratégias com opções, ações ou combinações (estratégias mistas)  
 
 **Eventos deste contexto:**
 - Template Selecionado
@@ -414,28 +414,28 @@
 - Trader Solicita Salvar como Template (opcional)
 - Template Salvo no Catálogo (opcional)
 
-**Complexidade:** Alta
+**Complexidade:** Alta  
 
-**Dados Sensíveis:** Estratégias privadas (propriedade intelectual)
+**Dados Sensíveis:** Estratégias privadas (propriedade intelectual)  
 
 ---
 
 ### 3. **Market Data** (Supporting)
 
-**Responsabilidade:** Sincronização de dados de mercado (preços, volatilidade, gregas) em tempo real ou batch
+**Responsabilidade:** Sincronização de dados de mercado (preços, volatilidade, gregas) em tempo real ou batch  
 
 **Eventos deste contexto:**
 - Dados de Mercado Sincronizados
 
-**Complexidade:** Média
+**Complexidade:** Média  
 
-**Alta Carga:** Sim (real-time para Pleno, polling para Básico)
+**Alta Carga:** Sim (real-time para Pleno, polling para Básico)  
 
 ---
 
 ### 4. **Trade Execution** (Core Domain)
 
-**Responsabilidade:** Execução, monitoramento e ajuste de estratégias ativas (real e paper trading)
+**Responsabilidade:** Execução, monitoramento e ajuste de estratégias ativas (real e paper trading)  
 
 **Eventos deste contexto:**
 - Estratégia Ativada (modo: paper trading ou real)
@@ -447,15 +447,15 @@
 - Posição Atualizada (real e simulada)
 - Estratégia Promovida para Real (paper → real)
 
-**Complexidade:** Alta
+**Complexidade:** Alta  
 
-**Dados Sensíveis:** Ordens e posições reais, histórico de paper trading
+**Dados Sensíveis:** Ordens e posições reais, histórico de paper trading  
 
 ---
 
 ### 5. **Risk Management** (Core Domain)
 
-**Responsabilidade:** Gestão de risco, detecção de conflitos, limites operacionais e alertas
+**Responsabilidade:** Gestão de risco, detecção de conflitos, limites operacionais e alertas  
 
 **Eventos deste contexto:**
 - Limites Operacionais Configurados
@@ -463,13 +463,13 @@
 - Alerta Disparado
 - Alerta de Conflito Enviado
 
-**Complexidade:** Alta
+**Complexidade:** Alta  
 
 ---
 
 ### 6. **Asset Management** (Supporting)
 
-**Responsabilidade:** Gestão da carteira de ativos (ações, índices, saldo) e carteira de opções (posições ativas), integração com B3, controle de garantias, aportes/retiradas e custo médio
+**Responsabilidade:** Gestão da carteira de ativos (ações, índices, saldo) e carteira de opções (posições ativas), integração com B3, controle de garantias, aportes/retiradas e custo médio  
 
 **Eventos deste contexto:**
 - Carteira de Ativos Sincronizada
@@ -477,15 +477,15 @@
 - Garantias Atualizadas
 - Aporte/Retirada Registrado
 
-**Complexidade:** Média
+**Complexidade:** Média  
 
-**Dados Sensíveis:** Posições em ativos, opções e saldos financeiros (LGPD)
+**Dados Sensíveis:** Posições em ativos, opções e saldos financeiros (LGPD)  
 
 ---
 
 ### 7. **Community & Sharing** (Supporting)
 
-**Responsabilidade:** Chat da comunidade, compartilhamento público de estratégias, exportação para redes sociais, moderação de conteúdo
+**Responsabilidade:** Chat da comunidade, compartilhamento público de estratégias, exportação para redes sociais, moderação de conteúdo  
 
 **Eventos deste contexto:**
 - Chat Iniciado
@@ -495,13 +495,13 @@
 - Estratégia Compartilhada (público, após moderação)
 - Estratégia Exportada para Rede Social
 
-**Complexidade:** Média (adicionado sistema de moderação e compliance)
+**Complexidade:** Média (adicionado sistema de moderação e compliance)  
 
 ---
 
 ### 8. **Consultant Services** (Supporting)
 
-**Responsabilidade:** Gestão de carteira de clientes por consultores, orientação e execução de operações para clientes
+**Responsabilidade:** Gestão de carteira de clientes por consultores, orientação e execução de operações para clientes  
 
 **Eventos deste contexto:**
 - Cliente Adicionado
@@ -509,15 +509,15 @@
 - Operação Orientada
 - Operação Executada por Consultor
 
-**Complexidade:** Média
+**Complexidade:** Média  
 
-**Dados Sensíveis:** Dados de clientes, operações executadas (LGPD)
+**Dados Sensíveis:** Dados de clientes, operações executadas (LGPD)  
 
 ---
 
 ### 9. **Analytics & AI** (Generic - Futuro)
 
-**Responsabilidade:** Backtesting, sugestões de IA, análise avançada de mercado
+**Responsabilidade:** Backtesting, sugestões de IA, análise avançada de mercado  
 
 **Eventos deste contexto:**
 - Backtesting Solicitado
@@ -527,9 +527,9 @@
 - Sugestão de IA Criada
 - Ajuste Recomendado
 
-**Complexidade:** Alta
+**Complexidade:** Alta  
 
-**Alta Carga:** Sim (processamento intensivo)
+**Alta Carga:** Sim (processamento intensivo)  
 
 ---
 

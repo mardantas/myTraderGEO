@@ -1,17 +1,17 @@
 # DE-01-EPIC-01-A-User-Management-Domain-Model.md
 
-**Projeto:** myTraderGEO
-**Épico:** EPIC-01-A - User Management (segmento do EPIC-01)
-**Data:** 2025-10-25
-**Engineer:** DE Agent
+**Projeto:** myTraderGEO  
+**Épico:** EPIC-01-A - User Management (segmento do EPIC-01)  
+**Data:** 2025-10-25  
+**Engineer:** DE Agent  
 
 ---
 
 ## 🎯 Contexto do Sub-Épico
 
-**Nome do Sub-Épico:** User Management
+**Nome do Sub-Épico:** User Management  
 
-**Bounded Context:** User Management
+**Bounded Context:** User Management  
 
 **Objetivo:**
 Modelar o gerenciamento de usuários, autenticação, perfis de risco, planos de assinatura e configurações globais do sistema. Inclui administração de planos, limites, overrides (VIP, trials, beta testers) e taxas customizadas por usuário.
@@ -28,7 +28,7 @@ Modelar o gerenciamento de usuários, autenticação, perfis de risco, planos de
 ### User Management BC
 
 #### [Aggregate: User](#1-user-aggregate-root)
-**Responsabilidade:** Gerenciamento de usuários, autenticação, perfil e planos
+**Responsabilidade:** Gerenciamento de usuários, autenticação, perfil e planos  
 
 **Entities:**
   - (nenhuma child entity)
@@ -47,7 +47,7 @@ Modelar o gerenciamento de usuários, autenticação, perfis de risco, planos de
 ---
 
 #### [Aggregate: SubscriptionPlan](#2-subscriptionplan-aggregate-root)
-**Responsabilidade:** Planos de assinatura (Básico, Pleno, Consultor)
+**Responsabilidade:** Planos de assinatura (Básico, Pleno, Consultor)  
 
 **Entities:**
   - (nenhuma child entity)
@@ -62,7 +62,7 @@ Modelar o gerenciamento de usuários, autenticação, perfis de risco, planos de
 ---
 
 #### [Aggregate: SystemConfig](#3-systemconfig-aggregate-root)
-**Responsabilidade:** Configurações globais (taxas, limites)
+**Responsabilidade:** Configurações globais (taxas, limites)  
 
 **Entities:**
   - (nenhuma child entity)
@@ -81,7 +81,7 @@ Modelar o gerenciamento de usuários, autenticação, perfis de risco, planos de
 
 ## 1. User (Aggregate Root)
 
-**Responsabilidade:** Gerenciar cadastro, autenticação e perfil de usuário
+**Responsabilidade:** Gerenciar cadastro, autenticação e perfil de usuário  
 
 **Invariantes (Business Rules):**
 1. Email deve ser único no sistema
@@ -785,7 +785,7 @@ public record PhoneNumberChanged(
 
 ## 2. SubscriptionPlan (Aggregate Root)
 
-**Responsabilidade:** Gerenciar planos de assinatura (Básico, Pleno, Consultor) e seus limites
+**Responsabilidade:** Gerenciar planos de assinatura (Básico, Pleno, Consultor) e seus limites  
 
 **Invariantes (Business Rules):**
 1. Name deve ser único
@@ -1062,7 +1062,7 @@ public record PlanActivated(
 
 ## 3. SystemConfig (Aggregate Root)
 
-**Responsabilidade:** Gerenciar configurações globais do sistema (taxas, limites, parâmetros)
+**Responsabilidade:** Gerenciar configurações globais do sistema (taxas, limites, parâmetros)  
 
 **Invariantes (Business Rules):**
 1. BrokerCommissionRate deve estar entre 0 e 1 (0% a 100%)
@@ -1361,7 +1361,7 @@ public interface ISystemConfigRepository
 
 ### User Management → Strategy Planning Integration
 
-**Mecanismo:** API de leitura (queries) + validação síncrona
+**Mecanismo:** API de leitura (queries) + validação síncrona  
 
 **Fluxo de Validação de Limite:**
 ```
@@ -1381,7 +1381,7 @@ public interface ISystemConfigRepository
 
 ### User Management → Market Data Integration
 
-**Mecanismo:** Feature flag validation
+**Mecanismo:** Feature flag validation  
 
 **Fluxo de Validação de Acesso a Dados em Tempo Real:**
 ```
@@ -1401,7 +1401,7 @@ public interface ISystemConfigRepository
 
 ### User Management → Risk Management Integration
 
-**Mecanismo:** Domain Events
+**Mecanismo:** Domain Events  
 
 **Eventos Publicados por User Management:**
 - `RiskProfileUpdated` → Risk Management pode recalcular risk scores de estratégias existentes
@@ -1413,9 +1413,9 @@ public interface ISystemConfigRepository
 
 ### UC-Admin-01: Configure Subscription Plan
 
-**Actor:** Administrator
-**Trigger:** Admin acessa painel de configuração de planos
-**Bounded Context:** User Management
+**Actor:** Administrator  
+**Trigger:** Admin acessa painel de configuração de planos  
+**Bounded Context:** User Management  
 
 **Fluxo:**
 
@@ -1480,9 +1480,9 @@ public record ConfigurePlanCommand(
 
 ### UC-Admin-02: Update System Parameters
 
-**Actor:** Administrator
-**Trigger:** Admin atualiza taxas ou limites globais
-**Bounded Context:** User Management
+**Actor:** Administrator  
+**Trigger:** Admin atualiza taxas ou limites globais  
+**Bounded Context:** User Management  
 
 **Fluxo:**
 
@@ -1546,9 +1546,9 @@ public record UpdateSystemParametersCommand(
 
 ### UC-Admin-03: Grant Plan Override
 
-**Actor:** Administrator
-**Trigger:** Admin concede acesso especial (VIP, trial, beta tester, etc.)
-**Bounded Context:** User Management
+**Actor:** Administrator  
+**Trigger:** Admin concede acesso especial (VIP, trial, beta tester, etc.)  
+**Bounded Context:** User Management  
 
 **Fluxo:**
 
@@ -1620,9 +1620,9 @@ public record GrantPlanOverrideCommand(
 
 ### UC-Admin-04: Revoke Plan Override
 
-**Actor:** Administrator
-**Trigger:** Admin revoga acesso especial (trial expirado, violação de termos, etc.)
-**Bounded Context:** User Management
+**Actor:** Administrator  
+**Trigger:** Admin revoga acesso especial (trial expirado, violação de termos, etc.)  
+**Bounded Context:** User Management  
 
 **Fluxo:**
 
@@ -1678,9 +1678,9 @@ public record RevokePlanOverrideCommand(
 
 ### UC-User-01: Register Trader
 
-**Actor:** Trader (novo usuário)
-**Trigger:** Usuário acessa página de cadastro
-**Bounded Context:** User Management
+**Actor:** Trader (novo usuário)  
+**Trigger:** Usuário acessa página de cadastro  
+**Bounded Context:** User Management  
 
 **Fluxo:**
 
@@ -1750,9 +1750,9 @@ public record RegisterTraderCommand(
 
 ### UC-User-02: Login
 
-**Actor:** User (Trader, Admin, Moderator)
-**Trigger:** Usuário acessa página de login
-**Bounded Context:** User Management
+**Actor:** User (Trader, Admin, Moderator)  
+**Trigger:** Usuário acessa página de login  
+**Bounded Context:** User Management  
 
 **Fluxo:**
 

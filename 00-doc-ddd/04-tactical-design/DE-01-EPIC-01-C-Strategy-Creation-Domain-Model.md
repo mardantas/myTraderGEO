@@ -1,17 +1,17 @@
 # DE-01-EPIC-01-C-Strategy-Creation-Domain-Model.md
 
-**Projeto:** myTraderGEO
-**Épico:** EPIC-01-C - Strategy Creation (segmento do EPIC-01)
-**Data:** 2025-10-25
-**Engineer:** DE Agent
+**Projeto:** myTraderGEO  
+**Épico:** EPIC-01-C - Strategy Creation (segmento do EPIC-01)  
+**Data:** 2025-10-25  
+**Engineer:** DE Agent  
 
 ---
 
 ## 🎯 Contexto do Sub-Épico
 
-**Nome do Sub-Épico:** Strategy Creation
+**Nome do Sub-Épico:** Strategy Creation  
 
-**Bounded Context:** Strategy Planning
+**Bounded Context:** Strategy Planning  
 
 **Objetivo:**
 Modelar a criação e gestão de estratégias instanciadas com valores absolutos (strikes em R$, datas específicas), incluindo paper trading, tracking de P&L (histórico de snapshots), ajustes/manejo de posições ativas e validação de limites por plano de assinatura.
@@ -28,7 +28,7 @@ Modelar a criação e gestão de estratégias instanciadas com valores absolutos
 ### Strategy Planning BC
 
 #### [Aggregate: Strategy](#5-strategy-aggregate-root)
-**Responsabilidade:** Estratégias instanciadas com valores absolutos, paper trading, P&L tracking e manejo
+**Responsabilidade:** Estratégias instanciadas com valores absolutos, paper trading, P&L tracking e manejo  
 
 **Entities:**
   - StrategyLeg, PnLSnapshot
@@ -51,7 +51,7 @@ Modelar a criação e gestão de estratégias instanciadas com valores absolutos
 
 ## 5. Strategy (Aggregate Root)
 
-**Responsabilidade:** Gerenciar estratégia instanciada com valores absolutos (strikes em R$, datas específicas)
+**Responsabilidade:** Gerenciar estratégia instanciada com valores absolutos (strikes em R$, datas específicas)  
 
 **Invariantes (Business Rules):**
 1. UserId deve existir e ser Trader
@@ -665,7 +665,7 @@ public interface IStrategyRepository
 
 ### User Management → Strategy Planning Integration
 
-**Mecanismo:** API de leitura (queries) + validação síncrona
+**Mecanismo:** API de leitura (queries) + validação síncrona  
 
 **Fluxo de Validação de Limite:**
 ```
@@ -685,7 +685,7 @@ public interface IStrategyRepository
 
 ### Strategy Planning → Market Data Integration
 
-**Mecanismo:** Queries diretas (read-only) via repositories
+**Mecanismo:** Queries diretas (read-only) via repositories  
 
 **Fluxo de Instanciação de Template (ATUALIZADO):**
 ```
@@ -770,7 +770,7 @@ public record OptionContractDto(
 
 ### Market Data → B3 API Integration (External Service)
 
-**Mecanismo:** Anti-Corruption Layer (ACL) via IB3ApiClient
+**Mecanismo:** Anti-Corruption Layer (ACL) via IB3ApiClient  
 
 **Interface Externa (Infrastructure Layer):**
 
@@ -966,7 +966,7 @@ foreach (var b3Option in b3Options)
 
 ### Strategy Planning → Risk Management Integration
 
-**Mecanismo:** Domain Events
+**Mecanismo:** Domain Events  
 
 **Eventos Publicados por Strategy Planning:**
 - `StrategyCreated` → Risk Management calcula risk score
@@ -990,9 +990,9 @@ foreach (var b3Option in b3Options)
 
 ### UC-Strategy-02: Instantiate Template
 
-**Actor:** Trader
-**Trigger:** Usuário instancia template em ativo específico
-**Bounded Context:** Strategy Planning
+**Actor:** Trader  
+**Trigger:** Usuário instancia template em ativo específico  
+**Bounded Context:** Strategy Planning  
 
 **Fluxo:**
 
@@ -1120,9 +1120,9 @@ public record InstantiateTemplateCommand(
 
 ### UC-Strategy-03: Create Strategy From Scratch
 
-**Actor:** Trader
-**Trigger:** Usuário cria estratégia sem template
-**Bounded Context:** Strategy Planning
+**Actor:** Trader  
+**Trigger:** Usuário cria estratégia sem template  
+**Bounded Context:** Strategy Planning  
 
 **Fluxo:**
 
@@ -1212,9 +1212,9 @@ public record StrategyLegDto(
 
 ### UC-Strategy-04: Calculate Margin
 
-**Actor:** System (background job) ou Trader (on-demand)
-**Trigger:** Estratégia criada ou usuário solicita recálculo
-**Bounded Context:** Strategy Planning
+**Actor:** System (background job) ou Trader (on-demand)  
+**Trigger:** Estratégia criada ou usuário solicita recálculo  
+**Bounded Context:** Strategy Planning  
 
 **Fluxo:**
 
@@ -1268,9 +1268,9 @@ public record CalculateMarginCommand(
 
 ### UC-Strategy-05: Validate Risk Limits
 
-**Actor:** System (via domain event handler)
-**Trigger:** StrategyCreated event
-**Bounded Context:** Risk Management (consuming Strategy Planning events)
+**Actor:** System (via domain event handler)  
+**Trigger:** StrategyCreated event  
+**Bounded Context:** Risk Management (consuming Strategy Planning events)  
 
 **Fluxo:**
 
@@ -1337,7 +1337,7 @@ public class StrategyCreatedEventHandler : INotificationHandler<StrategyCreated>
 - Use cases (4 use cases): 6 horas
 - Testing e refinamento: 4 horas
 
-**Nota:** StrategyTemplate (EPIC-01-B) não está incluído neste documento.
+**Nota:** StrategyTemplate (EPIC-01-B) não está incluído neste documento.  
 
 ---
 

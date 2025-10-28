@@ -1,10 +1,10 @@
 # QAE-00 - Test Strategy
 
-**Agent:** QAE (Quality Assurance Engineer)
-**Phase:** Discovery (1x)
-**Scope:** Testing strategy, coverage targets, quality gates
-**Version:** 1.0
-**Date:** 2025-10-15
+**Agent:** QAE (Quality Assurance Engineer)  
+**Phase:** Discovery (1x)  
+**Scope:** Testing strategy, coverage targets, quality gates  
+**Version:** 1.0  
+**Date:** 2025-10-15  
 
 ---
 
@@ -58,7 +58,7 @@ Definir estratégia de testes para myTraderGEO, garantindo qualidade e confiabil
 
 ## 🧪 Testing Stack
 
-**Definido pelo PE-00:** [`PE-00-Environments-Setup.md`](../08-platform-engineering/PE-00-Environments-Setup.md)
+**Definido pelo PE-00:** [`PE-00-Environments-Setup.md`](../08-platform-engineering/PE-00-Environments-Setup.md)  
 
 | Layer | Stack | Ferramentas |
 |-------|-------|-------------|
@@ -69,7 +69,7 @@ Definir estratégia de testes para myTraderGEO, garantindo qualidade e confiabil
 | Performance | Load testing | k6 (Epic 3+) |
 | Security | SAST/DAST | OWASP ZAP, Snyk (Epic 2+) |
 
-**Referência completa:** Ver PE-00 seção "Stack Tecnológico"
+**Referência completa:** Ver PE-00 seção "Stack Tecnológico"  
 
 ---
 
@@ -99,7 +99,7 @@ Definir estratégia de testes para myTraderGEO, garantindo qualidade e confiabil
 | Shared Kernel | 80% | 20% | - |
 | Authentication (ACL) | 70% | 40% | 10% |
 
-**Cobertura Mínima Global:** 70% (bloqueio de PR se < 70%)
+**Cobertura Mínima Global:** 70% (bloqueio de PR se < 70%)  
 
 ---
 
@@ -107,7 +107,7 @@ Definir estratégia de testes para myTraderGEO, garantindo qualidade e confiabil
 
 ### 1. Unit Tests - Domain Logic
 
-**Foco:** Regras de negócio isoladas, cálculos, validações
+**Foco:** Regras de negócio isoladas, cálculos, validações  
 
 **Strategy Planning BC:**
 - ✅ Transformações template → strategy (strikes relativos → absolutos)
@@ -136,7 +136,7 @@ Definir estratégia de testes para myTraderGEO, garantindo qualidade e confiabil
 
 ### 2. Integration Tests - APIs & Cross-BC
 
-**Foco:** Comunicação entre componentes, integrações externas
+**Foco:** Comunicação entre componentes, integrações externas  
 
 **Backend Integration:**
 - ✅ API endpoints (HTTP status, payloads, validações)
@@ -157,7 +157,7 @@ Definir estratégia de testes para myTraderGEO, garantindo qualidade e confiabil
 
 ### 3. E2E Tests - User Journeys
 
-**Foco:** Fluxos completos de alto valor
+**Foco:** Fluxos completos de alto valor  
 
 **Fluxos Críticos (Obrigatórios):**
 1. ✅ **Criar e ativar estratégia (paper trading)**
@@ -351,7 +351,7 @@ export const createMockStrategy = (overrides?: Partial<Strategy>): Strategy => (
 /--\         Pouquíssimos Unit
 ```
 
-**Problema:** E2E são lentos e frágeis. Priorizar unit tests.
+**Problema:** E2E são lentos e frágeis. Priorizar unit tests.  
 
 ### ❌ Testing Implementation Details
 
@@ -450,6 +450,6 @@ public void Calculate_ShouldReturnCorrectMargin()
 
 ---
 
-**Última atualização:** 2025-10-15
-**Fase:** Discovery (Epic 1)
-**Status:** ✅ Estratégia definida, pronta para implementação
+**Última atualização:** 2025-10-15  
+**Fase:** Discovery (Epic 1)  
+**Status:** ✅ Estratégia definida, pronta para implementação  
