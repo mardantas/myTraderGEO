@@ -1,10 +1,10 @@
 # PE-00 - Environments Setup
 
-**Agent:** PE (Platform Engineer)
-**Phase:** Discovery (1x)
-**Scope:** Basic environments with Docker Compose and deploy scripts
-**Version:** 1.0
-**Date:** 2025-10-14
+**Agent:** PE (Platform Engineer)  
+**Phase:** Discovery (1x)  
+**Scope:** Basic environments with Docker Compose and deploy scripts  
+**Version:** 1.0  
+**Date:** 2025-10-14  
 
 ---
 
@@ -124,6 +124,77 @@ Configurar ambientes básicos (dev, staging, production) com Docker Compose e sc
 
 ---
 
+## 🌐 Network Architecture & Deployment
+
+### Isolated Environments: Separate Servers
+
+**Staging and Production run on SEPARATE servers/IPs:**
+
+```
+┌─────────────────────────────────────┐
+│   Staging Server (IP: 203.0.113.10) │
+├─────────────────────────────────────┤
+│ • staging.{DOMAIN}                   │ → Frontend
+│ • api.staging.{DOMAIN}               │ → Backend API
+│ • traefik.staging.{DOMAIN}           │ → Traefik Dashboard
+└─────────────────────────────────────┘
+
+┌─────────────────────────────────────┐
+│ Production Server (IP: 203.0.113.20) │
+├─────────────────────────────────────┤
+│ • {DOMAIN}                            │ → Frontend
+│ • api.{DOMAIN}                        │ → Backend API
+│ • traefik.{DOMAIN}                    │ → Traefik Dashboard
+└─────────────────────────────────────┘
+```
+
+### DNS Configuration Required
+
+Point each subdomain to its respective server IP:
+
+**Staging (IP: 203.0.113.10):**
+```
+staging.mytrader.com          A    203.0.113.10
+api.staging.mytrader.com      A    203.0.113.10
+traefik.staging.mytrader.com  A    203.0.113.10
+```
+
+**Production (IP: 203.0.113.20):**
+```
+mytrader.com                  A    203.0.113.20
+www.mytrader.com              A    203.0.113.20
+api.mytrader.com              A    203.0.113.20
+traefik.mytrader.com          A    203.0.113.20
+```
+
+### Why Separate Servers?
+
+- ✅ **Isolation:** Staging issues don't affect production
+- ✅ **Security:** Breach containment (critical for financial apps)
+- ✅ **Performance:** Dedicated resources per environment
+- ✅ **Compliance:** Separate audit trails and access control
+- ✅ **Testing:** Can test deploy process without risk
+
+### Infrastructure Options
+
+**Option 1: Separate VPS (Recommended)**
+- Staging: Small VPS ($5-10/month) - DigitalOcean, Hetzner, Vultr
+- Production: Robust VPS ($20-40/month)
+- Total: ~$30/month for complete isolation
+
+**Option 2: Cloudflare + Private IPs**
+- Single public IP via Cloudflare Tunnel
+- Internal routing to separate staging/production VMs
+- DDoS protection + SSL management included
+- See Cloudflare Tunnel docs for setup
+
+**NOT Recommended: Single Server**
+- Sharing ports (staging:8443, prod:443) is complex
+- Risk of staging compromising production
+- Not suitable for financial/trading applications
+
+---
+
 ## 🏗️ Infraestrutura Física
 
 **Todos os arquivos de configuração e scripts estão implementados em:** [`05-infra/`](../../05-infra/)
@@ -178,13 +249,13 @@ Configurar ambientes básicos (dev, staging, production) com Docker Compose e sc
 
 ```bash
 # 1. Configurar environment
-cp 05-infra/configs/.env.example 05-infra/configs/.env
+cp 05-infra/configs/.env.example 05-infra/configs/.env.dev
 
 # 2. Iniciar serviços
-docker compose -f 05-infra/docker/docker-compose.yml up -d
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev up -d
 
 # 3. Verificar saúde
-docker compose -f 05-infra/docker/docker-compose.yml ps
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev ps
 ```
 
 **Acessos:**
@@ -346,6 +417,57 @@ TRAEFIK_DASHBOARD_AUTH=admin:$apr1$xyz...
 - Middlewares configurados
 - Certificados SSL status
 - Health checks
+
+---
+
+## 🪟 Desenvolvimento no Windows
+
+### Pré-requisitos
+
+- **Docker Desktop for Windows** (WSL2 backend enabled)
+- **Git for Windows** (inclui Git Bash)
+- **Windows 10/11** com WSL2 configurado
+
+### Executar Scripts Bash
+
+Todos os scripts (deploy, backup) usam Bash. No Windows, use uma destas opções:
+
+**Opção 1: Git Bash (Recomendado)**
+```bash
+bash ./05-infra/scripts/deploy.sh staging
+bash ./05-infra/scripts/backup-database.sh
+```
+
+**Opção 2: WSL2**
+```bash
+wsl bash ./05-infra/scripts/deploy.sh staging
+```
+
+### Named Volumes no Windows
+
+Docker Desktop armazena named volumes no filesystem WSL2:
+```
+\\wsl$\docker-desktop-data\data\docker\volumes\
+```
+
+**Benefícios:**
+- **Performance:** ~60x mais rápido que bind mounts para databases
+- **Compatibilidade:** Funciona identicamente em Windows/Linux/Mac
+- **Gestão automática:** Docker gerencia espaço e backups
+
+**Quando usar bind mounts:**
+- Apenas para código-fonte (hot reload)
+- Não para databases (performance ruim)
+
+### Troubleshooting Windows
+
+**Problema: Performance lenta**
+- **Solução:** Manter projeto dentro do filesystem WSL2 (`\\wsl$\Ubuntu\home\user\projects\`)
+- **Alternativa:** Se precisar manter em `C:\`, usar named volumes para databases (já configurado)
+
+**Problema: Scripts Bash não executam**
+- **Verificar:** Docker Desktop → Settings → General → "Use the WSL 2 based engine"
+- **Verificar:** Git Bash instalado (`git --version`)
 
 ---
 

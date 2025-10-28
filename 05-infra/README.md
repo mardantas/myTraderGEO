@@ -2,6 +2,20 @@
 
 Configuração completa de infraestrutura Docker para os ambientes Development, Staging e Production do myTraderGEO.
 
+---
+
+## 📋 About This Document
+
+This is a **quick reference guide** for executing infrastructure commands (Docker, deploy, environment setup). For strategic decisions, architecture details, and trade-offs, consult [PE-00-Environments-Setup.md](../00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md).
+
+**Document Separation:**
+- **This README:** Commands and checklists (HOW to execute)
+- **PE-00:** Architecture decisions, justifications, and trade-offs (WHY and WHAT)
+
+**Principle:** README is an INDEX/QUICK-REFERENCE to PE-00, not a duplicate.
+
+---
+
 ## Stack Tecnológico
 
 - **Backend:** .NET 8 (C#) + ASP.NET Core + Entity Framework Core + SignalR
@@ -42,23 +56,23 @@ Configuração completa de infraestrutura Docker para os ambientes Development, 
 
 ```bash
 # Copiar template
-cp 05-infra/configs/.env.example 05-infra/configs/.env
+cp 05-infra/configs/.env.example 05-infra/configs/.env.dev
 
 # Editar .env com suas credenciais
-nano 05-infra/configs/.env
+nano 05-infra/configs/.env.dev
 ```
 
 ### 2. Development - Iniciar Ambiente Local
 
 ```bash
 # Subir todos os serviços
-docker compose -f 05-infra/docker/docker-compose.yml up -d
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev up -d
 
 # Verificar logs
-docker compose -f 05-infra/docker/docker-compose.yml logs -f
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev logs -f
 
 # Parar serviços
-docker compose -f 05-infra/docker/docker-compose.yml down
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev down
 ```
 
 **Acessar:**
@@ -344,7 +358,7 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
 **Ver logs:**
 ```bash
 # Development
-docker compose -f 05-infra/docker/docker-compose.yml logs -f api
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev logs -f api
 
 # Production
 docker compose -f 05-infra/docker/docker-compose.production.yml logs -f api
@@ -384,20 +398,20 @@ Referrer-Policy: strict-origin-when-cross-origin
 
 ```bash
 # Verificar logs
-docker compose -f 05-infra/docker/docker-compose.yml logs api
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev logs api
 
 # Verificar health
-docker compose -f 05-infra/docker/docker-compose.yml ps
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev ps
 ```
 
 ### Database connection failed
 
 ```bash
 # Verificar se database está healthy
-docker compose -f 05-infra/docker/docker-compose.yml ps database
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev ps database
 
 # Testar conexão manual
-docker compose -f 05-infra/docker/docker-compose.yml exec database psql -U postgres -d mytrader_dev
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev exec database psql -U postgres -d mytrader_dev
 ```
 
 ### Hot reload não funciona
@@ -415,12 +429,67 @@ docker compose -f 05-infra/docker/docker-compose.yml exec database psql -U postg
 
 ```bash
 # Parar serviços conflitantes
-docker compose -f 05-infra/docker/docker-compose.yml down
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev down
 
 # Ou alterar porta no docker-compose.yml
 ports:
   - "5001:8080"  # Usar 5001 ao invés de 5000
 ```
+
+## 🪟 Desenvolvimento no Windows
+
+### Pré-requisitos
+
+- **Docker Desktop for Windows** (WSL2 backend habilitado)
+- **Git for Windows** (inclui Git Bash)
+- **Windows 10/11** com WSL2 configurado
+
+### Executar Scripts Bash
+
+**Opção 1: Git Bash (Recomendado)**
+```bash
+bash ./05-infra/scripts/deploy.sh staging
+bash ./05-infra/scripts/backup-database.sh
+```
+
+**Opção 2: WSL2**
+```bash
+wsl bash ./05-infra/scripts/deploy.sh staging
+```
+
+### Named Volumes no Windows
+
+Docker Desktop armazena named volumes no filesystem WSL2:
+```
+\\wsl$\docker-desktop-data\data\docker\volumes\
+```
+
+**Benefícios:**
+- **Performance:** ~60x mais rápido que bind mounts para databases
+- **Compatibilidade:** Funciona identicamente em Windows/Linux/Mac
+- **Gestão:** Docker gerencia automaticamente o armazenamento
+
+### Troubleshooting Windows
+
+**Performance lenta (Development):**
+- Verificar que Docker Desktop usa WSL2 backend (não Hyper-V)
+- Mover código para dentro do WSL2 filesystem: `\\wsl$\Ubuntu\home\user\mytrader`
+- Database usa named volume (já otimizado)
+
+**Scripts bash não executam:**
+```bash
+# Use Git Bash (incluído no Git for Windows)
+bash ./05-infra/scripts/deploy.sh development
+
+# Ou configure WSL2
+wsl --install
+wsl --set-default-version 2
+```
+
+**Volumes não sincronizam:**
+- Hot reload funciona em Windows se código está no filesystem Windows
+- Para melhor performance, considere desenvolver dentro do WSL2
+- Named volumes (database) não precisam sincronização
 
 ## CI/CD Integration
 

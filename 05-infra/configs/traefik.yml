@@ -26,6 +26,16 @@ entryPoints:
 
 # Certificate Resolvers (Let's Encrypt)
 certificatesResolvers:
+  # Staging CA (for testing - no rate limits)
+  letsencrypt-staging:
+    acme:
+      email: ${ACME_EMAIL}
+      storage: /letsencrypt/acme-staging.json
+      caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+      httpChallenge:
+        entryPoint: web
+
+  # Production CA (trusted certificates)
   letsencrypt:
     acme:
       email: ${ACME_EMAIL}
