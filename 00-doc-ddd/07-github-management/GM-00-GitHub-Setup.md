@@ -568,6 +568,71 @@ gh issue view [ISSUE_NUMBER] --repo mardantas/myTraderGEO
 
 **Status:** ⚠️ **Requires customization** (deployment target from PE-00)
 
+**Prerequisites:**
+- `.env.staging` configured on staging server (see [PE-00](../08-platform-engineering/PE-00-Environments-Setup.md#env-strategy))
+- Staging server IP configured (separate from production)
+- Docker Compose v2+ installed on staging server
+
+**Manual Deploy Command:**
+```bash
+# On staging server (SSH)
+docker compose -f 05-infra/docker/docker-compose.staging.yml \
+  --env-file 05-infra/configs/.env.staging \
+  up -d
+```
+
+---
+
+### 🔗 Deployment Strategy (PE-00 Integration)
+
+**IMPORTANT:** All deployment commands MUST use `--env-file` flag explicitly per environment.
+
+#### Environment-Specific .env Files
+
+See [PE-00 Environments Setup](../08-platform-engineering/PE-00-Environments-Setup.md) for complete strategy.
+
+| Environment | .env File | Usage |
+|-------------|-----------|-------|
+| Development | `.env.dev` | Local Docker Compose |
+| Staging | `.env.staging` | Staging server deployment |
+| Production | `.env.production` | Production server deployment |
+
+**Command Pattern:**
+```bash
+# Development
+docker compose -f 05-infra/docker/docker-compose.yml \
+  --env-file 05-infra/configs/.env.dev up
+
+# Staging
+docker compose -f 05-infra/docker/docker-compose.staging.yml \
+  --env-file 05-infra/configs/.env.staging up -d
+
+# Production
+docker compose -f 05-infra/docker/docker-compose.production.yml \
+  --env-file 05-infra/configs/.env.production up -d
+```
+
+#### Multi-Server Architecture
+
+**Staging and Production run on SEPARATE servers/IPs:**
+- **Staging Server:** Dedicated IP (e.g., 203.0.113.10)
+- **Production Server:** Dedicated IP (e.g., 203.0.113.20)
+
+**Why separate servers:**
+- ✅ Complete isolation (staging issues don't affect production)
+- ✅ Security (breach containment - critical for financial apps)
+- ✅ Independent resource allocation
+- ✅ Separate audit trails and access control
+
+See [PE-00 Network Architecture](../08-platform-engineering/PE-00-Environments-Setup.md#network-architecture) for details.
+
+#### Key PE-00 Decisions Affecting CI/CD
+
+1. **Docker Compose Commands:** ALWAYS use `--env-file` (no implicit `.env` loading)
+2. **Traefik Integration:** Staging + Production use Traefik v3.0 (separate instances)
+3. **Certificate Resolvers:** Staging uses Let's Encrypt staging CA, Production uses production CA
+4. **Windows Compatibility:** Scripts must run in Git Bash or WSL2 (see PE-00)
+
 ---
 
 ## 🔒 3. Branch Strategy (GitHub Free)

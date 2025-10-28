@@ -241,12 +241,12 @@ if [[ "$SKIP_STAGING" == "false" ]]; then
     git pull origin "$BASE_BRANCH"
 
     echo -e "  ${YELLOW}📦 Deploy to staging...${NC}"
-    echo -e "  ${GRAY}Command: docker-compose -f docker-compose.staging.yml up -d${NC}"
+    echo -e "  ${GRAY}Command: docker compose -f 05-infra/docker/docker-compose.staging.yml --env-file 05-infra/configs/.env.staging up -d${NC}"
     echo ""
 
     # Note: Actual deployment should be handled by CI/CD or manual approval
     echo -e "  ${CYAN}ℹ️  Staging deployment should be triggered by CI/CD pipeline${NC}"
-    echo -e "  ${CYAN}   Or manually run: docker-compose -f docker-compose.staging.yml up -d${NC}"
+    echo -e "  ${CYAN}   Or manually run: docker compose -f 05-infra/docker/docker-compose.staging.yml --env-file 05-infra/configs/.env.staging up -d${NC}"
     echo ""
 else
     echo -e "${YELLOW}━━━ STEP 7/7: Skipping Staging Deployment ━━━${NC}"
