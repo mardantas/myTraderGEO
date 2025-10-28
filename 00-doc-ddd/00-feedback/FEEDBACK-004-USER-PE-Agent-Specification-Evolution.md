@@ -180,22 +180,67 @@ Para considerar o feedback resolvido, o PE Agent deve:
 
 ## ✅ Resolução
 
-> _Seção preenchida pelo PE Agent após resolver_
-
-**Data Resolução:** [YYYY-MM-DD]
+**Data Resolução:** 2025-01-28
 **Resolvido por:** PE Agent
 
-**Ação Tomada:**
-[PE Agent descreverá o que foi auditado e corrigido]
+### Ação Tomada
 
-**Deliverables Atualizados:**
-- [ ] [deliverable] - [descrição da mudança]
+Realizou-se auditoria completa dos deliverables de infraestrutura contra a especificação atualizada do PE Agent, templates evoluídos, e decisões arquiteturais consolidadas. Identificadas e implementadas **11 correções** em 3 fases:
 
-**Referência Git Commit:** [hash]
+**Fase 1: Auditoria (completada)**
+- Comparou deliverables existentes vs especificação XML do Agent
+- Identificou gaps em traefik.yml, .env.example, PE-00, README
+- Validou decisões arquiteturais (multi-server, .env strategy, Windows support)
+
+**Fase 2: Correções (completadas - 11 itens)**
+1. ✅ traefik.yml: Adicionado `letsencrypt-staging` certificateResolver
+2. ✅ docker-compose.staging.yml: Alterado para usar staging CA (3 lugares)
+3. ✅ .env.example: Instruções de uso + IP whitelist opcional documentado
+4. ✅ PE-00: Markdown formatting (2 spaces em metadata, linhas 3-7)
+5. ✅ PE-00: Comandos docker-compose com `--env-file .env.dev`
+6. ✅ PE-00: Seção Network Architecture (multi-server, 70+ linhas)
+7. ✅ PE-00: Seção Windows Development (WSL2, Git Bash, 50+ linhas)
+8. ✅ README: Seção "About This Document" (separação PE-00 vs README)
+9. ✅ README: Todos os comandos docker-compose com `--env-file 05-infra/configs/.env.dev`
+10. ✅ README: Seção Windows Development (quick reference, 50+ linhas)
+11. ✅ FEEDBACK-004: Documento de auditoria criado
+
+**Fase 3: Validação (completada)**
+- ✅ Todos os 11 itens implementados
+- ✅ Conformidade com templates atualizados
+- ✅ Decisões arquiteturais documentadas e implementadas
+- ✅ Consistência interna verificada
+
+### Deliverables Atualizados
+
+- [x] **05-infra/configs/traefik.yml** - Adicionado certificateResolver staging (letsencrypt-staging) para evitar rate limits Let's Encrypt em staging
+- [x] **05-infra/docker/docker-compose.staging.yml** - Alterado certresolver para staging CA em 3 services (Dashboard, API, Frontend)
+- [x] **05-infra/configs/.env.example** - Adicionadas instruções de uso (.env.dev/.staging/.production strategy) + IP whitelist OPTIONAL documentado
+- [x] **00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md** - 4 atualizações:
+  - Markdown formatting (2 spaces em metadata)
+  - Comandos docker-compose com --env-file .env.dev
+  - Seção Network Architecture (multi-server isolation)
+  - Seção Windows Development (WSL2, Git Bash, troubleshooting)
+- [x] **05-infra/README.md** - 3 atualizações:
+  - Seção "About This Document" (separação estratégico vs operacional)
+  - Comandos docker-compose com --env-file 05-infra/configs/.env.dev
+  - Seção Windows Development (quick reference)
+- [x] **00-doc-ddd/00-feedback/FEEDBACK-004-USER-PE-Agent-Specification-Evolution.md** - Criado documento de auditoria e resolução
+
+### Decisões Arquiteturais Confirmadas
+
+1. **Multi-Server Architecture:** Staging (IP separado) + Production (IP separado) para isolamento total
+2. **IP Whitelist:** OPTIONAL - User tem IP dinâmico (desktop/home), basic auth suficiente
+3. **Let's Encrypt CAs:** Staging usa staging CA (sem rate limits), Production usa production CA (trusted)
+4. **.env Strategy:** .env.dev, .env.staging, .env.production com --env-file explícito em TODOS os comandos
+5. **Windows Support:** Docker Desktop + Git Bash recomendado, WSL2 como alternativa
+6. **Named Volumes:** Database usa named volumes (~60x performance vs bind mounts no Windows)
+
+**Referência Git Commit:** `651cc55`
 
 ---
 
-**Status Final:** 🔴 Aberto
+**Status Final:** 🟢 Resolvido
 
 ---
 
@@ -204,3 +249,4 @@ Para considerar o feedback resolvido, o PE Agent deve:
 | Data | Mudança | Autor |
 |------|---------|-------|
 | 2025-01-27 | Criado | User (Marco) |
+| 2025-01-28 | Resolvido (11 correções implementadas) | PE Agent |
