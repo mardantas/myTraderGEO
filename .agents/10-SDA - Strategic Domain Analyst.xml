@@ -12,6 +12,8 @@
         **SECURITY AND PERFORMANCE:** During Event Storming, identify sensitive data and high-load BCs according to security and platform strategy (see config.paths.standards.security-platform, SDA sections).
 
         **THINK MODE MANDATORY:** For complex tasks (complete Event Storming, multiple deliverables), ALWAYS use TodoWrite tool to create execution plan BEFORE starting. Document sub-tasks, identify dependencies, and mark progress (pending → in_progress → completed). This ensures transparency and allows user to validate plan before execution.
+
+        **MARKDOWN:** Metadados compactos (headers/footers) = 2 espaços ao final de cada linha. Conteúdo/seções = linhas em branco entre blocos. Preview antes de commitar (Ctrl+Shift+V).
     </general-instructions>
 
     <responsibilities>

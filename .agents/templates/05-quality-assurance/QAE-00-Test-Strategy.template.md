@@ -1,8 +1,15 @@
+<!--
+MARKDOWN FORMATTING:
+- Use 2 spaces at end of line for compact line breaks (metadata)
+- Use blank lines between sections for readability (content)
+- Validate in Markdown preview before committing
+-->
+
 # QAE-01-Test-Strategy.md
 
-**Projeto:** [PROJECT_NAME]
-**Data:** [YYYY-MM-DD]
-**QA Engineer:** QAE Agent
+**Projeto:** [PROJECT_NAME]  
+**Data:** [YYYY-MM-DD]  
+**QA Engineer:** QAE Agent  
 
 ---
 
@@ -24,7 +31,7 @@ Definir estratégia abrangente de testes para o projeto, estabelecendo pirâmide
   /--------------\
 ```
 
-**Distribuição Target:**
+**Distribuição Target:**  
 - **Unit Tests:** 60-70% dos testes
 - **Integration Tests:** 20-30% dos testes
 - **E2E Tests:** 5-10% dos testes
@@ -35,21 +42,21 @@ Definir estratégia abrangente de testes para o projeto, estabelecendo pirâmide
 
 ### 1. Unit Tests
 
-**Responsável Inicial:** DE (backend), FE (frontend)
-**QAE Expande Com:** Casos extremos, boundary conditions, error scenarios
+**Responsável Inicial:** DE (backend), FE (frontend)  
+**QAE Expande Com:** Casos extremos, boundary conditions, error scenarios  
 
 #### Backend (Domain Layer)
 
-**O que testar:**
+**O que testar:**  
 - Aggregates: Business rules, invariantes
 - Value Objects: Validações, imutabilidade
 - Domain Events: Geração correta
 - Use Cases: Orquestração lógica
 
-**Framework:** xUnit, NUnit ou MSTest
-**Mocking:** Moq, NSubstitute
+**Framework:** xUnit, NUnit ou MSTest  
+**Mocking:** Moq, NSubstitute  
 
-**Exemplo:**
+**Exemplo:**  
 ```csharp
 public class StrategyTests
 {
@@ -82,14 +89,14 @@ public class StrategyTests
 
 #### Frontend (Components)
 
-**O que testar:**
+**O que testar:**  
 - Componentes: Rendering, props, events
 - Hooks: State management logic
 - Utilities: Pure functions
 
-**Framework:** Jest, Vitest, Testing Library
+**Framework:** Jest, Vitest, Testing Library  
 
-**Exemplo:**
+**Exemplo:**  
 ```typescript
 describe('StrategyCard', () => {
   it('should render strategy name', () => {
@@ -107,26 +114,26 @@ describe('StrategyCard', () => {
 });
 ```
 
-**Coverage Target:** 70% line coverage mínimo
+**Coverage Target:** 70% line coverage mínimo  
 
 ---
 
 ### 2. Integration Tests
 
-**Responsável:** QAE (full ownership)
+**Responsável:** QAE (full ownership)  
 
 #### API Integration Tests
 
-**O que testar:**
+**O que testar:**  
 - Controllers + Use Cases + Repositories
 - Database interactions (real DB ou in-memory)
 - Authentication/Authorization
 - Error handling end-to-end
 
-**Framework:** xUnit com WebApplicationFactory
-**Database:** TestContainers (Docker) ou In-Memory SQLite
+**Framework:** xUnit com WebApplicationFactory  
+**Database:** TestContainers (Docker) ou In-Memory SQLite  
 
-**Exemplo:**
+**Exemplo:**  
 ```csharp
 public class StrategyApiTests : IClassFixture<WebApplicationFactory<Program>>
 {
@@ -162,12 +169,12 @@ public class StrategyApiTests : IClassFixture<WebApplicationFactory<Program>>
 
 #### Cross-BC Integration Tests
 
-**O que testar:**
+**O que testar:**  
 - Domain Events entre BCs
 - Eventual consistency
 - Saga/Process Managers
 
-**Exemplo:**
+**Exemplo:**  
 ```csharp
 [Fact]
 public async Task WhenStrategyCreated_RiskBCShouldCreateRiskProfile()
@@ -189,16 +196,16 @@ public async Task WhenStrategyCreated_RiskBCShouldCreateRiskProfile()
 
 ### 3. E2E Tests (End-to-End)
 
-**Responsável:** QAE (full ownership)
+**Responsável:** QAE (full ownership)  
 
-**O que testar:**
+**O que testar:**  
 - User journeys completas
 - Fluxos críticos de negócio
 - Integração frontend + backend + database
 
-**Framework:** Playwright, Cypress, Selenium
+**Framework:** Playwright, Cypress, Selenium  
 
-**User Journeys:**
+**User Journeys:**  
 
 1. **Happy Path: Criar Estratégia Completa**
    - Login → Dashboard → Criar Estratégia → Configurar Legs → Salvar → Ver Greeks
@@ -209,7 +216,7 @@ public async Task WhenStrategyCreated_RiskBCShouldCreateRiskProfile()
 3. **Cross-BC Flow: Estratégia → Risco**
    - Criar estratégia → Ver alerta de risco → Ajustar → Risco OK
 
-**Exemplo (Playwright):**
+**Exemplo (Playwright):**  
 ```typescript
 test('should create bull call spread strategy', async ({ page }) => {
   // Login
@@ -240,23 +247,23 @@ test('should create bull call spread strategy', async ({ page }) => {
 });
 ```
 
-**Coverage Target:** 100% de user journeys críticos
+**Coverage Target:** 100% de user journeys críticos  
 
 ---
 
 ### 4. Performance Tests
 
-**Responsável:** QAE (colaboração com PE se disponível)
+**Responsável:** QAE (colaboração com PE se disponível)  
 
-**O que testar:**
+**O que testar:**  
 - Response time de APIs críticas
 - Database query performance
 - Frontend rendering performance
 - Load testing (concurrent users)
 
-**Tools:** k6, Artillery, JMeter
+**Tools:** k6, Artillery, JMeter  
 
-**Benchmarks:**
+**Benchmarks:**  
 
 | Endpoint | Max Response Time | Throughput |
 |----------|------------------|------------|
@@ -264,7 +271,7 @@ test('should create bull call spread strategy', async ({ page }) => {
 | POST /api/strategies | < 500ms | 50 req/s |
 | GET /api/strategies/{id}/greeks | < 300ms | 200 req/s |
 
-**Exemplo (k6):**
+**Exemplo (k6):**  
 ```javascript
 import http from 'k6/http';
 import { check } from 'k6';
@@ -287,18 +294,18 @@ export default function () {
 
 ### 5. Security Tests
 
-**Responsável:** QAE (colaboração com SEC se disponível)
+**Responsável:** QAE (colaboração com SEC se disponível)  
 
-**O que testar:**
+**O que testar:**  
 - Authentication/Authorization
 - SQL Injection
 - XSS (Cross-Site Scripting)
 - CSRF (Cross-Site Request Forgery)
 - OWASP Top 10
 
-**Tools:** OWASP ZAP, Burp Suite (manual), Dependabot (dependencies)
+**Tools:** OWASP ZAP, Burp Suite (manual), Dependabot (dependencies)  
 
-**Checklist:**
+**Checklist:**  
 
 - [ ] Authentication required para endpoints protegidos
 - [ ] Authorization: Users só vêem seus próprios dados
@@ -351,12 +358,12 @@ stages:
 
 ### Quality Gates
 
-**Blocking (PR não pode mergear):**
+**Blocking (PR não pode mergear):**  
 - ❌ Unit tests falhando
 - ❌ Integration tests críticos falhando
 - ❌ Coverage < 70%
 
-**Warning (PR pode mergear mas avisa):**
+**Warning (PR pode mergear mas avisa):**  
 - ⚠️ E2E tests falhando (flaky tests)
 - ⚠️ Performance degradation > 20%
 
@@ -371,7 +378,7 @@ stages:
 3. **Test passa (regression prevention)**
 4. **Deploy**
 
-**Exemplo:**
+**Exemplo:**  
 ```csharp
 // Regression test para Bug #123
 [Fact]
@@ -446,7 +453,7 @@ public void Bug123_WhenStrategyHasNoLegs_ShouldNotCalculateGreeks()
 
 ## ✅ Definition of Done - Testing
 
-**Uma feature só está DONE quando:**
+**Uma feature só está DONE quando:**  
 
 - [ ] Unit tests escritos (DE/FE) e expandidos (QAE)
 - [ ] Integration tests criados (QAE)
@@ -460,7 +467,7 @@ public void Bug123_WhenStrategyHasNoLegs_ShouldNotCalculateGreeks()
 
 ## 📈 Métricas de Qualidade
 
-**Tracking:**
+**Tracking:**  
 
 | Métrica | Target | Atual | Trend |
 |---------|--------|-------|-------|
@@ -477,11 +484,11 @@ public void Bug123_WhenStrategyHasNoLegs_ShouldNotCalculateGreeks()
 
 ### Test Data Strategy
 
-**Unit Tests:** In-memory fake data (Bogus library)
-**Integration Tests:** Database seeding per test
-**E2E Tests:** Dedicated test environment com data fixtures
+**Unit Tests:** In-memory fake data (Bogus library)  
+**Integration Tests:** Database seeding per test  
+**E2E Tests:** Dedicated test environment com data fixtures  
 
-**Exemplo (Bogus):**
+**Exemplo (Bogus):**  
 ```csharp
 public class StrategyFaker : Faker<Strategy>
 {
@@ -506,5 +513,5 @@ public class StrategyFaker : Faker<Strategy>
 
 ---
 
-**Test Strategy Version:** 1.0
-**Status:** Living Document (atualizar conforme projeto evolui)
+**Test Strategy Version:** 1.0  
+**Status:** Living Document (atualizar conforme projeto evolui)  

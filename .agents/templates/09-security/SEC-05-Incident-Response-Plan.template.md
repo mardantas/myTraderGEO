@@ -1,9 +1,16 @@
+<!--
+MARKDOWN FORMATTING:
+- Use 2 spaces at end of line for compact line breaks (metadata)
+- Use blank lines between sections for readability (content)
+- Validate in Markdown preview before committing
+-->
+
 # SEC-05: Incident Response Plan
 
-**Projeto:** [NOME-DO-PROJETO]
-**Data:** [DATA]
-**Security Specialist:** [NOME]
-**Versão:** 1.0
+**Projeto:** [NOME-DO-PROJETO]  
+**Data:** [DATA]  
+**Security Specialist:** [NOME]  
+**Versão:** 1.0  
 
 ---
 
@@ -110,7 +117,7 @@ alerts:
 
 ### Phase 1: Detection & Triage (0-15 min)
 
-**Objective:** Confirm incident is real (not false positive).
+**Objective:** Confirm incident is real (not false positive).  
 
 ```yaml
 steps:
@@ -141,7 +148,7 @@ grep "suspicious_ip" /var/log/nginx/access.log
 
 ### Phase 2: Containment (15 min - 1 hour)
 
-**Objective:** Stop the attack, prevent further damage.
+**Objective:** Stop the attack, prevent further damage.  
 
 #### Immediate Actions
 
@@ -174,7 +181,7 @@ grep "suspicious_ip" /var/log/nginx/access.log
 #### Communication
 
 ```markdown
-**Internal Alert (Slack #security-incidents):**
+**Internal Alert (Slack #security-incidents):**  
 
 🚨 INCIDENT P0: Data Breach Detected
 - Severity: P0 (Critical)
@@ -188,7 +195,7 @@ grep "suspicious_ip" /var/log/nginx/access.log
 
 ### Phase 3: Eradication (1-4 hours)
 
-**Objective:** Remove attacker access, fix vulnerability.
+**Objective:** Remove attacker access, fix vulnerability.  
 
 ```yaml
 - action: Patch vulnerability
@@ -224,7 +231,7 @@ grep "suspicious_ip" /var/log/nginx/access.log
 
 ### Phase 4: Recovery (4-24 hours)
 
-**Objective:** Restore normal operations, monitor for reinfection.
+**Objective:** Restore normal operations, monitor for reinfection.  
 
 ```yaml
 - action: Restore from backup (if needed)
@@ -251,16 +258,16 @@ grep "suspicious_ip" /var/log/nginx/access.log
 
 ### Phase 5: Post-Mortem (24-72 hours)
 
-**Objective:** Learn from incident, prevent recurrence.
+**Objective:** Learn from incident, prevent recurrence.  
 
 #### Post-Mortem Report Template
 
 ```markdown
 # Incident Post-Mortem: [INCIDENT-ID]
 
-**Date:** 2025-10-05
-**Duration:** 3 hours (14:00 - 17:00 UTC)
-**Severity:** P0 (Critical)
+**Date:** 2025-10-05  
+**Duration:** 3 hours (14:00 - 17:00 UTC)  
+**Severity:** P0 (Critical)  
 
 ## Summary
 
@@ -322,7 +329,7 @@ Developer used string concatenation instead of parameterized query in `OrdersCon
 
 ### Playbook 1: Database Breach
 
-**File:** `playbooks/database-breach.md`
+**File:** `playbooks/database-breach.md`  
 
 ```markdown
 # Playbook: Database Breach
@@ -361,7 +368,7 @@ Developer used string concatenation instead of parameterized query in `OrdersCon
 
 ### Playbook 2: DDoS Attack
 
-**File:** `playbooks/ddos-attack.md`
+**File:** `playbooks/ddos-attack.md`  
 
 ```markdown
 # Playbook: DDoS Attack
@@ -392,7 +399,7 @@ Developer used string concatenation instead of parameterized query in `OrdersCon
 
 ### Playbook 3: Ransomware
 
-**File:** `playbooks/ransomware.md`
+**File:** `playbooks/ransomware.md`  
 
 ```markdown
 # Playbook: Ransomware
@@ -446,7 +453,7 @@ Developer used string concatenation instead of parameterized query in `OrdersCon
 - [ ] **Q3:** Simulate ransomware (test playbook/ransomware.md)
 - [ ] **Q4:** Simulate unauthorized access (test playbook/account-takeover.md)
 
-**Drill Checklist:**
+**Drill Checklist:**  
 - [ ] Alert mechanisms working? (automated alerts triggered?)
 - [ ] Response time within SLA? (P0: 15 min)
 - [ ] Playbooks up-to-date? (no broken commands)
@@ -467,7 +474,7 @@ Developer used string concatenation instead of parameterized query in `OrdersCon
 
 ---
 
-**Próximos Passos:**
+**Próximos Passos:**  
 1. Agendar primeiro incident drill (Q1)
 2. Integrar playbooks com SIEM (Splunk/Sumo Logic)
 3. Treinar equipe nos playbooks (walkthrough)

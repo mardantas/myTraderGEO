@@ -1,9 +1,16 @@
+<!--
+MARKDOWN FORMATTING:
+- Use 2 spaces at end of line for compact line breaks (metadata)
+- Use blank lines between sections for readability (content)
+- Validate in Markdown preview before committing
+-->
+
 # PE-01: Infrastructure Design
 
-**Projeto:** [NOME-DO-PROJETO]
-**Data:** [DATA]
-**Platform Engineer:** [NOME]
-**Versão:** 1.0
+**Projeto:** [NOME-DO-PROJETO]  
+**Data:** [DATA]  
+**Platform Engineer:** [NOME]  
+**Versão:** 1.0  
 
 ---
 
@@ -94,7 +101,7 @@ Tudo roda em Docker (single-node Swarm ou Compose)
 | **Development** | Dev local | http://localhost:5173 (Vue) + :5000 (.NET) | Docker Compose |
 | **Production** | Produção | https://app.[YOUR-DOMAIN] | Contabo VPS (1 servidor inicial) |
 
-**Evolução futura:**
+**Evolução futura:**  
 - 2 servidores: 1 manager + 1 worker (HA)
 - 3+ servidores: 1 manager + 2+ workers (scale horizontal)
 
@@ -178,7 +185,7 @@ docker node ls
 # xxx     vpsXXX     Ready    Active         Leader
 ```
 
-**Spec do Servidor:**
+**Spec do Servidor:**  
 - **CPU:** 8 vCPU (AMD Ryzen)
 - **RAM:** 30GB DDR4
 - **Storage:** 400GB NVMe SSD
@@ -296,7 +303,7 @@ networks:
     driver: bridge
 ```
 
-**Deploy:**
+**Deploy:**  
 ```bash
 # 1. Clone repo no servidor
 git clone [YOUR-REPO] /app
@@ -316,7 +323,7 @@ docker compose ps
 docker compose logs -f backend
 ```
 
-**Quando evoluir para Swarm (2+ servidores):**
+**Quando evoluir para Swarm (2+ servidores):**  
 ```bash
 # Converter para stack
 docker stack deploy -c docker-compose.yml myapp
@@ -333,7 +340,7 @@ docker stack deploy -c docker-compose.yml myapp
 | **Production DB** | PostgreSQL 15 (Docker) | 50GB volume (Contabo VPS) | Daily full backup | Single-node (evoluir para replica) |
 | **Redis Cache** | Redis 7 (Docker) | 2GB volume | AOF persistence | Single-node |
 
-**Backup Strategy:**
+**Backup Strategy:**  
 ```bash
 # Backup diário automatizado (cron)
 0 2 * * * docker exec postgres pg_dump -U postgres myapp | gzip > /backups/db-$(date +\%Y\%m\%d).sql.gz
@@ -344,9 +351,9 @@ docker stack deploy -c docker-compose.yml myapp
 
 ### Object Storage (Opcional)
 
-**Início:** Usar volume do Contabo (400GB disponível)
+**Início:** Usar volume do Contabo (400GB disponível)  
 
-**Quando crescer:** Migrar para object storage:
+**Quando crescer:** Migrar para object storage:  
 - **Backblaze B2** ($0.005/GB/mês) - mais barato
 - **AWS S3** ($0.023/GB/mês)
 - **Contabo Object Storage** (€2.49/mês 250GB)
@@ -357,7 +364,7 @@ docker stack deploy -c docker-compose.yml myapp
 
 ### Docker Swarm Service Scaling
 
-**Manual Scaling:**
+**Manual Scaling:**  
 ```bash
 # Scale service up/down
 docker service scale myapp_backend-api=10
@@ -366,7 +373,7 @@ docker service scale myapp_backend-api=10
 docker stack deploy -c docker-stack.yml myapp
 ```
 
-**Auto-Scaling (via monitoring alerts):**
+**Auto-Scaling (via monitoring alerts):**  
 ```bash
 # Script: auto-scale.sh (triggered by Prometheus AlertManager)
 #!/bin/bash
@@ -387,7 +394,7 @@ elif [ "$1" == "scale-down" ] && [ $CURRENT -gt $MIN_REPLICAS ]; then
 fi
 ```
 
-**Prometheus Alert Example:**
+**Prometheus Alert Example:**  
 ```yaml
 # prometheus/alerts.yml
 - alert: HighCPUUsage
@@ -398,7 +405,7 @@ fi
   # Webhook triggers auto-scale.sh via AlertManager
 ```
 
-**NOTA:** Para projetos maiores que precisem de auto-scaling automático nativo, considere **Kubernetes** (HPA, VPA, Cluster Autoscaler). Docker Swarm é ideal para scaling manual ou script-based (suficiente para 80% dos casos).
+**NOTA:** Para projetos maiores que precisem de auto-scaling automático nativo, considere **Kubernetes** (HPA, VPA, Cluster Autoscaler). Docker Swarm é ideal para scaling manual ou script-based (suficiente para 80% dos casos).  
 
 ---
 
@@ -509,7 +516,7 @@ jobs:
 
 ---
 
-**Próximos Passos:**
+**Próximos Passos:**  
 1. PE-02: Configurar Observability (Prometheus, Grafana)
 2. PE-03: Implementar DR Plan (Backup/Restore)
 3. PE-04: Configurar Production Deployment (Blue-Green)

@@ -1,17 +1,24 @@
+<!--
+MARKDOWN FORMATTING:
+- Use 2 spaces at end of line for compact line breaks (metadata)
+- Use blank lines between sections for readability (content)
+- Validate in Markdown preview before committing
+-->
+
 # DE-01-[EpicName]-Tactical-Model.md
 
-**Projeto:** [PROJECT_NAME]
-**Épico:** [Epic Name]
-**Data:** [YYYY-MM-DD]
-**Engineer:** DE Agent
+**Projeto:** [PROJECT_NAME]  
+**Épico:** [Epic Name]  
+**Data:** [YYYY-MM-DD]  
+**Engineer:** DE Agent  
 
 ---
 
 ## 🎯 Contexto do Épico
 
-**Nome do Épico:** [Epic Name]
-**Bounded Contexts Envolvidos:** [BC1, BC2, BC3]
-**Objetivo de Negócio:** [O que este épico entrega de valor]
+**Nome do Épico:** [Epic Name]  
+**Bounded Contexts Envolvidos:** [BC1, BC2, BC3]  
+**Objetivo de Negócio:** [O que este épico entrega de valor]  
 
 ---
 
@@ -23,13 +30,13 @@
 
 ##### 1. [Aggregate Name] (Aggregate Root)
 
-**Responsabilidade:** [O que este aggregate gerencia]
+**Responsabilidade:** [O que este aggregate gerencia]  
 
-**Invariantes (Business Rules):**
+**Invariantes (Business Rules):**  
 1. [Regra de negócio 1]
 2. [Regra de negócio 2]
 
-**Entities:**
+**Entities:**  
 
 ```csharp
 // Aggregate Root
@@ -80,7 +87,7 @@ public class [ChildEntity] : Entity<[ChildId]>
 }
 ```
 
-**Value Objects:**
+**Value Objects:**  
 
 ```csharp
 public record [ValueObjectName](
@@ -97,7 +104,7 @@ public record [ValueObjectName](
 }
 ```
 
-**Domain Events:**
+**Domain Events:**  
 
 ```csharp
 public record [AggregateCreated](
@@ -116,7 +123,7 @@ public record [SomethingHappened](
 
 #### ⚠️ Anti-Pattern: Modelo Anêmico
 
-**EVITE:**
+**EVITE:**  
 ```csharp
 // ❌ MODELO ANÊMICO (apenas getters/setters, sem comportamento)
 public class Order
@@ -137,7 +144,7 @@ public class OrderService
 }
 ```
 
-**USE:**
+**USE:**  
 ```csharp
 // ✅ MODELO RICO (comportamento + invariantes)
 public class Order
@@ -161,7 +168,7 @@ public class Order
 }
 ```
 
-**Princípio:** Aggregate = Dados + Comportamento + Invariantes (não apenas DTOs)
+**Princípio:** Aggregate = Dados + Comportamento + Invariantes (não apenas DTOs)  
 
 ---
 
@@ -178,7 +185,7 @@ public interface I[Aggregate]Repository
 }
 ```
 
-**Queries Esperadas pelo DBA:**
+**Queries Esperadas pelo DBA:**  
 1. `GetByIdAsync` → Index em Id (PK)
 2. `GetActiveAsync` → Index em Status + [Criteria]
 
@@ -197,12 +204,12 @@ public interface I[Aggregate]Repository
 
 ### [BC1] → [BC2] Integration
 
-**Mecanismo:** Domain Events
-**Eventos Publicados por [BC1]:**
+**Mecanismo:** Domain Events  
+**Eventos Publicados por [BC1]:**  
 - `[Event1]` → Consumido por [BC2] para [ação]
 - `[Event2]` → Consumido por [BC2] para [ação]
 
-**Fluxo:**
+**Fluxo:**  
 ```
 [BC1: Aggregate]
     → raises [DomainEvent]
@@ -217,11 +224,11 @@ public interface I[Aggregate]Repository
 
 ### Use Case 1: [Use Case Name]
 
-**Actor:** [User/System]
-**Trigger:** [O que inicia este use case]
-**Bounded Context:** [BC]
+**Actor:** [User/System]  
+**Trigger:** [O que inicia este use case]  
+**Bounded Context:** [BC]  
 
-**Fluxo:**
+**Fluxo:**  
 
 ```csharp
 public class [UseCaseName]Handler : IRequestHandler<[UseCaseCommand], [Result]>
@@ -254,11 +261,11 @@ public class [UseCaseName]Handler : IRequestHandler<[UseCaseCommand], [Result]>
 }
 ```
 
-**Aggregates Envolvidos:**
+**Aggregates Envolvidos:**  
 - [Aggregate1] (modify)
 - [Aggregate2] (read-only)
 
-**Domain Events Gerados:**
+**Domain Events Gerados:**  
 - `[Event1]`
 - `[Event2]`
 
@@ -304,7 +311,7 @@ classDiagram
 | [BC2] | 1 | 2 | 2 | 1 | Média |
 | **Total** | **3** | **7** | **5** | **3** | **-** |
 
-**Estimativa de Implementação:** [X] dias
+**Estimativa de Implementação:** [X] dias  
 
 ---
 
@@ -322,12 +329,12 @@ classDiagram
 
 ## 📝 Notas de Implementação para DE
 
-**Tecnologias:**
+**Tecnologias:**  
 - Framework: [.NET 8, etc]
 - ORM: [EF Core 8]
 - Event Bus: [MediatR, RabbitMQ, etc]
 
-**Estrutura de Pastas:**
+**Estrutura de Pastas:**  
 ```
 02-backend/src/
 ├── Domain/

@@ -27,6 +27,8 @@
         **SECURITY AND PERFORMANCE:** During domain modeling, identify sensitive data and high-load BCs according to security and platform strategy (see config.paths.standards.security-platform, DE sections).
 
         **THINK MODE RECOMMENDED:** For complex epics (>3 BCs, >5 aggregates), use TodoWrite tool to create execution plan before starting.
+
+        **MARKDOWN:** Metadados compactos (headers/footers) = 2 espaços ao final de cada linha. Conteúdo/seções = linhas em branco entre blocos. Preview antes de commitar (Ctrl+Shift+V).
     </general-instructions>
 
     <responsibilities>

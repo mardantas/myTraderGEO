@@ -1,9 +1,16 @@
+<!--
+MARKDOWN FORMATTING:
+- Use 2 spaces at end of line for compact line breaks (metadata)
+- Use blank lines between sections for readability (content)
+- Validate in Markdown preview before committing
+-->
+
 # SEC-00 - Security Baseline
 
-**Agent:** SEC (Security Specialist)
-**Phase:** Discovery (1x)
-**Scope:** Essential security baseline for small/medium projects
-**Version:** 3.0 (Simplified)
+**Agent:** SEC (Security Specialist)  
+**Phase:** Discovery (1x)  
+**Scope:** Essential security baseline for small/medium projects  
+**Version:** 3.0 (Simplified)  
 
 ---
 
@@ -35,13 +42,13 @@ Definir baseline de segurança essencial para projetos small/medium: OWASP Top 3
 
 ### Threat Summary
 
-**Critical Assets:**
+**Critical Assets:**  
 - [ ] User credentials (passwords, tokens)
 - [ ] Personal Identifiable Information (PII) - CPF, email, phone
 - [ ] Financial data (if applicable)
 - [ ] Business-critical data (orders, transactions, strategies)
 
-**Attack Vectors Identified:**
+**Attack Vectors Identified:**  
 - [ ] Web application vulnerabilities (OWASP Top 10)
 - [ ] API abuse (rate limiting, authentication bypass)
 - [ ] Database injection (SQL, NoSQL)
@@ -54,9 +61,9 @@ Definir baseline de segurança essencial para projetos small/medium: OWASP Top 3
 
 ### A01 - Broken Access Control
 
-**Risk:** Users accessing data/functions they shouldn't (e.g., User A views User B's orders)
+**Risk:** Users accessing data/functions they shouldn't (e.g., User A views User B's orders)  
 
-**Mitigations:**
+**Mitigations:**  
 
 1. **Domain-Level Authorization**
    ```csharp
@@ -97,9 +104,9 @@ Definir baseline de segurança essencial para projetos small/medium: OWASP Top 3
 
 ### A02 - Cryptographic Failures
 
-**Risk:** Sensitive data exposed (plaintext passwords, unencrypted traffic, secrets in code)
+**Risk:** Sensitive data exposed (plaintext passwords, unencrypted traffic, secrets in code)  
 
-**Mitigations:**
+**Mitigations:**  
 
 1. **HTTPS/TLS 1.3 for All Connections**
    - All API traffic over HTTPS
@@ -138,9 +145,9 @@ Definir baseline de segurança essencial para projetos small/medium: OWASP Top 3
 
 ### A03 - Injection
 
-**Risk:** SQL injection, NoSQL injection, command injection
+**Risk:** SQL injection, NoSQL injection, command injection  
 
-**Mitigations:**
+**Mitigations:**  
 
 1. **SQL Parametrizado (ORM Usage)**
    ```csharp
@@ -219,7 +226,7 @@ Definir baseline de segurança essencial para projetos small/medium: OWASP Top 3
 
 ### Data Subject Rights
 
-**Implemented Rights:**
+**Implemented Rights:**  
 
 1. **Right to Access (Art. 18, I, II)**
    - Endpoint: `GET /api/v1/users/{id}/data-export`
@@ -246,12 +253,12 @@ Definir baseline de segurança essencial para projetos small/medium: OWASP Top 3
 
 ### Privacy Policy
 
-**Status:** [Choose one]
+**Status:** [Choose one]  
 - [ ] Published at [URL]
 - [ ] Draft ready for review
 - [ ] Pending creation
 
-**Minimum Sections Required:**
+**Minimum Sections Required:**  
 1. Data collected (what)
 2. Purpose of collection (why)
 3. Data retention periods (how long)
@@ -260,7 +267,7 @@ Definir baseline de segurança essencial para projetos small/medium: OWASP Top 3
 6. Cookie policy (if applicable)
 7. Third-party sharing (if applicable)
 
-**DPO (Data Protection Officer):**
+**DPO (Data Protection Officer):**  
 - **Name:** [DPO_NAME or "TBD"]
 - **Email:** dpo@[DOMAIN] or [CONTACT_EMAIL]
 - **Required:** Yes (LGPD Art. 41) - can be outsourced for small companies
@@ -282,9 +289,9 @@ Definir baseline de segurança essencial para projetos small/medium: OWASP Top 3
 
 ### Authentication
 
-**Method:** JWT (JSON Web Tokens)
+**Method:** JWT (JSON Web Tokens)  
 
-**Algorithm:** [Choose one]
+**Algorithm:** [Choose one]  
 - [ ] **RS256** (Asymmetric - recommended for production)
   - Public key for verification
   - Private key for signing (kept secret)
@@ -293,7 +300,7 @@ Definir baseline de segurança essencial para projetos small/medium: OWASP Top 3
   - Single secret key (min 32 characters)
   - Simpler implementation
 
-**Token Structure:**
+**Token Structure:**  
 ```json
 {
   "sub": "user-id-123",
@@ -304,11 +311,11 @@ Definir baseline de segurança essencial para projetos small/medium: OWASP Top 3
 }
 ```
 
-**Token Expiration:**
+**Token Expiration:**  
 - **Access Token:** 15-60 minutes
 - **Refresh Token:** 7-30 days (optional for v1.0)
 
-**Implementation Checklist:**
+**Implementation Checklist:**  
 - [ ] JWT library integrated (e.g., `System.IdentityModel.Tokens.Jwt`)
 - [ ] Token expiration configured (15-60 min)
 - [ ] Secret key in environment variable (min 32 chars)
@@ -317,9 +324,9 @@ Definir baseline de segurança essencial para projetos small/medium: OWASP Top 3
 
 ### Authorization
 
-**Strategy:** Domain-Level Authorization (Aggregates validate permissions)
+**Strategy:** Domain-Level Authorization (Aggregates validate permissions)  
 
-**Pattern:**
+**Pattern:**  
 ```csharp
 // Aggregate validates authorization
 public class Strategy : AggregateRoot
@@ -336,14 +343,14 @@ public class Strategy : AggregateRoot
 }
 ```
 
-**RBAC (Role-Based Access Control):**
+**RBAC (Role-Based Access Control):**  
 
 | Role | Permissions |
 |------|-------------|
 | **User** | - Create own strategies<br>- View own data<br>- Modify own profile |
 | **Admin** | - All User permissions<br>- View all users<br>- Manage system settings |
 
-**Checklist:**
+**Checklist:**  
 - [ ] Aggregates validate user ownership (domain-level authz)
 - [ ] Authorization failures throw `DomainException` or `UnauthorizedAccessException`
 - [ ] API controllers extract user ID from JWT claims
@@ -356,7 +363,7 @@ public class Strategy : AggregateRoot
 
 ### Input Validation
 
-**Layers:**
+**Layers:**  
 1. **Value Objects** (domain layer)
    - Validate format, length, business rules
    - Example: Email, CPF, CNPJ, Symbol, Quantity
@@ -365,7 +372,7 @@ public class Strategy : AggregateRoot
    - Validate request structure
    - Complement Value Object validation
 
-**Checklist:**
+**Checklist:**  
 - [ ] Value Objects validate all domain inputs
 - [ ] FluentValidation in API controllers
 - [ ] Invalid input returns `400 Bad Request` with clear message
@@ -373,12 +380,12 @@ public class Strategy : AggregateRoot
 
 ### Password Security
 
-**Requirements:**
+**Requirements:**  
 - Minimum length: 8 characters (12+ recommended)
 - Complexity: At least 1 uppercase, 1 lowercase, 1 number, 1 special char
 - No common passwords (validate against top 10k list - optional)
 
-**Hashing:**
+**Hashing:**  
 ```csharp
 // ASP.NET Core Identity PasswordHasher
 var hasher = new PasswordHasher<User>();
@@ -388,7 +395,7 @@ string hash = hasher.HashPassword(user, password);
 string hash = BCrypt.Net.BCrypt.HashPassword(password);
 ```
 
-**Checklist:**
+**Checklist:**  
 - [ ] Passwords hashed with bcrypt/Argon2 (NEVER plaintext)
 - [ ] Password complexity rules enforced
 - [ ] Password reset via email (time-limited token)
@@ -396,21 +403,21 @@ string hash = BCrypt.Net.BCrypt.HashPassword(password);
 
 ### Secrets Management
 
-**Approach:** Environment Variables (v1.0 Simplified)
+**Approach:** Environment Variables (v1.0 Simplified)  
 
-**What goes in `.env`:**
+**What goes in `.env`:**  
 - Database connection strings
 - JWT signing key
 - Third-party API keys (Stripe, SendGrid, etc.)
 - Encryption keys
 
-**What NEVER goes in code:**
+**What NEVER goes in code:**  
 - Passwords
 - API keys
 - Connection strings with credentials
 - JWT secrets
 
-**Checklist:**
+**Checklist:**  
 - [ ] All secrets in `.env` files
 - [ ] `.env` in `.gitignore`
 - [ ] No secrets committed to git (check git history)
@@ -423,7 +430,7 @@ string hash = BCrypt.Net.BCrypt.HashPassword(password);
 
 ### Security Events to Log
 
-**Critical Events:**
+**Critical Events:**  
 1. **Failed Login Attempts**
    - Log: userId, IP, timestamp
    - Alert: 5+ failures in 5 minutes
@@ -445,7 +452,7 @@ string hash = BCrypt.Net.BCrypt.HashPassword(password);
 
 ### Logging Implementation
 
-**Structured Logging:**
+**Structured Logging:**  
 ```csharp
 _logger.LogWarning("Failed login attempt",
     new { UserId = userId, IpAddress = ipAddress, Timestamp = DateTime.UtcNow });
@@ -454,18 +461,18 @@ _logger.LogWarning("Unauthorized access attempt",
     new { UserId = userId, Resource = resource, Timestamp = DateTime.UtcNow });
 ```
 
-**Log Storage:**
+**Log Storage:**  
 - Development: Console + File
 - Staging/Production: Docker logs (JSON format)
 
 ### Security Alerts (Optional for v1.0)
 
-**Recommended Alerts:**
+**Recommended Alerts:**  
 - [ ] HighFailedLoginRate (5+ failures in 5 min) → Email/Slack
 - [ ] UnauthorizedAccessSpike (>10 403s in 5 min) → Email/Slack
 - [ ] SuspiciousDataExport (>1000 rows) → Email to Admin
 
-**Implementation:** Can be added post-launch when monitoring infrastructure is in place.
+**Implementation:** Can be added post-launch when monitoring infrastructure is in place.  
 
 ---
 
@@ -483,7 +490,7 @@ To maintain simplicity for small/medium projects, v1.0 **DOES NOT include**:
 - ❌ **SOC2 Compliance** (enterprise customers only)
 - ❌ **PCI-DSS Compliance** (unless handling credit cards directly)
 
-**When to add:** When scaling to enterprise, handling >100k users, or enterprise customers require SOC2.
+**When to add:** When scaling to enterprise, handling >100k users, or enterprise customers require SOC2.  
 
 ---
 
@@ -537,6 +544,6 @@ To maintain simplicity for small/medium projects, v1.0 **DOES NOT include**:
 
 ---
 
-**Template Version:** 3.0
-**Last Updated:** 2025-10-08
-**Focus:** Pragmatic security baseline for small/medium projects
+**Template Version:** 3.0  
+**Last Updated:** 2025-10-08  
+**Focus:** Pragmatic security baseline for small/medium projects  

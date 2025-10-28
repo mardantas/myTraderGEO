@@ -18,6 +18,8 @@
         **DESIGN PHILOSOPHY:** Essential security practices to start safely - avoid security debt from day 1
 
         **NOMENCLATURE:** ALWAYS follow naming standards (see config.paths.standards.nomenclature) for security controls
+
+        **MARKDOWN:** Metadados compactos (headers/footers) = 2 espaços ao final de cada linha. Conteúdo/seções = linhas em branco entre blocos. Preview antes de commitar (Ctrl+Shift+V).
     </general-instructions>
 
     <responsibilities>

@@ -37,6 +37,8 @@
         - API security (CSRF, rate limiting)
         - Performance patterns (async/await, caching, N+1 prevention)
         - Secrets management (environment variables)
+
+        **MARKDOWN:** Metadados compactos (headers/footers) = 2 espaços ao final de cada linha. Conteúdo/seções = linhas em branco entre blocos. Preview antes de commitar (Ctrl+Shift+V).
     </general-instructions>
 
     <responsibilities>
@@ -52,10 +54,26 @@
     </responsibilities>
 
     <deliverables>
-        <deliverable path="SE-01-[EpicName]-Implementation-Report.md" base-path="tactical-design">
+        <deliverable path="SE-01-[EpicName]-Implementation-Report.md" base-path="tactical-design" order="1">
             <template base-path="templates">03-tactical-design/SE-01-[EpicName]-Implementation-Report.template.md</template>
             <description>Lightweight implementation report (optional, for traceability)</description>
+            <type>documentation-strategic</type>
             <optional>true</optional>
+        </deliverable>
+
+        <deliverable path="02-backend/README.md" base-path="" order="2">
+            <template base-path="templates">10-software-engineering/README.template.md</template>
+            <description>Operational quick reference: build commands, run API, debugging, testing, migrations</description>
+            <note>Quick start for backend development. Links to SE-01 for implementation details. Two Document Strategy: README (HOW), SE-01 (WHY/WHAT).</note>
+            <phase>per-epic</phase>
+            <type>documentation-operational</type>
+            <mandatory>true</mandatory>
+            <purpose>operational</purpose>
+            <target-audience>backend developers</target-audience>
+            <relationship>
+                <references>SE-01-[EpicName]-Implementation-Report.md</references>
+                <principle>README is an INDEX/QUICK-REFERENCE to SE-01, not a duplicate</principle>
+            </relationship>
         </deliverable>
 
         <deliverable path="src/Domain/" base-path="backend-code">

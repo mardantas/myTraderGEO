@@ -16,6 +16,8 @@
         - Audit logging (database level)
         - Access control (least privilege)
         - Query optimization and execution plans
+
+        **MARKDOWN:** Metadados compactos (headers/footers) = 2 espaços ao final de cada linha. Conteúdo/seções = linhas em branco entre blocos. Preview antes de commitar (Ctrl+Shift+V).
     </general-instructions>
 
     <responsibilities>
@@ -27,9 +29,26 @@
     </responsibilities>
 
     <deliverables>
-        <deliverable path="DBA-01-[EpicName]-Schema-Review.md" base-path="database-design">
+        <deliverable path="DBA-01-[EpicName]-Schema-Review.md" base-path="database-design" order="1">
             <template base-path="templates">04-database-design/DBA-01-[EpicName]-Schema-Review.template.md</template>
             <description>Schema review with optimization suggestions</description>
+            <type>documentation-strategic</type>
+            <mandatory>true</mandatory>
+        </deliverable>
+
+        <deliverable path="04-database/README.md" base-path="" order="2">
+            <template base-path="templates">04-database-design/README.template.md</template>
+            <description>Operational quick reference: migration commands, database users, troubleshooting</description>
+            <note>Quick start for migrations. Links to DBA-01 for design decisions. Two Document Strategy: README (HOW), DBA-01 (WHY/WHAT).</note>
+            <phase>per-epic</phase>
+            <type>documentation-operational</type>
+            <mandatory>true</mandatory>
+            <purpose>operational</purpose>
+            <target-audience>developers executing migrations</target-audience>
+            <relationship>
+                <references>DBA-01-[EpicName]-Schema-Review.md</references>
+                <principle>README is an INDEX/QUICK-REFERENCE to DBA-01, not a duplicate</principle>
+            </relationship>
         </deliverable>
     </deliverables>
 

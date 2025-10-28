@@ -1,8 +1,15 @@
+<!--
+MARKDOWN FORMATTING:
+- Use 2 spaces at end of line for compact line breaks (metadata)
+- Use blank lines between sections for readability (content)
+- Validate in Markdown preview before committing
+-->
+
 # UXD-03-Component-Library.md
 
-**Projeto:** [PROJECT_NAME]
-**Data:** [YYYY-MM-DD]
-**Designer:** UXD Agent
+**Projeto:** [PROJECT_NAME]  
+**Data:** [YYYY-MM-DD]  
+**Designer:** UXD Agent  
 
 ---
 
@@ -16,7 +23,7 @@ Definir biblioteca de componentes reutilizáveis para garantir consistência vis
 
 ### 1. Buttons
 
-**Variantes:**
+**Variantes:**  
 
 | Variante | Uso | Aparência |
 |----------|-----|-----------|
@@ -26,10 +33,10 @@ Definir biblioteca de componentes reutilizáveis para garantir consistência vis
 | **Ghost** | Ações terciárias | Apenas texto, sem borda |
 | **Link** | Navegação | Estilo de link |
 
-**Tamanhos:** Small, Medium, Large
-**Estados:** Default, Hover, Active, Disabled, Loading
+**Tamanhos:** Small, Medium, Large  
+**Estados:** Default, Hover, Active, Disabled, Loading  
 
-**Props/Atributos:**
+**Props/Atributos:**  
 ```typescript
 {
   variant: 'primary' | 'secondary' | 'danger' | 'ghost' | 'link'
@@ -45,7 +52,7 @@ Definir biblioteca de componentes reutilizáveis para garantir consistência vis
 
 ### 2. Input Fields
 
-**Tipos:**
+**Tipos:**  
 - Text input
 - Number input
 - Email input
@@ -54,14 +61,14 @@ Definir biblioteca de componentes reutilizáveis para garantir consistência vis
 - Date picker
 - Time picker
 
-**Estados:**
+**Estados:**  
 - Default
 - Focus
 - Error (com mensagem)
 - Disabled
 - Read-only
 
-**Props:**
+**Props:**  
 ```typescript
 {
   type: 'text' | 'number' | 'email' | 'password'
@@ -78,13 +85,13 @@ Definir biblioteca de componentes reutilizáveis para garantir consistência vis
 
 ### 3. Select/Dropdown
 
-**Variantes:**
+**Variantes:**  
 - Single select
 - Multi select
 - Searchable select
 - Grouped options
 
-**Props:**
+**Props:**  
 ```typescript
 {
   options: Array<{label: string, value: any}>
@@ -99,13 +106,13 @@ Definir biblioteca de componentes reutilizáveis para garantir consistência vis
 
 ### 4. Cards
 
-**Tipos:**
+**Tipos:**  
 - Basic card (título + conteúdo)
 - Interactive card (clicável)
 - Status card (com badge)
 - Metric card (número + label)
 
-**Estrutura:**
+**Estrutura:**  
 ```
 +---------------------------+
 | [Header com título]       |
@@ -121,7 +128,7 @@ Definir biblioteca de componentes reutilizáveis para garantir consistência vis
 
 ### 5. Tables/Data Grids
 
-**Funcionalidades:**
+**Funcionalidades:**  
 - Sorting (ordenação por coluna)
 - Filtering (filtro por coluna)
 - Pagination
@@ -129,7 +136,7 @@ Definir biblioteca de componentes reutilizáveis para garantir consistência vis
 - Row actions
 - Responsive (card view em mobile)
 
-**Props:**
+**Props:**  
 ```typescript
 {
   columns: Array<{key, label, sortable, filterable}>
@@ -144,15 +151,15 @@ Definir biblioteca de componentes reutilizáveis para garantir consistência vis
 
 ### 6. Modals/Dialogs
 
-**Tipos:**
+**Tipos:**  
 - Confirmation dialog
 - Form modal
 - Info modal
 - Full screen modal
 
-**Tamanhos:** Small (400px), Medium (600px), Large (800px), Full screen
+**Tamanhos:** Small (400px), Medium (600px), Large (800px), Full screen  
 
-**Props:**
+**Props:**  
 ```typescript
 {
   title: string
@@ -167,20 +174,20 @@ Definir biblioteca de componentes reutilizáveis para garantir consistência vis
 
 ### 7. Alerts/Notifications
 
-**Tipos:**
+**Tipos:**  
 - Success (verde)
 - Warning (amarelo)
 - Error (vermelho)
 - Info (azul)
 
-**Positions:** Top-right, Top-center, Bottom-right
-**Auto-dismiss:** Sim/Não (timeout configurável)
+**Positions:** Top-right, Top-center, Bottom-right  
+**Auto-dismiss:** Sim/Não (timeout configurável)  
 
 ---
 
 ### 8. Loading States
 
-**Componentes:**
+**Componentes:**  
 - Spinner (circular)
 - Linear progress bar
 - Skeleton loader (para conteúdo)
@@ -267,14 +274,14 @@ Definir biblioteca de componentes reutilizáveis para garantir consistência vis
 
 ### Grid System
 
-**Breakpoints:**
+**Breakpoints:**  
 - xs: 0-640px
 - sm: 640px-768px
 - md: 768px-1024px
 - lg: 1024px-1280px
 - xl: 1280px+
 
-**Columns:** 12-column grid
+**Columns:** 12-column grid  
 
 ---
 
@@ -290,11 +297,11 @@ Definir biblioteca de componentes reutilizáveis para garantir consistência vis
 
 ### [BC Name] - Componentes Customizados
 
-**Componente:** [Nome do Componente Específico]
+**Componente:** [Nome do Componente Específico]  
 
-**Uso:** [Quando usar]
-**Props:** [Listagem]
-**Exemplo:** [Visual ou código]
+**Uso:** [Quando usar]  
+**Props:** [Listagem]  
+**Exemplo:** [Visual ou código]  
 
 ---
 

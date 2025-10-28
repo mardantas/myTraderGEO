@@ -1,9 +1,16 @@
+<!--
+MARKDOWN FORMATTING:
+- Use 2 spaces at end of line for compact line breaks (metadata)
+- Use blank lines between sections for readability (content)
+- Validate in Markdown preview before committing
+-->
+
 # SEC-03: Compliance Report
 
-**Projeto:** [NOME-DO-PROJETO]
-**Data:** [DATA]
-**Security Specialist:** [NOME]
-**Versão:** 1.0
+**Projeto:** [NOME-DO-PROJETO]  
+**Data:** [DATA]  
+**Security Specialist:** [NOME]  
+**Versão:** 1.0  
 
 ---
 
@@ -80,7 +87,7 @@ POST /api/v1/consent
 | **Portability** (Art. 18, V) | Export data in JSON | `GET /api/v1/users/{id}/data-export` | ✅ |
 | **Revoke Consent** (Art. 18, IX) | Revoke specific consent | `DELETE /api/v1/consent/{id}` | ✅ |
 
-**Right to Deletion Implementation:**
+**Right to Deletion Implementation:**  
 
 ```csharp
 // UserService.cs
@@ -110,7 +117,7 @@ public async Task DeleteUser(UserId userId)
 
 #### 4. Data Breach Notification (Art. 48)
 
-**Obrigação:** Notificar ANPD e titulares em até **72 horas** após incidente.
+**Obrigação:** Notificar ANPD e titulares em até **72 horas** após incidente.  
 
 ```yaml
 # Incident Response Plan
@@ -220,7 +227,7 @@ evidence/
 
 ## 💳 PCI-DSS (Payment Card Industry Data Security Standard)
 
-**Applies if:** Processing, storing, or transmitting cardholder data (credit/debit cards).
+**Applies if:** Processing, storing, or transmitting cardholder data (credit/debit cards).  
 
 ### Compliance Level
 
@@ -245,7 +252,7 @@ evidence/
 - [ ] **3.5** - Never store CVV/CVC (prohibited!)
 - [ ] **4.1** - Encrypt data in transit (TLS 1.2+)
 
-**RECOMMENDED:** Use payment gateway (Stripe, PayPal) instead of storing card data.
+**RECOMMENDED:** Use payment gateway (Stripe, PayPal) instead of storing card data.  
 
 ```javascript
 // NEVER store card data directly
@@ -287,7 +294,7 @@ const paymentIntent = await stripe.paymentIntents.create({
 
 ## 📈 CVM/SEC (Financial Regulations - Brazil/US)
 
-**Applies if:** Offering investment products, trading, or financial advisory.
+**Applies if:** Offering investment products, trading, or financial advisory.  
 
 ### CVM (Comissão de Valores Mobiliários) - Brazil
 
@@ -326,7 +333,7 @@ public class Trade : AggregateRoot
 
 ### SEC (Securities and Exchange Commission) - US
 
-**Applies if:** Offering securities to US investors.
+**Applies if:** Offering securities to US investors.  
 
 - [ ] **Regulation S-P** - Privacy of consumer financial information
 - [ ] **Regulation SCI** - Systems compliance and integrity
@@ -347,7 +354,7 @@ public class Trade : AggregateRoot
 
 ---
 
-**Próximos Passos:**
+**Próximos Passos:**  
 1. SEC-04: Executar Penetration Test
 2. SEC-05: Incident Response Plan
 3. Agendar compliance audit externo (SOC2)
