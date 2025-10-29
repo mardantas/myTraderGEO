@@ -157,6 +157,183 @@ show_logs() {
 }
 
 # ==================================
+# Remote Deployment Functions
+# ==================================
+
+check_ssh_connection() {
+    local user=$1
+    local host=$2
+
+    log_info "Checking SSH connection to $user@$host..."
+
+    if ! ssh -o ConnectTimeout=10 -o BatchMode=yes "$user@$host" "echo 'SSH OK'" > /dev/null 2>&1; then
+        log_error "Cannot connect to $user@$host via SSH"
+        log_error "Prerequisites:"
+        log_error "  1. Server prepared per PE-00 setup"
+        log_error "  2. SSH keys configured"
+        log_error "  3. Hostname $host resolving (DNS or /etc/hosts)"
+        exit 1
+    fi
+
+    log_info "SSH connection OK"
+}
+
+remote_backup_database() {
+    local user=$1
+    local host=$2
+    local app_dir=$3
+    local env=$4
+
+    log_info "Running remote database backup..."
+
+    ssh "$user@$host" << EOF
+        cd ~/$app_dir
+        # TODO: Implement backup via script (backup-database.sh)
+        echo "[REMOTE] Database backup not implemented yet"
+EOF
+}
+
+remote_health_check() {
+    local env=$1
+    local api_url
+
+    if [ "$env" = "staging" ]; then
+        api_url="https://api.staging.mytrader.com/health"
+    else
+        api_url="https://api.mytrader.com/health"
+    fi
+
+    log_info "Running remote health checks..."
+    log_info "API URL: $api_url"
+
+    local max_attempts=30
+    local attempt=1
+
+    while [ $attempt -le $max_attempts ]; do
+        if curl -f -s -k "$api_url" > /dev/null 2>&1; then
+            log_info "Remote API health check passed"
+            return 0
+        fi
+
+        log_warn "API not ready yet (attempt $attempt/$max_attempts)..."
+        sleep 5
+        ((attempt++))
+    done
+
+    log_error "Remote API health check failed after $max_attempts attempts"
+    return 1
+}
+
+log_deployment_history() {
+    local env=$1
+    local version=$2
+    local host=$3
+    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+
+    # Local log
+    local log_dir="$INFRA_DIR/logs"
+    mkdir -p "$log_dir"
+
+    echo "[$timestamp] Deployed $env ($version) to $host - SUCCESS" >> "$log_dir/deploy-history.log"
+
+    log_info "Deployment logged to $log_dir/deploy-history.log"
+}
+
+deploy_remote() {
+    local env=$1
+    local version=$2
+
+    log_info "========================================="
+    log_info "myTraderGEO Remote Deployment"
+    log_info "========================================="
+    log_info "Environment: $env"
+    log_info "Version: $version"
+    log_info "========================================="
+
+    # 1. Definir hostname conforme ambiente
+    local SERVER_USER="mytrader"
+    local APP_DIR="mytrader-app/app"
+    local SERVER_HOST
+
+    if [ "$env" = "staging" ]; then
+        SERVER_HOST="mytrader-stage"
+    elif [ "$env" = "production" ]; then
+        SERVER_HOST="mytrader-prod"
+    else
+        log_error "Ambiente inválido: $env"
+        exit 1
+    fi
+
+    log_info "Target server: $SERVER_USER@$SERVER_HOST"
+
+    # 2. Verificar conectividade SSH
+    check_ssh_connection "$SERVER_USER" "$SERVER_HOST"
+
+    # 3. Backup remoto do banco (via SSH)
+    remote_backup_database "$SERVER_USER" "$SERVER_HOST" "$APP_DIR" "$env"
+
+    # 4. Copiar arquivos via SCP
+    log_info "Copying files to remote server..."
+
+    scp "$INFRA_DIR/docker/docker-compose.$env.yml" \
+        "$SERVER_USER@$SERVER_HOST:~/$APP_DIR/docker-compose.yml" || exit 1
+
+    scp "$INFRA_DIR/configs/traefik.yml" \
+        "$SERVER_USER@$SERVER_HOST:~/$APP_DIR/configs/traefik.yml" || exit 1
+
+    log_info "Files copied successfully"
+
+    # 5. Deploy via SSH
+    log_info "Deploying services on remote server..."
+
+    ssh "$SERVER_USER@$SERVER_HOST" << 'EOF'
+        set -e
+        cd ~/mytrader-app/app
+
+        # Pull images
+        echo "[REMOTE] Pulling Docker images..."
+        docker compose pull
+
+        # Deploy services
+        echo "[REMOTE] Starting services..."
+        docker compose up -d --remove-orphans
+
+        # Show status
+        echo "[REMOTE] Services status:"
+        docker compose ps
+EOF
+
+    if [ $? -ne 0 ]; then
+        log_error "Remote deployment failed"
+        exit 1
+    fi
+
+    log_info "Remote deployment completed"
+
+    # 6. Health checks remotos via HTTPS
+    remote_health_check "$env"
+
+    # 7. Logging de deploy
+    log_deployment_history "$env" "$version" "$SERVER_HOST"
+
+    log_info "========================================="
+    log_info "Deployment completed successfully!"
+    log_info "========================================="
+
+    if [ "$env" = "staging" ]; then
+        log_info "Frontend: https://staging.mytrader.com"
+        log_info "API: https://api.staging.mytrader.com"
+        log_info "Traefik Dashboard: https://traefik.staging.mytrader.com"
+    else
+        log_info "Frontend: https://mytrader.com"
+        log_info "API: https://api.mytrader.com"
+        log_info "Traefik Dashboard: https://traefik.mytrader.com"
+    fi
+
+    log_info "========================================="
+}
+
+# ==================================
 # Main Deployment Flow
 # ==================================
 
@@ -196,41 +373,37 @@ main() {
     # Export version for docker-compose
     export VERSION="$version"
 
-    log_info "========================================="
-    log_info "myTraderGEO Deployment"
-    log_info "========================================="
-    log_info "Environment: $environment"
-    log_info "Version: $version"
-    log_info "========================================="
+    # Detect deployment type (local vs remote)
+    if [ "$environment" = "development" ]; then
+        # Local deployment
+        log_info "========================================="
+        log_info "myTraderGEO Local Deployment"
+        log_info "========================================="
+        log_info "Environment: $environment"
+        log_info "Version: $version"
+        log_info "========================================="
 
-    # Execute deployment steps
-    check_prerequisites
-    load_env_file
+        # Execute local deployment steps
+        check_prerequisites
+        load_env_file
+        deploy_services "$environment"
+        health_check "$environment"
 
-    if [ "$environment" != "development" ]; then
-        backup_database "$environment"
-        pull_images "$environment"
-    fi
+        log_info "========================================="
+        log_info "Deployment completed successfully!"
+        log_info "========================================="
+        log_info "API: http://localhost:5000"
+        log_info "Frontend: http://localhost:3000"
+        log_info "========================================="
 
-    deploy_services "$environment"
-
-    if [ "$environment" != "development" ]; then
-        run_migrations "$environment"
-    fi
-
-    health_check "$environment"
-
-    log_info "========================================="
-    log_info "Deployment completed successfully!"
-    log_info "========================================="
-    log_info "API: http://localhost:5000"
-    log_info "Frontend: http://localhost:3000"
-    log_info "========================================="
-
-    # Ask if user wants to see logs
-    read -p "Show logs? (y/n): " show_logs_confirm
-    if [ "$show_logs_confirm" = "y" ]; then
-        show_logs "$environment"
+        # Ask if user wants to see logs
+        read -p "Show logs? (y/n): " show_logs_confirm
+        if [ "$show_logs_confirm" = "y" ]; then
+            show_logs "$environment"
+        fi
+    else
+        # Remote deployment (staging or production)
+        deploy_remote "$environment" "$version"
     fi
 }
 

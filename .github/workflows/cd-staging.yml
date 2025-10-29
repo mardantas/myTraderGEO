@@ -1,0 +1,38 @@
+name: CD - Staging
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY_STAGING }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+
+      - name: Deploy to Staging
+        run: |
+          ./05-infra/scripts/deploy.sh staging latest
+
+      - name: Notify success
+        if: success()
+        run: |
+          echo "::notice::Deployment to staging succeeded"
+          echo "Frontend: https://staging.mytrader.com"
+          echo "API: https://api.staging.mytrader.com"
+
+      - name: Notify failure
+        if: failure()
+        run: echo "::error::Deployment to staging failed"
