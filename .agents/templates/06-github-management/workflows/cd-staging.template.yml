@@ -1,188 +1,103 @@
-name: Deploy to Staging
+name: CD Staging (Auto-Deploy)
+
+# Triggered automatically on push to main branch
+# Deploys to staging server via SSH/SCP using deploy.sh script
+# Integrates with PE-00-Environments-Setup.md deployment strategy
 
 on:
   push:
-    branches: [ develop ]
+    branches:
+      - main
   workflow_dispatch:
-    inputs:
-      deploy_backend:
-        description: 'Deploy Backend'
-        required: true
-        type: boolean
-        default: true
-      deploy_frontend:
-        description: 'Deploy Frontend'
-        required: true
-        type: boolean
-        default: true
 
 env:
-  DOTNET_VERSION: '[DOTNET_VERSION]'  # From PE-00
-  NODE_VERSION: '[NODE_VERSION]'      # From PE-00
-  STAGING_URL: '[STAGING_URL]'        # From PE-00: e.g., https://staging.example.com
+  ENVIRONMENT: staging
+  VERSION: latest
 
 jobs:
-  deploy-backend:
-    name: Deploy Backend to Staging
+  deploy-staging:
+    name: Deploy to Staging
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' || inputs.deploy_backend == true
 
     environment:
       name: staging
-      url: ${{ env.STAGING_URL }}/api/health
+      url: https://staging.${{ secrets.DOMAIN }}
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY_STAGING }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
 
-    - name: Restore dependencies
-      run: dotnet restore
-      working-directory: 02-backend
+      - name: Verify SSH Connection
+        run: |
+          ssh -o BatchMode=yes -o ConnectTimeout=5 \
+            [project]_app@[project]-stage "echo 'SSH connection successful'"
 
-    - name: Build
-      run: dotnet build --no-restore --configuration Release
-      working-directory: 02-backend
+      - name: Deploy to Staging Server
+        run: |
+          chmod +x ./deploy.sh
+          ./deploy.sh staging latest
 
-    - name: Publish
-      run: dotnet publish --no-build --configuration Release --output ./publish
-      working-directory: 02-backend
+      - name: Health Check
+        run: |
+          echo "Running health check on https://api-staging.${{ secrets.DOMAIN }}/health"
 
-    # Option 1: Deploy to Azure App Service
-    # - name: Deploy to Azure
-    #   uses: azure/webapps-deploy@v3
-    #   with:
-    #     app-name: '[AZURE_APP_NAME]'
-    #     publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_STAGING }}
-    #     package: 02-backend/publish
+          # Retry logic (30 attempts, 5s interval)
+          MAX_ATTEMPTS=30
+          SLEEP_INTERVAL=5
 
-    # Option 2: Deploy via SSH/SCP
-    # - name: Deploy via SCP
-    #   uses: appleboy/scp-action@v0.1.7
-    #   with:
-    #     host: ${{ secrets.STAGING_HOST }}
-    #     username: ${{ secrets.STAGING_USERNAME }}
-    #     key: ${{ secrets.STAGING_SSH_KEY }}
-    #     source: "02-backend/publish/*"
-    #     target: "/var/www/api"
+          for i in $(seq 1 $MAX_ATTEMPTS); do
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 \
+              https://api-staging.${{ secrets.DOMAIN }}/health || echo "000")
 
-    # Option 3: Deploy to Docker Registry
-    # - name: Build and Push Docker Image
-    #   run: |
-    #     docker build -t [REGISTRY]/[PROJECT_NAME]-backend:staging ./02-backend
-    #     echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-    #     docker push [REGISTRY]/[PROJECT_NAME]-backend:staging
+            if [ "$HTTP_STATUS" -eq 200 ]; then
+              echo "✅ Health check passed (HTTP $HTTP_STATUS) after $i attempts"
+              exit 0
+            else
+              echo "⏳ Attempt $i/$MAX_ATTEMPTS: Health check returned HTTP $HTTP_STATUS. Retrying in ${SLEEP_INTERVAL}s..."
+              sleep $SLEEP_INTERVAL
+            fi
+          done
 
-    - name: Run Database Migrations
-      run: |
-        # Add your migration command here
-        # Example: dotnet ef database update --connection "${{ secrets.STAGING_CONNECTION_STRING }}"
-        echo "Running database migrations..."
-      working-directory: 02-backend
+          echo "❌ Health check failed after $MAX_ATTEMPTS attempts"
+          exit 1
 
-    - name: Health Check
-      run: |
-        sleep 10
-        curl --fail ${{ env.STAGING_URL }}/api/health || exit 1
+      - name: Deployment Summary
+        if: always()
+        run: |
+          echo "### 🚀 Staging Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment:** staging" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version:** latest" >> $GITHUB_STEP_SUMMARY
+          echo "- **Frontend:** https://staging.${{ secrets.DOMAIN }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Backend API:** https://api-staging.${{ secrets.DOMAIN }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Traefik Dashboard:** https://traefik-staging.${{ secrets.DOMAIN }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status:** ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
 
-  deploy-frontend:
-    name: Deploy Frontend to Staging
+  notify-on-failure:
+    name: Notify Deployment Failure
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' || inputs.deploy_frontend == true
-
-    environment:
-      name: staging
-      url: ${{ env.STAGING_URL }}
+    needs: deploy-staging
+    if: failure()
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Deployment Failed
+        run: |
+          echo "❌ Staging deployment failed!"
+          echo "Check logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          exit 1
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        cache-dependency-path: 01-frontend/package-lock.json
-
-    - name: Install dependencies
-      run: npm ci
-      working-directory: 01-frontend
-
-    - name: Build
-      run: npm run build
-      working-directory: 01-frontend
-      env:
-        NODE_ENV: staging
-        VITE_API_URL: ${{ env.STAGING_URL }}/api
-        VITE_APP_ENV: staging
-
-    # Option 1: Deploy to Azure Static Web Apps
-    # - name: Deploy to Azure Static Web Apps
-    #   uses: Azure/static-web-apps-deploy@v1
-    #   with:
-    #     azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_STAGING }}
-    #     repo_token: ${{ secrets.GITHUB_TOKEN }}
-    #     action: "upload"
-    #     app_location: "01-frontend"
-    #     output_location: "dist"
-
-    # Option 2: Deploy to S3 + CloudFront
-    # - name: Deploy to S3
-    #   uses: jakejarvis/s3-sync-action@master
-    #   with:
-    #     args: --delete
-    #   env:
-    #     AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET_STAGING }}
-    #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    #     AWS_REGION: 'us-east-1'
-    #     SOURCE_DIR: '01-frontend/dist'
-
-    # Option 3: Deploy via SSH/SCP
-    # - name: Deploy via SCP
-    #   uses: appleboy/scp-action@v0.1.7
-    #   with:
-    #     host: ${{ secrets.STAGING_HOST }}
-    #     username: ${{ secrets.STAGING_USERNAME }}
-    #     key: ${{ secrets.STAGING_SSH_KEY }}
-    #     source: "01-frontend/dist/*"
-    #     target: "/var/www/html"
-
-    - name: Health Check
-      run: |
-        sleep 5
-        curl --fail ${{ env.STAGING_URL }} || exit 1
-
-  notify:
-    name: Notify Deployment
-    runs-on: ubuntu-latest
-    needs: [deploy-backend, deploy-frontend]
-    if: always()
-
-    steps:
-    - name: Notify Success
-      if: needs.deploy-backend.result == 'success' && needs.deploy-frontend.result == 'success'
-      run: |
-        echo "✅ Staging deployment successful!"
-        echo "Backend: ${{ env.STAGING_URL }}/api/health"
-        echo "Frontend: ${{ env.STAGING_URL }}"
-
-    - name: Notify Failure
-      if: needs.deploy-backend.result == 'failure' || needs.deploy-frontend.result == 'failure'
-      run: |
-        echo "❌ Staging deployment failed!"
-        exit 1
-
-    # Optional: Send notification to Slack/Discord/Email
-    # - name: Slack Notification
-    #   if: always()
-    #   uses: 8398a7/action-slack@v3
-    #   with:
-    #     status: ${{ job.status }}
-    #     text: 'Staging deployment ${{ job.status }}'
-    #     webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+      # Optional: Send notification to Slack/Discord/Email
+      # - name: Slack Notification
+      #   uses: 8398a7/action-slack@v3
+      #   with:
+      #     status: ${{ job.status }}
+      #     text: 'Staging deployment failed'
+      #     webhook_url: ${{ secrets.SLACK_WEBHOOK }}
