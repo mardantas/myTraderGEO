@@ -238,7 +238,7 @@ Design user experience: foundations in Discovery + specific wireframes per epic.
 
 ### PE Light Review per Epic (OPTIONAL)
 
-**When to Execute:** See [07-PE-SEC-Checkpoint-Decision-Matrix.md](07-PE-SEC-Checkpoint-Decision-Matrix.md) for complete criteria.
+**When to Execute:** See [07-PE-SEC-Checkpoint-Guide.md](07-PE-SEC-Checkpoint-Guide.md) for complete criteria.
 
 **Summary:**
 - Epic introduces critical performance path (ex: real-time calculations)
@@ -293,7 +293,7 @@ Design user experience: foundations in Discovery + specific wireframes per epic.
 "PE, faça checkpoint de performance para épico 'Calculate Greeks' (Epic 3)"
 → Quick 15-30 min review (not full document)
 → Checks: N+1 queries, async/await, caching, resource management
-→ See: 07-PE-SEC-Checkpoint-Decision-Matrix.md for criteria
+→ See: 07-PE-SEC-Checkpoint-Guide.md for criteria
 
 "PE, revise queries do épico 5 (>3 JOINs detectados)"
 → Targeted review based on Decision Matrix criteria
@@ -474,7 +474,7 @@ Define **essential security baseline** - OWASP Top 3, LGPD minimum, auth strateg
 
 ### SEC Light Review per Epic (OPTIONAL)
 
-**When to Execute:** See [07-PE-SEC-Checkpoint-Decision-Matrix.md](07-PE-SEC-Checkpoint-Decision-Matrix.md) for complete criteria.
+**When to Execute:** See [07-PE-SEC-Checkpoint-Guide.md](07-PE-SEC-Checkpoint-Guide.md) for complete criteria.
 
 **Summary:**
 - Epic handles sensitive data (PII, credentials, financial)
@@ -534,7 +534,7 @@ Define **essential security baseline** - OWASP Top 3, LGPD minimum, auth strateg
 "SEC, faça checkpoint de segurança para épico 'Autenticação de Usuário' (Epic 2)"
 → Quick 15-30 min review (not full document)
 → Checks: OWASP Top 3 compliance, input validation, auth/authz, secrets management
-→ See: 07-PE-SEC-Checkpoint-Decision-Matrix.md for criteria
+→ See: 07-PE-SEC-Checkpoint-Guide.md for criteria
 
 "SEC, revise segurança do épico 4 (manipula dados PII)"
 → Targeted review based on Decision Matrix criteria (PII data handling)

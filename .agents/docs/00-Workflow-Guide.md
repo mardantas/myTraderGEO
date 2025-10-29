@@ -178,8 +178,8 @@ Executada para cada épico prioritário, entregando funcionalidade completa pont
         │ SEC: PII/financial data, auth logic,  │
         │      Epic 4+, upload arquivos         │
         │                                       │
-        │ 📋 Ref: 07-PE-SEC-Checkpoint-Decision-│
-        │         Matrix.md                     │
+        │ 📋 Ref: 07-PE-SEC-Checkpoint-Guide.md │
+        │                                       │
         └───────────────────────────────────────┘
                         ↓
         ┌───────────────────────────────────────┐
@@ -340,7 +340,7 @@ Exemplos:
 **Dicas:**
 - Use linguagem natural e direta
 - Seja específico no escopo (épico, BC, deliverable)
-- Para tarefas complexas, considere pedir ao agente para usar [Think Mode](10-THINK-MODE-GUIDE.md)
+- Para tarefas complexas, considere pedir ao agente para usar [Think Mode](09-THINK-MODE-GUIDE.md)
 - Agentes referenciam automaticamente deliverables de outros agentes (ex: DE lê SDA-02-Context-Map.md)
 
 > **Para exemplos detalhados por agente, veja [01-Agents-Overview.md](01-Agents-Overview.md)**
@@ -783,9 +783,9 @@ cd c:\Users\Marco\Projetos\myTraderGEO
 - **Segurança:** [04-Security-And-Platform-Strategy.md](04-Security-And-Platform-Strategy.md)
 - **Padrões DDD:** [05-DDD-Patterns-Reference.md](05-DDD-Patterns-Reference.md)
 - **Padrões de API:** [06-API-Standards.md](06-API-Standards.md)
-- **PE/SEC Checkpoints:** [08-PE-SEC-Checkpoint-Decision-Matrix.md](08-PE-SEC-Checkpoint-Decision-Matrix.md)
-- **Fluxo de Feedback:** [09-FEEDBACK-FLOW-GUIDE.md](09-FEEDBACK-FLOW-GUIDE.md)
-- **Think Mode:** [10-THINK-MODE-GUIDE.md](10-THINK-MODE-GUIDE.md)
+- **PE/SEC Checkpoints:** [07-PE-SEC-Checkpoint-Guide.md](07-PE-SEC-Checkpoint-Guide.md)
+- **Fluxo de Feedback:** [08-FEEDBACK-FLOW-GUIDE.md](08-FEEDBACK-FLOW-GUIDE.md)
+- **Think Mode:** [09-THINK-MODE-GUIDE.md](09-THINK-MODE-GUIDE.md)
 - **Config Master:** `workflow-config.json`
 
 ---

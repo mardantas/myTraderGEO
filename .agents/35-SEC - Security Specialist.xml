@@ -65,7 +65,7 @@
         <successor agent="QAE" phase="iteration">Security testing requirements (DAST, fuzzing - optional for Epic 4+)</successor>
     </successors>
 
-    <note>SEC-00 executes in Discovery for baseline security. Security reviews per epic (SEC-EPIC-[N]) are OPTIONAL checkpoints (see 07-PE-SEC-Checkpoint-Decision-Matrix.md) and would depend on DE, DBA, SE, FE implementations.</note>
+    <note>SEC-00 executes in Discovery for baseline security. Security reviews per epic (SEC-EPIC-[N]) are OPTIONAL checkpoints (see 07-PE-SEC-Checkpoint-Guide.md) and would depend on DE, DBA, SE, FE implementations.</note>
 
     <quality-checklist path="SEC-checklist.yml" base-path="checklists">
         <essential-check>Complete threat model (all BCs modeled with STRIDE)</essential-check>

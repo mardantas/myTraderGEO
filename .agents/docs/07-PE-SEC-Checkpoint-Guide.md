@@ -1,47 +1,122 @@
-# PE/SEC Light Review - Checkpoints Opcionais por Épico
+# PE/SEC Checkpoint Guide - Quando e Como Executar
 
-**Versão:** 1.0
-**Data:** 2025-10-10
-**Objetivo:** Adicionar camada leve de revisão de performance e segurança sem sobrecarregar o processo
-
----
-
-## 🎯 Conceito
-
-**PE** e **SEC** executam **Discovery** (setup inicial), mas NÃO participam ativamente de cada épico.
-
-**Problema:** Épicos 4+ podem acumular dívida técnica (N+1 queries, falta de autorização) sem revisão.
-
-**Solução:** **Checkpoints leves opcionais** (15-30 min) quando necessário.
+**Versão:** 2.0
+**Data:** 2025-10-29
+**Objetivo:** Guia consolidado para determinar quando PE e SEC devem executar checkpoints opcionais e como executá-los com qualidade.
 
 ---
 
-## 📊 Quando Usar
+## 🎯 Visão Geral
 
-### **✅ SIM - Execute Checkpoint:**
+**PE** (Platform Engineer) e **SEC** (Security Specialist) executam **baseline obrigatório** na Discovery (1x):
+- **PE-00-Environments-Setup.md**: Docker Compose, scripts deploy, env vars, logs, health checks, server setup
+- **SEC-00-Security-Baseline.md**: OWASP Top 3, LGPD mínimo, auth strategy, input validation, secrets management
 
-| Cenário | Agente | Exemplo |
-|---------|--------|---------|
-| Epic 4+ (pós-MVP estável) | PE + SEC | A partir do 4º épico |
-| Dados sensíveis (PII, credentials, payment) | SEC | Epic de Autenticação, Pagamentos |
-| Queries complexas (>3 JOINs) | PE | Epic de Relatórios, Analytics |
-| Real-time/Performance crítico | PE | Epic de Cálculo de Greeks |
-| Auth/Authz introduzido | SEC | Epic de Gestão de Usuários |
+Durante **iteração por épico**, checkpoints são **OPCIONAIS** por padrão, mas **OBRIGATÓRIOS** se o épico atender aos critérios de decisão abaixo.
 
-### **❌ NÃO - Pule Checkpoint:**
+**Problema:** Épicos 4+ podem acumular dívida técnica (N+1 queries, falta de autorização, hardcoded secrets) sem revisão.
 
-| Cenário | Por quê? |
-|---------|---------|
-| Epic 1-3 (MVP) | Foco em funcionalidade, não otimização prematura |
-| Epic simples (CRUD básico) | Não há riscos de performance/segurança |
-| Queries simples (sem JOINs) | PE não adiciona valor |
-| Sem dados sensíveis | SEC não adiciona valor |
+**Solução:** **Checkpoints leves opcionais** (15-30 min) quando necessário, baseados em critérios objetivos.
 
 ---
 
-## ⚙️ Como Funciona
+## 🔧 PE Checkpoint: Matriz de Decisão
 
-### **Timing no Workflow**
+### ✅ OBRIGATÓRIO (Execute PE Checkpoint)
+
+Execute **PE checkpoint** (15-30 min) se o épico atender a **qualquer** critério abaixo:
+
+| Critério | Descrição | Exemplo Prático |
+|----------|-----------|-----------------|
+| **Queries Complexas** | Epic com queries SQL usando >3 JOINs | Relatório consolidando Order + Customer + Product + Payment |
+| **Real-time Calculations** | Epic com cálculos em tempo real (latência <200ms crítica) | Cálculo de Greeks de opções, pricing dinâmico |
+| **Alto Volume de Dados** | Epic com queries retornando >1000 registros | Dashboard com histórico completo, exportação CSV |
+| **Operações Assíncronas Críticas** | Epic com background jobs ou async/await complexo | Processamento de lote, integração externa |
+| **Epic 4+ (Pós-MVP)** | A partir do 4º épico, revisar acúmulo de débito técnico | Qualquer épico após MVP estável |
+| **Integração Externa** | Epic integra com APIs externas (3rd party) | Payment gateway, market data provider |
+
+### 🟡 OPCIONAL (Considere PE Checkpoint)
+
+Considere PE checkpoint se:
+- Epic modifica queries existentes de épicos anteriores
+- Epic adiciona novos índices ou altera schema significativamente
+- Desenvolvedor solicita explicitamente review de performance
+
+### ❌ NÃO NECESSÁRIO
+
+Não execute PE checkpoint se:
+- Epic é CRUD simples (<3 tabelas, queries básicas)
+- Queries retornam <100 registros
+- Nenhum cálculo ou processamento intensivo
+
+---
+
+## 🔒 SEC Checkpoint: Matriz de Decisão
+
+### ✅ OBRIGATÓRIO (Execute SEC Checkpoint)
+
+Execute **SEC checkpoint** (15-30 min) se o épico atender a **qualquer** critério abaixo:
+
+| Critério | Descrição | Exemplo Prático |
+|----------|-----------|-----------------|
+| **Dados Pessoais (PII)** | Epic manipula dados pessoais (LGPD Art. 5º) | Nome, CPF, endereço, telefone, email |
+| **Dados Sensíveis** | Epic manipula dados sensíveis (LGPD Art. 5º, II) | Origem racial, saúde, orientação sexual, biometria |
+| **Dados Financeiros** | Epic manipula transações, saldo, pagamentos | Pagamento, saldo de conta, cartão de crédito |
+| **Autenticação/Autorização** | Epic implementa login, controle de acesso, permissões | Login de usuário, roles, JWT, OAuth |
+| **Epic 4+ com Dados Críticos** | A partir do 4º épico, se manipula dados críticos | Qualquer épico pós-MVP com dados PII/financeiros |
+| **Integração Externa Sensível** | Epic integra com APIs externas que enviam dados sensíveis | Payment gateway, KYC provider, data analytics |
+| **Upload de Arquivos** | Epic permite upload de arquivos pelo usuário | Upload de documentos, imagens, PDFs |
+
+### 🟡 OPCIONAL (Considere SEC Checkpoint)
+
+Considere SEC checkpoint se:
+- Epic altera fluxo de autorização existente
+- Epic adiciona novos endpoints públicos (sem auth)
+- Desenvolvedor tem dúvidas sobre input validation ou XSS
+
+### ❌ NÃO NECESSÁRIO
+
+Não execute SEC checkpoint se:
+- Epic é CRUD simples sem dados sensíveis
+- Epic não altera autenticação/autorização
+- Epic não manipula dados de usuário
+
+---
+
+## 📋 Checklist de Decisão Rápida
+
+### PE Checkpoint
+
+```markdown
+[ ] Epic tem queries com >3 JOINs?
+[ ] Epic faz cálculos em tempo real (<200ms)?
+[ ] Epic retorna >1000 registros?
+[ ] Epic usa background jobs ou async/await complexo?
+[ ] Epic integra com API externa?
+[ ] É o Epic 4+ (pós-MVP)?
+
+✅ Se QUALQUER checkbox marcado → EXECUTAR PE Checkpoint
+❌ Se NENHUM checkbox marcado → PULAR PE Checkpoint
+```
+
+### SEC Checkpoint
+
+```markdown
+[ ] Epic manipula dados pessoais (nome, CPF, email, telefone)?
+[ ] Epic manipula dados sensíveis (saúde, biometria, origem racial)?
+[ ] Epic manipula dados financeiros (pagamento, saldo, transações)?
+[ ] Epic implementa autenticação/autorização (login, roles)?
+[ ] Epic integra com API externa sensível (payment, KYC)?
+[ ] Epic permite upload de arquivos?
+[ ] É o Epic 4+ com dados críticos?
+
+✅ Se QUALQUER checkbox marcado → EXECUTAR SEC Checkpoint
+❌ Se NENHUM checkbox marcado → PULAR SEC Checkpoint
+```
+
+---
+
+## ⚙️ Timing no Workflow
 
 ```
 Dia 7-9: FE implementa UI
@@ -57,13 +132,14 @@ Dia 10: QAE Quality Gate
 
 ---
 
-## 🔧 PE Performance Checkpoint
+## 🔧 PE Performance Checkpoint - Como Executar
 
 ### **Duração:** 15-30 min
 
 ### **O que PE Revisa:**
 
 #### 1. **Database Performance** (5 min)
+
 ```csharp
 // ❌ N+1 Query (PROBLEMA)
 var strategies = await _context.Strategies.ToListAsync();
@@ -87,6 +163,7 @@ var strategies = await _context.Strategies
 - [ ] Queries <100ms?
 
 #### 2. **Async/Await** (5 min)
+
 ```csharp
 // ❌ Deadlock Risk (PROBLEMA)
 var result = _service.GetDataAsync().Result; // Sync-over-async!
@@ -100,6 +177,7 @@ var result = await _service.GetDataAsync();
 - [ ] I/O operations async?
 
 #### 3. **Caching** (5 min)
+
 ```csharp
 // PE sugere cachear market data
 services.AddMemoryCache();
@@ -111,6 +189,7 @@ _cache.Set("market-data", data, TimeSpan.FromMinutes(5));
 - [ ] Cache expiration configured?
 
 #### 4. **Resource Management** (5 min)
+
 ```csharp
 // ✅ Usando using statement
 using var connection = new SqlConnection(connectionString);
@@ -121,6 +200,7 @@ using var connection = new SqlConnection(connectionString);
 - [ ] No memory leaks?
 
 #### 5. **Server Setup & Deployment** (Discovery - 5 min)
+
 ```bash
 # PE verifica se servidor remoto está preparado
 ✅ UFW firewall configurado (ports 22, 80, 443)
@@ -144,7 +224,7 @@ using var connection = new SqlConnection(connectionString);
 **Template:** `PE-EPIC-[N]-Performance-Checkpoint.md`
 
 **Seções:**
-1. ✅ Performance Checklist (5 categorias: DB, Async, Cache, Resources, **Server/Deploy**)
+1. ✅ Performance Checklist (5 categorias: DB, Async, Cache, Resources, Server/Deploy)
 2. 📊 Issues Found (N+1 queries, missing indexes, server hardening, etc)
 3. 🔄 Feedback Created (se necessário)
 4. ✅ Final Verdict (Approved / Issues / Critical)
@@ -155,7 +235,7 @@ using var connection = new SqlConnection(connectionString);
 
 ---
 
-## 🔒 SEC Security Checkpoint
+## 🔒 SEC Security Checkpoint - Como Executar
 
 ### **Duração:** 15-30 min
 
@@ -164,6 +244,7 @@ using var connection = new SqlConnection(connectionString);
 #### 1. **OWASP Top 3** (10 min)
 
 **A) Broken Access Control**
+
 ```csharp
 // ❌ Sem autorização (PROBLEMA)
 public void DeleteStrategy(Guid id)
@@ -190,6 +271,7 @@ public void DeleteStrategy(Guid id, UserId requestingUser)
 - [ ] API tem `[Authorize]`?
 
 **B) Cryptographic Failures**
+
 ```csharp
 // ❌ Senha em plain text (PROBLEMA)
 user.Password = request.Password;
@@ -204,6 +286,7 @@ user.PasswordHash = BCrypt.HashPassword(request.Password);
 - [ ] Passwords hashed?
 
 **C) Injection**
+
 ```csharp
 // ❌ SQL Injection (PROBLEMA)
 var query = $"SELECT * FROM Users WHERE Email = '{email}'";
@@ -220,6 +303,7 @@ var user = await _context.Users
 - [ ] DTOs have validation?
 
 #### 2. **Input Validation** (5 min)
+
 ```csharp
 // ✅ Value Object com validação
 public record Strike(decimal Value)
@@ -237,6 +321,7 @@ public record Strike(decimal Value)
 - [ ] DTOs have `[Required]`, `[MaxLength]`?
 
 #### 3. **Secrets Management** (5 min)
+
 ```csharp
 // ❌ Hardcoded secret (PROBLEMA)
 var apiKey = "sk_live_123456789";
@@ -252,6 +337,7 @@ var apiKey = Environment.GetEnvironmentVariable("API_KEY");
 - [ ] Staging/production use strong passwords (16+ chars)?
 
 #### 4. **Multi-Environment Credentials** (Discovery + Per Epic - 5 min)
+
 ```sql
 -- ❌ Hardcoded password in Git (PROBLEMA)
 CREATE USER app_user WITH PASSWORD 'production_password_123';
@@ -283,7 +369,7 @@ psql -v app_password="$DB_APP_PASSWORD" -f 002_update_passwords.sql
 **Template:** `SEC-EPIC-[N]-Security-Checkpoint.md`
 
 **Seções:**
-1. ✅ Security Checklist (OWASP Top 3 + Validation + Secrets + **Multi-Env Credentials**)
+1. ✅ Security Checklist (OWASP Top 3 + Validation + Secrets + Multi-Env Credentials)
 2. 🔍 Issues Found (missing authz, hardcoded secrets, hardcoded passwords, etc)
 3. ⚠️ Threats Identified (if new)
 4. 🔄 Feedback Created (se necessário)
@@ -295,9 +381,93 @@ psql -v app_password="$DB_APP_PASSWORD" -f 002_update_passwords.sql
 
 ---
 
-## 📋 Exemplo Prático
+## 🚀 Exemplo Prático: myTraderGEO
 
-### **Epic 4: Calculate Greeks in Real-Time**
+### **Epic 1: "Criar e Visualizar Estratégia Bull Call Spread"**
+
+#### **PE Checkpoint?**
+
+```markdown
+[ ] Queries >3 JOINs? → Não (apenas Strategy + StrategyLeg)
+[ ] Real-time calculations? → Não (cálculo on-demand, não crítico)
+[ ] >1000 registros? → Não (usuário tem <100 estratégias)
+[ ] Background jobs? → Não
+[ ] API externa? → Não
+[ ] Epic 4+? → Não (Epic 1)
+```
+
+**Decisão PE:** ❌ **NÃO executar** checkpoint
+
+---
+
+#### **SEC Checkpoint?**
+
+```markdown
+[x] Dados pessoais? → Sim (usuário cria estratégia, associada ao UserId)
+[ ] Dados sensíveis? → Não
+[ ] Dados financeiros? → Parcial (estratégia tem valor, mas não é transação)
+[x] Autenticação? → Sim (apenas usuário logado cria estratégia)
+[ ] API externa sensível? → Não
+[ ] Upload arquivos? → Não
+[ ] Epic 4+? → Não
+```
+
+**Decisão SEC:** ✅ **EXECUTAR** checkpoint (2 critérios atendidos: dados pessoais + autenticação)
+
+**Ações SEC:**
+- Validar que `Strategy` tem `UserId` (ownership)
+- Validar que `CreateStrategyCommand` valida JWT token
+- Validar que endpoint `/api/strategies` requer `[Authorize]`
+- Validar que usuário A não pode modificar estratégia de usuário B
+
+---
+
+### **Epic 3: "Calcular Greeks e P&L em Tempo Real"**
+
+#### **PE Checkpoint?**
+
+```markdown
+[ ] Queries >3 JOINs? → Não
+[x] Real-time calculations? → Sim (Greeks calculados em <200ms)
+[ ] >1000 registros? → Não
+[ ] Background jobs? → Não
+[x] API externa? → Sim (integração com B3 para market data)
+[ ] Epic 4+? → Não
+```
+
+**Decisão PE:** ✅ **EXECUTAR** checkpoint (2 critérios atendidos: real-time + API externa)
+
+**Ações PE:**
+- Validar que cálculo de Greeks é assíncrono
+- Validar que market data API tem circuit breaker (Polly)
+- Validar que market data é cacheada (Redis, TTL 5 min)
+- Validar que queries de Strategy + MarketData usam `.Include()` para evitar N+1
+
+---
+
+#### **SEC Checkpoint?**
+
+```markdown
+[ ] Dados pessoais? → Não (apenas cálculos)
+[ ] Dados sensíveis? → Não
+[x] Dados financeiros? → Sim (P&L é financeiro)
+[ ] Autenticação? → Sim (já validado em Epic 1)
+[x] API externa sensível? → Sim (B3 API envia dados de mercado proprietários)
+[ ] Upload arquivos? → Não
+[ ] Epic 4+? → Não
+```
+
+**Decisão SEC:** ✅ **EXECUTAR** checkpoint (2 critérios atendidos: financeiro + API externa)
+
+**Ações SEC:**
+- Validar que API B3 usa HTTPS
+- Validar que API key B3 está em env var (não hardcoded)
+- Validar que P&L só é visível para owner da estratégia
+- Validar que logs não expõem dados de mercado sensíveis
+
+---
+
+### **Epic 4: "Calculate Greeks in Real-Time" - Checkpoint Completo**
 
 #### **PE Checkpoint (15 min):**
 
@@ -332,6 +502,8 @@ public async Task<Greeks> CalculateGreeks(Guid strategyId)
 ## Verdict
 ⚠️ Issues Found (non-blocking) - Epic can proceed to QAE
 ```
+
+---
 
 #### **SEC Checkpoint (15 min):**
 
@@ -376,6 +548,7 @@ public async Task<IActionResult> GetGreeks(Guid strategyId)
 | **Complementa QAE** | QAE testa funcionalidade, PE/SEC checam quality |
 | **Feedback direcionado** | PE → SE/DBA, SEC → SE/DE/FE |
 | **Opcional** | Epic 1-3 não precisa (foco em MVP) |
+| **Critérios objetivos** | Decision matrix clara evita ambiguidade |
 
 ---
 
@@ -386,7 +559,7 @@ public async Task<IActionResult> GetGreeks(Guid strategyId)
 | ❌ Revisão completa de código | ✅ Checklist rápido de hotspots |
 | ❌ Profiling completo | ✅ Identificação de anti-patterns |
 | ❌ Pentest | ✅ OWASP Top 3 compliance check |
-| ❌ Bloqueio obrigatório | ✅ Checkpoint opcional |
+| ❌ Bloqueio obrigatório | ✅ Checkpoint opcional baseado em critérios |
 | ❌ Deliverable extenso | ✅ Checklist de 1 página |
 
 ---
@@ -433,6 +606,7 @@ public async Task<IActionResult> GetGreeks(Guid strategyId)
 
 ---
 
-**Versão:** 1.0
+**Versão:** 2.0
 **Status:** Ativo
-**Última Atualização:** 2025-10-10
+**Última Atualização:** 2025-10-29
+**Consolidado de:** 07-PE-SEC-Light-Review.md + 08-PE-SEC-Checkpoint-Decision-Matrix.md

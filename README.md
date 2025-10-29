@@ -209,11 +209,10 @@ gh release create v0.1.0 --title "Discovery Foundation Complete" --generate-note
 - [**04-Security-And-Platform-Strategy.md**](.agents/docs/04-Security-And-Platform-Strategy.md) - Estratégia de segurança e plataforma
 - [**05-DDD-Patterns-Reference.md**](.agents/docs/05-DDD-Patterns-Reference.md) - Padrões DDD
 - [**06-API-Standards.md**](.agents/docs/06-API-Standards.md) - Padrões de API
-- [**07-PE-SEC-Light-Review.md**](.agents/docs/07-PE-SEC-Light-Review.md) - Review rápido PE/SEC
-- [**08-PE-SEC-Checkpoint-Decision-Matrix.md**](.agents/docs/08-PE-SEC-Checkpoint-Decision-Matrix.md) - Matriz de decisão PE/SEC
-- [**09-FEEDBACK-FLOW-GUIDE.md**](.agents/docs/09-FEEDBACK-FLOW-GUIDE.md) - Fluxo de feedback entre agentes
-- [**10-THINK-MODE-GUIDE.md**](.agents/docs/10-THINK-MODE-GUIDE.md) - Modo de pensamento estratégico
-- [**11-STANDARDS-COMPLIANCE-ANALYSIS.md**](.agents/docs/11-STANDARDS-COMPLIANCE-ANALYSIS.md) - Análise de conformidade
+- [**07-PE-SEC-Checkpoint-Guide.md**](.agents/docs/07-PE-SEC-Checkpoint-Guide.md) - Guia completo de checkpoints PE/SEC
+- [**08-FEEDBACK-FLOW-GUIDE.md**](.agents/docs/08-FEEDBACK-FLOW-GUIDE.md) - Fluxo de feedback entre agentes
+- [**09-THINK-MODE-GUIDE.md**](.agents/docs/09-THINK-MODE-GUIDE.md) - Modo de pensamento estratégico
+- [**10-STANDARDS-COMPLIANCE-ANALYSIS.md**](.agents/docs/10-STANDARDS-COMPLIANCE-ANALYSIS.md) - Análise de conformidade
 
 ---
 
