@@ -13,9 +13,10 @@ MARKDOWN FORMATTING:
 
 **Data Abertura:** 2025-10-28
 **Data Reaberto:** 2025-10-28
+**Data Resolução:** 2025-10-28
 **Solicitante:** User (Marco)
 **Destinatário:** PE Agent
-**Status:** 🟡 Em Andamento (Follow-up)
+**Status:** 🟢 Resolvido
 
 **Tipo:**
 - [x] Melhoria (sugestão de enhancement)
@@ -557,7 +558,21 @@ Documentei a estrutura de diretórios completa para servidores remotos (staging/
 
 ---
 
-**Status Final:** 🟢 Resolvido
+**Status Final:** 🟢 Resolvido (PE completou sua parte)
+
+**Próximos Passos:**
+- ✅ Infraestrutura do servidor documentada pelo PE (completo)
+- ⏭️ Implementação de deploy remoto ficará a cargo do **GM Agent** (ver FEEDBACK-009)
+
+---
+
+## 🔗 Feedback Relacionado
+
+**FEEDBACK-009-GM-Implement-Remote-Deploy.md:**
+- **Destinatário:** GM Agent (GitHub Manager)
+- **Objetivo:** Implementar deploy remoto via SSH/SCP no `deploy.sh`
+- **Referências:** Este FEEDBACK-008 (linhas 377-418 - exemplo de implementação)
+- **Status:** 🔴 Aberto (aguardando GM)
 
 ---
 
@@ -569,3 +584,4 @@ Documentei a estrutura de diretórios completa para servidores remotos (staging/
 | 2025-10-28 | Resolução inicial - Estrutura de servidor remoto documentada em PE-00 e 05-infra/README.md | PE Agent |
 | 2025-10-28 | Reaberto (Follow-up) - Identificadas lacunas: instalação Docker, firewall, security hardening | PE Agent + User (Marco) |
 | 2025-10-28 | Expandido FEEDBACK com etapas 0-8 de setup completo (hostname, Docker, UFW, fail2ban, user/grupo, SSH, diretórios, .env, verificação) | PE Agent |
+| 2025-10-28 | Resolvido pelo PE - Deploy remoto será implementado pelo GM (FEEDBACK-009) | PE Agent |
