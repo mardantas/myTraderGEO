@@ -29,70 +29,44 @@
 ## 10 - SDA (Strategic Domain Analyst)
 
 ### Objective
-Discover and map the complete business domain, defining bounded contexts and strategic epics.
+Discover and map the complete business domain - bounded contexts, strategic epics, ubiquitous language.
 
 ### Responsibilities
-- Event Storming (domain event discovery)
-- Bounded Contexts identification
-- Context Map with relationships
-- Ubiquitous Language (glossary)
-- Epic prioritization by business value
+**Discovery (1x at project start):** Event Storming (domain event discovery), Bounded Contexts identification, Context Map (relationships), Ubiquitous Language (glossary), epic prioritization by business value.
 
 ### When Executes
-**1x at project start** - discovery phase
+**1x at project start** - discovery phase (analyzes entire business domain)
 
-### Scope
-**Complete system** - analyzes entire business domain
+### Key Deliverables
+- **SDA-01-Event-Storming.md** - Domain events per BC
+- **SDA-02-Context-Map.md** - BCs and relationships
+- **SDA-03-Ubiquitous-Language.md** - Glossary
 
-### Deliverables
+### Example Invocations
 ```
-00-doc-ddd/02-strategic-design/
-├── SDA-01-Event-Storming.md
-├── SDA-02-Context-Map.md
-└── SDA-03-Ubiquitous-Language.md
-```
-
-### Example Invocation
-
-#### Complete Task (Discovery)
-```
+# Discovery
 "SDA, faça a modelagem estratégica completa do sistema myTrader"
 → Executes full Discovery: Event Storming + Context Map + Ubiquitous Language
 → Deliverables: SDA-01, SDA-02, SDA-03
 
 "SDA, identifique Bounded Contexts e eventos de domínio para sistema de opções financeiras"
 → Focuses on BC identification first
-```
 
-#### Self-Review (before delivery)
-```
+# Review & Updates
 "SDA, revise Event Storming verificando completude dos eventos por BC"
-→ Validates all BCs have domain events
-→ Checks event naming consistency with Ubiquitous Language
+→ Validates all BCs have domain events, checks naming consistency
 
-"SDA, revise Context Map verificando se todos os relacionamentos estão documentados"
-→ Ensures all BC relationships are explicit
-```
+"SDA, processe FEEDBACK-001 sobre evento StrategyValidated faltante"
+→ Reviews feedback, adds event to SDA-01
 
-#### Process Feedback
-```
-"SDA, processe FEEDBACK-003"
-→ Reads feedback, analyzes impact, updates deliverables
-
-"SDA, analise FEEDBACK-001 sobre evento StrategyValidated faltante"
-→ Reviews feedback, validates suggestion, adds event to SDA-01
-```
-
-#### Specific Update
-```
 "SDA, adicione BC de Notificações ao Context Map como Upstream-Downstream com BC Strategy"
 → Updates SDA-02-Context-Map.md with new BC and relationship
-
-"SDA, adicione termo 'Greeks' ao Ubiquitous Language com definição de opções"
-→ Updates SDA-03-Ubiquitous-Language.md with new domain term
 ```
 
 **Note:** SDA executes ONLY in Discovery. For epic-specific changes, use DE.
+
+### Dependencies
+**Depends on:** None (first agent) | **Blocks:** All other agents (provides BCs, Context Map, UL)
 
 ### Specification
 [10-SDA - Strategic Domain Analyst.xml](../10-SDA%20-%20Strategic%20Domain%20Analyst.xml)
@@ -105,80 +79,40 @@ Discover and map the complete business domain, defining bounded contexts and str
 Design user experience: foundations in Discovery + specific wireframes per epic.
 
 ### Responsibilities
-**Discovery (1x):**
-- Design foundations (colors, typography, base components)
-- Does not create complete user flows or detailed wireframes
-
-**Per Epic (Nx):**
-- Epic-specific wireframes
-- Works in PARALLEL with SE (Days 3-6)
-- FE receives ready wireframes on Day 7
+**Discovery (1x):** Design foundations (colors, typography, base components) independent of tech stack.
+**Per Epic (Nx):** Epic-specific wireframes with detailed components, work in PARALLEL with SE (Days 3-6), FE receives ready wireframes on Day 7.
 
 ### When Executes
-- **Discovery:** UXD-00-Design-Foundations.md (1x)
-- **Iteration:** UXD-01-[EpicName]-Wireframes.md (per epic, parallel with SE)
+**Discovery:** UXD-00-Design-Foundations (1x)
+**Iteration:** UXD-01-[EpicName]-Wireframes (per epic, parallel with SE)
 
-### Scope
-- **Discovery:** System foundations
-- **Iteration:** Epic-specific wireframes
+### Key Deliverables
+- **UXD-00-Design-Foundations.md** - Colors, typography, base components (1x)
+- **UXD-01-[EpicName]-Wireframes.md** - Epic-specific wireframes (per epic)
 
-### Deliverables
+### Example Invocations
 ```
-00-doc-ddd/03-ux-design/
-├── UXD-00-Design-Foundations.md  (Discovery - 1x)
-└── UXD-01-[EpicName]-Wireframes.md  (Per epic - Nx)
-```
-
-### Example Invocation
-
-#### Complete Task
-
-**Discovery (1x - Foundations):**
-```
+# Discovery (1x)
 "UXD, crie design foundations (cores, tipografia, componentes base)"
-→ Creates UXD-00-Design-Foundations.md
-→ Independent of tech stack, consumed by FE later
+→ Creates UXD-00 independent of tech stack, consumed by FE later
 
-"UXD, defina paleta de cores para plataforma financeira (trading)"
-→ Focuses on color system appropriate for domain
-```
-
-**Iteration (Per Epic - Wireframes):**
-```
+# Per Epic
 "UXD, crie wireframes para épico 'Criar Estratégia Bull Call Spread'"
-→ Creates UXD-01-EPIC-01-Strategy-Wireframes.md
-→ Specific components: modal, form validation, leg management
+→ Creates UXD-01-EPIC-01-Strategy-Wireframes.md with modal, form, leg management
 
 "UXD, desenhe user flow e wireframes para Dashboard de P&L em tempo real"
-→ Epic 2: Real-time Greeks calculation
-→ Focuses on data visualization and responsiveness
-```
+→ Epic 2: Real-time Greeks calculation, data visualization, responsiveness
 
-#### Self-Review (before FE consumes)
-```
+# Review & Updates
 "UXD, revise wireframes do épico 1 verificando consistência com Design Foundations"
-→ Checks colors, typography, component usage
-→ Ensures FE will have clear implementation guide
+→ Checks colors, typography, component usage, ensures FE has clear guide
 
-"UXD, valide acessibilidade dos wireframes (contraste, WCAG AA)"
-→ Reviews color contrast ratios, touch targets, screen reader support
-```
-
-#### Process Feedback
-```
 "UXD, processe FEEDBACK-005 do FE sobre comportamento do botão Adicionar Perna"
-→ Clarifies ambiguous wireframe specification
-→ Updates UXD-01 with detailed interaction states
+→ Clarifies ambiguous spec, updates UXD-01 with interaction states
 ```
 
-#### Specific Update
-```
-"UXD, adicione estado de loading ao modal Criar Estratégia"
-→ Updates wireframe with loading spinner and disabled state
-
-"UXD, atualize componente Leg Card com botão de remoção {X}"
-→ Small iteration based on user feedback
-```
+### Dependencies
+**Depends on:** SDA (BCs for scope) | **Consumed by:** FE (wireframes for implementation)
 
 ### Specification
 [20-UXD - User Experience Designer.xml](../20-UXD%20-%20User%20Experience%20Designer.xml)
@@ -188,147 +122,46 @@ Design user experience: foundations in Discovery + specific wireframes per epic.
 ## 30 - PE (Platform Engineer)
 
 ### Objective
-**Define tech stack** and configure basic environments (dev/stage/prod) with **deploy scripts** - NO complete IaC.
+Define tech stack (Backend, Frontend, Database) and configure basic environments (dev/staging/production) with deploy scripts - pragmatic setup for small/medium projects.
 
 ### Responsibilities
-**Discovery ONLY (1x - Day 2-3):**
-- **Define Tech Stack (Backend, Frontend, Database)** ← CRITICAL for GM/SEC/QAE
-- Docker Compose for environments (dev, staging, production) with Traefik (staging + production)
-- **Server setup documentation** (OS, Docker, firewall, user/group, SSH keys, directories)
-- **Scaling strategy documentation** (decision matrix, migration paths)
-- Deploy scripts (deploy.sh) with **remote deployment** (local vs remote detection)
-- Environment variables configuration (`.env.dev`, `.env.staging`, `.env.production`)
-- Basic logging (Docker logs + rotation)
-- Configured health checks (local + remote HTTPS)
+**Discovery (Day 2-3 - BLOCKS GM/SEC/QAE):**
+Define tech stack, Docker Compose environments (dev/staging/production with Traefik), server setup docs (OS, Docker, firewall, users, SSH), scaling strategy, deploy scripts with remote deployment, environment variables (.env files), logging, health checks.
 
 ### When Executes
-- **Discovery (Day 2-3):** PE-00-Environments-Setup ← **BEFORE GM, SEC, QAE**
-- **Per Epic (OPTIONAL - Light Review):** Quick performance checkpoint (15-30 min)
+**Discovery:** PE-00-Environments-Setup (BEFORE GM, SEC, QAE)
+**Per Epic (OPTIONAL):** Performance checkpoint (15-30 min) - See [07-PE-SEC-Checkpoint-Guide.md](07-PE-SEC-Checkpoint-Guide.md) for criteria
 
-### Scope
-- **Discovery:** Define stack + basic setup - pragmatic for small/medium projects
-- **Per Epic:** Light performance review (optional, only if needed)
+### Key Deliverables
+- **PE-00-Environments-Setup.md** - Tech stack + environment configs + server setup + scaling strategy
+- **Docker Compose** files (dev, staging, production with Traefik)
+- **Deploy scripts** (deploy.sh) with SSH remote deployment
+- **PE-EPIC-[N]-Performance-Checkpoint.md** (optional per epic when performance-critical)
+
+### Example Invocations
+```
+# Discovery (MANDATORY)
+"PE, configure ambientes (dev/stage/prod) com Docker Compose e defina tech stack"
+→ Creates PE-00 with Backend + Frontend + Database stack definition
+→ Docker Compose, Traefik, .env strategy, deploy.sh with remote deployment
+
+"PE, documente setup do servidor (Debian 12, Docker, firewall, usuários SSH)"
+→ Server hardening: UFW, fail2ban, SSH keys, user/group setup (8+ steps)
+
+# Optional per-epic performance checkpoint
+"PE, checkpoint de performance para Epic 3 (Calculate Greeks - real-time)"
+→ Quick 15-30 min review: N+1 queries, async/await, caching, resources
+
+# Updates
+"PE, adicione health check remoto HTTPS ao deploy.sh"
+→ Updates deploy.sh with remote_health_check() function
+
+"PE, processe FEEDBACK-004 sobre evolução da especificação PE"
+→ Aligns PE-00 with updated agent spec (Traefik staging CA, server docs)
+```
 
 ### Dependencies
-- **Depends on:** SDA (BCs to estimate environments)
-- **Blocks:** GM (CI/CD), SEC (security tools), QAE (test tools) until stack is defined
-
-### Deliverables
-```
-00-doc-ddd/08-platform-engineering/
-├── PE-00-Environments-Setup.md  (Discovery - 1x)
-│   ├── Environment Strategy (.env.dev, .env.staging, .env.production)
-│   ├── Server Setup Documentation (8+ steps: hostname, Docker, firewall, users, SSH)
-│   ├── Traefik Configuration (staging CA + production CA)
-│   ├── Scaling Strategy (decision matrix, 3 migration paths)
-│   └── Remote Deployment Architecture
-└── PE-EPIC-[N]-Performance-Checkpoint.md  (Per epic - OPTIONAL)
-
-05-infra/
-├── docker/
-│   ├── docker-compose.yml (development)
-│   ├── docker-compose.staging.yml (with Traefik staging CA)
-│   └── docker-compose.production.yml (with Traefik production CA)
-├── configs/
-│   ├── .env.example (multi-environment instructions)
-│   └── traefik.yml (2 certificateResolvers)
-└── scripts/
-    └── deploy.sh (local + remote deployment)
-```
-
-### PE Light Review per Epic (OPTIONAL)
-
-**When to Execute:** See [07-PE-SEC-Checkpoint-Guide.md](07-PE-SEC-Checkpoint-Guide.md) for complete criteria.
-
-**Summary:**
-- Epic introduces critical performance path (ex: real-time calculations)
-- Database queries becoming complex (>3 JOINs)
-- Epic 4+ (after MVP is stable)
-- Integration with external APIs
-
-**What PE Reviews (15-30 min):**
-1. ✅ **Database Performance**
-   - N+1 queries identified? (use `.Include()`)
-   - Missing indexes on FK/query filters?
-   - Queries >100ms?
-
-2. ✅ **Async/Await Correctness**
-   - No `.Result` or `.Wait()` (deadlock risk)?
-   - I/O operations are async?
-
-3. ✅ **Caching Strategy**
-   - Frequently accessed data cached? (Redis/In-Memory)
-   - Cache invalidation clear?
-
-4. ✅ **Resource Management**
-   - Connections/streams disposed correctly?
-   - No memory leaks in loops?
-
-**Output:** Quick checklist (not full document), feedback to SE/DBA if issues found.
-
-**Example Invocation:**
-```
-"PE, do a quick performance checkpoint for Epic 3 (Calculate Greeks)"
-"PE, review database queries performance for Epic 5"
-```
-
-### Example Invocation
-
-#### Complete Task
-
-**Discovery (1x - MANDATORY before QAE/SEC/GM):**
-```
-"PE, configure ambientes básicos (dev/stage/prod) com Docker Compose"
-→ Creates PE-00-Environments-Setup.md
-→ Defines tech stack (CRITICAL: blocks QAE, SEC, GM until done)
-→ Docker Compose + Traefik + .env strategy + deploy scripts
-
-"PE, documente setup inicial do servidor (Debian 12, Docker, firewall, usuários)"
-→ Server setup documentation (8+ steps: hostname, Docker, UFW, users, SSH keys)
-→ Prerequisite for remote deployment
-```
-
-**Iteration (OPTIONAL - Light Review only if needed):**
-```
-"PE, faça checkpoint de performance para épico 'Calculate Greeks' (Epic 3)"
-→ Quick 15-30 min review (not full document)
-→ Checks: N+1 queries, async/await, caching, resource management
-→ See: 07-PE-SEC-Checkpoint-Guide.md for criteria
-
-"PE, revise queries do épico 5 (>3 JOINs detectados)"
-→ Targeted review based on Decision Matrix criteria
-```
-
-#### Self-Review (Discovery only)
-```
-"PE, revise PE-00 verificando se tech stack está completo (Backend, Frontend, Database)"
-→ Ensures GM/SEC/QAE can choose compatible tools
-
-"PE, valide se estratégia .env cobre todos os ambientes (dev/staging/production)"
-→ Checks .env.dev, .env.staging, .env.production documented
-→ Validates multi-server architecture documented
-```
-
-#### Process Feedback
-```
-"PE, processe FEEDBACK-004 sobre evolução da especificação do PE Agent"
-→ Aligns deliverables with updated agent specification
-→ Adds Traefik staging CA, server setup docs, multi-env strategy
-
-"PE, analise FEEDBACK-007 sobre estratégia de scaling (Docker Swarm)"
-→ Documents scaling strategy, decision matrix, migration paths
-```
-
-#### Specific Update
-```
-"PE, adicione health check remoto (HTTPS) ao script deploy.sh"
-→ Updates 05-infra/scripts/deploy.sh with remote_health_check() function
-
-"PE, documente rotação de senhas para ambientes staging/production"
-→ Adds password rotation strategy to PE-00 (quarterly prod, semi-annual staging)
-```
-
-**Critical Note:** PE must execute BEFORE QAE/SEC/GM in Discovery (defines stack).
+**Depends on:** SDA (BCs estimate infrastructure) | **Blocks:** GM, QAE, SEC (wait for tech stack)
 
 ### Specification
 [30-PE - Platform Engineer.xml](../30-PE%20-%20Platform%20Engineer.xml)
@@ -338,100 +171,46 @@ Design user experience: foundations in Discovery + specific wireframes per epic.
 ## 60 - QAE (Quality Assurance Engineer)
 
 ### Objective
-Ensure quality as **QUALITY GATE** at end of each epic.
+Ensure quality as **QUALITY GATE** at end of each epic - tests pass → approve deploy, tests fail → block deploy.
 
 ### Responsibilities
-**Discovery (1x - Day 3-4):**
-- QAE-00-Test-Strategy.md (tools, minimum coverage, criteria)
-- **Test tools selection based on PE stack** (xUnit vs Jest, Vitest vs Mocha, Playwright vs Cypress)
-
-**Per Epic (Nx - Day 10 - QUALITY GATE):**
-- Integration tests (SE APIs, cross-BC communication)
-- E2E tests (UXD-01 wireframe user journeys)
-- Regression tests (previous epics still work)
-- Smoke test (critical functionality)
-
-**QUALITY GATE DECISION:**
-- ✅ **Tests pass** → APPROVE deploy to staging/production
-- ❌ **Tests fail** → BLOCK deploy, send feedback to SE/FE
+**Discovery (AFTER PE):** Test strategy (QAE-00), tools selection based on PE stack (xUnit vs Jest, Playwright vs Cypress), coverage criteria (≥70% domain, ≥60% application).
+**Per Epic (Day 10 - QUALITY GATE):** Integration tests (SE APIs), E2E tests (UXD-01 journeys), regression tests (previous epics), smoke test (critical paths), DECISION: ✅ approve OR ❌ block deploy.
 
 ### When Executes
-- **Discovery (Day 3-4):** QAE-00-Test-Strategy - **AFTER PE defines stack**
-- **Iteration (Day 10):** FINAL quality gate (integration + E2E + regression + smoke)
+**Discovery:** QAE-00-Test-Strategy (AFTER PE defines stack)
+**Iteration:** Day 10 QUALITY GATE (integration + E2E + regression + smoke)
 
-### Scope
-**Per epic** - mandatory quality gate before deploy
+### Key Deliverables
+- **QAE-00-Test-Strategy.md** - Tools, coverage, quality gate criteria
+- **Integration tests** - 02-backend/tests/integration/
+- **E2E tests** - 01-frontend/tests/e2e/
 
-### Dependencies
-- **Depends on:** SDA (BCs for test strategy), **PE (stack for test tools selection)**
-
-### Deliverables
+### Example Invocations
 ```
-00-doc-ddd/06-quality-assurance/
-└── QAE-00-Test-Strategy.md  (Discovery - 1x)
-
-02-backend/tests/integration/
-01-frontend/tests/e2e/
-```
-
-### Example Invocation
-
-#### Complete Task
-
-**Discovery (1x - AFTER PE defines stack):**
-```
+# Discovery (AFTER PE)
 "QAE, crie estratégia de testes baseada no stack do PE (.NET + React + PostgreSQL)"
-→ Creates QAE-00-Test-Strategy.md
-→ Tools: xUnit (backend), Vitest (frontend), Playwright (E2E)
-→ Coverage: ≥70% domain layer, ≥60% application layer
+→ Creates QAE-00 with xUnit, Vitest, Playwright, coverage ≥70% domain
 
-"QAE, defina critérios de quality gate para aprovação de deploy"
-→ Specifies test types, coverage thresholds, blocking criteria
-```
-
-**Iteration (Per Epic - QUALITY GATE on Day 10):**
-```
+# Per Epic Quality Gate
 "QAE, execute quality gate para épico 'Criar Estratégia' (Epic 1)"
-→ Integration tests (SE APIs)
-→ E2E tests (UXD-01 user journeys)
-→ Regression tests (previous epics)
-→ Smoke test (critical paths)
+→ Integration tests (SE APIs), E2E tests (UXD-01 journeys)
+→ Regression tests (previous epics), Smoke test (critical paths)
 → DECISION: ✅ Approve deploy OR ❌ Block deploy + create feedback
 
 "QAE, execute teste de regressão completo antes de deploy production"
-→ Validates all previous epics still work
-→ Critical before production release
-```
+→ Validates all previous epics still work, critical before production
 
-#### Self-Review (before blocking deploy)
-```
-"QAE, revise cobertura de testes do épico 2 antes de aprovar deploy"
-→ Validates ≥70% coverage domain layer
-→ Checks all acceptance criteria have tests
-
-"QAE, valide que testes E2E cobrem todos os user journeys do UXD-01"
-→ Cross-references wireframes with test scenarios
-```
-
-#### Process Feedback
-```
+# Updates
 "QAE, processe FEEDBACK-010 sobre falha intermitente no teste de Greeks"
 → Investigates flaky test, fixes timing issue, updates test
 
-"QAE, analise FEEDBACK do SE sobre novo endpoint de listagem de estratégias"
-→ Adds integration test for new API endpoint
-```
-
-#### Specific Update
-```
 "QAE, adicione teste de boundary condition para strike negativo"
 → Adds test to validate domain invariant
-
-"QAE, atualize teste E2E de criação de estratégia com novo campo 'Descrição'"
-→ Adapts test to UI change
 ```
 
-**Critical Note:** QAE is the QUALITY GATE. Deploy ONLY if QAE approves.
+### Dependencies
+**Depends on:** SDA (BCs for test strategy), PE (stack for test tools) | **Blocks:** Deploy (quality gate)
 
 ### Specification
 [60-QAE - Quality Assurance Engineer.xml](../60-QAE%20-%20Quality%20Assurance%20Engineer.xml)
@@ -441,136 +220,44 @@ Ensure quality as **QUALITY GATE** at end of each epic.
 ## 35 - SEC (Security Specialist)
 
 ### Objective
-Define **essential security baseline** - OWASP Top 3, LGPD minimum, auth strategy.
+Define essential security baseline: OWASP Top 3, LGPD minimum, authentication/authorization strategy - pragmatic for small/medium projects.
 
 ### Responsibilities
-**Discovery ONLY (1x - Day 3-4):**
-- Identify main threats per BC
-- OWASP Top 3 mitigations (Broken Access Control, Cryptographic Failures, Injection)
-- LGPD minimum (personal data mapping, deletion strategy, privacy policy)
-- Authentication & Authorization strategy (JWT, domain-level authz)
-- Input validation strategy
-- Secrets management strategy (environment variables)
-- **Security tools compatible with PE stack** (OWASP ZAP, Snyk, etc)
-- Basic security monitoring (security events logging)
+**Discovery (Day 3-4 - AFTER PE defines stack):**
+Identify main threats per BC, OWASP Top 3 mitigations (Broken Access Control, Cryptographic Failures, Injection), LGPD minimum (PII mapping, deletion strategy, privacy policy), auth/authz strategy (JWT, domain-level), input validation, secrets management, security tools compatible with PE stack, security monitoring.
 
 ### When Executes
-- **Discovery (Day 3-4):** SEC-00-Security-Baseline - **AFTER PE defines stack**
-- **Per Epic (OPTIONAL - Light Review):** Quick security checkpoint (15-30 min)
+**Discovery:** SEC-00-Security-Baseline (AFTER PE)
+**Per Epic (OPTIONAL):** Security checkpoint (15-30 min) - See [07-PE-SEC-Checkpoint-Guide.md](07-PE-SEC-Checkpoint-Guide.md) for criteria
 
-### Scope
-- **Discovery:** Essential baseline - pragmatic for small/medium projects
-- **Per Epic:** Light security review (optional, only if needed)
+### Key Deliverables
+- **SEC-00-Security-Baseline.md** - OWASP Top 3 + LGPD + auth strategy + threat identification per BC
+- **SEC-EPIC-[N]-Security-Checkpoint.md** (optional per epic when handles sensitive data/auth)
 
-### Dependencies
-- **Depends on:** SDA (BCs, UL for threat identification), **PE (stack for compatible tools)**
-
-### Deliverables
+### Example Invocations
 ```
-00-doc-ddd/09-security/
-├── SEC-00-Security-Baseline.md  (Discovery - 1x)
-└── SEC-EPIC-[N]-Security-Checkpoint.md  (Per epic - OPTIONAL)
-```
+# Discovery (AFTER PE)
+"SEC, crie baseline de segurança (OWASP Top 3, LGPD mínimo, estratégia auth)"
+→ Creates SEC-00 with OWASP Top 3 mitigations, LGPD PII mapping, JWT auth strategy
+→ Security tools compatible with PE stack (OWASP ZAP, Snyk)
 
-### SEC Light Review per Epic (OPTIONAL)
+"SEC, identifique principais ameaças por BC e defina mitigações essenciais"
+→ Basic threat identification per BC (essential MVP mitigations, not full STRIDE)
 
-**When to Execute:** See [07-PE-SEC-Checkpoint-Guide.md](07-PE-SEC-Checkpoint-Guide.md) for complete criteria.
+# Optional per-epic security checkpoint
+"SEC, checkpoint de segurança para Epic 2 (Autenticação - manipula PII)"
+→ Quick 15-30 min review: OWASP Top 3, input validation, auth/authz, secrets
 
-**Summary:**
-- Epic handles sensitive data (PII, credentials, financial)
-- Epic introduces authentication/authorization logic
-- Epic 4+ (after MVP is stable)
-- Epic allows file uploads
+# Updates
+"SEC, processe FEEDBACK-008 sobre hardcoded secrets em database init"
+→ Documents multi-environment password strategy (ALTER USER migration)
 
-**What SEC Reviews (15-30 min):**
-1. ✅ **OWASP Top 3 Compliance**
-   - **Broken Access Control:** Authorization checks in place?
-   - **Cryptographic Failures:** Sensitive data encrypted? (at rest/transit)
-   - **Injection:** Parameterized queries? Input validation?
-
-2. ✅ **Input Validation**
-   - Value Objects validate input?
-   - DTOs have [Required], [MaxLength]?
-   - XSS prevention? (React auto-escapes)
-
-3. ✅ **Authentication & Authorization**
-   - JWT token validated?
-   - Domain-level authorization? (only owner can modify)
-   - Sensitive operations require re-auth?
-
-4. ✅ **Secrets Management**
-   - No hardcoded secrets?
-   - Environment variables used?
-   - .env in .gitignore?
-
-**Output:** Quick checklist (not full document), feedback to SE/DE/FE if issues found.
-
-**Example Invocation:**
-```
-"SEC, do a quick security checkpoint for Epic 2 (User Authentication)"
-"SEC, review security for Epic 4 (Payment Processing)"
-```
-
-### Example Invocation
-
-#### Complete Task
-
-**Discovery (1x - AFTER PE defines stack):**
-```
-"SEC, crie baseline de segurança (OWASP Top 3, LGPD mínimo, estratégia de auth)"
-→ Creates SEC-00-Security-Baseline.md
-→ OWASP Top 3: Broken Access Control, Cryptographic Failures, Injection
-→ LGPD: PII mapping, deletion strategy, privacy policy outline
-→ Auth: JWT strategy, domain-level authorization
-→ Tools: Compatible with PE stack (OWASP ZAP, Snyk, etc)
-
-"SEC, identifique principais ameaças por BC e defina mitigações"
-→ Basic threat identification per BC (not full STRIDE)
-→ Essential mitigations for MVP
-```
-
-**Iteration (OPTIONAL - Light Review only if needed):**
-```
-"SEC, faça checkpoint de segurança para épico 'Autenticação de Usuário' (Epic 2)"
-→ Quick 15-30 min review (not full document)
-→ Checks: OWASP Top 3 compliance, input validation, auth/authz, secrets management
-→ See: 07-PE-SEC-Checkpoint-Guide.md for criteria
-
-"SEC, revise segurança do épico 4 (manipula dados PII)"
-→ Targeted review based on Decision Matrix criteria (PII data handling)
-```
-
-#### Self-Review (Discovery only)
-```
-"SEC, revise SEC-00 verificando se OWASP Top 3 está coberto para todos os BCs"
-→ Validates Broken Access Control, Cryptographic Failures, Injection mitigations
-
-"SEC, valide se LGPD mínimo cobre dados pessoais identificados no sistema"
-→ Cross-references SDA BCs with PII data mapping
-→ Ensures deletion strategy and privacy policy are outlined
-```
-
-#### Process Feedback
-```
-"SEC, processe FEEDBACK-008 sobre hardcoded secrets em init script do database"
-→ Reviews security issue, validates proposed solution (ALTER USER migration)
-→ Documents multi-environment password strategy
-
-"SEC, analise FEEDBACK sobre falta de validação de input em Value Object Strike"
-→ Validates security issue, creates feedback for DE to fix
-```
-
-#### Specific Update
-```
 "SEC, adicione checklist de validação de input para Value Objects"
 → Updates SEC-00 with validation patterns for domain layer
-
-"SEC, documente estratégia de rotação de senhas para staging/production"
-→ Adds password rotation policy: quarterly (prod), semi-annual (staging)
-→ Aligns with LGPD Art. 46, SOC2, ISO 27001
 ```
 
-**Critical Note:** SEC executes AFTER PE (needs stack for tool selection).
+### Dependencies
+**Depends on:** SDA (BCs, UL for threats), PE (stack for tool selection) | **Blocks:** None (parallel with GM/QAE)
 
 ### Specification
 [35-SEC - Security Specialist.xml](../35-SEC%20-%20Security%20Specialist.xml)
@@ -580,294 +267,58 @@ Define **essential security baseline** - OWASP Top 3, LGPD minimum, auth strateg
 ## 25 - GM (GitHub Manager)
 
 ### Objective
-Integrate DDD workflow with GitHub (v1.0). **Issues created via GitHub form AFTER DE-01** (refined epic).
-
-### Version
-**1.0**
-
-**Philosophy:**
-- ✅ Automate HIGH ROI tasks (labels via script, CI/CD workflows)
-- ✅ Manual for LOW FREQUENCY tasks (milestones via UI, epic issues via GitHub form)
-- ✅ Prefer GitHub native features over custom scripts
+Integrate DDD workflow with GitHub: automate labels (script), CI/CD workflows, epic template, Git automation scripts - pragmatic v1.0.
 
 ### Responsibilities
+**Discovery (Day 3-4 - AFTER PE):**
+Create setup-labels.sh (from SDA BCs + epics), execute script (creates labels in GitHub), epic issue template (.github/ISSUE_TEMPLATE/10-epic.yml), CI/CD workflows (ci-backend, ci-frontend, security, cd-staging, cd-production customized from PE stack), Git workflow automation scripts (discovery-start/finish, epic-modeling-start/finish, epic-create, epic-issue-start/finish, epic-close), document setup in GM-00.
 
-#### **Discovery (1x - Day 3-4):**
-- ✅ **Create setup-labels.sh** in `03-github-manager/scripts/` (customized from SDA BCs and Epics)
-- ✅ **Execute script**: Create labels in GitHub (agents, BCs, epics, types, priority, status, phase)
-- ✅ **Create helper scripts**: `create-milestone.sh`, `create-epic-issue.sh` (for iteration phase)
-- ✅ **Create epic issue template**: `.github/ISSUE_TEMPLATE/10-epic.yml` (GitHub native form)
-- ✅ **Create CI/CD workflows** in `.github/workflows/` (customized from PE-00 stack):
-  - `ci-backend.yml` (build, test for backend)
-  - `ci-frontend.yml` (build, test for frontend)
-  - `security.yml` (CodeQL, secret scanning)
-  - `cd-staging.yml` (auto-deploy to staging) - **MANDATORY**
-  - `cd-production.yml` (manual deploy to production with approval) - **MANDATORY**
-  - `dependabot.yml` (dependency updates - optional)
-- ✅ **Document deployment strategy**: PE-00 integration (`.env` strategy, multi-server, remote deploy)
-- ✅ **Document pre-existing templates**: Issue/PR templates already exist in `.github/`
-- ❌ **DOES NOT create milestones** (created per epic during iteration - not all at once)
-- ❌ **DOES NOT create issues** (epics not refined yet - no DE-01)
-
-#### **Per Epic (Nx - Day 2):**
-- ✅ Read `DE-01-[EpicName]-Domain-Model.md`
-- ✅ Extract epic information:
-  - Epic number (from filename: DE-01-EPIC-01-*.md)
-  - Epic name and description
-  - Objectives and acceptance criteria
-  - BCs involved
-- ✅ **EXECUTE `create-milestone.sh` automatically:**
-  - Creates milestone: `M{number}: EPIC-{number} - {name from DE-01}`
-  - Sets due date: Today + 6 weeks
-  - Sets description: First paragraph from DE-01
-- ✅ **EXECUTE `create-epic-issue.sh` automatically:**
-  - Creates epic issue with base template
-  - Links to milestone created above
-  - Populates with basic structure
-- ✅ **Guide user to customize epic issue:**
-  - Edit issue to add complete DE-01 objectives
-  - Edit issue to add complete acceptance criteria
-  - Add BC labels (bc:*)
-  - Add any epic-specific details from DE-01
+**Per Epic (Day 2 - AFTER DE-01):**
+Read DE-01, extract epic info (number, name, BCs, objectives, acceptance criteria), execute epic-create.sh to create milestone + epic issue automatically populated from DE-01.
 
 ### When Executes
-- **Discovery (Day 3-4):** GitHub setup (labels script, CI/CD, epic template, helper scripts) - **AFTER PE defines stack**
-- **Iteration (Day 2):** Execute scripts to create milestone + epic issue **AFTER DE-01** is complete
+**Discovery:** GitHub setup (AFTER PE defines stack)
+**Per Epic:** Create milestone + epic issue (AFTER DE-01 complete)
 
-### Scope
-**Complete system** - traceability of all epics, CI/CD automation
+### Key Deliverables
+- **GM-00-GitHub-Setup.md** - Documents pragmatic setup (labels, CI/CD, templates)
+- **setup-labels.sh** - Creates labels (agents, BCs, epics, types, priority, status) in GitHub
+- **CI/CD workflows** - ci-backend, ci-frontend, security, cd-staging, cd-production (customized from PE stack)
+- **Epic template** - .github/ISSUE_TEMPLATE/10-epic.yml (GitHub native form)
+- **Git automation scripts** - discovery-start/finish, epic-create, epic-issue-start/finish, epic-close
 
-### Dependencies
-- **Depends on:**
-  - SDA (BCs for labels, epics for labels/template)
-  - **PE (stack for CI/CD configuration - CRITICAL)**
-  - DE (DE-01 for epic issue creation in iteration)
-
-### Deliverables
-
-#### Discovery (1x)
+### Example Invocations
 ```
-00-doc-ddd/07-github-management/
-└── GM-00-GitHub-Setup.md  (documents pragmatic setup)
+# Discovery
+"GM, configure GitHub (labels, CI/CD, epic template)"
+→ Creates setup-labels.sh from SDA BCs + epics, executes script (41 labels)
+→ Creates CI/CD workflows customized from PE stack
+→ Creates epic template (.github/ISSUE_TEMPLATE/10-epic.yml)
+→ Documents in GM-00-GitHub-Setup.md
 
-03-github-manager/scripts/
-├── setup-labels.sh          (executable - creates labels, ONE-TIME)
-├── create-milestone.sh      (executable - creates milestone per epic, ON-DEMAND)
-├── create-epic-issue.sh     (executable - creates epic issue per epic, ON-DEMAND)
-└── README.md                (documentation: scripts usage)
+# Per Epic - Milestone + Issues
+"GM, crie milestone e issues para EPIC-01 (lendo DE-01)"
+→ Executes epic-create.sh: reads DE-01, extracts BCs/objectives/criteria
+→ Creates milestone M1 + epic issue 100% populated from DE-01
+→ Creates 6 agent issues (DE, DBA, SE, UXD, FE, QAE) linked to M1
 
-.github/workflows/
-├── ci-backend.yml           (created - customized from PE-00)
-├── ci-frontend.yml          (created - customized from PE-00)
-├── security.yml             (created - languages from PE-00)
-├── cd-staging.yml           (created - auto-deploy, SSH setup) ← MANDATORY
-├── cd-production.yml        (created - manual approval, version input) ← MANDATORY
-└── dependabot.yml           (created - ecosystems from PE-00 - optional)
+# Git Workflow Automation (see 03-GIT-PATTERNS.md for complete documentation)
+"GM, inicie Discovery Foundation"
+→ Executes: discovery-start.sh (branch + PR + milestone)
 
-.github/ISSUE_TEMPLATE/
-├── 10-epic.yml              (created - GitHub native form for epics)
-└── (other templates pre-existing - NOT created by GM)
-
-.github/PULL_REQUEST_TEMPLATE.md  (pre-existing - NOT created by GM)
-```
-
-#### Per Epic (Nx)
-```
-Milestone M{number} created by GM via create-milestone.sh script
-Epic Issue created by GM via create-epic-issue.sh script
-User customizes issue with DE-01 complete details (1min)
-```
-
-### Example Invocation
-
-#### Discovery
-```
-"GM, configure GitHub for the project (Discovery)"
-```
-
-**What GM does (step-by-step):**
-
-1. **Read inputs:**
-   - `SDA-02-Context-Map.md` → Extract BCs (for labels)
-   - `SDA-01-Event-Storming.md` → Extract Epics (for labels)
-   - `PE-00-Environments-Setup.md` → Extract tech stack (for CI/CD)
-
-2. **Create setup-labels.sh** in `03-github-manager/`:
-   - Populated with:
-     - Agent labels (agent:SDA, agent:DE, etc.)
-     - BC labels (bc:strategy-planning, bc:market-data, etc.) **from SDA-02**
-     - Epic labels (epic:strategy-creation, epic:trade-execution, etc.) **from SDA-01**
-     - Type, Priority, Status, Phase labels
-   - `README.md` → Documentation (script + manual steps)
-
-3. **Execute script:**
-   ```bash
-   cd 03-github-manager
-   chmod +x setup-labels.sh
-   ./setup-labels.sh       # Creates 41 labels in GitHub (~10min saved)
-   ```
-
-4. **Create epic issue template:**
-   - `.github/ISSUE_TEMPLATE/10-epic.yml`
-   - GitHub native form with:
-     - Epic number, name, milestone dropdown
-     - Description, objectives, acceptance criteria (text areas)
-     - Deliverables checklist (checkboxes)
-     - Definition of Done (checkboxes)
-
-5. **Create CI/CD workflows** in `.github/workflows/`:
-   - `ci-backend.yml` → Customized from PE-00 stack
-   - `ci-frontend.yml` → Customized from PE-00 stack
-   - `security.yml` → Languages from PE-00
-   - `dependabot.yml` → Ecosystems from PE-00 (optional)
-
-6. **Document setup:**
-   - Create `GM-00-GitHub-Setup.md`:
-     - Section 1: Pre-existing templates (Issue/PR templates)
-     - Section 2: Created by GM (labels script, workflows, epic template)
-     - Section 3: Manual steps (milestones via UI, Dependabot enable)
-     - Section 4: Branch strategy (discipline-based, merge strategy)
-     - Section 5: Metrics and monitoring commands
-
-**Output:**
-- ✅ Labels created in GitHub via script (agents, BCs, epics, types, priority, status)
-- ✅ Epic issue template ready (GitHub form)
-- ✅ CI/CD workflows created and running
-- ✅ Manual steps documented (milestones, Dependabot)
-- ✅ GM-00-GitHub-Setup.md documenting pragmatic approach
-
----
-
-#### Iteration
-```
-"GM, create milestone and epic issue for EPIC-01 (Iteration)"
-```
-
-**What GM does (step-by-step):**
-
-1. **Read DE-01:**
-   - `DE-01-EPIC-01-Strategy-Creation-Domain-Model.md`
-   - Extract:
-     - Epic number: 01 (from filename)
-     - Epic name: Strategy Creation (from filename)
-     - **Bounded Contexts:** Strategy, MarketData (from DE-01 section)
-     - **Objectives:** List of business objectives (from DE-01)
-     - **Acceptance Criteria:** List of criteria (from DE-01)
-
-2. **Execute epic-create.sh automatically with extracted data:**
-   ```bash
-   ./03-github-manager/scripts/epic-create.sh \
-     1 \
-     "Criar e Visualizar Estratégia" \
-     "2026-02-28" \
-     --bcs "Strategy,MarketData" \
-     --objectives "Permitir criação de estratégias|Calcular P&L automaticamente" \
-     --criteria "Usuário pode criar estratégia|P&L é exibido em tempo real"
-   ```
-
-3. **Script creates everything automatically:**
-   - ✅ Milestone M1 with description from DE-01
-   - ✅ Epic issue **fully populated:**
-     - Title: `[EPIC-01] Criar e Visualizar Estratégia`
-     - Bounded Contexts listed
-     - Objectives numbered (1, 2, 3...)
-     - Acceptance criteria with checkboxes
-     - Labels: `epic`, `priority-high`, `bc:strategy`, `bc:market-data`
-   - ✅ 6 Agent issues created (DE, DBA, SE, UXD, FE, QAE)
-   - ✅ All issues linked to Milestone M1
-
-**Output:**
-- ✅ Milestone M1 created automatically
-- ✅ Epic issue **100% populated** from DE-01 (no manual editing needed!)
-- ✅ 6 agent issues created
-- ✅ BC labels applied automatically
-- ✅ Total time: **40s** (vs 3min manual)
-- ✅ Traceability: Issue → Milestone → DE-01 → Code → Tests
-
-**Why fully automated:**
-- **Faster:** GM reads DE-01 and creates everything populated (40s vs 3min)
-- **Consistent:** Always same structure, always complete
-- **Zero manual work:** No need to edit issue after creation
-- **Accurate:** Data comes directly from DE-01 (no copy-paste errors)
-
----
-
-#### Git Workflow Automation
-
-GM also executes **Git workflow automation scripts** to streamline branch management, PRs, and releases.
-
-**Available Scripts:**
-
-```bash
-# DISCOVERY FOUNDATION
-discovery-start.sh              # Inicia Discovery (branch + PR + milestone)
-discovery-finish.sh [--merge] [--release]  # Finaliza Discovery
-
-# ÉPICO - Modelagem (DE)
-epic-modeling-start.sh <N>      # DE inicia modelagem (branch DE-01)
-epic-modeling-finish.sh <N>     # DE finaliza modelagem (merge DE-01)
-
-# ÉPICO - GitHub Setup (GM)
-epic-create.sh <N> "<name>" "<due-date>"  # Cria milestone + issues
-
-# ÉPICO - Issues Individuais
-epic-issue-start.sh <issue-number>    # Inicia trabalho em issue (branch + PR)
-epic-issue-finish.sh <issue-number> [--merge]  # Finaliza issue
-
-# ÉPICO - Encerramento
-epic-close.sh <N> [--release <version>]  # Fecha milestone + release
-```
-
-**Example Invocations:**
-
-```
-"GM, inicie a Discovery Foundation"
-→ Executes: discovery-start.sh
-
-"GM, finalize a Discovery Foundation e faça o merge"
-→ Executes: discovery-finish.sh --merge
-
-"GM, crie milestone e issues para EPIC-01"
-→ Executes: epic-create.sh 1 "Criar Estratégia" "2026-02-28"
-
-"DBA, revise o schema do EPIC-01"
-→ GM executes: epic-issue-start.sh 7 (creates branch + PR for issue #7)
-
-"GM, finalize a issue #7"
+"GM, finalize issue #7 e faça merge"
 → Executes: epic-issue-finish.sh 7 --merge
 
-"GM, feche o EPIC-01 e crie release v1.0.0"
+"GM, feche EPIC-01 e crie release v1.0.0"
 → Executes: epic-close.sh 1 --release v1.0.0
+
+# Updates
+"GM, processe FEEDBACK-005 sobre alinhamento com PE multi-env strategy"
+→ Updates GM-00 deployment section, aligns scripts with .env strategy
 ```
 
-**Complete Documentation:**
-- [03-GIT-PATTERNS.md#scripts-executáveis-automação-completa](03-GIT-PATTERNS.md#scripts-executáveis-automação-completa)
-
----
-
-#### Self-Review (before automating)
-```
-"GM, revise setup-labels.sh verificando se todos os BCs do SDA-02 estão incluídos"
-→ Cross-references SDA-02-Context-Map.md with label script
-→ Ensures no BC is missing
-
-"GM, valide se CI/CD workflows estão alinhados com stack do PE-00"
-→ Checks ci-backend.yml matches PE stack (.NET)
-→ Checks ci-frontend.yml matches PE stack (React)
-→ Validates security.yml has correct languages
-```
-
-#### Process Feedback
-```
-"GM, processe FEEDBACK-005 sobre alinhamento com mudanças do PE"
-→ Updates GM-00 deployment strategy section
-→ Aligns epic-deploy.sh with .env multi-environment strategy
-
-"GM, analise FEEDBACK sobre comandos docker-compose sem --env-file explícito"
-→ Updates scripts to use --env-file .env.dev (or staging/production)
-```
-
----
+### Dependencies
+**Depends on:** SDA (BCs, epics), PE (stack for CI/CD), DE (DE-01 for epic creation) | **Blocks:** None
 
 ### Specification
 [25-GM - GitHub Manager.xml](../25-GM%20-%20GitHub%20Manager.xml)
@@ -877,74 +328,43 @@ epic-close.sh <N> [--release <version>]  # Fecha milestone + release
 ## 15 - DE (Domain Engineer)
 
 ### Objective
-Model tactical domain PER EPIC (does NOT implement code).
+Model tactical domain PER EPIC - Aggregates, Entities, Value Objects (does NOT implement code).
 
 ### Responsibilities
-- Detailed tactical modeling PER EPIC (Aggregates, Entities, Value Objects)
-- Domain Events and business rules
-- Use Cases / Application Services (specification)
-- Repository interfaces (contracts)
-- Integration contracts between epic BCs
+**Per Epic (Nx):** Detailed tactical modeling (Aggregates, Entities, Value Objects, Domain Events), business rules, Use Cases (specifications), Repository interfaces (contracts), integration contracts between epic BCs.
 
 ### When Executes
-- **Per epic (Nx):** DE-01-[EpicName]-Domain-Model ONLY
+**Per epic (Nx):** DE-01-[EpicName]-Domain-Model ONLY (Iteration phase)
 
-### Scope
-- **Iteration ONLY:** Multiple epic BCs (detailed modeling)
-- UXD, PE, SEC work with SDA outputs (BCs, Context Map, UL)
+### Key Deliverables
+- **DE-01-[EpicName]-Domain-Model.md** - Tactical modeling per epic
 
-### Deliverables
+### Example Invocations
 ```
-00-doc-ddd/04-tactical-design/
-└── DE-01-[EpicName]-Domain-Model.md  (Per epic - Nx)
-```
-
-### Example Invocation
-
-#### Complete Task (Iteration - Per Epic)
-```
+# Per Epic
 "DE, modele épico 'Criar Estratégia Bull Call Spread' nos BCs Strategy + Market Data"
 → Creates DE-01-EPIC-01-Strategy-Domain-Model.md
 → Tactical modeling: Aggregates, Entities, Value Objects, Domain Events
 → Use Cases with specifications, Repository interfaces
 
 "DE, crie modelo de domínio para épico 'Calcular Greeks em Tempo Real'"
-→ Epic 2: Risk BC + Market Data BC
-→ Detailed invariants, business rules, integration contracts
-```
+→ Epic 2: Risk BC + Market Data BC, invariants, business rules, integration contracts
 
-#### Self-Review (before DBA/SE consume)
-```
+# Review & Updates
 "DE, revise DE-01-Strategy verificando completude dos Aggregates"
-→ Validates all entities, value objects, domain events documented
-→ Checks invariants are explicit and testable
+→ Validates all entities, value objects, domain events documented, checks testable invariants
 
-"DE, valide se Use Cases têm especificações completas (pre-conditions, post-conditions)"
-→ Ensures SE has clear implementation guide
-→ Checks repository interfaces are defined
-```
-
-#### Process Feedback
-```
 "DE, processe FEEDBACK-003 do QAE sobre Strategy aceitar strike negativo"
 → Analyzes bug report, updates domain model with invariant
-→ Adds validation to aggregate or value object
 
-"DE, analise FEEDBACK-001 do SE sobre evento StrategyValidated faltante"
-→ Reviews feedback, creates feedback for SDA to add event to Event Storming
-→ Updates DE-01 with StrategyValidated domain event
-```
-
-#### Specific Update
-```
 "DE, adicione Use Case 'Validar Estratégia' ao DE-01-Strategy-Domain-Model"
 → Adds new use case with specifications
-
-"DE, atualize aggregate Strategy com invariante MaxLegs = 4"
-→ Small update based on business rule clarification
 ```
 
 **Note:** DE executes ONLY in Iteration (per epic). For strategic changes, use SDA.
+
+### Dependencies
+**Depends on:** SDA (BCs, Context Map, UL) | **Consumed by:** DBA (schema), SE (implementation), GM (epic creation)
 
 ### Specification
 [15-DE - Domain Engineer.xml](../15-DE%20-%20Domain%20Engineer.xml)
@@ -954,44 +374,22 @@ Model tactical domain PER EPIC (does NOT implement code).
 ## 50 - DBA (Database Administrator)
 
 ### Objective
-Validate and optimize database schema created by DE.
+Validate and optimize database schema created by DE - indexing, performance, multi-environment password strategy.
 
 ### Responsibilities
-- **Validation** of DE-created schema
-- Indexing strategy
-- Query optimization
-- Performance review
-- Guidance for DE to adjust schema
-- **Multi-environment password strategy** (dev simple, staging/prod strong)
-- **Security best practices** (least privilege, password rotation, compliance)
+**Per Epic (AFTER DE):** Validate DE-01 schema, indexing strategy, query optimization, performance review, guidance for DE adjustments, multi-environment password strategy (dev simple, staging/prod strong via ALTER USER), security best practices (least privilege, rotation, LGPD/SOC2).
 
 ### When Executes
-**Per epic** - after DE creates schema
+**Per Epic:** After DE creates schema
 
-### Scope
-**Multiple epic BCs** - validates coordinated schema between BCs
+### Key Deliverables
+- **README.md** - Multi-environment password strategy, security best practices
+- **DBA-01-[EpicName]-Schema-Review.md** - Per epic validation
+- **Migrations** - 001_initial_schema.sql (dev passwords), 002_update_production_passwords.sql (ALTER USER)
 
-### Deliverables
+### Example Invocations
 ```
-00-doc-ddd/05-database-design/
-├── README.md (multi-environment password strategy, security best practices)
-├── DBA-01-[EpicName]-Schema-Review.md (per epic)
-└── migrations/
-    ├── 001_initial_schema.sql (init scripts - dev default passwords)
-    └── 002_update_production_passwords.sql (ALTER USER for staging/prod)
-```
-
-**Security Notes:**
-- **NEVER hardcode passwords in Git** (even in SQL scripts)
-- **Development:** Simple passwords OK (e.g., `dev_password_123`)
-- **Staging/Production:** Strong passwords via ALTER USER migration
-- **Password Rotation:** Quarterly (production), semi-annual (staging)
-- **Compliance:** LGPD Art. 46, SOC2, ISO 27001 awareness
-
-### Example Invocation
-
-#### Complete Task (Iteration - Per Epic, after DE)
-```
+# Per Epic (AFTER DE)
 "DBA, revise schema para épico 'Criar Estratégia'"
 → Creates DBA-01-EPIC-01-Schema-Review.md
 → Validates DE-01 schema, suggests indexes, checks FK relationships
@@ -999,44 +397,24 @@ Validate and optimize database schema created by DE.
 "DBA, crie migration para épico 'Calculate Greeks' com índices de performance"
 → Creates migration file with indexes for query optimization
 → Validates schema supports DE-01 repository interfaces
-```
 
-#### Self-Review (before SE consumes)
-```
-"DBA, revise índices sugeridos para performance de query de listagem"
-→ Validates indexes match expected query patterns
-→ Checks for missing indexes on FK columns
+# Security & Performance
+"DBA, processe FEEDBACK-006 sobre senhas hardcoded no Git"
+→ Documents multi-environment password strategy (dev simple, staging/prod strong)
+→ Creates ALTER USER migration for staging/production (LGPD/SOC2)
 
-"DBA, valide se estratégia de senha multi-ambiente está documentada"
-→ Ensures README.md has password strategy (dev simple, staging/prod strong)
-→ Checks migration 002 (ALTER USER) is ready for staging/prod
-```
-
-#### Process Feedback
-```
 "DBA, processe FEEDBACK-007 sobre performance de query com >3 JOINs"
 → Analyzes slow query, suggests composite index or query refactoring
 
-"DBA, analise FEEDBACK-006 sobre senhas hardcoded no Git"
-→ Documents multi-environment password strategy
-→ Creates ALTER USER migration for staging/production
-→ Aligns with LGPD/SOC2 compliance
-```
-
-#### Specific Update
-```
+# Updates
 "DBA, adicione índice em Strategy.UserId para query de listagem"
 → Small performance optimization based on monitoring
-
-"DBA, atualize migration 002 com rotação de senha para produção"
-→ Adds quarterly password rotation for production user
 ```
 
-**Security Notes:**
-- NEVER hardcode passwords in Git (even in SQL scripts)
-- Development: Simple passwords OK (e.g., dev_password_123)
-- Staging/Production: Strong passwords via ALTER USER migration
-- Password Rotation: Quarterly (production), semi-annual (staging)
+**Security:** NEVER hardcode passwords in Git. Dev: simple OK. Staging/Prod: strong via ALTER USER. Rotation: quarterly (prod), semi-annual (staging).
+
+### Dependencies
+**Depends on:** DE (schema), PE (database tech) | **Consumed by:** SE (migrations for implementation)
 
 ### Specification
 [50-DBA - Database Administrator.xml](../50-DBA%20-%20Database%20Administrator.xml)
@@ -1046,78 +424,48 @@ Validate and optimize database schema created by DE.
 ## 45 - SE (Software Engineer)
 
 ### Objective
-Implement complete backend based on DE domain model.
+Implement complete backend based on DE domain model - Domain, Application, Infrastructure, REST APIs.
 
 ### Responsibilities
-- Domain layer implementation (DE-01 Aggregates)
-- Application layer implementation (DE-01 Use Cases)
-- Infrastructure layer implementation (Repositories, EF Migrations)
-- REST/GraphQL APIs (Controllers, DTOs, OpenAPI)
-- Basic unit tests (≥70% coverage domain layer)
+**Per Epic (AFTER DE + DBA):** Domain layer (DE-01 Aggregates), Application layer (Use Cases), Infrastructure layer (Repositories, EF Migrations), REST/GraphQL APIs (Controllers, DTOs, OpenAPI), basic unit tests (≥70% coverage domain layer).
 
 ### When Executes
-**Per epic** - after DE creates DE-01-[EpicName]-Domain-Model.md
+**Per epic** - after DE creates DE-01 and DBA validates schema
 
-### Scope
-**Multiple epic BCs** - completely implements DE-specified model
+### Key Deliverables
+- **02-backend/src/Domain/** - Aggregates, Entities, Value Objects
+- **02-backend/src/Application/** - Use Cases, Commands, Queries, Handlers
+- **02-backend/src/Infrastructure/** - Repositories, EF Migrations, DB Context
+- **02-backend/src/Api/** - REST Controllers, DTOs, OpenAPI/Swagger
+- **02-backend/tests/unit/** - Domain layer tests ≥70% coverage
 
-### Deliverables
+### Example Invocations
 ```
-02-backend/
-├── src/Domain/           (Aggregates, Entities, Value Objects)
-├── src/Application/      (Use Cases, Commands, Queries, Handlers)
-├── src/Infrastructure/   (Repositories, EF Migrations, DB Context)
-├── src/Api/              (REST Controllers, DTOs, OpenAPI/Swagger)
-└── tests/unit/           (Domain layer tests ≥70% coverage)
-```
-
-### Example Invocation
-
-#### Complete Task (Iteration - Per Epic, after DE + DBA)
-```
+# Per Epic (AFTER DE + DBA)
 "SE, implemente domain layer para épico 'Criar Estratégia'"
 → Implements Aggregates, Entities, Value Objects from DE-01
-→ Domain layer: 02-backend/src/Domain/
-→ Unit tests ≥70% coverage domain layer
+→ Domain layer: 02-backend/src/Domain/, Unit tests ≥70% coverage
 
 "SE, crie APIs REST para épico 'Calcular Greeks em Tempo Real'"
-→ Implements Application layer (Use Cases, Commands, Queries, Handlers)
+→ Application layer (Use Cases, Commands, Queries, Handlers)
 → Infrastructure layer (Repositories, EF Migrations, DB Context)
 → API layer (Controllers, DTOs, OpenAPI/Swagger)
-```
 
-#### Self-Review (before QAE tests)
-```
+# Review & Updates
 "SE, revise cobertura de testes unitários do domain layer (target ≥70%)"
-→ Validates domain logic has comprehensive tests
-→ Focuses on aggregates, value objects, domain events
+→ Validates domain logic has comprehensive tests (aggregates, value objects, events)
 
-"SE, valide se APIs REST seguem padrões do 06-API-Standards.md"
-→ Checks DTOs, HTTP status codes, error handling, OpenAPI documentation
-```
-
-#### Process Feedback
-```
 "SE, processe FEEDBACK-003 do QAE sobre aggregate Strategy aceitar strike negativo"
-→ Fixes validation bug in domain layer
-→ Adds guard clause to Strategy.AddLeg()
-→ Updates unit tests with boundary conditions
-
-"SE, analise FEEDBACK do PE sobre N+1 query em listagem de estratégias"
-→ Fixes query with .Include() for eager loading
-→ Adds integration test to prevent regression
-```
-
-#### Specific Update
-```
-"SE, adicione validação de negócio em Use Case 'Criar Estratégia'"
-→ Small business rule addition to application layer
+→ Fixes validation bug in domain layer, adds guard clause, updates unit tests
 
 "SE, crie endpoint GET /strategies/{id}/greeks para cálculo de Greeks"
 → New API endpoint for Epic 2
 ```
 
 **Critical Note:** SE implements AFTER DE (domain model) and DBA (schema validation).
+
+### Dependencies
+**Depends on:** DE (domain model), DBA (schema validation), PE (tech stack) | **Consumed by:** FE (APIs), QAE (tests)
 
 ### Specification
 [45-SE - Software Engineer.xml](../45-SE%20-%20Software%20Engineer.xml)
@@ -1127,80 +475,50 @@ Implement complete backend based on DE domain model.
 ## 55 - FE (Frontend Engineer)
 
 ### Objective
-Implement user interfaces following UXD specs.
+Implement user interfaces following UXD specs - UI components, state management, API integration, accessibility.
 
 ### Responsibilities
-- UI components implementation
-- **Frontend skeleton** (project structure)
-- State management
-- API integration (backend)
-- Responsiveness and accessibility
-- **Basic component unit tests**
+**Per Epic (AFTER SE + UXD):** UI components implementation, frontend skeleton (project structure), state management (Context/Redux), API integration (SE backend), responsiveness and accessibility (WCAG AA), basic component unit tests.
 
 ### When Executes
-**Per epic** - iterative, parallel to DE
+**Per epic** - after SE (APIs) and UXD (wireframes), works in parallel with SE on Days 3-6
 
-### Scope
-**Epic cross-cutting features** - UI integrating multiple BCs
+### Key Deliverables
+- **01-frontend/src/components/** - Reusable UI components
+- **01-frontend/src/pages/** - Page-level components
+- **01-frontend/src/services/** - API integration layer
+- **01-frontend/tests/** - Component unit tests
 
-### Deliverables
+### Example Invocations
 ```
-01-frontend/
-├── src/components/
-├── src/pages/
-├── src/services/
-└── tests/
-```
-
-### Example Invocation
-
-#### Complete Task (Iteration - Per Epic, after SE + UXD)
-```
+# Per Epic (AFTER SE + UXD)
 "FE, implemente UI para épico 'Criar Estratégia' usando wireframes UXD-01"
 → Implements components based on UXD-01-EPIC-01-Wireframes.md
 → Integrates with SE APIs (POST /strategies, GET /market-data)
-→ State management (React Context or Redux)
-→ Basic component unit tests
+→ State management (React Context or Redux), basic component unit tests
 
 "FE, crie componente Greeks Visualization para Dashboard de P&L"
-→ Epic 2: Real-time Greeks display
-→ Chart library (Recharts, Chart.js)
+→ Epic 2: Real-time Greeks display, Chart library (Recharts, Chart.js)
 → WebSocket integration for real-time updates
-```
 
-#### Self-Review (before QAE E2E tests)
-```
+# Review & Updates
 "FE, revise componentes do épico 1 verificando consistência com UXD-00 Design Foundations"
-→ Validates colors, typography, spacing match Design Foundations
-→ Checks component naming follows PascalCase convention
+→ Validates colors, typography, spacing, checks PascalCase naming
 
 "FE, valide acessibilidade dos componentes (WCAG AA, screen readers)"
-→ Checks color contrast, keyboard navigation, ARIA labels
-→ Ensures forms have proper labels and error messages
-```
+→ Checks color contrast, keyboard navigation, ARIA labels, form labels and errors
 
-#### Process Feedback
-```
 "FE, processe FEEDBACK-002 do UXD sobre comportamento do botão Adicionar Perna"
-→ Implements inline leg addition (not nested modal)
-→ Adds limit of 4 legs with counter (2/4)
-→ Real-time validation with visual indicators
+→ Implements inline leg addition (not nested modal), adds limit of 4 legs with counter
 
-"FE, analise FEEDBACK do QAE sobre falha no teste E2E de criação de estratégia"
-→ Fixes timing issue in form submission
-→ Adds loading state to button
-```
-
-#### Specific Update
-```
 "FE, adicione loading spinner ao modal Criar Estratégia durante submit"
 → UX improvement for async operation
-
-"FE, atualize componente Leg Card com botão de remoção {X}"
-→ Small UI iteration based on user feedback
 ```
 
 **Note:** FE implements AFTER SE (APIs) and UXD (wireframes). Works in parallel with SE on Days 3-6.
+
+### Dependencies
+**Depends on:** SE (APIs), UXD (wireframes), PE (tech stack) | **Consumed by:** QAE (E2E tests)
 
 ### Specification
 [55-FE - Frontend Engineer.xml](../55-FE%20-%20Frontend%20Engineer.xml)
@@ -1209,96 +527,32 @@ Implement user interfaces following UXD specs.
 
 ## 🔄 Agent Interactions
 
-### Discovery Phase (SDA → [UXD + PE] → [QAE + SEC + GM])
-```
-Day 1-2: SDA
-  - Event Storming
-  - Context Map
-  - Ubiquitous Language
-  - Prioritized epics
-    ↓
-Day 2-3: [UXD + PE] in PARALLEL (Independent Foundations)
+### Discovery Phase (Days 1-4)
+**Day 1-2:** SDA (Event Storming, Context Map, Ubiquitous Language, prioritized epics)
 
-  UXD: UXD-00-Design-Foundations (colors, typography, base components)
-       - Consumes: BCs, Context Map (from SDA)
-       - ✅ Independent of tech stack
+**Day 2-3 (PARALLEL):** UXD (Design Foundations - independent of tech stack) + PE (Environments Setup - DEFINES tech stack)
 
-  PE: PE-00-Environments-Setup (Docker Compose, scripts)
-      - Consumes: BCs (from SDA) to estimate environments
-      - ✅ DEFINES tech stack (Backend, Frontend, Database)
-    ↓
-Day 3-4: [QAE + SEC + GM] in PARALLEL (Depend on PE Stack)
+**Day 3-4 (PARALLEL, AFTER PE):** QAE (Test Strategy - tools from PE stack) + SEC (Security Baseline - tools from PE stack) + GM (GitHub Setup - CI/CD from PE stack)
 
-  QAE: QAE-00-Test-Strategy (tools, coverage, criteria)
-       - Consumes: BCs (from SDA) to define test strategy
-       - Consumes: PE stack to choose test tools (xUnit vs Jest, etc)
-       - ⚠️ DEPENDS on PE stack
+**Critical:** PE must execute BEFORE QAE, SEC, GM because it defines the tech stack.
 
-  SEC: SEC-00-Security-Baseline (OWASP Top 3, LGPD, auth strategy)
-       - Consumes: BCs, UL (from SDA) to identify threats
-       - Consumes: PE stack for compatible security tools
-       - ⚠️ DEPENDS on PE stack
+### Iteration Phase (Days 1-10 per epic)
+**Day 1-2:** DE (DE-01-[EpicName]-Domain-Model)
 
-  GM: GM-00-GitHub-Setup (labels, CI/CD, templates)
-      - Consumes: PE stack definition for CI/CD configuration
-      - ❌ DOES NOT create issues (epics not refined)
-      - ⚠️ DEPENDS on PE stack
-```
+**Day 2:** GM (reads DE-01, creates milestone + epic issue)
 
-### Iteration Phase (DE → GM → DBA → [SE + UXD] → FE → QAE → DEPLOY)
-```
-Day 1-2: DE
-  - DE-01-[EpicName]-Domain-Model
-    ↓
-Day 2: GM
-  - Reads DE-01
-  - Executes create-milestone.sh (milestone M{N} created)
-  - Executes create-epic-issue.sh (epic issue created with base template)
-  - User customizes issue with DE-01 details (1min)
-    ↓
-Day 2-3: DBA
-  - Validates DE-01 schema
-  - Feedback to DE if needed
-    ↓
-Day 3-6: [SE + UXD] in PARALLEL
+**Day 2-3:** DBA (validates DE-01 schema, feedback to DE if needed)
 
-  SE: Implements backend
-      ├─→ Domain layer (DE-01 Aggregates)
-      ├─→ Application layer (DE-01 Use Cases)
-      ├─→ Infrastructure layer (Repositories, Migrations)
-      ├─→ API layer (REST Controllers)
-      └─→ Unit tests (≥70% coverage domain)
+**Day 3-6 (PARALLEL):** SE (implements backend: Domain, Application, Infrastructure, API, unit tests ≥70%) + UXD (UXD-01-[EpicName]-Wireframes for FE)
 
-  UXD: UXD-01-[EpicName]-Wireframes
-       - Epic-specific wireframes
-       - FE receives ready wireframes on Day 7
-    ↓
-Day 7-9: FE
-  - Implements UI using UXD-01 wireframes
-  - Integrates with SE APIs
-    ↓
-Day 10: QAE (QUALITY GATE)
-  - Integration tests (SE APIs)
-  - E2E tests (user journeys)
-  - Regression tests (previous epics)
-  - Smoke test
-  - ✅ Tests pass → APPROVE DEPLOY
-  - ❌ Tests fail → BLOCK DEPLOY (return to SE/FE)
-    ↓
-DEPLOY (only if QAE approved)
-```
+**Day 7-9:** FE (implements UI using UXD-01, integrates with SE APIs)
+
+**Day 10 (QUALITY GATE):** QAE (integration + E2E + regression + smoke tests) → ✅ Approve deploy OR ❌ Block deploy
+
+**DEPLOY:** Only if QAE approved
 
 ### Feedback Loops
-```
-Any agent can create FEEDBACK for another:
-- SE → DE (ambiguous invariant in DE-01)
-- FE → UXD (inconsistent wireframe in UXD-01)
-- QAE → SE (failing integration test)
-- QAE → FE (failing E2E test)
-- DBA → DE (schema with performance issue)
-- GM → DE (unclear acceptance criteria)
-- etc.
-```
+Any agent can create FEEDBACK for another: SE → DE (ambiguous invariant), FE → UXD (inconsistent wireframe), QAE → SE/FE (failing tests), DBA → DE (schema issues), GM → DE (unclear criteria), etc.
 
 ---
 
