@@ -573,7 +573,347 @@ gh issue view [ISSUE_NUMBER] --repo [OWNER]/[REPO]
 3. **notify**
    - Slack/Discord/Email notification (optional)
 
-**Status:** ⚠️ **Requires customization** (deployment target from PE-00)  
+**Status:** ⚠️ **Requires customization** (deployment target from PE-00)
+
+---
+
+## 🚀 Deployment Strategy (PE-00 Integration)
+
+This section documents the **deployment strategy** that integrates with [PE-00-Environments-Setup.md](../00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md).
+
+### Multi-Environment Architecture
+
+**Nomenclature from PE-00:**
+- **Development:** Local docker-compose (`.env.dev` committed)
+- **Staging:** Remote server `[project]-stage` (`.env.staging` NOT committed)
+- **Production:** Remote server `[project]-prod` (`.env.production` NOT committed)
+
+### .env Files Strategy
+
+**Principe:** `.env` files contain environment-specific configuration. Development uses safe defaults (committed to Git), staging/production use real secrets (created on server, NEVER committed).
+
+| Environment | File | Git Status | Location | Secrets Level |
+|-------------|------|-----------|----------|---------------|
+| **Development** | `.env.dev` | ✅ Committed | Repository root | Safe (dev passwords OK) |
+| **Staging** | `.env.staging` | ❌ NOT committed | Server (`/home/[project]_app/[project]/.env.staging`) | Real secrets (16+ chars) |
+| **Production** | `.env.production` | ❌ NOT committed | Server (`/home/[project]_app/[project]/.env.production`) | Strong secrets (20+ chars) |
+
+**Required Variables (from PE-00):**
+
+```bash
+# Domain configuration
+DOMAIN=localhost                    # dev
+DOMAIN=staging.example.com          # staging
+DOMAIN=example.com                  # production
+
+# Database credentials (per environment)
+DB_APP_PASSWORD=dev_password_123    # dev (simple OK)
+DB_APP_PASSWORD=[STRONG_PASSWORD]   # staging (16+ chars)
+DB_APP_PASSWORD=[VERY_STRONG_PWD]   # production (20+ chars)
+
+# Let's Encrypt email (staging/production only)
+ACME_EMAIL=admin@example.com
+
+# Traefik Dashboard IP Whitelist (production only)
+YOUR_IP_ADDRESS=203.0.113.0         # Change to YOUR public IP
+```
+
+### Multi-Server Remote Deployment
+
+**PE-00 Deploy Script Pattern:**
+- **Development:** Local deployment (`docker-compose up`)
+- **Staging:** Remote deployment via SSH/SCP to `[project]-stage` server
+- **Production:** Remote deployment via SSH/SCP to `[project]-prod` server
+
+**Server Prerequisites (from PE-00):**
+1. ✅ Server setup complete (8-step process documented in PE-00)
+2. ✅ Hostname configured: `[project]-stage` or `[project]-prod`
+3. ✅ UFW firewall (ports 22, 80, 443)
+4. ✅ fail2ban configured (SSH protection)
+5. ✅ Dedicated user `[project]_app` with SSH key access
+6. ✅ Docker Engine installed
+7. ✅ NTP time synchronization (chrony)
+8. ✅ `.env.staging` or `.env.production` created on server
+
+**Remote Deployment Flow (from PE-00):**
+
+```
+┌─────────────────┐
+│  GitHub Actions │
+│  (CI/CD Runner) │
+└────────┬────────┘
+         │
+         │ 1. check_ssh_connection()
+         ├──────────────────────────────┐
+         │                              ▼
+         │                     ┌─────────────────┐
+         │                     │  Remote Server  │
+         │                     │  [project]-stage│
+         │                     └─────────────────┘
+         │
+         │ 2. SCP files (docker-compose.yml, configs/)
+         ├──────────────────────────────▶
+         │
+         │ 3. SSH: docker-compose up -d
+         ├──────────────────────────────▶
+         │
+         │ 4. remote_health_check() (HTTPS with retry 30x5s)
+         ├──────────────────────────────▶
+         │                              │
+         │ 5. log_deployment_history()  │
+         ◀──────────────────────────────┘
+```
+
+**Deploy Script Commands (from PE-00):**
+
+```bash
+# Development (local)
+./deploy.sh development
+
+# Staging (remote SSH/SCP to [project]-stage)
+./deploy.sh staging latest
+
+# Production (remote SSH/SCP to [project]-prod)
+./deploy.sh production v1.2.3
+```
+
+**For full deploy.sh implementation, see [PE-00-Environments-Setup.md - Remote Deployment Architecture](../00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md#-remote-deployment-architecture).**
+
+---
+
+### CD Pipelines (GitHub Actions)
+
+This section documents the **Continuous Deployment (CD) pipelines** that automate deployments to staging and production environments.
+
+**Philosophy:**
+- **Staging:** Auto-deploy on push to `main` (fast feedback, safe to fail)
+- **Production:** Manual workflow_dispatch with approval (controlled, auditable)
+
+#### CD Staging Pipeline (Auto-Deploy)
+
+**Arquivo:** [.github/workflows/cd-staging.yml](.github/workflows/cd-staging.yml)
+
+**Characteristics:**
+- ✅ **Automatic:** Triggered on every push to `main`
+- ✅ **Fast feedback:** Deploy immediately after merge
+- ✅ **Safe to fail:** Staging is non-critical environment
+- ✅ **Health checks:** HTTPS check with retry (30x5s)
+- ✅ **Rollback:** Manual via `./deploy.sh staging <previous-version>`
+
+**Workflow Structure:**
+
+```yaml
+name: CD Staging (Auto-Deploy)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy-staging:
+    runs-on: ubuntu-latest
+    environment: staging
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY_STAGING }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Deploy to Staging
+        run: |
+          chmod +x ./deploy.sh
+          ./deploy.sh staging latest
+
+      - name: Verify Deployment
+        run: |
+          curl -f https://staging.${{ secrets.DOMAIN }}/health || exit 1
+```
+
+**GitHub Secrets Required:**
+- `SSH_PRIVATE_KEY_STAGING` - Private key to connect to staging server
+- `SSH_KNOWN_HOSTS` - Known hosts file to prevent MITM attacks
+- `DOMAIN` - Your domain (e.g., `example.com`)
+
+**Deploy Target:** `[project]_app@[project]-stage` (from PE-00 server setup)
+
+---
+
+#### CD Production Pipeline (Manual Approval)
+
+**Arquivo:** [.github/workflows/cd-production.yml](.github/workflows/cd-production.yml)
+
+**Characteristics:**
+- ✅ **Manual trigger:** workflow_dispatch with version input
+- ✅ **Approval required:** GitHub environment protection (production)
+- ✅ **Version control:** Deploys specific version (e.g., `v1.2.3`)
+- ✅ **Audit trail:** All deployments logged in GitHub Actions history
+- ✅ **Health checks:** HTTPS check with retry (30x5s)
+- ✅ **Rollback:** Manual via `./deploy.sh production <previous-version>`
+
+**Workflow Structure:**
+
+```yaml
+name: CD Production (Manual Approval)
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to deploy (e.g., v1.2.3, latest)'
+        required: true
+        default: 'latest'
+
+jobs:
+  deploy-production:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://${{ secrets.DOMAIN }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY_PRODUCTION }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Deploy to Production
+        run: |
+          chmod +x ./deploy.sh
+          ./deploy.sh production ${{ github.event.inputs.version }}
+
+      - name: Verify Deployment
+        run: |
+          curl -f https://${{ secrets.DOMAIN }}/health || exit 1
+
+      - name: Create Deployment Tag
+        if: github.event.inputs.version != 'latest'
+        run: |
+          git tag -a deployed-${{ github.event.inputs.version }} \
+            -m "Deployed ${{ github.event.inputs.version }} to production"
+          git push origin deployed-${{ github.event.inputs.version }}
+```
+
+**GitHub Secrets Required:**
+- `SSH_PRIVATE_KEY_PRODUCTION` - Private key to connect to production server
+- `SSH_KNOWN_HOSTS` - Known hosts file to prevent MITM attacks
+- `DOMAIN` - Your domain (e.g., `example.com`)
+
+**Deploy Target:** `[project]_app@[project]-prod` (from PE-00 server setup)
+
+**Environment Protection Rules (GitHub Settings):**
+1. Go to: Settings → Environments → production
+2. Enable: "Required reviewers" (1+ reviewers)
+3. Enable: "Wait timer" (optional, e.g., 5 minutes)
+
+**How to Deploy to Production:**
+
+```bash
+# 1. Go to GitHub Actions tab
+# 2. Select "CD Production (Manual Approval)" workflow
+# 3. Click "Run workflow"
+# 4. Enter version (e.g., v1.2.3)
+# 5. Wait for approval from reviewer
+# 6. Deployment executes after approval
+```
+
+---
+
+### GitHub Secrets Configuration
+
+This section documents all required GitHub Secrets for remote deployment.
+
+**Location:** GitHub Repository → Settings → Secrets and variables → Actions
+
+| Secret Name | Environment | Description | How to Generate |
+|-------------|-------------|-------------|-----------------|
+| `SSH_PRIVATE_KEY_STAGING` | Staging | Private SSH key for staging server | `ssh-keygen -t ed25519 -C "[project]-staging"` → Copy `~/.ssh/id_ed25519` content |
+| `SSH_PRIVATE_KEY_PRODUCTION` | Production | Private SSH key for production server | `ssh-keygen -t ed25519 -C "[project]-production"` → Copy `~/.ssh/id_ed25519` content |
+| `SSH_KNOWN_HOSTS` | Both | Known hosts file to prevent MITM attacks | `ssh-keyscan [project]-stage >> ~/.ssh/known_hosts && ssh-keyscan [project]-prod >> ~/.ssh/known_hosts` → Copy file content |
+| `DOMAIN` | Both | Your domain (e.g., `example.com`) | Manually enter your domain |
+
+**Step-by-Step Setup:**
+
+#### 1. Generate SSH Keys for CI/CD
+
+```bash
+# Generate key for staging
+ssh-keygen -t ed25519 -C "[project]-staging-deploy-key" -f ~/.ssh/[project]_staging_ed25519
+
+# Generate key for production
+ssh-keygen -t ed25519 -C "[project]-production-deploy-key" -f ~/.ssh/[project]_production_ed25519
+
+# Generate known_hosts
+ssh-keyscan [project]-stage >> ~/.ssh/known_hosts_staging
+ssh-keyscan [project]-prod >> ~/.ssh/known_hosts_production
+```
+
+#### 2. Copy Public Keys to Servers
+
+```bash
+# Staging server
+ssh-copy-id -i ~/.ssh/[project]_staging_ed25519.pub [project]_app@[project]-stage
+
+# Production server
+ssh-copy-id -i ~/.ssh/[project]_production_ed25519.pub [project]_app@[project]-prod
+```
+
+#### 3. Add Secrets to GitHub
+
+```bash
+# View private key (copy output)
+cat ~/.ssh/[project]_staging_ed25519
+
+# View known_hosts (copy output)
+cat ~/.ssh/known_hosts_staging
+```
+
+**Then:**
+1. Go to GitHub Repository → Settings → Secrets and variables → Actions
+2. Click "New repository secret"
+3. Add:
+   - Name: `SSH_PRIVATE_KEY_STAGING`
+   - Value: [Paste entire private key content, including -----BEGIN OPENSSH PRIVATE KEY-----]
+4. Repeat for `SSH_PRIVATE_KEY_PRODUCTION`, `SSH_KNOWN_HOSTS`, `DOMAIN`
+
+#### 4. Verify SSH Connection
+
+```bash
+# Test staging connection
+ssh -i ~/.ssh/[project]_staging_ed25519 [project]_app@[project]-stage "echo 'SSH OK'"
+
+# Test production connection
+ssh -i ~/.ssh/[project]_production_ed25519 [project]_app@[project]-prod "echo 'SSH OK'"
+```
+
+**Security Notes:**
+- ✅ **Separate keys per environment** (staging vs production)
+- ✅ **Ed25519 algorithm** (more secure, faster than RSA)
+- ✅ **GitHub Secrets encrypted** (AES-256-GCM)
+- ✅ **Least privilege** - Keys only have access to `[project]_app` user
+- ❌ **NEVER commit private keys to Git**
+- ❌ **NEVER reuse keys across projects**
+
+**Rotation Policy:**
+- **Development:** No rotation (local keys)
+- **Staging:** Rotate annually
+- **Production:** Rotate quarterly
+
+**For full server setup instructions (including user creation, SSH hardening, and firewall configuration), see [PE-00-Environments-Setup.md - Server Setup Documentation](../00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md#-server-setup-documentation).**
 
 ---
 
