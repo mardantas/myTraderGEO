@@ -293,7 +293,7 @@ volumes:
 
 ### Docker Compose with Traefik (Production)
 
-**File:** `docker-compose.prod.yml`
+**File:** `docker-compose.production.yml`
 
 ```yaml
 version: '3.8'
@@ -1546,7 +1546,7 @@ volumes:
 - [ ] Logs acessíveis via `docker-compose -f docker-compose.staging.yml --env-file .env.staging logs`
 
 ### Production Environment
-- [ ] `docker-compose.prod.yml` criado com Traefik
+- [ ] `docker-compose.production.yml` criado com Traefik
 - [ ] `.env.production` configurado (secrets fortes, DOMAIN, LETSENCRYPT_EMAIL, YOUR_IP_ADDRESS)
 - [ ] `05-infra/configs/traefik.yml` criado
 - [ ] Traefik Dashboard acessível em https://traefik.{DOMAIN} (IP whitelist + basic auth)
