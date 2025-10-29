@@ -18,6 +18,67 @@ Este workflow combina **DDD estratégico e tático** com **desenvolvimento ágil
 
 ---
 
+## 🔄 Workflow Visualization
+
+O diagrama abaixo mostra o fluxo completo do DDD Workflow v1.0 com os 10 agentes especializados:
+
+```mermaid
+graph TD
+    subgraph Discovery["📋 DISCOVERY PHASE (1x - Days 1-4)"]
+        SDA[10-SDA<br/>Strategic Domain Analyst<br/>Day 1-2]
+
+        SDA --> UXD[20-UXD<br/>UX Designer<br/>Day 2-3]
+        SDA --> PE[30-PE<br/>Platform Engineer<br/>Day 2-3<br/>⚠️ DEFINES TECH STACK]
+
+        PE -.blocks.-> QAE[60-QAE<br/>Quality Assurance<br/>Day 3-4]
+        PE -.blocks.-> SEC[35-SEC<br/>Security Specialist<br/>Day 3-4]
+        PE -.blocks.-> GM[25-GM<br/>GitHub Manager<br/>Day 3-4]
+
+        SDA --> QAE
+        SDA --> SEC
+        SDA --> GM
+    end
+
+    subgraph Iteration["🔄 ITERATION PHASE (Nx - Days 1-10 per epic)"]
+        DE[15-DE<br/>Domain Engineer<br/>Day 1-2]
+
+        DE --> GM2[25-GM<br/>Create Milestone + Issue<br/>Day 2]
+        DE --> DBA[50-DBA<br/>Database Admin<br/>Day 2-3]
+
+        DBA --> SE[45-SE<br/>Software Engineer<br/>Day 3-6]
+        DBA --> UXD2[20-UXD<br/>Epic Wireframes<br/>Day 3-6]
+
+        SE --> FE[55-FE<br/>Frontend Engineer<br/>Day 7-9]
+        UXD2 --> FE
+
+        FE --> QAE2[60-QAE<br/>QUALITY GATE<br/>Day 10]
+
+        QAE2 -->|✅ Tests Pass| DEPLOY[🚀 DEPLOY]
+        QAE2 -->|❌ Tests Fail| BLOCK[🚫 BLOCK<br/>Return to SE/FE]
+    end
+
+    Discovery -.Next Phase.-> Iteration
+
+    style PE fill:#ff6b6b,stroke:#c92a2a,color:#fff
+    style QAE2 fill:#ff6b6b,stroke:#c92a2a,color:#fff
+    style DEPLOY fill:#51cf66,stroke:#2f9e44,color:#fff
+    style BLOCK fill:#ffa94d,stroke:#fd7e14,color:#fff
+```
+
+**Legenda:**
+- **Setas sólidas (→):** Fluxo sequencial obrigatório
+- **Setas tracejadas (-.->):** Dependência de bloqueio (PE define tech stack que QAE/SEC/GM precisam)
+- **Cores:**
+  - 🔴 Vermelho: Critical path (PE define stack, QAE é quality gate)
+  - 🟢 Verde: Deploy aprovado
+  - 🟠 Laranja: Deploy bloqueado (retorna para correções)
+
+**Fases:**
+- **Discovery (1x):** Executado uma vez no início do projeto (Days 1-4)
+- **Iteration (Nx):** Executado N vezes, uma por épico funcional (Days 1-10 por épico)
+
+---
+
 ## 👥 Agentes (10)
 
 | Ordem | Sigla | Agente | Quando Executa | Escopo | Dependências |
