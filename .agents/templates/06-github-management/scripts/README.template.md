@@ -212,7 +212,163 @@ gh pr ready  # Mark PR as ready for review
 gh pr merge --merge --delete-branch
 ```
 
-**See 03-GIT-PATTERNS.md for:** Complete Git workflow details  
+**See 03-GIT-PATTERNS.md for:** Complete Git workflow details
+
+---
+
+## 🚀 Deployment Commands
+
+### Manual Deployment (via deploy.sh)
+
+**Development (Local):**
+```bash
+# Deploy to local docker-compose
+./deploy.sh development
+```
+
+**Staging (Remote via SSH/SCP):**
+```bash
+# Deploy latest to staging server
+./deploy.sh staging latest
+```
+
+**Production (Remote via SSH/SCP):**
+```bash
+# Deploy specific version to production server
+./deploy.sh production v1.2.3
+```
+
+**See PE-00 for:** Complete deploy.sh implementation and remote deployment architecture
+
+---
+
+### CD Pipelines (GitHub Actions)
+
+**Staging (Auto-Deploy):**
+- Triggered automatically on push to `main`
+- Deploys latest to staging server
+- No manual action required
+
+**Monitor deployment:**
+```bash
+# View recent workflow runs
+gh run list --workflow=cd-staging.yml --repo [OWNER]/[REPO]
+
+# View specific run logs
+gh run view [RUN_ID] --log --repo [OWNER]/[REPO]
+```
+
+**Production (Manual Approval):**
+```bash
+# Trigger production deployment via GitHub Actions
+gh workflow run cd-production.yml \
+  --repo [OWNER]/[REPO] \
+  --field version=v1.2.3
+
+# Or via GitHub UI:
+# 1. Go to Actions tab
+# 2. Select "CD Production (Manual Approval)"
+# 3. Click "Run workflow"
+# 4. Enter version (e.g., v1.2.3)
+# 5. Wait for approval
+```
+
+**Monitor production deployment:**
+```bash
+# View production workflow runs
+gh run list --workflow=cd-production.yml --repo [OWNER]/[REPO]
+
+# Watch deployment in real-time
+gh run watch
+```
+
+**Rollback (if needed):**
+```bash
+# SSH to production server
+ssh [project]_app@[project]-prod
+
+# Run deploy.sh with previous version
+cd ~/[project]
+./deploy.sh production v1.2.2
+```
+
+**See GM-00 for:** CD pipelines configuration, GitHub secrets setup, and deployment strategy
+
+---
+
+### Health Checks
+
+**Staging:**
+```bash
+# Check frontend
+curl -I https://staging.[DOMAIN]
+
+# Check backend API
+curl https://api-staging.[DOMAIN]/health
+```
+
+**Production:**
+```bash
+# Check frontend
+curl -I https://[DOMAIN]
+
+# Check backend API
+curl https://api.[DOMAIN]/health
+```
+
+---
+
+### GitHub Secrets (Required for CD Pipelines)
+
+**Setup once during Discovery:**
+
+1. **Generate SSH keys:**
+   ```bash
+   # Staging key
+   ssh-keygen -t ed25519 -C "[project]-staging-deploy-key" \
+     -f ~/.ssh/[project]_staging_ed25519
+
+   # Production key
+   ssh-keygen -t ed25519 -C "[project]-production-deploy-key" \
+     -f ~/.ssh/[project]_production_ed25519
+   ```
+
+2. **Copy public keys to servers:**
+   ```bash
+   # Staging
+   ssh-copy-id -i ~/.ssh/[project]_staging_ed25519.pub \
+     [project]_app@[project]-stage
+
+   # Production
+   ssh-copy-id -i ~/.ssh/[project]_production_ed25519.pub \
+     [project]_app@[project]-prod
+   ```
+
+3. **Generate known_hosts:**
+   ```bash
+   ssh-keyscan [project]-stage >> ~/.ssh/known_hosts
+   ssh-keyscan [project]-prod >> ~/.ssh/known_hosts
+   ```
+
+4. **Add secrets to GitHub:**
+   ```bash
+   # Via GitHub UI:
+   # Settings → Secrets and variables → Actions → New repository secret
+
+   # Required secrets:
+   # - SSH_PRIVATE_KEY_STAGING (content of ~/.ssh/[project]_staging_ed25519)
+   # - SSH_PRIVATE_KEY_PRODUCTION (content of ~/.ssh/[project]_production_ed25519)
+   # - SSH_KNOWN_HOSTS (content of ~/.ssh/known_hosts)
+   # - DOMAIN (e.g., example.com)
+   ```
+
+**Verify secrets:**
+```bash
+# List repository secrets (names only, not values)
+gh secret list --repo [OWNER]/[REPO]
+```
+
+**See GM-00 for:** Complete GitHub secrets setup with step-by-step instructions
 
 ---
 
