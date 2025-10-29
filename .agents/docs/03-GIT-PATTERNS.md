@@ -17,18 +17,19 @@ Este documento estabelece os padrões de uso do Git no DDD Workflow.
 ### **Ferramentas e Gestão**
 7. [🔍 Git Log Básico](#git-log-básico)
 8. [🏷️ Milestones e Tags](#milestones-e-tags)
+9. [🚀 Deployment Patterns](#deployment-patterns)
 
 ### **Boas Práticas**
-9. [🚫 O Que NÃO Fazer](#o-que-não-fazer)
-10. [✅ Checklist de Qualidade](#checklist-de-qualidade)
+10. [🚫 O Que NÃO Fazer](#o-que-não-fazer)
+11. [✅ Checklist de Qualidade](#checklist-de-qualidade)
 
 ### **Guias Operacionais**
-11. [📋 Quick Reference: Discovery](#quick-reference-discovery)
-12. [📋 Quick Reference: Épico](#quick-reference-épico)
+12. [📋 Quick Reference: Discovery](#quick-reference-discovery)
+13. [📋 Quick Reference: Épico](#quick-reference-épico)
 
 ### **Referências**
-13. [🎯 Quem Faz O Quê?](#quem-faz-o-quê)
-14. [📚 Mais Informações](#mais-informações)
+14. [🎯 Quem Faz O Quê?](#quem-faz-o-quê)
+15. [📚 Mais Informações](#mais-informações)
 
 ---
 
@@ -484,6 +485,107 @@ gh release create v1.0.0 \
 | **Vincula a** | Issues (#5, #6, #7) | Commit específico (SHA) |
 | **Mutável?** | Sim (pode reabrir) | Não (imutável) |
 | **Usado para** | Tracking, Velocity | Deploy, Rollback |
+
+---
+
+<a id="deployment-patterns"></a>
+## 🚀 Deployment Patterns
+
+### **Local vs Remote Deployment**
+
+**Tipos de Deployment:**
+```
+Development (local)    → Localhost (docker compose direto)
+Staging (remote)       → Server VPS (SSH/SCP + docker compose remoto)
+Production (remote)    → Server VPS (SSH/SCP + docker compose remoto)
+```
+
+### **Local Deployment (Development)**
+
+**Características:**
+- Executa na máquina do desenvolvedor
+- Usa `docker compose` sem SSH/SCP
+- Hot reload habilitado (backend + frontend)
+- Health checks via HTTP localhost
+
+**Comando:**
+```bash
+docker compose -f docker-compose.yml --env-file .env.dev up
+```
+
+### **Remote Deployment (Staging/Production)**
+
+**Características:**
+- Executa em servidor remoto via SSH
+- Copia arquivos via SCP (docker-compose, traefik.yml)
+- Executa `docker compose` remotamente via SSH
+- Health checks via HTTPS com retry logic
+
+**Servidor patterns:**
+```bash
+# Hostnames padronizados
+myproject-stage     # staging
+myproject-prod      # production
+
+# Deploy scripts detectam automaticamente
+./deploy.sh staging     # remote deployment
+./deploy.sh production  # remote deployment
+```
+
+**Fluxo de Deploy:**
+```
+1. check_ssh_connection()      # Valida SSH antes
+2. Copy files via SCP          # docker-compose + configs
+3. SSH remote execution        # docker compose pull && up -d
+4. remote_health_check()       # HTTPS (30 retries, 5s interval)
+5. log_deployment_history()    # Log local
+```
+
+### **CD Pipelines**
+
+**Staging (Auto-deploy):**
+```yaml
+# .github/workflows/cd-staging.yml
+on:
+  push:
+    branches: [main]
+
+# Auto-deploy to myproject-stage
+./deploy.sh staging latest
+```
+
+**Production (Manual approval):**
+```yaml
+# .github/workflows/cd-production.yml
+on:
+  workflow_dispatch:
+    inputs:
+      version:  # e.g., v1.0.0
+
+environment:
+  name: production  # Requires approval
+
+# Manual deploy to myproject-prod
+./deploy.sh production ${{ inputs.version }}
+```
+
+**GitHub Secrets Required:**
+- `SSH_PRIVATE_KEY_STAGING`
+- `SSH_PRIVATE_KEY_PRODUCTION`
+- `SSH_KNOWN_HOSTS`
+
+### **Prerequisites for Remote Deploy**
+
+**Server must be prepared (PE-00 setup):**
+- ✅ OS: Debian/Ubuntu
+- ✅ Docker Engine + Compose Plugin
+- ✅ Firewall (UFW): ports 22, 80, 443
+- ✅ User with docker group
+- ✅ SSH keys configured
+- ✅ Directory structure created
+- ✅ `.env` file with secrets
+
+**See:** PE-00-Environments-Setup.md for complete server setup guide
 
 ---
 
