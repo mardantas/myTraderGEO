@@ -18,6 +18,27 @@ Este workflow combina **DDD estratégico e tático** com **desenvolvimento ágil
 
 ---
 
+## 👥 Agentes (10)
+
+| Ordem | Sigla | Agente | Quando Executa | Escopo | Dependências |
+|-------|-------|--------|----------------|--------|--------------|
+| 1 | SDA | Strategic Domain Analyst | 1x Discovery (Dia 1-2) | Sistema completo | - |
+| 2 | UXD | User Experience Designer | 1x Discovery (Dia 2-3) + Por épico | Fundamentos + Wireframes | SDA |
+| 3 | **PE** | **Platform Engineer** | **1x Discovery (Dia 2-3)** | **Define stack + ambientes** | **SDA** |
+| 4 | QAE | Quality Assurance Engineer | 1x Discovery (Dia 3-4) + Por épico | Estratégia de testes + Quality gate | **PE** (stack) |
+| 5 | SEC | Security Specialist | 1x Discovery (Dia 3-4) | Baseline de segurança | **PE** (stack) |
+| 6 | GM | GitHub Manager | 1x Discovery (Dia 3-4) + Por épico | Setup CI/CD + Issues | **PE** (stack) |
+| 7 | DE | Domain Engineer | Por épico | Modelagem tática | SDA |
+| 8 | DBA | Database Administrator | Por épico | Migrations e validação | DE, PE |
+| 9 | SE | Software Engineer | Por épico | Implementação backend | DE, DBA |
+| 10 | FE | Frontend Engineer | Por épico | Implementação frontend | SE, UXD |
+
+**⚠️ Atenção:** PE (Platform Engineer) **deve executar ANTES** de QAE, SEC e GM na Discovery, pois define o stack tecnológico que estes agentes precisam para escolher ferramentas compatíveis.
+
+Ver detalhes e **exemplos de invocação** em [01-Agents-Overview.md](01-Agents-Overview.md)
+
+---
+
 ## 🔄 Workflow Visualization
 
 O diagrama abaixo mostra o fluxo completo do DDD Workflow v1.0 com os 10 agentes especializados:
@@ -76,27 +97,6 @@ graph TD
 **Fases:**
 - **Discovery (1x):** Executado uma vez no início do projeto (Days 1-4)
 - **Iteration (Nx):** Executado N vezes, uma por épico funcional (Days 1-10 por épico)
-
----
-
-## 👥 Agentes (10)
-
-| Ordem | Sigla | Agente | Quando Executa | Escopo | Dependências |
-|-------|-------|--------|----------------|--------|--------------|
-| 1 | SDA | Strategic Domain Analyst | 1x Discovery (Dia 1-2) | Sistema completo | - |
-| 2 | UXD | User Experience Designer | 1x Discovery (Dia 2-3) + Por épico | Fundamentos + Wireframes | SDA |
-| 3 | **PE** | **Platform Engineer** | **1x Discovery (Dia 2-3)** | **Define stack + ambientes** | **SDA** |
-| 4 | QAE | Quality Assurance Engineer | 1x Discovery (Dia 3-4) + Por épico | Estratégia de testes + Quality gate | **PE** (stack) |
-| 5 | SEC | Security Specialist | 1x Discovery (Dia 3-4) | Baseline de segurança | **PE** (stack) |
-| 6 | GM | GitHub Manager | 1x Discovery (Dia 3-4) + Por épico | Setup CI/CD + Issues | **PE** (stack) |
-| 7 | DE | Domain Engineer | Por épico | Modelagem tática | SDA |
-| 8 | DBA | Database Administrator | Por épico | Migrations e validação | DE, PE |
-| 9 | SE | Software Engineer | Por épico | Implementação backend | DE, DBA |
-| 10 | FE | Frontend Engineer | Por épico | Implementação frontend | SE, UXD |
-
-**⚠️ Atenção:** PE (Platform Engineer) **deve executar ANTES** de QAE, SEC e GM na Discovery, pois define o stack tecnológico que estes agentes precisam para escolher ferramentas compatíveis.
-
-Ver detalhes e **exemplos de invocação** em [01-Agents-Overview.md](01-Agents-Overview.md)
 
 ---
 
