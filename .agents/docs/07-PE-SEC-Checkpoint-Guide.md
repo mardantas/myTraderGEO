@@ -1,8 +1,9 @@
+<!-- FORMATAÇÃO: Todas as linhas de metadata abaixo DEVEM terminar com 2 espaços para forçar quebra de linha em Markdown -->
 # PE/SEC Checkpoint Guide - Quando e Como Executar
 
-**Versão:** 2.0
-**Data:** 2025-10-29
-**Objetivo:** Guia consolidado para determinar quando PE e SEC devem executar checkpoints opcionais e como executá-los com qualidade.
+**Versão:** 2.0  
+**Data:** 2025-10-29  
+**Objetivo:** Guia consolidado para determinar quando PE e SEC devem executar checkpoints opcionais e como executá-los com qualidade.  
 
 ---
 
