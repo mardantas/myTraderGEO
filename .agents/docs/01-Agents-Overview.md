@@ -114,11 +114,13 @@ Design user experience: foundations in Discovery + specific wireframes per epic.
 ### Responsibilities
 **Discovery ONLY (1x - Day 2-3):**
 - **Define Tech Stack (Backend, Frontend, Database)** ← CRITICAL for GM/SEC/QAE
-- Docker Compose for environments (dev, staging, production)
-- Deploy scripts (deploy.sh)
-- Environment variables configuration (.env.example)
+- Docker Compose for environments (dev, staging, production) with Traefik (staging + production)
+- **Server setup documentation** (OS, Docker, firewall, user/group, SSH keys, directories)
+- **Scaling strategy documentation** (decision matrix, migration paths)
+- Deploy scripts (deploy.sh) with **remote deployment** (local vs remote detection)
+- Environment variables configuration (`.env.dev`, `.env.staging`, `.env.production`)
 - Basic logging (Docker logs + rotation)
-- Configured health checks
+- Configured health checks (local + remote HTTPS)
 
 ### When Executes
 - **Discovery (Day 2-3):** PE-00-Environments-Setup ← **BEFORE GM, SEC, QAE**
@@ -136,13 +138,23 @@ Design user experience: foundations in Discovery + specific wireframes per epic.
 ```
 00-doc-ddd/08-platform-engineering/
 ├── PE-00-Environments-Setup.md  (Discovery - 1x)
+│   ├── Environment Strategy (.env.dev, .env.staging, .env.production)
+│   ├── Server Setup Documentation (8+ steps: hostname, Docker, firewall, users, SSH)
+│   ├── Traefik Configuration (staging CA + production CA)
+│   ├── Scaling Strategy (decision matrix, 3 migration paths)
+│   └── Remote Deployment Architecture
 └── PE-EPIC-[N]-Performance-Checkpoint.md  (Per epic - OPTIONAL)
 
-docker-compose.dev.yml
-docker-compose.staging.yml
-docker-compose.prod.yml
-deploy.sh
-.env.example
+05-infra/
+├── docker/
+│   ├── docker-compose.yml (development)
+│   ├── docker-compose.staging.yml (with Traefik staging CA)
+│   └── docker-compose.production.yml (with Traefik production CA)
+├── configs/
+│   ├── .env.example (multi-environment instructions)
+│   └── traefik.yml (2 certificateResolvers)
+└── scripts/
+    └── deploy.sh (local + remote deployment)
 ```
 
 ### PE Light Review per Epic (OPTIONAL)
@@ -354,7 +366,10 @@ Integrate DDD workflow with GitHub (v1.0). **Issues created via GitHub form AFTE
   - `ci-backend.yml` (build, test for backend)
   - `ci-frontend.yml` (build, test for frontend)
   - `security.yml` (CodeQL, secret scanning)
-  - `dependabot.yml` (dependency updates)
+  - `cd-staging.yml` (auto-deploy to staging) - **MANDATORY**
+  - `cd-production.yml` (manual deploy to production with approval) - **MANDATORY**
+  - `dependabot.yml` (dependency updates - optional)
+- ✅ **Document deployment strategy**: PE-00 integration (`.env` strategy, multi-server, remote deploy)
 - ✅ **Document pre-existing templates**: Issue/PR templates already exist in `.github/`
 - ❌ **DOES NOT create milestones** (created per epic during iteration - not all at once)
 - ❌ **DOES NOT create issues** (epics not refined yet - no DE-01)
@@ -410,7 +425,9 @@ Integrate DDD workflow with GitHub (v1.0). **Issues created via GitHub form AFTE
 ├── ci-backend.yml           (created - customized from PE-00)
 ├── ci-frontend.yml          (created - customized from PE-00)
 ├── security.yml             (created - languages from PE-00)
-└── dependabot.yml           (created - ecosystems from PE-00)
+├── cd-staging.yml           (created - auto-deploy, SSH setup) ← MANDATORY
+├── cd-production.yml        (created - manual approval, version input) ← MANDATORY
+└── dependabot.yml           (created - ecosystems from PE-00 - optional)
 
 .github/ISSUE_TEMPLATE/
 ├── 10-epic.yml              (created - GitHub native form for epics)
@@ -646,6 +663,8 @@ Validate and optimize database schema created by DE.
 - Query optimization
 - Performance review
 - Guidance for DE to adjust schema
+- **Multi-environment password strategy** (dev simple, staging/prod strong)
+- **Security best practices** (least privilege, password rotation, compliance)
 
 ### When Executes
 **Per epic** - after DE creates schema
@@ -656,13 +675,26 @@ Validate and optimize database schema created by DE.
 ### Deliverables
 ```
 00-doc-ddd/05-database-design/
-└── DBA-01-[EpicName]-Schema-Review.md
+├── README.md (multi-environment password strategy, security best practices)
+├── DBA-01-[EpicName]-Schema-Review.md (per epic)
+└── migrations/
+    ├── 001_initial_schema.sql (init scripts - dev default passwords)
+    └── 002_update_production_passwords.sql (ALTER USER for staging/prod)
 ```
+
+**Security Notes:**
+- **NEVER hardcode passwords in Git** (even in SQL scripts)
+- **Development:** Simple passwords OK (e.g., `dev_password_123`)
+- **Staging/Production:** Strong passwords via ALTER USER migration
+- **Password Rotation:** Quarterly (production), semi-annual (staging)
+- **Compliance:** LGPD Art. 46, SOC2, ISO 27001 awareness
 
 ### Example Invocation
 ```
 "DBA, review schema for epic 'Create Strategy'"
 "DBA, suggest indexes for Greeks query"
+"DBA, document multi-environment password strategy"
+"DBA, create ALTER USER migration for staging/production passwords"
 "DBA, process FEEDBACK-007"
 ```
 

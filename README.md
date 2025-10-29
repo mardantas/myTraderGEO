@@ -205,11 +205,15 @@ gh release create v0.1.0 --title "Discovery Foundation Complete" --generate-note
 - [**00-Workflow-Guide.md**](.agents/docs/00-Workflow-Guide.md) - Guia completo do processo
 - [**01-Agents-Overview.md**](.agents/docs/01-Agents-Overview.md) - Detalhes dos 10 agentes
 - [**02-Nomenclature-Standards.md**](.agents/docs/02-Nomenclature-Standards.md) - Padrões de nomenclatura
-- [**03-Security-And-Platform-Strategy.md**](.agents/docs/03-Security-And-Platform-Strategy.md) - Estratégia de segurança
-- [**04-DDD-Patterns-Reference.md**](.agents/docs/04-DDD-Patterns-Reference.md) - Padrões DDD
-- [**05-API-Standards.md**](.agents/docs/05-API-Standards.md) - Padrões de API
-- [**07-PE-SEC-Checkpoint-Decision-Matrix.md**](.agents/docs/07-PE-SEC-Checkpoint-Decision-Matrix.md) - Matriz de decisão PE/SEC
-- [**08-FEEDBACK-FLOW-GUIDE.md**](.agents/docs/08-FEEDBACK-FLOW-GUIDE.md) - Fluxo de feedback entre agentes
+- [**03-GIT-PATTERNS.md**](.agents/docs/03-GIT-PATTERNS.md) - Padrões Git (branches, commits, PRs, deployment)
+- [**04-Security-And-Platform-Strategy.md**](.agents/docs/04-Security-And-Platform-Strategy.md) - Estratégia de segurança e plataforma
+- [**05-DDD-Patterns-Reference.md**](.agents/docs/05-DDD-Patterns-Reference.md) - Padrões DDD
+- [**06-API-Standards.md**](.agents/docs/06-API-Standards.md) - Padrões de API
+- [**07-PE-SEC-Light-Review.md**](.agents/docs/07-PE-SEC-Light-Review.md) - Review rápido PE/SEC
+- [**08-PE-SEC-Checkpoint-Decision-Matrix.md**](.agents/docs/08-PE-SEC-Checkpoint-Decision-Matrix.md) - Matriz de decisão PE/SEC
+- [**09-FEEDBACK-FLOW-GUIDE.md**](.agents/docs/09-FEEDBACK-FLOW-GUIDE.md) - Fluxo de feedback entre agentes
+- [**10-THINK-MODE-GUIDE.md**](.agents/docs/10-THINK-MODE-GUIDE.md) - Modo de pensamento estratégico
+- [**11-STANDARDS-COMPLIANCE-ANALYSIS.md**](.agents/docs/11-STANDARDS-COMPLIANCE-ANALYSIS.md) - Análise de conformidade
 
 ---
 
@@ -294,10 +298,13 @@ Dia 1-2: SDA
 Dia 2-3: [UXD + PE] (PARALELO - Fundações Independentes)
   → UXD: Design Foundations
   → PE: Define Stack + Ambientes (dev/stage/prod com Docker)
+  → PE: Server Setup Documentation (OS, Docker, firewall, users, SSH)
+  → PE: Scaling Strategy (quando migrar de Compose para orquestração)
 
 Dia 3-4: [GM + SEC + QAE] (PARALELO - Dependem do Stack do PE)
   → GM: GitHub Setup (CI/CD baseado no stack)
-  → SEC: Security Baseline (ferramentas compatíveis)
+  → GM: Deployment Strategy (local vs remote, CD pipelines)
+  → SEC: Security Baseline (ferramentas compatíveis + server hardening)
   → QAE: Test Strategy (ferramentas baseadas no stack)
 
 Duração: 3-4 dias
@@ -346,8 +353,11 @@ Dia 10: QAE (QUALITY GATE)
   → ✅ OK → Deploy | ❌ Falhou → Volta SE/FE
 
 Deploy
-  → PE: Deploy staging → production
+  → PE/GM: Deploy staging (auto via CD pipeline)
+  → PE/GM: Deploy production (manual approval)
   → Monitoramento
+
+**Nota:** Deploy remoto requer servidor preparado conforme PE-00 (Discovery).
 
 Duração: 10 dias (2 semanas)
 ```
