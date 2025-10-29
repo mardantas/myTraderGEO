@@ -73,6 +73,8 @@
         <responsibility>Create CI/CD workflows customized per project stack (from PE-00)</responsibility>
         <responsibility>Create setup-labels.sh script (from SDA BCs/Epics) - ONE-TIME execution</responsibility>
         <responsibility>Create epic issue template YAML (GitHub native form)</responsibility>
+        <responsibility>Create CD pipelines (staging auto-deploy, production manual approval) - MANDATORY</responsibility>
+        <responsibility>Document deployment strategy (PE-00 integration: .env strategy, multi-server, remote deploy)</responsibility>
         <responsibility>Security scanning configuration (CodeQL, optional Dependabot config)</responsibility>
         <responsibility>Branch strategy documentation (branch naming conventions, PR workflow, merge strategy)</responsibility>
         <responsibility>Branch protection alternatives (GitHub Free: discipline-based, no automatic protection)</responsibility>
@@ -166,20 +168,48 @@
         <deliverable path="GM-00-GitHub-Setup.md" base-path="github-management" order="8">
             <template base-path="templates">06-github-management/GM-00-GitHub-Setup.template.md</template>
             <description>STRATEGIC GitHub documentation: justifications, technical details, integrations with SDA/PE, GitHub Free limitations</description>
+            <sections>
+                <section>Deployment Strategy (PE-00 Integration) - .env files, multi-server, remote deploy patterns</section>
+                <section>CD Pipelines (staging auto-deploy, production manual approval)</section>
+                <section>GitHub Secrets (SSH_PRIVATE_KEY_STAGING, SSH_PRIVATE_KEY_PRODUCTION, SSH_KNOWN_HOSTS)</section>
+            </sections>
             <phase>discovery</phase>
-            <note>Complete reference - explains WHY and WHAT. References files created above.</note>
+            <note>Complete reference - explains WHY and WHAT. References files created above. Integrates with PE-00 deployment decisions.</note>
             <type>documentation-strategic</type>
             <mandatory>true</mandatory>
             <purpose>strategic</purpose>
             <target-audience>team leads, architects, future maintainers</target-audience>
         </deliverable>
 
-        <deliverable path=".github/workflows/cd-staging.yml" base-path="">
+        <deliverable path=".github/workflows/cd-staging.yml" base-path="" order="9">
             <template base-path="templates">06-github-management/workflows/cd-staging.template.yml</template>
-            <description>CD pipeline for staging deployment (optional)</description>
-            <customization>Deploy scripts/commands from PE-00</customization>
-            <optional>true</optional>
+            <description>CD pipeline for staging auto-deployment on push to main</description>
+            <customization>Deploy scripts/commands from PE-00, SSH setup with GitHub Secrets</customization>
+            <features>
+                <feature>Auto-deploy on push to main branch</feature>
+                <feature>SSH setup with SSH_PRIVATE_KEY_STAGING secret</feature>
+                <feature>Remote deployment via deploy.sh staging latest</feature>
+            </features>
             <phase>discovery</phase>
+            <type>workflow-file</type>
+            <mandatory>true</mandatory>
+            <critical>MUST CREATE PHYSICAL FILE in .github/workflows/</critical>
+        </deliverable>
+
+        <deliverable path=".github/workflows/cd-production.yml" base-path="" order="10">
+            <template base-path="templates">06-github-management/workflows/cd-production.template.yml</template>
+            <description>CD pipeline for production manual deployment with approval</description>
+            <customization>Deploy scripts/commands from PE-00, environment protection, version input</customization>
+            <features>
+                <feature>Manual workflow dispatch with version input parameter</feature>
+                <feature>Environment protection (production) requires approval</feature>
+                <feature>SSH setup with SSH_PRIVATE_KEY_PRODUCTION secret</feature>
+                <feature>Remote deployment via deploy.sh production $version</feature>
+            </features>
+            <phase>discovery</phase>
+            <type>workflow-file</type>
+            <mandatory>true</mandatory>
+            <critical>MUST CREATE PHYSICAL FILE in .github/workflows/</critical>
         </deliverable>
 
         <!-- 5. PRE-EXISTING TEMPLATES: Part of workflow template (GM documents only, does NOT create) -->
@@ -300,9 +330,11 @@
         </criteria>
 
         <criteria type="deployment">
-            <criterion>Staging CD pipeline created if needed (optional)</criterion>
-            <criterion>Deployment process documented in GM-00</criterion>
-            <criterion>Secrets management via GitHub Secrets documented</criterion>
+            <criterion>Staging CD pipeline FILE created (.github/workflows/cd-staging.yml) - MANDATORY</criterion>
+            <criterion>Production CD pipeline FILE created (.github/workflows/cd-production.yml) - MANDATORY</criterion>
+            <criterion>Deployment strategy documented in GM-00 (PE-00 integration: .env, multi-server, remote deploy)</criterion>
+            <criterion>GitHub Secrets documented (SSH_PRIVATE_KEY_STAGING, SSH_PRIVATE_KEY_PRODUCTION, SSH_KNOWN_HOSTS)</criterion>
+            <criterion>CD pipelines trigger correctly (staging auto on push to main, production manual)</criterion>
         </criteria>
 
         <criteria type="versioning">
@@ -320,8 +352,8 @@
 
         <exit-condition>
             GitHub setup is COMPLETE when ALL of these are TRUE:
-            1. ALL PHYSICAL FILES created (8 files: script + 3 workflows + template + dependabot + 2 docs)
-            2. GM-00 explains WHY/WHAT (strategic)
+            1. ALL PHYSICAL FILES created (10 files: script + 5 workflows (ci-backend, ci-frontend, security, cd-staging, cd-production) + template + dependabot + 2 docs)
+            2. GM-00 explains WHY/WHAT (strategic) + PE-00 deployment strategy integration
             3. README explains HOW (operational, minimal, links to GM-00)
             4. NO duplication between GM-00 and README
             5. Self-validation checklist above is 100% complete
@@ -329,6 +361,7 @@
 
             ⚠️ IF YOU ONLY DOCUMENTED WORKFLOWS WITHOUT CREATING FILES → NOT COMPLETE
             ⚠️ IF GM-00 AND README HAVE DUPLICATED CONTENT → NOT COMPLETE
+            ⚠️ IF CD PIPELINES (staging + production) NOT CREATED → NOT COMPLETE
         </exit-condition>
     </definition-of-done>
 

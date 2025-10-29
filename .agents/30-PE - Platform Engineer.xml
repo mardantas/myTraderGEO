@@ -23,23 +23,34 @@
 
     <responsibilities>
         <responsibility>Basic environments setup (dev, staging, production) using Docker Compose</responsibility>
+        <responsibility>Server setup documentation (OS installation, Docker Engine, firewall, security hardening)</responsibility>
+        <responsibility>Multi-environment strategy (.env.dev, .env.staging, .env.production with --env-file mandatory)</responsibility>
+        <responsibility>Scaling strategy documentation (decision matrix, migration paths to Managed Cloud/K8s)</responsibility>
         <responsibility>Database setup (PostgreSQL container or managed service)</responsibility>
-        <responsibility>Deploy scripts (bash/PowerShell for manual/semi-automated deployment)</responsibility>
-        <responsibility>Secrets management basics (.env files, environment variables)</responsibility>
+        <responsibility>Deploy scripts (bash/PowerShell) with local vs remote detection (SSH/SCP for remote)</responsibility>
+        <responsibility>Secrets management basics (.env files, environment variables, NEVER hardcode)</responsibility>
         <responsibility>Basic logging (stdout/stderr → files or basic cloud logging)</responsibility>
-        <responsibility>Health checks (simple liveness endpoints)</responsibility>
-        <responsibility>HTTPS setup (Let's Encrypt or cloud provider SSL)</responsibility>
+        <responsibility>Health checks (local HTTP + remote HTTPS with retry logic)</responsibility>
+        <responsibility>HTTPS setup (Let's Encrypt with 2 certificateResolvers: staging CA + production CA)</responsibility>
         <responsibility>Backup basics (database backup script - daily cron job)</responsibility>
+        <responsibility>Security hardening (UFW firewall, fail2ban, SSH key-based auth, NTP time sync)</responsibility>
     </responsibilities>
 
     <deliverables>
         <deliverable path="PE-00-Environments-Setup.md" base-path="platform-engineering" order="1">
             <template base-path="templates">08-platform-engineering/PE-00-Environments-Setup.template.md</template>
             <description>Basic environments setup (dev/stage/prod with Docker Compose and deploy scripts) - pragmatic approach</description>
+            <sections>
+                <section>Environment Strategy (.env.dev, .env.staging, .env.production)</section>
+                <section>Server Setup Documentation (8+ steps: hostname, Docker, firewall, users, SSH, directories, .env, verification)</section>
+                <section>Traefik Configuration (2 certificateResolvers: staging CA + production CA)</section>
+                <section>Scaling Strategy (decision matrix with users/SLA/cost, 3 migration paths)</section>
+                <section>Remote Deployment Architecture (SSH/SCP, health checks, logging)</section>
+            </sections>
             <phase>discovery</phase>
             <type>documentation-strategic</type>
             <mandatory>true</mandatory>
-            <note>Lean infrastructure: PE-00 only, focuses on essential setup (Docker Compose + deploy scripts)</note>
+            <note>Lean infrastructure: PE-00 only, focuses on essential setup (Docker Compose + deploy scripts) + server setup + scaling strategy</note>
         </deliverable>
 
         <deliverable path="05-infra/README.md" base-path="" order="2">
@@ -69,17 +80,41 @@
             <type>infrastructure</type>
         </deliverable>
         <deliverable path="deploy.sh" base-path="project-root">
-            <description>Deploy script (bash) for manual/semi-automated deployment</description>
+            <description>Deploy script (bash) for local and remote deployment with environment detection</description>
+            <functions>
+                <function>check_ssh_connection() - Validates SSH connectivity before remote deploy</function>
+                <function>remote_backup_database() - Placeholder for remote database backup</function>
+                <function>remote_health_check() - HTTPS health check with retry logic (30 attempts, 5s interval)</function>
+                <function>log_deployment_history() - Logs deployment to local file</function>
+                <function>deploy_remote() - Main remote deployment function (SSH/SCP)</function>
+                <function>main() - Detects environment (development=local, staging/production=remote)</function>
+            </functions>
             <type>script</type>
+            <note>Script detects local vs remote automatically. Remote uses SSH/SCP to deploy to [project]-stage or [project]-prod servers.</note>
         </deliverable>
         <deliverable path=".env.example" base-path="project-root">
-            <description>Environment variables template (secrets management)</description>
+            <description>Environment variables template with multi-environment instructions</description>
+            <instructions>
+                <instruction>Copy to .env.dev (committed with safe defaults)</instruction>
+                <instruction>Copy to .env.staging (created on server, NOT committed)</instruction>
+                <instruction>Copy to .env.production (created on server, NOT committed)</instruction>
+            </instructions>
+            <variables>
+                <variable>DOMAIN - environment-specific domain (localhost, staging.domain.com, domain.com)</variable>
+                <variable>ACME_EMAIL - Let's Encrypt email</variable>
+                <variable>DB_APP_PASSWORD - per-environment (dev simple, staging/prod strong 16+ chars)</variable>
+            </variables>
             <type>config</type>
+            <note>ALWAYS use --env-file flag explicitly in docker-compose commands</note>
         </deliverable>
         <deliverable path="05-infra/configs/traefik.yml" base-path="">
-            <description>Traefik static configuration (reverse proxy + automatic HTTPS for staging/production)</description>
+            <description>Traefik static configuration with 2 certificateResolvers</description>
+            <resolvers>
+                <resolver name="letsencrypt-staging">Staging CA (no rate limits, for testing)</resolver>
+                <resolver name="letsencrypt">Production CA (trusted certificates)</resolver>
+            </resolvers>
             <type>config</type>
-            <note>Traefik v3.0 for staging/production only (not used in development). Provides automatic SSL certificates via Let's Encrypt.</note>
+            <note>Traefik v3.0 for staging/production only (not used in development). Staging uses staging CA to avoid Let's Encrypt rate limits.</note>
         </deliverable>
     </deliverables>
 
@@ -97,13 +132,19 @@
 
     <quality-checklist path="PE-checklist.yml" base-path="checklists">
         <essential-check>Docker Compose files created for dev/staging/production</essential-check>
-        <essential-check>Deploy scripts functional (can deploy to staging/production)</essential-check>
+        <essential-check>Multi-environment .env strategy documented (.env.dev, .env.staging, .env.production)</essential-check>
+        <essential-check>All docker-compose commands use --env-file flag explicitly</essential-check>
+        <essential-check>Server setup documented (8+ steps: hostname, Docker, firewall, users, SSH, directories, .env, verification)</essential-check>
+        <essential-check>Security hardening documented (UFW firewall, fail2ban, SSH keys, NTP)</essential-check>
+        <essential-check>Scaling strategy documented (decision matrix + 3 migration paths)</essential-check>
+        <essential-check>Deploy scripts functional with local vs remote detection (SSH/SCP for remote)</essential-check>
+        <essential-check>Remote health checks implemented (HTTPS with retry logic 30x5s)</essential-check>
         <essential-check>Database setup documented and working</essential-check>
-        <essential-check>Secrets management configured (.env files, no hardcoded secrets)</essential-check>
+        <essential-check>Secrets management configured (.env files, NEVER hardcoded)</essential-check>
         <essential-check>Basic logging functional (can see application logs)</essential-check>
-        <essential-check>Traefik configured for staging/production (automatic HTTPS with Let's Encrypt)</essential-check>
+        <essential-check>Traefik configured with 2 certificateResolvers (staging CA + production CA)</essential-check>
         <essential-check>SSL certificates issued successfully and HTTPS accessible</essential-check>
-        <essential-check>Traefik dashboard accessible and secured (basic auth + IP whitelist)</essential-check>
+        <essential-check>Traefik dashboard accessible and secured (basic auth)</essential-check>
     </quality-checklist>
 
     <definition-of-done>
