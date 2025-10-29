@@ -512,12 +512,65 @@ Define **essential security baseline** - OWASP Top 3, LGPD minimum, auth strateg
 ```
 
 ### Example Invocation
+
+#### Complete Task
+
+**Discovery (1x - AFTER PE defines stack):**
 ```
-"SEC, identify main threats per BC"
-"SEC, define OWASP Top 3 mitigations"
-"SEC, document LGPD minimum (data mapping, deletion, privacy policy)"
-"SEC, define JWT authentication strategy"
+"SEC, crie baseline de segurança (OWASP Top 3, LGPD mínimo, estratégia de auth)"
+→ Creates SEC-00-Security-Baseline.md
+→ OWASP Top 3: Broken Access Control, Cryptographic Failures, Injection
+→ LGPD: PII mapping, deletion strategy, privacy policy outline
+→ Auth: JWT strategy, domain-level authorization
+→ Tools: Compatible with PE stack (OWASP ZAP, Snyk, etc)
+
+"SEC, identifique principais ameaças por BC e defina mitigações"
+→ Basic threat identification per BC (not full STRIDE)
+→ Essential mitigations for MVP
 ```
+
+**Iteration (OPTIONAL - Light Review only if needed):**
+```
+"SEC, faça checkpoint de segurança para épico 'Autenticação de Usuário' (Epic 2)"
+→ Quick 15-30 min review (not full document)
+→ Checks: OWASP Top 3 compliance, input validation, auth/authz, secrets management
+→ See: 07-PE-SEC-Checkpoint-Decision-Matrix.md for criteria
+
+"SEC, revise segurança do épico 4 (manipula dados PII)"
+→ Targeted review based on Decision Matrix criteria (PII data handling)
+```
+
+#### Self-Review (Discovery only)
+```
+"SEC, revise SEC-00 verificando se OWASP Top 3 está coberto para todos os BCs"
+→ Validates Broken Access Control, Cryptographic Failures, Injection mitigations
+
+"SEC, valide se LGPD mínimo cobre dados pessoais identificados no sistema"
+→ Cross-references SDA BCs with PII data mapping
+→ Ensures deletion strategy and privacy policy are outlined
+```
+
+#### Process Feedback
+```
+"SEC, processe FEEDBACK-008 sobre hardcoded secrets em init script do database"
+→ Reviews security issue, validates proposed solution (ALTER USER migration)
+→ Documents multi-environment password strategy
+
+"SEC, analise FEEDBACK sobre falta de validação de input em Value Object Strike"
+→ Validates security issue, creates feedback for DE to fix
+```
+
+#### Specific Update
+```
+"SEC, adicione checklist de validação de input para Value Objects"
+→ Updates SEC-00 with validation patterns for domain layer
+
+"SEC, documente estratégia de rotação de senhas para staging/production"
+→ Adds password rotation policy: quarterly (prod), semi-annual (staging)
+→ Aligns with LGPD Art. 46, SOC2, ISO 27001
+```
+
+**Critical Note:** SEC executes AFTER PE (needs stack for tool selection).
 
 ### Specification
 [35-SEC - Security Specialist.xml](../35-SEC%20-%20Security%20Specialist.xml)
@@ -792,6 +845,30 @@ epic-close.sh <N> [--release <version>]  # Fecha milestone + release
 
 ---
 
+#### Self-Review (before automating)
+```
+"GM, revise setup-labels.sh verificando se todos os BCs do SDA-02 estão incluídos"
+→ Cross-references SDA-02-Context-Map.md with label script
+→ Ensures no BC is missing
+
+"GM, valide se CI/CD workflows estão alinhados com stack do PE-00"
+→ Checks ci-backend.yml matches PE stack (.NET)
+→ Checks ci-frontend.yml matches PE stack (React)
+→ Validates security.yml has correct languages
+```
+
+#### Process Feedback
+```
+"GM, processe FEEDBACK-005 sobre alinhamento com mudanças do PE"
+→ Updates GM-00 deployment strategy section
+→ Aligns epic-deploy.sh with .env multi-environment strategy
+
+"GM, analise FEEDBACK sobre comandos docker-compose sem --env-file explícito"
+→ Updates scripts to use --env-file .env.dev (or staging/production)
+```
+
+---
+
 ### Specification
 [25-GM - GitHub Manager.xml](../25-GM%20-%20GitHub%20Manager.xml)
 
@@ -823,11 +900,51 @@ Model tactical domain PER EPIC (does NOT implement code).
 ```
 
 ### Example Invocation
+
+#### Complete Task (Iteration - Per Epic)
 ```
-"DE, model epic 'Create Strategy' in Strategy + Market Data BCs"
-"DE, create DE-01-Calculate-Greeks-Domain-Model"
-"DE, create feedback for SDA about missing event"
+"DE, modele épico 'Criar Estratégia Bull Call Spread' nos BCs Strategy + Market Data"
+→ Creates DE-01-EPIC-01-Strategy-Domain-Model.md
+→ Tactical modeling: Aggregates, Entities, Value Objects, Domain Events
+→ Use Cases with specifications, Repository interfaces
+
+"DE, crie modelo de domínio para épico 'Calcular Greeks em Tempo Real'"
+→ Epic 2: Risk BC + Market Data BC
+→ Detailed invariants, business rules, integration contracts
 ```
+
+#### Self-Review (before DBA/SE consume)
+```
+"DE, revise DE-01-Strategy verificando completude dos Aggregates"
+→ Validates all entities, value objects, domain events documented
+→ Checks invariants are explicit and testable
+
+"DE, valide se Use Cases têm especificações completas (pre-conditions, post-conditions)"
+→ Ensures SE has clear implementation guide
+→ Checks repository interfaces are defined
+```
+
+#### Process Feedback
+```
+"DE, processe FEEDBACK-003 do QAE sobre Strategy aceitar strike negativo"
+→ Analyzes bug report, updates domain model with invariant
+→ Adds validation to aggregate or value object
+
+"DE, analise FEEDBACK-001 do SE sobre evento StrategyValidated faltante"
+→ Reviews feedback, creates feedback for SDA to add event to Event Storming
+→ Updates DE-01 with StrategyValidated domain event
+```
+
+#### Specific Update
+```
+"DE, adicione Use Case 'Validar Estratégia' ao DE-01-Strategy-Domain-Model"
+→ Adds new use case with specifications
+
+"DE, atualize aggregate Strategy com invariante MaxLegs = 4"
+→ Small update based on business rule clarification
+```
+
+**Note:** DE executes ONLY in Iteration (per epic). For strategic changes, use SDA.
 
 ### Specification
 [15-DE - Domain Engineer.xml](../15-DE%20-%20Domain%20Engineer.xml)
@@ -872,13 +989,54 @@ Validate and optimize database schema created by DE.
 - **Compliance:** LGPD Art. 46, SOC2, ISO 27001 awareness
 
 ### Example Invocation
+
+#### Complete Task (Iteration - Per Epic, after DE)
 ```
-"DBA, review schema for epic 'Create Strategy'"
-"DBA, suggest indexes for Greeks query"
-"DBA, document multi-environment password strategy"
-"DBA, create ALTER USER migration for staging/production passwords"
-"DBA, process FEEDBACK-007"
+"DBA, revise schema para épico 'Criar Estratégia'"
+→ Creates DBA-01-EPIC-01-Schema-Review.md
+→ Validates DE-01 schema, suggests indexes, checks FK relationships
+
+"DBA, crie migration para épico 'Calculate Greeks' com índices de performance"
+→ Creates migration file with indexes for query optimization
+→ Validates schema supports DE-01 repository interfaces
 ```
+
+#### Self-Review (before SE consumes)
+```
+"DBA, revise índices sugeridos para performance de query de listagem"
+→ Validates indexes match expected query patterns
+→ Checks for missing indexes on FK columns
+
+"DBA, valide se estratégia de senha multi-ambiente está documentada"
+→ Ensures README.md has password strategy (dev simple, staging/prod strong)
+→ Checks migration 002 (ALTER USER) is ready for staging/prod
+```
+
+#### Process Feedback
+```
+"DBA, processe FEEDBACK-007 sobre performance de query com >3 JOINs"
+→ Analyzes slow query, suggests composite index or query refactoring
+
+"DBA, analise FEEDBACK-006 sobre senhas hardcoded no Git"
+→ Documents multi-environment password strategy
+→ Creates ALTER USER migration for staging/production
+→ Aligns with LGPD/SOC2 compliance
+```
+
+#### Specific Update
+```
+"DBA, adicione índice em Strategy.UserId para query de listagem"
+→ Small performance optimization based on monitoring
+
+"DBA, atualize migration 002 com rotação de senha para produção"
+→ Adds quarterly password rotation for production user
+```
+
+**Security Notes:**
+- NEVER hardcode passwords in Git (even in SQL scripts)
+- Development: Simple passwords OK (e.g., dev_password_123)
+- Staging/Production: Strong passwords via ALTER USER migration
+- Password Rotation: Quarterly (production), semi-annual (staging)
 
 ### Specification
 [50-DBA - Database Administrator.xml](../50-DBA%20-%20Database%20Administrator.xml)
@@ -914,12 +1072,52 @@ Implement complete backend based on DE domain model.
 ```
 
 ### Example Invocation
+
+#### Complete Task (Iteration - Per Epic, after DE + DBA)
 ```
-"SE, implement domain layer for epic 'Create Strategy'"
-"SE, create REST APIs for epic 'Calculate Greeks'"
-"SE, add unit tests for Strategy aggregate"
-"SE, create feedback for DE about ambiguous invariant"
+"SE, implemente domain layer para épico 'Criar Estratégia'"
+→ Implements Aggregates, Entities, Value Objects from DE-01
+→ Domain layer: 02-backend/src/Domain/
+→ Unit tests ≥70% coverage domain layer
+
+"SE, crie APIs REST para épico 'Calcular Greeks em Tempo Real'"
+→ Implements Application layer (Use Cases, Commands, Queries, Handlers)
+→ Infrastructure layer (Repositories, EF Migrations, DB Context)
+→ API layer (Controllers, DTOs, OpenAPI/Swagger)
 ```
+
+#### Self-Review (before QAE tests)
+```
+"SE, revise cobertura de testes unitários do domain layer (target ≥70%)"
+→ Validates domain logic has comprehensive tests
+→ Focuses on aggregates, value objects, domain events
+
+"SE, valide se APIs REST seguem padrões do 06-API-Standards.md"
+→ Checks DTOs, HTTP status codes, error handling, OpenAPI documentation
+```
+
+#### Process Feedback
+```
+"SE, processe FEEDBACK-003 do QAE sobre aggregate Strategy aceitar strike negativo"
+→ Fixes validation bug in domain layer
+→ Adds guard clause to Strategy.AddLeg()
+→ Updates unit tests with boundary conditions
+
+"SE, analise FEEDBACK do PE sobre N+1 query em listagem de estratégias"
+→ Fixes query with .Include() for eager loading
+→ Adds integration test to prevent regression
+```
+
+#### Specific Update
+```
+"SE, adicione validação de negócio em Use Case 'Criar Estratégia'"
+→ Small business rule addition to application layer
+
+"SE, crie endpoint GET /strategies/{id}/greeks para cálculo de Greeks"
+→ New API endpoint for Epic 2
+```
+
+**Critical Note:** SE implements AFTER DE (domain model) and DBA (schema validation).
 
 ### Specification
 [45-SE - Software Engineer.xml](../45-SE%20-%20Software%20Engineer.xml)
@@ -955,11 +1153,54 @@ Implement user interfaces following UXD specs.
 ```
 
 ### Example Invocation
+
+#### Complete Task (Iteration - Per Epic, after SE + UXD)
 ```
-"FE, implement UI for epic 'Create Strategy'"
-"FE, create Greeks visualization component"
-"FE, create feedback for UXD about dashboard wireframe"
+"FE, implemente UI para épico 'Criar Estratégia' usando wireframes UXD-01"
+→ Implements components based on UXD-01-EPIC-01-Wireframes.md
+→ Integrates with SE APIs (POST /strategies, GET /market-data)
+→ State management (React Context or Redux)
+→ Basic component unit tests
+
+"FE, crie componente Greeks Visualization para Dashboard de P&L"
+→ Epic 2: Real-time Greeks display
+→ Chart library (Recharts, Chart.js)
+→ WebSocket integration for real-time updates
 ```
+
+#### Self-Review (before QAE E2E tests)
+```
+"FE, revise componentes do épico 1 verificando consistência com UXD-00 Design Foundations"
+→ Validates colors, typography, spacing match Design Foundations
+→ Checks component naming follows PascalCase convention
+
+"FE, valide acessibilidade dos componentes (WCAG AA, screen readers)"
+→ Checks color contrast, keyboard navigation, ARIA labels
+→ Ensures forms have proper labels and error messages
+```
+
+#### Process Feedback
+```
+"FE, processe FEEDBACK-002 do UXD sobre comportamento do botão Adicionar Perna"
+→ Implements inline leg addition (not nested modal)
+→ Adds limit of 4 legs with counter (2/4)
+→ Real-time validation with visual indicators
+
+"FE, analise FEEDBACK do QAE sobre falha no teste E2E de criação de estratégia"
+→ Fixes timing issue in form submission
+→ Adds loading state to button
+```
+
+#### Specific Update
+```
+"FE, adicione loading spinner ao modal Criar Estratégia durante submit"
+→ UX improvement for async operation
+
+"FE, atualize componente Leg Card com botão de remoção {X}"
+→ Small UI iteration based on user feedback
+```
+
+**Note:** FE implements AFTER SE (APIs) and UXD (wireframes). Works in parallel with SE on Days 3-6.
 
 ### Specification
 [55-FE - Frontend Engineer.xml](../55-FE%20-%20Frontend%20Engineer.xml)
