@@ -120,6 +120,23 @@ using var connection = new SqlConnection(connectionString);
 - [ ] Connections/streams disposed?
 - [ ] No memory leaks?
 
+#### 5. **Server Setup & Deployment** (Discovery - 5 min)
+```bash
+# PE verifica se servidor remoto está preparado
+✅ UFW firewall configurado (ports 22, 80, 443)
+✅ fail2ban ativo (SSH brute-force protection)
+✅ SSH key-based auth (password auth disabled)
+✅ User dedicado com docker group
+✅ Directory structure criada
+✅ .env files em ambiente (não commitados)
+```
+
+**Checklist:**
+- [ ] Server hardening complete (UFW, fail2ban, SSH)?
+- [ ] Multi-environment .env strategy documented?
+- [ ] Remote deploy script functional (local vs remote detection)?
+- [ ] Health checks configured (local HTTP + remote HTTPS)?
+
 ---
 
 ### **Output PE:**
@@ -127,8 +144,8 @@ using var connection = new SqlConnection(connectionString);
 **Template:** `PE-EPIC-[N]-Performance-Checkpoint.md`
 
 **Seções:**
-1. ✅ Performance Checklist (4 categorias)
-2. 📊 Issues Found (N+1 queries, missing indexes, etc)
+1. ✅ Performance Checklist (5 categorias: DB, Async, Cache, Resources, **Server/Deploy**)
+2. 📊 Issues Found (N+1 queries, missing indexes, server hardening, etc)
 3. 🔄 Feedback Created (se necessário)
 4. ✅ Final Verdict (Approved / Issues / Critical)
 
@@ -231,6 +248,33 @@ var apiKey = Environment.GetEnvironmentVariable("API_KEY");
 **Checklist:**
 - [ ] No hardcoded secrets?
 - [ ] .env in .gitignore?
+- [ ] .env.staging and .env.production NOT committed?
+- [ ] Staging/production use strong passwords (16+ chars)?
+
+#### 4. **Multi-Environment Credentials** (Discovery + Per Epic - 5 min)
+```sql
+-- ❌ Hardcoded password in Git (PROBLEMA)
+CREATE USER app_user WITH PASSWORD 'production_password_123';
+
+-- ✅ Correto (SEC + DBA sugerem)
+-- 1. Init script com dev default (committed)
+CREATE USER app_user WITH PASSWORD 'dev_password_123';
+
+-- 2. ALTER USER migration para staging/prod (committed sem senha real)
+ALTER USER app_user WITH PASSWORD :'app_password';  -- via psql -v
+
+-- 3. Execute com env var (NOT in Git, NOT in bash history)
+export DB_APP_PASSWORD="Pr0d_VeryStr0ng!#$"
+psql -v app_password="$DB_APP_PASSWORD" -f 002_update_passwords.sql
+```
+
+**Checklist:**
+- [ ] Database passwords NOT hardcoded in Git?
+- [ ] ALTER USER migration created (002_update_production_passwords.sql)?
+- [ ] Password rotation procedure documented?
+- [ ] Development uses simple passwords (OK)?
+- [ ] Staging/Production use strong passwords (16+ chars)?
+- [ ] Compliance noted (LGPD Art. 46, SOC2, ISO 27001)?
 
 ---
 
@@ -239,8 +283,8 @@ var apiKey = Environment.GetEnvironmentVariable("API_KEY");
 **Template:** `SEC-EPIC-[N]-Security-Checkpoint.md`
 
 **Seções:**
-1. ✅ Security Checklist (OWASP Top 3 + Validation + Secrets)
-2. 🔍 Issues Found (missing authz, hardcoded secrets, etc)
+1. ✅ Security Checklist (OWASP Top 3 + Validation + Secrets + **Multi-Env Credentials**)
+2. 🔍 Issues Found (missing authz, hardcoded secrets, hardcoded passwords, etc)
 3. ⚠️ Threats Identified (if new)
 4. 🔄 Feedback Created (se necessário)
 5. ✅ Final Verdict (Approved / Issues / Critical)
