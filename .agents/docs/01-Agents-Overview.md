@@ -53,11 +53,46 @@ Discover and map the complete business domain, defining bounded contexts and str
 ```
 
 ### Example Invocation
+
+#### Complete Task (Discovery)
 ```
-"SDA, perform complete strategic modeling of the system"
-"SDA, update Context Map adding Notifications BC"
-"SDA, process FEEDBACK-003"
+"SDA, faça a modelagem estratégica completa do sistema myTrader"
+→ Executes full Discovery: Event Storming + Context Map + Ubiquitous Language
+→ Deliverables: SDA-01, SDA-02, SDA-03
+
+"SDA, identifique Bounded Contexts e eventos de domínio para sistema de opções financeiras"
+→ Focuses on BC identification first
 ```
+
+#### Self-Review (before delivery)
+```
+"SDA, revise Event Storming verificando completude dos eventos por BC"
+→ Validates all BCs have domain events
+→ Checks event naming consistency with Ubiquitous Language
+
+"SDA, revise Context Map verificando se todos os relacionamentos estão documentados"
+→ Ensures all BC relationships are explicit
+```
+
+#### Process Feedback
+```
+"SDA, processe FEEDBACK-003"
+→ Reads feedback, analyzes impact, updates deliverables
+
+"SDA, analise FEEDBACK-001 sobre evento StrategyValidated faltante"
+→ Reviews feedback, validates suggestion, adds event to SDA-01
+```
+
+#### Specific Update
+```
+"SDA, adicione BC de Notificações ao Context Map como Upstream-Downstream com BC Strategy"
+→ Updates SDA-02-Context-Map.md with new BC and relationship
+
+"SDA, adicione termo 'Greeks' ao Ubiquitous Language com definição de opções"
+→ Updates SDA-03-Ubiquitous-Language.md with new domain term
+```
+
+**Note:** SDA executes ONLY in Discovery. For epic-specific changes, use DE.
 
 ### Specification
 [10-SDA - Strategic Domain Analyst.xml](../10-SDA%20-%20Strategic%20Domain%20Analyst.xml)
@@ -95,10 +130,54 @@ Design user experience: foundations in Discovery + specific wireframes per epic.
 ```
 
 ### Example Invocation
+
+#### Complete Task
+
+**Discovery (1x - Foundations):**
 ```
-"UXD, create design foundations (colors, typography, base components)"
-"UXD, create wireframes for epic 'Create Strategy'"
-"UXD, process FEEDBACK-005"
+"UXD, crie design foundations (cores, tipografia, componentes base)"
+→ Creates UXD-00-Design-Foundations.md
+→ Independent of tech stack, consumed by FE later
+
+"UXD, defina paleta de cores para plataforma financeira (trading)"
+→ Focuses on color system appropriate for domain
+```
+
+**Iteration (Per Epic - Wireframes):**
+```
+"UXD, crie wireframes para épico 'Criar Estratégia Bull Call Spread'"
+→ Creates UXD-01-EPIC-01-Strategy-Wireframes.md
+→ Specific components: modal, form validation, leg management
+
+"UXD, desenhe user flow e wireframes para Dashboard de P&L em tempo real"
+→ Epic 2: Real-time Greeks calculation
+→ Focuses on data visualization and responsiveness
+```
+
+#### Self-Review (before FE consumes)
+```
+"UXD, revise wireframes do épico 1 verificando consistência com Design Foundations"
+→ Checks colors, typography, component usage
+→ Ensures FE will have clear implementation guide
+
+"UXD, valide acessibilidade dos wireframes (contraste, WCAG AA)"
+→ Reviews color contrast ratios, touch targets, screen reader support
+```
+
+#### Process Feedback
+```
+"UXD, processe FEEDBACK-005 do FE sobre comportamento do botão Adicionar Perna"
+→ Clarifies ambiguous wireframe specification
+→ Updates UXD-01 with detailed interaction states
+```
+
+#### Specific Update
+```
+"UXD, adicione estado de loading ao modal Criar Estratégia"
+→ Updates wireframe with loading spinner and disabled state
+
+"UXD, atualize componente Leg Card com botão de remoção {X}"
+→ Small iteration based on user feedback
 ```
 
 ### Specification
@@ -194,11 +273,62 @@ Design user experience: foundations in Discovery + specific wireframes per epic.
 ```
 
 ### Example Invocation
+
+#### Complete Task
+
+**Discovery (1x - MANDATORY before QAE/SEC/GM):**
 ```
-"PE, configure basic environments (dev/stage/prod) with Docker Compose"
-"PE, create simple deploy scripts"
-"PE, document required environment variables"
+"PE, configure ambientes básicos (dev/stage/prod) com Docker Compose"
+→ Creates PE-00-Environments-Setup.md
+→ Defines tech stack (CRITICAL: blocks QAE, SEC, GM until done)
+→ Docker Compose + Traefik + .env strategy + deploy scripts
+
+"PE, documente setup inicial do servidor (Debian 12, Docker, firewall, usuários)"
+→ Server setup documentation (8+ steps: hostname, Docker, UFW, users, SSH keys)
+→ Prerequisite for remote deployment
 ```
+
+**Iteration (OPTIONAL - Light Review only if needed):**
+```
+"PE, faça checkpoint de performance para épico 'Calculate Greeks' (Epic 3)"
+→ Quick 15-30 min review (not full document)
+→ Checks: N+1 queries, async/await, caching, resource management
+→ See: 07-PE-SEC-Checkpoint-Decision-Matrix.md for criteria
+
+"PE, revise queries do épico 5 (>3 JOINs detectados)"
+→ Targeted review based on Decision Matrix criteria
+```
+
+#### Self-Review (Discovery only)
+```
+"PE, revise PE-00 verificando se tech stack está completo (Backend, Frontend, Database)"
+→ Ensures GM/SEC/QAE can choose compatible tools
+
+"PE, valide se estratégia .env cobre todos os ambientes (dev/staging/production)"
+→ Checks .env.dev, .env.staging, .env.production documented
+→ Validates multi-server architecture documented
+```
+
+#### Process Feedback
+```
+"PE, processe FEEDBACK-004 sobre evolução da especificação do PE Agent"
+→ Aligns deliverables with updated agent specification
+→ Adds Traefik staging CA, server setup docs, multi-env strategy
+
+"PE, analise FEEDBACK-007 sobre estratégia de scaling (Docker Swarm)"
+→ Documents scaling strategy, decision matrix, migration paths
+```
+
+#### Specific Update
+```
+"PE, adicione health check remoto (HTTPS) ao script deploy.sh"
+→ Updates 05-infra/scripts/deploy.sh with remote_health_check() function
+
+"PE, documente rotação de senhas para ambientes staging/production"
+→ Adds password rotation strategy to PE-00 (quarterly prod, semi-annual staging)
+```
+
+**Critical Note:** PE must execute BEFORE QAE/SEC/GM in Discovery (defines stack).
 
 ### Specification
 [30-PE - Platform Engineer.xml](../30-PE%20-%20Platform%20Engineer.xml)
@@ -245,11 +375,63 @@ Ensure quality as **QUALITY GATE** at end of each epic.
 ```
 
 ### Example Invocation
+
+#### Complete Task
+
+**Discovery (1x - AFTER PE defines stack):**
 ```
-"QAE, create test strategy (tools, coverage, criteria)"
-"QAE, execute quality gate for epic 'Create Strategy' (Day 10)"
-"QAE, execute integration + E2E + regression + smoke tests"
+"QAE, crie estratégia de testes baseada no stack do PE (.NET + React + PostgreSQL)"
+→ Creates QAE-00-Test-Strategy.md
+→ Tools: xUnit (backend), Vitest (frontend), Playwright (E2E)
+→ Coverage: ≥70% domain layer, ≥60% application layer
+
+"QAE, defina critérios de quality gate para aprovação de deploy"
+→ Specifies test types, coverage thresholds, blocking criteria
 ```
+
+**Iteration (Per Epic - QUALITY GATE on Day 10):**
+```
+"QAE, execute quality gate para épico 'Criar Estratégia' (Epic 1)"
+→ Integration tests (SE APIs)
+→ E2E tests (UXD-01 user journeys)
+→ Regression tests (previous epics)
+→ Smoke test (critical paths)
+→ DECISION: ✅ Approve deploy OR ❌ Block deploy + create feedback
+
+"QAE, execute teste de regressão completo antes de deploy production"
+→ Validates all previous epics still work
+→ Critical before production release
+```
+
+#### Self-Review (before blocking deploy)
+```
+"QAE, revise cobertura de testes do épico 2 antes de aprovar deploy"
+→ Validates ≥70% coverage domain layer
+→ Checks all acceptance criteria have tests
+
+"QAE, valide que testes E2E cobrem todos os user journeys do UXD-01"
+→ Cross-references wireframes with test scenarios
+```
+
+#### Process Feedback
+```
+"QAE, processe FEEDBACK-010 sobre falha intermitente no teste de Greeks"
+→ Investigates flaky test, fixes timing issue, updates test
+
+"QAE, analise FEEDBACK do SE sobre novo endpoint de listagem de estratégias"
+→ Adds integration test for new API endpoint
+```
+
+#### Specific Update
+```
+"QAE, adicione teste de boundary condition para strike negativo"
+→ Adds test to validate domain invariant
+
+"QAE, atualize teste E2E de criação de estratégia com novo campo 'Descrição'"
+→ Adapts test to UI change
+```
+
+**Critical Note:** QAE is the QUALITY GATE. Deploy ONLY if QAE approves.
 
 ### Specification
 [60-QAE - Quality Assurance Engineer.xml](../60-QAE%20-%20Quality%20Assurance%20Engineer.xml)

@@ -35,7 +35,7 @@ Este workflow combina **DDD estratégico e tático** com **desenvolvimento ágil
 
 **⚠️ Atenção:** PE (Platform Engineer) **deve executar ANTES** de QAE, SEC e GM na Discovery, pois define o stack tecnológico que estes agentes precisam para escolher ferramentas compatíveis.
 
-Ver detalhes em [01-Agents-Overview.md](01-Agents-Overview.md)
+Ver detalhes e **exemplos de invocação** em [01-Agents-Overview.md](01-Agents-Overview.md)
 
 ---
 
@@ -292,9 +292,66 @@ SDA: [lê feedback]
 
 ## 🎭 Modos de Execução dos Agentes
 
+### Como se Comunicar com Agentes
+
+Agentes respondem a **linguagem natural** em português. Não é necessário usar comandos formais ou sintaxe especial.
+
+#### Padrões de Comunicação
+
+**1. Tarefa Completa (Discovery ou Iteração):**
+```
+"[AGENTE], [ação] [escopo]"
+
+Exemplos:
+- "SDA, faça a modelagem estratégica completa do sistema"
+- "DE, modele épico 'Criar Estratégia' nos BCs Strategy + Market Data"
+- "QAE, execute quality gate para épico 'Calculate Greeks'"
+```
+
+**2. Auto-Revisão (antes da entrega):**
+```
+"[AGENTE], revise seu trabalho em [deliverable] antes de entregar"
+
+Exemplos:
+- "DE, revise DE-01-Strategy-Domain-Model verificando completude"
+- "DBA, revise índices sugeridos para performance"
+- "UXD, revise wireframes verificando consistência com Design Foundations"
+```
+
+**3. Processar Feedback (de outro agente):**
+```
+"[AGENTE], processe FEEDBACK-[NNN]"
+
+Exemplos:
+- "SDA, processe FEEDBACK-003"
+- "DE, analise e resolva FEEDBACK-007 sobre aggregate Strategy"
+```
+
+**4. Atualização Específica (em deliverable existente):**
+```
+"[AGENTE], atualize [deliverable] [ação específica]"
+
+Exemplos:
+- "SDA, atualize Context Map adicionando BC de Notificações"
+- "DBA, adicione índice em Strategy.UserId para query de listagem"
+- "UXD, atualize modal Criar Estratégia com validação real-time"
+```
+
+**Dicas:**
+- Use linguagem natural e direta
+- Seja específico no escopo (épico, BC, deliverable)
+- Para tarefas complexas, considere pedir ao agente para usar [Think Mode](10-THINK-MODE-GUIDE.md)
+- Agentes referenciam automaticamente deliverables de outros agentes (ex: DE lê SDA-02-Context-Map.md)
+
+> **Para exemplos detalhados por agente, veja [01-Agents-Overview.md](01-Agents-Overview.md)**
+
+---
+
+### Modo Natural vs Modo Formal
+
 Agentes suportam execução em dois modos:
 
-### Modo Natural (Principal)
+#### Modo Natural (Principal)
 ```
 "SDA, faça a modelagem estratégica completa do sistema"
 "DE, modele épico 'Criar Estratégia' nos BCs Strategy + Market Data"
