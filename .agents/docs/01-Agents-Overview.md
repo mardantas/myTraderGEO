@@ -406,7 +406,7 @@ Validate and optimize database schema created by DE - indexing, performance, mul
 ### Key Deliverables
 - **README.md** - Multi-environment password strategy, security best practices  
 - **DBA-01-[EpicName]-Schema-Review.md** - Per epic validation  
-- **Migrations** - 001_initial_schema.sql (dev passwords), 002_update_production_passwords.sql (ALTER USER)  
+- **Migrations** - 001_initial_schema.sql (dev passwords), 002_update_prod_passwords.sql (ALTER USER)  
 
 ### Example Invocations
 ```

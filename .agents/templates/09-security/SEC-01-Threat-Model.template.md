@@ -1,8 +1,8 @@
 <!--
 MARKDOWN FORMATTING:
-- Use 2 spaces at end of line for compact line breaks (metadata)
-- Use blank lines between sections for readability (content)
-- Validate in Markdown preview before committing
+- Use 2 spaces at end of line for compact line breaks (metadata)  
+- Use blank lines between sections for readability (content)  
+- Validate in Markdown preview before committing  
 -->
 
 # SEC-01: Threat Model
@@ -38,10 +38,10 @@ Threat Modeling completo usando **STRIDE** para identificar ameaças e definir m
 ### BC: [Nome do Bounded Context]
 
 #### Assets (O que proteger?)
-- [ ] User credentials (passwords, tokens)
-- [ ] Business data (orders, payments, etc)
-- [ ] API keys (third-party integrations)
-- [ ] PII (Personally Identifiable Information)
+- [ ] User credentials (passwords, tokens)  
+- [ ] Business data (orders, payments, etc)  
+- [ ] API keys (third-party integrations)  
+- [ ] PII (Personally Identifiable Information)  
 
 #### Data Flow Diagram
 
@@ -71,32 +71,32 @@ Threat Modeling completo usando **STRIDE** para identificar ameaças e definir m
 ## 🛡️ Mitigation Strategies
 
 ### Authentication & Authorization
-- [ ] JWT tokens com assinatura (HS256/RS256)
-- [ ] Token expiry: 15 minutos (access), 7 dias (refresh)
-- [ ] Authorization em Aggregates (domain-level)
-- [ ] Principle of least privilege (RBAC)
+- [ ] JWT tokens com assinatura (HS256/RS256)  
+- [ ] Token expiry: 15 minutos (access), 7 dias (refresh)  
+- [ ] Authorization em Aggregates (domain-level)  
+- [ ] Principle of least privilege (RBAC)  
 
 ### Data Protection
-- [ ] Encryption at rest (database TDE)
-- [ ] Encryption in transit (TLS 1.3+)
-- [ ] Secrets em Vault/Secrets Manager (NUNCA em código)
-- [ ] PII masking em logs
+- [ ] Encryption at rest (database TDE)  
+- [ ] Encryption in transit (TLS 1.3+)  
+- [ ] Secrets em Vault/Secrets Manager (NUNCA em código)  
+- [ ] PII masking em logs  
 
 ### Input Validation
-- [ ] Value Objects validam input (domain layer)
-- [ ] API input validation (FluentValidation)
-- [ ] SQL parametrizado (EF Core, sem raw SQL)
-- [ ] XSS prevention (React auto-escape, CSP headers)
+- [ ] Value Objects validam input (domain layer)  
+- [ ] API input validation (FluentValidation)  
+- [ ] SQL parametrizado (EF Core, sem raw SQL)  
+- [ ] XSS prevention (React auto-escape, CSP headers)  
 
 ### DoS Prevention
-- [ ] Rate limiting (100 req/min por user)
-- [ ] DDoS protection (CloudFlare, AWS Shield)
-- [ ] Circuit breaker para external APIs (Polly)
+- [ ] Rate limiting (100 req/min por user)  
+- [ ] DDoS protection (CloudFlare, AWS Shield)  
+- [ ] Circuit breaker para external APIs (Polly)  
 
 ### Audit & Monitoring
-- [ ] Immutable audit logs (quem, o quê, quando)
-- [ ] SIEM integration (Splunk, Sumo Logic)
-- [ ] Alerting para atividades suspeitas
+- [ ] Immutable audit logs (quem, o quê, quando)  
+- [ ] SIEM integration (Splunk, Sumo Logic)  
+- [ ] Alerting para atividades suspeitas  
 
 ---
 
@@ -114,20 +114,20 @@ Threat Modeling completo usando **STRIDE** para identificar ameaças e definir m
     [Fake login page]     [Brute force login]
         |                       |
    Mitigation:            Mitigation:
-   - Security training    - Rate limiting
-   - MFA required         - Account lockout
+   - Security training    - Rate limiting  
+   - MFA required         - Account lockout  
 ```
 
 ---
 
 ## ✅ Definition of Done
 
-- [ ] STRIDE analysis completo para TODOS BCs
-- [ ] Attack trees para funcionalidades críticas
-- [ ] Data flow diagrams com security annotations
-- [ ] Mitigation strategies documentadas
-- [ ] Threat prioritization (Impacto × Probabilidade)
-- [ ] SEC-checklist.yml completo
+- [ ] STRIDE analysis completo para TODOS BCs  
+- [ ] Attack trees para funcionalidades críticas  
+- [ ] Data flow diagrams com security annotations  
+- [ ] Mitigation strategies documentadas  
+- [ ] Threat prioritization (Impacto × Probabilidade)  
+- [ ] SEC-checklist.yml completo  
 
 ---
 

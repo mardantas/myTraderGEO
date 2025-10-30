@@ -1,8 +1,8 @@
 <!--
 MARKDOWN FORMATTING:
-- Use 2 spaces at end of line for compact line breaks (metadata)
-- Use blank lines between sections for readability (content)
-- Validate in Markdown preview before committing
+- Use 2 spaces at end of line for compact line breaks (metadata)  
+- Use blank lines between sections for readability (content)  
+- Validate in Markdown preview before committing  
 -->
 
 # 02-backend - {PROJECT_NAME} Backend API
@@ -19,8 +19,8 @@ MARKDOWN FORMATTING:
 This is a **quick reference guide** for building, running, and debugging the backend API. For strategic implementation decisions, domain model details, and architectural patterns, consult [SE-01-{EpicName}-Implementation-Report.md](../00-doc-ddd/04-tactical-design/SE-01-{EpicName}-Implementation-Report.md).
 
 **Document Separation:**  
-- **This README:** Commands and checklists (HOW to execute)
-- **SE-01:** Implementation decisions, patterns, and trade-offs (WHY and WHAT)
+- **This README:** Commands and checklists (HOW to execute)  
+- **SE-01:** Implementation decisions, patterns, and trade-offs (WHY and WHAT)  
 
 **Principle:** README is an INDEX/QUICK-REFERENCE to SE-01, not a duplicate.  
 
@@ -28,13 +28,13 @@ This is a **quick reference guide** for building, running, and debugging the bac
 
 ## 🎯 Technology Stack
 
-- **Runtime:** {RUNTIME} (e.g., .NET 8)
-- **Framework:** {FRAMEWORK} (e.g., ASP.NET Core 8.0)
-- **ORM:** {ORM} (e.g., Entity Framework Core 8.0)
-- **Real-time:** {REALTIME} (e.g., SignalR)
-- **Authentication:** JWT Bearer Tokens
-- **API Documentation:** OpenAPI/Swagger (Swashbuckle)
-- **Testing:** xUnit + FluentAssertions + Moq
+- **Runtime:** {RUNTIME} (e.g., .NET 8)  
+- **Framework:** {FRAMEWORK} (e.g., ASP.NET Core 8.0)  
+- **ORM:** {ORM} (e.g., Entity Framework Core 8.0)  
+- **Real-time:** {REALTIME} (e.g., SignalR)  
+- **Authentication:** JWT Bearer Tokens  
+- **API Documentation:** OpenAPI/Swagger (Swashbuckle)  
+- **Testing:** xUnit + FluentAssertions + Moq  
 
 ---
 
@@ -108,9 +108,9 @@ nano src/Api/appsettings.Development.json
 ```
 
 **Required Configuration:**  
-- Database connection string
-- JWT secret (min 32 characters)
-- CORS origins (frontend URL)
+- Database connection string  
+- JWT secret (min 32 characters)  
+- CORS origins (frontend URL)  
 
 ### 4. Run Migrations
 
@@ -133,8 +133,8 @@ docker compose -f ../05-infra/docker/docker-compose.yml up api -d
 ```
 
 **Access:**  
-- API: http://localhost:5000
-- Swagger UI: http://localhost:5000/swagger
+- API: http://localhost:5000  
+- Swagger UI: http://localhost:5000/swagger  
 
 ---
 
@@ -262,8 +262,8 @@ docker compose -f ../05-infra/docker/docker-compose.test.yml up -d database
 1. Start API: `{RUN_COMMAND}`
 2. Open Swagger: http://localhost:5000/swagger
 3. Authenticate (if needed):
-   - Click "Authorize" button
-   - Enter JWT token: `Bearer {token}`
+   - Click "Authorize" button  
+   - Enter JWT token: `Bearer {token}`  
 4. Test endpoints
 
 ---
@@ -321,16 +321,16 @@ docker ps | grep api
 **Responsibility:** Business logic, invariants, domain rules  
 
 **Contains:**  
-- Aggregates (Aggregate Roots + Entities)
-- Value Objects (Email, Money, etc.)
-- Domain Events
-- Repository Interfaces (contracts only)
+- Aggregates (Aggregate Roots + Entities)  
+- Value Objects (Email, Money, etc.)  
+- Domain Events  
+- Repository Interfaces (contracts only)  
 
 **Key Patterns:**  
-- Aggregate Pattern (consistency boundaries)
-- Value Object Pattern (immutability)
-- Domain Events (loose coupling)
-- Specification Pattern (complex business rules)
+- Aggregate Pattern (consistency boundaries)  
+- Value Object Pattern (immutability)  
+- Domain Events (loose coupling)  
+- Specification Pattern (complex business rules)  
 
 **See:** [SE-01 - Domain Layer Section](../00-doc-ddd/04-tactical-design/SE-01-{EpicName}-Implementation-Report.md#domain-layer)  
 
@@ -339,15 +339,15 @@ docker ps | grep api
 **Responsibility:** Orchestration, use cases, business workflows  
 
 **Contains:**  
-- Commands (write operations)
-- Queries (read operations)
-- Command/Query Handlers (CQRS pattern)
-- Application Services (orchestration)
+- Commands (write operations)  
+- Queries (read operations)  
+- Command/Query Handlers (CQRS pattern)  
+- Application Services (orchestration)  
 
 **Key Patterns:**  
-- CQRS (Command Query Responsibility Segregation)
-- Mediator Pattern (MediatR library)
-- Unit of Work Pattern (transaction management)
+- CQRS (Command Query Responsibility Segregation)  
+- Mediator Pattern (MediatR library)  
+- Unit of Work Pattern (transaction management)  
 
 **See:** [SE-01 - Application Layer Section](../00-doc-ddd/04-tactical-design/SE-01-{EpicName}-Implementation-Report.md#application-layer)  
 
@@ -356,14 +356,14 @@ docker ps | grep api
 **Responsibility:** Technical implementations, external dependencies  
 
 **Contains:**  
-- EF Core DbContext
-- Repository Implementations
-- Migrations
-- External service integrations (email, SMS, etc.)
+- EF Core DbContext  
+- Repository Implementations  
+- Migrations  
+- External service integrations (email, SMS, etc.)  
 
 **Key Patterns:**  
-- Repository Pattern (data access abstraction)
-- Dependency Injection (loose coupling)
+- Repository Pattern (data access abstraction)  
+- Dependency Injection (loose coupling)  
 
 **See:** [SE-01 - Infrastructure Layer Section](../00-doc-ddd/04-tactical-design/SE-01-{EpicName}-Implementation-Report.md#infrastructure-layer)  
 
@@ -372,15 +372,15 @@ docker ps | grep api
 **Responsibility:** HTTP endpoints, DTOs, middleware, API concerns  
 
 **Contains:**  
-- Controllers (REST endpoints)
-- DTOs (Data Transfer Objects)
-- Middleware (auth, logging, error handling)
-- OpenAPI/Swagger configuration
+- Controllers (REST endpoints)  
+- DTOs (Data Transfer Objects)  
+- Middleware (auth, logging, error handling)  
+- OpenAPI/Swagger configuration  
 
 **Key Patterns:**  
-- RESTful API (resource-based)
-- DTO Pattern (decoupling API from domain)
-- Middleware Pipeline (cross-cutting concerns)
+- RESTful API (resource-based)  
+- DTO Pattern (decoupling API from domain)  
+- Middleware Pipeline (cross-cutting concerns)  
 
 **See:** [SE-01 - API Layer Section](../00-doc-ddd/04-tactical-design/SE-01-{EpicName}-Implementation-Report.md#api-layer)  
 
@@ -404,17 +404,17 @@ This section connects operational README with strategic documentation.
 
 ### Internal Documentation
 
-- **Implementation Report:** [00-doc-ddd/04-tactical-design/SE-01-{EpicName}-Implementation-Report.md](../00-doc-ddd/04-tactical-design/SE-01-{EpicName}-Implementation-Report.md)
-- **Domain Model:** [00-doc-ddd/04-tactical-design/DE-01-{EpicName}-Domain-Model.md](../00-doc-ddd/04-tactical-design/DE-01-{EpicName}-Domain-Model.md)
-- **API Standards:** [.agents/docs/06-API-Standards.md](../.agents/docs/06-API-Standards.md)
-- **DDD Patterns:** [.agents/docs/05-DDD-Patterns-Reference.md](../.agents/docs/05-DDD-Patterns-Reference.md)
+- **Implementation Report:** [00-doc-ddd/04-tactical-design/SE-01-{EpicName}-Implementation-Report.md](../00-doc-ddd/04-tactical-design/SE-01-{EpicName}-Implementation-Report.md)  
+- **Domain Model:** [00-doc-ddd/04-tactical-design/DE-01-{EpicName}-Domain-Model.md](../00-doc-ddd/04-tactical-design/DE-01-{EpicName}-Domain-Model.md)  
+- **API Standards:** [.agents/docs/06-API-Standards.md](../.agents/docs/06-API-Standards.md)  
+- **DDD Patterns:** [.agents/docs/05-DDD-Patterns-Reference.md](../.agents/docs/05-DDD-Patterns-Reference.md)  
 
 ### External Documentation
 
-- **{FRAMEWORK} Documentation:** {DOCS_URL} (e.g., https://learn.microsoft.com/aspnet/core/)
-- **{ORM} Documentation:** {ORM_DOCS_URL} (e.g., https://learn.microsoft.com/ef/core/)
-- **Clean Architecture:** https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html
-- **Domain-Driven Design:** https://martinfowler.com/bliki/DomainDrivenDesign.html
+- **{FRAMEWORK} Documentation:** {DOCS_URL} (e.g., https://learn.microsoft.com/aspnet/core/)  
+- **{ORM} Documentation:** {ORM_DOCS_URL} (e.g., https://learn.microsoft.com/ef/core/)  
+- **Clean Architecture:** https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html  
+- **Domain-Driven Design:** https://martinfowler.com/bliki/DomainDrivenDesign.html  
 
 ---
 

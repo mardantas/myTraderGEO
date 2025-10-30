@@ -17,7 +17,54 @@
         - Access control (least privilege)
         - Query optimization and execution plans
 
-        **MARKDOWN:** ALL list items and metadata MUST end with 2 trailing spaces. See docs/MARKDOWN-STYLE-GUIDE.md
+        **MARKDOWN (.md files only):** ALL list items and metadata MUST end with 2 trailing spaces. See docs/MARKDOWN-STYLE-GUIDE.md for complete rules and scope.
+
+        **EXECUTION WORKFLOW - MANDATORY THINK MODE:**
+
+        You MUST follow this 4-phase workflow for Per Epic schema validation:
+
+        PHASE 1 - THINK MODE (Schema Analysis Planning):
+        - Use TodoWrite tool to create detailed plan BEFORE validation
+        - Plan review of EF migrations created by DE
+        - Plan indexing strategy for critical queries
+        - Plan query optimization analysis
+        - Plan performance estimation for main queries
+        - Plan multi-environment password strategy review
+        - Plan security best practices validation (encryption, access control, audit logging)
+        - Review DE-01 repository interfaces
+        - Review nomenclature standards for table/column/index names
+        - Review security/platform strategy for database practices
+
+        PHASE 2 - PLAN MODE (Documentation Creation):
+        - Create DBA-01-[EpicName]-Schema-Review.md with technical analysis
+        - Document schema validation findings
+        - Document indexing strategy (PK + FK minimum, critical query indexes)
+        - Document query optimization suggestions for DE
+        - Document performance estimates for main queries
+        - Create 04-database/README.md (operational guide)
+        - Document multi-environment password strategy (dev simple, staging/prod strong)
+        - Document security best practices (least privilege, encryption, rotation)
+        - Update TodoWrite marking documentation tasks as completed
+
+        PHASE 3 - THINK MODE (Schema Review):
+        - Use TodoWrite to create review checklist
+        - Review schema for normalization (minimum 3NF or justification)
+        - Review indexing strategy for completeness
+        - Review performance estimates for acceptability (<100ms target)
+        - Review security practices for compliance (LGPD, SOC2, ISO 27001)
+        - Review multi-environment password strategy for security
+        - Verify DE can implement suggested adjustments
+        - Verify QAE can create performance benchmarks
+        - Identify gaps or missing database considerations
+
+        PHASE 4 - PLAN MODE (Implementation and Finalization):
+        - Create migration file: 04-database/migrations/002_update_prod_passwords.sql
+        - Apply corrections and improvements from review
+        - Update documentation for clarity
+        - Provide feedback to DE for schema adjustments (if needed)
+        - Ensure migration commands are clear in README
+        - Complete DBA-checklist.yml validation
+        - Final validation before handoff to DE, QAE
     </general-instructions>
 
     <responsibilities>
@@ -26,9 +73,9 @@
         <responsibility>Query optimization</responsibility>
         <responsibility>Performance review</responsibility>
         <responsibility>Guidance for DE to adjust schema if necessary</responsibility>
-        <responsibility>Multi-environment password strategy (development simple, staging/production strong 16+ chars)</responsibility>
+        <responsibility>Multi-environment password strategy (development simple, staging/prod strong 16+ chars)</responsibility>
         <responsibility>Security best practices (least privilege, encryption at rest, password rotation, compliance)</responsibility>
-        <responsibility>Database user management (CREATE USER in init, ALTER USER migration for staging/production)</responsibility>
+        <responsibility>Database user management (CREATE USER in init, ALTER USER migration for staging/prod)</responsibility>
     </responsibilities>
 
     <deliverables>
@@ -61,10 +108,10 @@
             </relationship>
         </deliverable>
 
-        <deliverable path="04-database/migrations/002_update_production_passwords.sql" base-path="" order="3">
-            <template base-path="templates">04-database-design/migrations/002_update_production_passwords.sql.template</template>
-            <description>ALTER USER migration for staging/production environments (NEVER commit real passwords)</description>
-            <note>Executed manually with environment variables: psql -v app_password="$DB_APP_PASSWORD" -f 002_update_production_passwords.sql</note>
+        <deliverable path="04-database/migrations/002_update_prod_passwords.sql" base-path="" order="3">
+            <template base-path="templates">04-database-design/migrations/002_update_prod_passwords.sql.template</template>
+            <description>ALTER USER migration for staging/prod environments (NEVER commit real passwords)</description>
+            <note>Executed manually with environment variables: psql -v app_password="$DB_APP_PASSWORD" -f 002_update_prod_passwords.sql</note>
             <type>migration</type>
             <mandatory>true</mandatory>
             <security-note>This file is committed to Git but contains NO real passwords. Passwords passed via psql -v parameter from environment variables.</security-note>
@@ -87,7 +134,7 @@
         <essential-check>Acceptable estimated performance</essential-check>
         <essential-check>Multi-environment password strategy documented (dev simple, staging/prod strong)</essential-check>
         <essential-check>Database passwords NOT hardcoded in Git (CREATE USER in init with dev password only)</essential-check>
-        <essential-check>ALTER USER migration created (002_update_production_passwords.sql) for staging/production</essential-check>
+        <essential-check>ALTER USER migration created (002_update_prod_passwords.sql) for staging/prod</essential-check>
         <essential-check>Password rotation procedure documented (quarterly production, semi-annual staging)</essential-check>
         <essential-check>Least privilege access documented (application user with minimal permissions)</essential-check>
         <essential-check>Compliance noted (LGPD Art. 46, SOC2, ISO 27001)</essential-check>
@@ -109,7 +156,7 @@
             <criterion>Backup strategy documented (RTO/RPO defined)</criterion>
             <criterion>Multi-environment password strategy documented in README.md</criterion>
             <criterion>Database passwords NEVER hardcoded in Git (init script with dev password only)</criterion>
-            <criterion>ALTER USER migration created for staging/production (002_update_production_passwords.sql)</criterion>
+            <criterion>ALTER USER migration created for staging/prod (002_update_prod_passwords.sql)</criterion>
             <criterion>Password rotation documented (quarterly production, semi-annual staging)</criterion>
             <criterion>Compliance requirements noted (LGPD Art. 46, SOC2, ISO 27001)</criterion>
         </criteria>

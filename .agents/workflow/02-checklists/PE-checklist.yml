@@ -19,7 +19,7 @@ scope: "Discovery ONLY - Pragmatic infrastructure setup for small/medium project
 environments:
   - id: PE-ENV-01
     category: Environments
-    check: Docker Compose criado para ambientes (dev, staging, production)
+    check: Docker Compose criado para ambientes (dev, staging, prod)
     required: true
     evidence:
       - docker-compose.dev.yml
@@ -40,7 +40,7 @@ environments:
     check: Scripts de deploy criados (deploy.sh)
     required: true
     evidence:
-      - deploy.sh com deploy para staging/production
+      - deploy.sh com deploy para staging/prod
       - Permissões de execução (chmod +x deploy.sh)
 
 # ========================================
@@ -50,7 +50,7 @@ environments:
 docker:
   - id: PE-DOCKER-01
     category: Docker
-    check: Docker instalado nos ambientes (dev, staging, production)
+    check: Docker instalado nos ambientes (dev, staging, prod)
     required: true
     evidence:
       - docker --version funcional
@@ -134,7 +134,7 @@ documentation:
     required: true
     evidence:
       - README.md ou DEPLOY.md com instruções claras
-      - Como fazer deploy para staging/production
+      - Como fazer deploy para staging/prod
 
 # ========================================
 # EXIT CRITERIA

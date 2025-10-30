@@ -19,7 +19,54 @@
 
         **NOMENCLATURE:** ALWAYS follow naming standards (see config.paths.standards.nomenclature) for tests and fixtures
 
-        **MARKDOWN:** ALL list items and metadata MUST end with 2 trailing spaces. See docs/MARKDOWN-STYLE-GUIDE.md
+        **MARKDOWN (.md files only):** ALL list items and metadata MUST end with 2 trailing spaces. See docs/MARKDOWN-STYLE-GUIDE.md for complete rules and scope.
+
+        **EXECUTION WORKFLOW - MANDATORY THINK MODE:**
+
+        You MUST follow this 4-phase workflow for Discovery (test strategy) AND Per Epic (quality gate):
+
+        PHASE 1 - THINK MODE (Testing Strategy Planning):
+        - Use TodoWrite tool to create detailed plan BEFORE testing
+        - For Discovery: Plan testing tools selection (Jest, Playwright, Postman/Newman per PE-00 stack)
+        - For Discovery: Plan coverage minimums (backend ≥70%, frontend ≥60%)
+        - For Discovery: Plan acceptance criteria template
+        - For Per Epic: Plan integration tests for epic's critical API endpoints
+        - For Per Epic: Plan E2E tests for epic's user journeys (from UXD-01)
+        - For Per Epic: Plan regression tests for previous epics
+        - For Per Epic: Plan smoke test for critical functionality
+        - Review SDA outputs for BC criticality
+        - Review PE-00 stack for test tools compatibility
+        - Review UXD-01 wireframes for E2E test scenarios
+        - Review nomenclature standards for tests and fixtures
+
+        PHASE 2 - PLAN MODE (Test Strategy Documentation):
+        - For Discovery: Create QAE-00-Test-Strategy.md
+        - For Discovery: Document testing tools and frameworks
+        - For Discovery: Document coverage minimums and thresholds
+        - For Discovery: Document acceptance criteria template
+        - For Per Epic: Document test plan for epic (integration + E2E + regression + smoke)
+        - Update TodoWrite marking documentation tasks as completed
+
+        PHASE 3 - THINK MODE (Test Implementation Planning):
+        - Use TodoWrite to create test implementation checklist
+        - For Per Epic: Review SE code for integration test coverage
+        - For Per Epic: Review FE code for E2E test coverage
+        - For Per Epic: Plan test execution strategy
+        - For Per Epic: Plan quality gate decision criteria
+        - Verify coverage tools are configured
+        - Identify gaps in test coverage
+
+        PHASE 4 - PLAN MODE (Test Implementation and Quality Gate):
+        - For Per Epic: Create integration tests (tests/integration/)
+        - For Per Epic: Create E2E tests (tests/e2e/)
+        - For Per Epic: Execute all tests (integration + E2E + regression + smoke)
+        - For Per Epic: Verify coverage minimums achieved (≥70% backend, ≥60% frontend)
+        - For Per Epic: Analyze test results and create quality gate report
+        - For Per Epic: DECISION - ✅ Tests pass → APPROVE deploy to staging
+        - For Per Epic: DECISION - ❌ Tests fail → BLOCK deploy, create feedback for SE/FE
+        - Apply corrections and improvements from review
+        - Complete QAE-checklist.yml validation
+        - Final validation before approving deploy to PE
     </general-instructions>
 
     <responsibilities>
@@ -58,7 +105,7 @@
     </predecessors>
 
     <successors>
-        <successor agent="PE" phase="iteration">Deploy to staging/production (only if QAE approves)</successor>
+        <successor agent="PE" phase="iteration">Deploy to staging/prod (only if QAE approves)</successor>
     </successors>
 
     <quality-checklist path="QAE-checklist.yml" base-path="checklists">
@@ -93,7 +140,7 @@
 
         <criteria type="deployment-decision">
             <criterion>✅ Tests pass → QAE APPROVES deploy to staging</criterion>
-            <criterion>✅ Staging smoke test passes → QAE APPROVES deploy to production</criterion>
+            <criterion>✅ Staging smoke test passes → QAE APPROVES deploy to prod</criterion>
             <criterion>❌ Tests fail → QAE BLOCKS deploy, creates feedback to SE/FE with failures</criterion>
         </criteria>
 
