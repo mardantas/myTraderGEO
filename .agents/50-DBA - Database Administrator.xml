@@ -26,9 +26,9 @@
         <responsibility>Query optimization</responsibility>
         <responsibility>Performance review</responsibility>
         <responsibility>Guidance for DE to adjust schema if necessary</responsibility>
-        <responsibility>Multi-environment password strategy (development simple, staging/production strong 16+ chars)</responsibility>
+        <responsibility>Multi-environment password strategy (development simple, staging/prod strong 16+ chars)</responsibility>
         <responsibility>Security best practices (least privilege, encryption at rest, password rotation, compliance)</responsibility>
-        <responsibility>Database user management (CREATE USER in init, ALTER USER migration for staging/production)</responsibility>
+        <responsibility>Database user management (CREATE USER in init, ALTER USER migration for staging/prod)</responsibility>
     </responsibilities>
 
     <deliverables>
@@ -61,10 +61,10 @@
             </relationship>
         </deliverable>
 
-        <deliverable path="04-database/migrations/002_update_production_passwords.sql" base-path="" order="3">
-            <template base-path="templates">04-database-design/migrations/002_update_production_passwords.sql.template</template>
-            <description>ALTER USER migration for staging/production environments (NEVER commit real passwords)</description>
-            <note>Executed manually with environment variables: psql -v app_password="$DB_APP_PASSWORD" -f 002_update_production_passwords.sql</note>
+        <deliverable path="04-database/migrations/002_update_prod_passwords.sql" base-path="" order="3">
+            <template base-path="templates">04-database-design/migrations/002_update_prod_passwords.sql.template</template>
+            <description>ALTER USER migration for staging/prod environments (NEVER commit real passwords)</description>
+            <note>Executed manually with environment variables: psql -v app_password="$DB_APP_PASSWORD" -f 002_update_prod_passwords.sql</note>
             <type>migration</type>
             <mandatory>true</mandatory>
             <security-note>This file is committed to Git but contains NO real passwords. Passwords passed via psql -v parameter from environment variables.</security-note>
@@ -87,7 +87,7 @@
         <essential-check>Acceptable estimated performance</essential-check>
         <essential-check>Multi-environment password strategy documented (dev simple, staging/prod strong)</essential-check>
         <essential-check>Database passwords NOT hardcoded in Git (CREATE USER in init with dev password only)</essential-check>
-        <essential-check>ALTER USER migration created (002_update_production_passwords.sql) for staging/production</essential-check>
+        <essential-check>ALTER USER migration created (002_update_prod_passwords.sql) for staging/prod</essential-check>
         <essential-check>Password rotation procedure documented (quarterly production, semi-annual staging)</essential-check>
         <essential-check>Least privilege access documented (application user with minimal permissions)</essential-check>
         <essential-check>Compliance noted (LGPD Art. 46, SOC2, ISO 27001)</essential-check>
@@ -109,7 +109,7 @@
             <criterion>Backup strategy documented (RTO/RPO defined)</criterion>
             <criterion>Multi-environment password strategy documented in README.md</criterion>
             <criterion>Database passwords NEVER hardcoded in Git (init script with dev password only)</criterion>
-            <criterion>ALTER USER migration created for staging/production (002_update_production_passwords.sql)</criterion>
+            <criterion>ALTER USER migration created for staging/prod (002_update_prod_passwords.sql)</criterion>
             <criterion>Password rotation documented (quarterly production, semi-annual staging)</criterion>
             <criterion>Compliance requirements noted (LGPD Art. 46, SOC2, ISO 27001)</criterion>
         </criteria>

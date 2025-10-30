@@ -571,7 +571,7 @@ environment:
 
 **GitHub Secrets Required:**
 - `SSH_PRIVATE_KEY_STAGING`
-- `SSH_PRIVATE_KEY_PRODUCTION`
+- `SSH_PRIVATE_KEY_PROD`
 - `SSH_KNOWN_HOSTS`
 
 ### **Prerequisites for Remote Deploy**

@@ -58,7 +58,7 @@
     </predecessors>
 
     <successors>
-        <successor agent="PE" phase="iteration">Deploy to staging/production (only if QAE approves)</successor>
+        <successor agent="PE" phase="iteration">Deploy to staging/prod (only if QAE approves)</successor>
     </successors>
 
     <quality-checklist path="QAE-checklist.yml" base-path="checklists">
@@ -93,7 +93,7 @@
 
         <criteria type="deployment-decision">
             <criterion>✅ Tests pass → QAE APPROVES deploy to staging</criterion>
-            <criterion>✅ Staging smoke test passes → QAE APPROVES deploy to production</criterion>
+            <criterion>✅ Staging smoke test passes → QAE APPROVES deploy to prod</criterion>
             <criterion>❌ Tests fail → QAE BLOCKS deploy, creates feedback to SE/FE with failures</criterion>
         </criteria>
 

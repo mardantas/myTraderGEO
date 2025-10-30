@@ -196,14 +196,14 @@
             <critical>MUST CREATE PHYSICAL FILE in .github/workflows/</critical>
         </deliverable>
 
-        <deliverable path=".github/workflows/cd-production.yml" base-path="" order="10">
-            <template base-path="templates">06-github-management/workflows/cd-production.template.yml</template>
+        <deliverable path=".github/workflows/cd-prod.yml" base-path="" order="10">
+            <template base-path="templates">06-github-management/workflows/cd-prod.template.yml</template>
             <description>CD pipeline for production manual deployment with approval</description>
             <customization>Deploy scripts/commands from PE-00, environment protection, version input</customization>
             <features>
                 <feature>Manual workflow dispatch with version input parameter</feature>
                 <feature>Environment protection (production) requires approval</feature>
-                <feature>SSH setup with SSH_PRIVATE_KEY_PRODUCTION secret</feature>
+                <feature>SSH setup with SSH_PRIVATE_KEY_PROD secret</feature>
                 <feature>Remote deployment via deploy.sh production $version</feature>
             </features>
             <phase>discovery</phase>
@@ -331,9 +331,9 @@
 
         <criteria type="deployment">
             <criterion>Staging CD pipeline FILE created (.github/workflows/cd-staging.yml) - MANDATORY</criterion>
-            <criterion>Production CD pipeline FILE created (.github/workflows/cd-production.yml) - MANDATORY</criterion>
+            <criterion>Production CD pipeline FILE created (.github/workflows/cd-prod.yml) - MANDATORY</criterion>
             <criterion>Deployment strategy documented in GM-00 (PE-00 integration: .env, multi-server, remote deploy)</criterion>
-            <criterion>GitHub Secrets documented (SSH_PRIVATE_KEY_STAGING, SSH_PRIVATE_KEY_PRODUCTION, SSH_KNOWN_HOSTS)</criterion>
+            <criterion>GitHub Secrets documented (SSH_PRIVATE_KEY_STAGING, SSH_PRIVATE_KEY_PROD, SSH_KNOWN_HOSTS)</criterion>
             <criterion>CD pipelines trigger correctly (staging auto on push to main, production manual)</criterion>
         </criteria>
 
@@ -352,7 +352,7 @@
 
         <exit-condition>
             GitHub setup is COMPLETE when ALL of these are TRUE:
-            1. ALL PHYSICAL FILES created (10 files: script + 5 workflows (ci-backend, ci-frontend, security, cd-staging, cd-production) + template + dependabot + 2 docs)
+            1. ALL PHYSICAL FILES created (10 files: script + 5 workflows (ci-backend, ci-frontend, security, cd-staging, cd-prod) + template + dependabot + 2 docs)
             2. GM-00 explains WHY/WHAT (strategic) + PE-00 deployment strategy integration
             3. README explains HOW (operational, minimal, links to GM-00)
             4. NO duplication between GM-00 and README

@@ -14,7 +14,7 @@
 
         **DESIGN PHILOSOPHY:** Minimum viable infrastructure to start development and deploy epics quickly
 
-        **NOMENCLATURE:** ALWAYS follow nomenclature standards (see config.paths.standards.nomenclature) for infrastructure resources, environments and deployments
+        **NOMENCLATURE:** ALWAYS follow nomenclature standards (see .agents/docs/02-Nomenclature-Standards.md) for infrastructure resources, environments and deployments
 
         **MARKDOWN:** ALL list items and metadata MUST end with 2 trailing spaces. See docs/MARKDOWN-STYLE-GUIDE.md
 
@@ -25,18 +25,18 @@
         PHASE 1 - THINK MODE (Infrastructure Planning):
         - Use TodoWrite tool to create detailed plan BEFORE setting up infrastructure
         - Plan tech stack definition (Backend, Frontend, Database)
-        - Identify environment strategy (dev/staging/production)
+        - Identify environment strategy (dev/staging/prod)
         - Plan Docker Compose structure and service dependencies
         - Document deploy scripts strategy (local vs remote deployment)
         - Plan server hardening steps (UFW, fail2ban, SSH, NTP)
-        - Estimate Traefik configuration (staging CA + production CA)
+        - Estimate Traefik configuration (staging CA + prod CA)
         - Plan scaling decision matrix and migration paths
 
         PHASE 2 - PLAN MODE (Implementation):
         - Create PE-00-Quick-Start.md (local dev environment)
-        - Create PE-01-Server-Setup.md (production infrastructure)
+        - Create PE-01-Server-Setup.md (prod infrastructure)
         - Create PE-02-Scaling-Strategy.md (future growth planning)
-        - Implement Docker Compose files (dev/staging/production)
+        - Implement Docker Compose files (dev/staging/prod)
         - Create deploy scripts with SSH/SCP remote deployment
         - Configure Traefik with 2 certificateResolvers
         - Document environment variables strategy (.env files)
@@ -47,7 +47,7 @@
         - Verify tech stack compatibility with QAE/SEC/GM requirements
         - Validate security hardening (9 steps complete)
         - Check deploy script robustness (health checks, rollback, backup)
-        - Verify multi-environment strategy (dev/staging/production)
+        - Verify multi-environment strategy (dev/staging/prod)
         - Review scaling decision matrix (clear thresholds and migration paths)
         - Identify infrastructure gaps or missing documentation
 
@@ -60,9 +60,9 @@
     </general-instructions>
 
     <responsibilities>
-        <responsibility>Basic environments setup (dev, staging, production) using Docker Compose</responsibility>
+        <responsibility>Basic environments setup (dev, staging, prod) using Docker Compose</responsibility>
         <responsibility>Server setup documentation (OS installation, Docker Engine, firewall, security hardening)</responsibility>
-        <responsibility>Multi-environment strategy (.env.dev, .env.staging, .env.production with --env-file mandatory)</responsibility>
+        <responsibility>Multi-environment strategy (.env.dev, .env.staging, .env.prod with --env-file mandatory)</responsibility>
         <responsibility>Scaling strategy documentation (decision matrix, migration paths to Managed Cloud/K8s)</responsibility>
         <responsibility>Database setup (PostgreSQL container or managed service)</responsibility>
         <responsibility>Deploy scripts (bash/PowerShell) with local vs remote detection (SSH/SCP for remote)</responsibility>
@@ -97,12 +97,12 @@
                 <section>Server Hardening (9 steps: UFW, fail2ban, SSH, NTP, Docker, user/groups, directories, .env, verification)</section>
                 <section>Traefik Configuration (2 certificateResolvers: staging CA + production CA, consolidated guide)</section>
                 <section>Remote Deployment (SSH/SCP, health checks, rollback, backup, CI/CD integration)</section>
-                <section>Environment Strategy (.env.staging, .env.production)</section>
+                <section>Environment Strategy (.env.staging, .env.prod)</section>
             </sections>
             <phase>discovery</phase>
             <type>documentation-strategic</type>
             <mandatory>true</mandatory>
-            <note>Server Setup: Production infrastructure (staging/production environments)</note>
+            <note>Server Setup: Production infrastructure (staging/prod environments)</note>
         </deliverable>
 
         <deliverable path="PE-02-Scaling-Strategy.md" base-path="platform-engineering" order="3">
@@ -137,7 +137,7 @@
                 <principle>README is an INDEX/QUICK-REFERENCE to PE docs, not a duplicate</principle>
             </relationship>
         </deliverable>
-        <deliverable path="docker-compose.yml" base-path="project-root">
+        <deliverable path="docker-compose.dev.yml" base-path="project-root">
             <description>Docker Compose for local development</description>
             <type>infrastructure</type>
         </deliverable>
@@ -145,7 +145,7 @@
             <description>Docker Compose for staging environment</description>
             <type>infrastructure</type>
         </deliverable>
-        <deliverable path="docker-compose.production.yml" base-path="project-root">
+        <deliverable path="docker-compose.prod.yml" base-path="project-root">
             <description>Docker Compose for production environment</description>
             <type>infrastructure</type>
         </deliverable>
@@ -157,17 +157,17 @@
                 <function>remote_health_check() - HTTPS health check with retry logic (30 attempts, 5s interval)</function>
                 <function>log_deployment_history() - Logs deployment to local file</function>
                 <function>deploy_remote() - Main remote deployment function (SSH/SCP)</function>
-                <function>main() - Detects environment (development=local, staging/production=remote)</function>
+                <function>main() - Detects environment (development=local, staging/prod=remote)</function>
             </functions>
             <type>script</type>
-            <note>Script detects local vs remote automatically. Remote uses SSH/SCP to deploy to [project]-stage or [project]-prod servers.</note>
+            <note>Script detects local vs remote automatically. Remote uses SSH/SCP to deploy to [project]-staging or [project]-prod servers.</note>
         </deliverable>
         <deliverable path=".env.example" base-path="project-root">
             <description>Environment variables template with multi-environment instructions</description>
             <instructions>
                 <instruction>Copy to .env.dev (committed with safe defaults)</instruction>
                 <instruction>Copy to .env.staging (created on server, NOT committed)</instruction>
-                <instruction>Copy to .env.production (created on server, NOT committed)</instruction>
+                <instruction>Copy to .env.prod (created on server, NOT committed)</instruction>
             </instructions>
             <variables>
                 <variable>DOMAIN - environment-specific domain (localhost, staging.domain.com, domain.com)</variable>
@@ -184,7 +184,7 @@
                 <resolver name="letsencrypt">Production CA (trusted certificates)</resolver>
             </resolvers>
             <type>config</type>
-            <note>Traefik v3.0 for staging/production only (not used in development). Staging uses staging CA to avoid Let's Encrypt rate limits.</note>
+            <note>Traefik v3.0 for staging/prod only (not used in development). Staging uses staging CA to avoid Let's Encrypt rate limits.</note>
         </deliverable>
     </deliverables>
 
@@ -201,8 +201,8 @@
     </successors>
 
     <quality-checklist path="PE-checklist.yml" base-path="checklists">
-        <essential-check>Docker Compose files created for dev/staging/production</essential-check>
-        <essential-check>Multi-environment .env strategy documented (.env.dev, .env.staging, .env.production)</essential-check>
+        <essential-check>Docker Compose files created for dev/staging/prod</essential-check>
+        <essential-check>Multi-environment .env strategy documented (.env.dev, .env.staging, .env.prod)</essential-check>
         <essential-check>All docker-compose commands use --env-file flag explicitly</essential-check>
         <essential-check>Server setup documented (8+ steps: hostname, Docker, firewall, users, SSH, directories, .env, verification)</essential-check>
         <essential-check>Security hardening documented (UFW firewall, fail2ban, SSH keys, NTP)</essential-check>
@@ -219,11 +219,11 @@
 
     <definition-of-done>
         <criteria type="infrastructure">
-            <criterion>Docker Compose files created for all environments (dev, staging, production)</criterion>
+            <criterion>Docker Compose files created for all environments (dev, staging, prod)</criterion>
             <criterion>Database configured (PostgreSQL container or managed service)</criterion>
-            <criterion>Deploy script created and tested (can deploy to staging/production)</criterion>
+            <criterion>Deploy script created and tested (can deploy to staging/prod)</criterion>
             <criterion>.env.example file created with all required environment variables</criterion>
-            <criterion>Traefik reverse proxy configured with automatic SSL (staging + production)</criterion>
+            <criterion>Traefik reverse proxy configured with automatic SSL (staging + prod)</criterion>
             <criterion>Traefik static configuration (traefik.yml) created with Let's Encrypt setup</criterion>
         </criteria>
 
@@ -239,7 +239,7 @@
             <criterion>PE-00-Quick-Start.md created with local development setup</criterion>
             <criterion>PE-01-Server-Setup.md created with server hardening, Traefik configuration, and remote deployment</criterion>
             <criterion>PE-02-Scaling-Strategy.md created with decision matrix and migration paths</criterion>
-            <criterion>Deploy process documented (how to deploy to staging/production)</criterion>
+            <criterion>Deploy process documented (how to deploy to staging/prod)</criterion>
             <criterion>Environment variables documented in .env.example (including LETSENCRYPT_EMAIL, DOMAIN)</criterion>
             <criterion>Database backup/restore procedure documented</criterion>
             <criterion>Traefik setup documented (configuration, routing, SSL certificates, dashboard access)</criterion>
@@ -250,12 +250,12 @@
             <criterion>SE/FE can start development (environments ready)</criterion>
             <criterion>Can deploy a simple "Hello World" application to staging</criterion>
             <criterion>Database connection tested from application</criterion>
-            <criterion>HTTPS accessible on staging/production via Traefik (automatic SSL working)</criterion>
+            <criterion>HTTPS accessible on staging/prod via Traefik (automatic SSL working)</criterion>
             <criterion>Traefik dashboard accessible and secured (basic auth + IP whitelist for production)</criterion>
         </criteria>
 
         <exit-condition>
-            Basic infrastructure ready when: Docker Compose working AND deploy script functional AND database accessible AND Traefik routing with HTTPS working (staging/production) AND SE/FE can start coding
+            Basic infrastructure ready when: Docker Compose working AND deploy script functional AND database accessible AND Traefik routing with HTTPS working (staging/prod) AND SE/FE can start coding
         </exit-condition>
 
         <note>Pragmatic infrastructure: focuses on essentials (Docker Compose + deploy scripts). Advanced features (IaC, full observability, DR, Blue-Green) can be added when needed.</note>
