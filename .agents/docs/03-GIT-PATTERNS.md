@@ -585,7 +585,7 @@ environment:
 - ✅ Directory structure created
 - ✅ `.env` file with secrets
 
-**See:** PE-00-Environments-Setup.md for complete server setup guide
+**See:** PE platform engineering documentation (PE-00-Quick-Start.md, PE-01-Server-Setup.md, PE-02-Scaling-Strategy.md) for complete server setup guide
 
 ---
 

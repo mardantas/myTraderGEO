@@ -600,7 +600,7 @@ Other references:
 - [03-GIT-PATTERNS.md](../.agents/docs/03-GIT-PATTERNS.md) - Git workflow (branches, PRs, milestones, tags)
 - [SDA-01 Event Storming](../00-doc-ddd/02-strategic-design/SDA-01-Event-Storming.md) - Epics source
 - [SDA-02 Context Map](../00-doc-ddd/02-strategic-design/SDA-02-Context-Map.md) - Bounded Contexts source
-- [PE-00 Environments Setup](../00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md) - Stack for CI/CD
+- [PE-00 Environments Setup](../00-doc-ddd/08-platform-engineering/PE-00-Quick-Start.md, PE-01-Server-Setup.md, PE-02-Scaling-Strategy.md) - Stack for CI/CD
 
 ---
 

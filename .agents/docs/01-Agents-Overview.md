@@ -129,11 +129,11 @@ Define tech stack (Backend, Frontend, Database) and configure basic environments
 Define tech stack, Docker Compose environments (dev/staging/production with Traefik), server setup docs (OS, Docker, firewall, users, SSH), scaling strategy, deploy scripts with remote deployment, environment variables (.env files), logging, health checks.
 
 ### When Executes
-**Discovery:** PE-00-Environments-Setup (BEFORE GM, SEC, QAE)
+**Discovery:** PE platform engineering documentation (BEFORE GM, SEC, QAE)
 **Per Epic (OPTIONAL):** Performance checkpoint (15-30 min) - See [07-PE-SEC-Checkpoint-Guide.md](07-PE-SEC-Checkpoint-Guide.md) for criteria
 
 ### Key Deliverables
-- **PE-00-Environments-Setup.md** - Tech stack + environment configs + server setup + scaling strategy
+- **PE platform engineering documentation (PE-00-Quick-Start.md, PE-01-Server-Setup.md, PE-02-Scaling-Strategy.md)** - Tech stack + environment configs + server setup + scaling strategy
 - **Docker Compose** files (dev, staging, production with Traefik)
 - **Deploy scripts** (deploy.sh) with SSH remote deployment
 - **PE-EPIC-[N]-Performance-Checkpoint.md** (optional per epic when performance-critical)

@@ -579,7 +579,7 @@ gh issue view [ISSUE_NUMBER] --repo [OWNER]/[REPO]
 
 ## 🚀 Deployment Strategy (PE-00 Integration)
 
-This section documents the **deployment strategy** that integrates with [PE-00-Environments-Setup.md](../00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md).
+This section documents the **deployment strategy** that integrates with PE docs: [PE-00-Quick-Start.md](../00-doc-ddd/08-platform-engineering/PE-00-Quick-Start.md) (local dev), [PE-01-Server-Setup.md](../00-doc-ddd/08-platform-engineering/PE-01-Server-Setup.md) (remote deployment).
 
 ### Multi-Environment Architecture
 
@@ -677,7 +677,7 @@ YOUR_IP_ADDRESS=203.0.113.0         # Change to YOUR public IP
 ./deploy.sh production v1.2.3
 ```
 
-**For full deploy.sh implementation, see [PE-00-Environments-Setup.md - Remote Deployment Architecture](../00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md#-remote-deployment-architecture).**
+**For full deploy.sh implementation, see [PE-01-Server-Setup.md - Remote Deployment Architecture](../00-doc-ddd/08-platform-engineering/PE-01-Server-Setup.md#remote-deployment).**
 
 ---
 
@@ -913,7 +913,7 @@ ssh -i ~/.ssh/[project]_production_ed25519 [project]_app@[project]-prod "echo 'S
 - **Staging:** Rotate annually
 - **Production:** Rotate quarterly
 
-**For full server setup instructions (including user creation, SSH hardening, and firewall configuration), see [PE-00-Environments-Setup.md - Server Setup Documentation](../00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md#-server-setup-documentation).**
+**For full server setup instructions (including user creation, SSH hardening, and firewall configuration), see [PE-01-Server-Setup.md - Server Setup Documentation](../00-doc-ddd/08-platform-engineering/PE-01-Server-Setup.md#server-hardening).**
 
 ---
 
@@ -1076,7 +1076,7 @@ gh run view [RUN_ID] --repo [OWNER]/[REPO]
 ### Documentos Consultados
 - **SDA-01 Event Storming:** [00-doc-ddd/02-strategic-design/SDA-01-Event-Storming.md](00-doc-ddd/02-strategic-design/SDA-01-Event-Storming.md) - Epics para labels/milestones
 - **SDA-02 Context Map:** [00-doc-ddd/02-strategic-design/SDA-02-Context-Map.md](00-doc-ddd/02-strategic-design/SDA-02-Context-Map.md) - BCs para labels
-- **PE-00 Environments Setup:** [00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md](00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md) - Stack para CI/CD
+- **PE Platform Engineering:** [00-doc-ddd/08-platform-engineering/PE-00-Quick-Start.md](00-doc-ddd/08-platform-engineering/PE-00-Quick-Start.md), [PE-01-Server-Setup.md](00-doc-ddd/08-platform-engineering/PE-01-Server-Setup.md) - Stack para CI/CD
 
 ### Scripts Criados
 - [03-github-manager/scripts/setup-labels.sh](../../../03-github-manager/scripts/setup-labels.sh) ✅ ONE-TIME (Discovery)

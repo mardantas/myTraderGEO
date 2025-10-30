@@ -502,7 +502,7 @@ Obrigado pelo catch! Regression test criado.
 
 ## 🎯 Contexto
 
-**Deliverable Afetado:** PE-00-Environments-Setup.md
+**Deliverable Afetado:** PE platform engineering documentation (PE-00-Quick-Start.md, PE-01-Server-Setup.md, PE-02-Scaling-Strategy.md)
 **Bounded Context:** Infra
 
 ## 📝 Descrição
@@ -539,7 +539,7 @@ Fase 3: Validação (quality checklist)
 
 ### Arquivos Modificados
 
-- PE-00-Environments-Setup.md (+250 linhas)
+- PE platform engineering documentation (PE-00-Quick-Start.md, PE-01-Server-Setup.md, PE-02-Scaling-Strategy.md) (+250 linhas)
 - 05-infra/configs/traefik.yml (2 certificateResolvers)
 - 05-infra/configs/.env.example (instruções de uso)
 - 05-infra/README.md (separação estratégico/operacional)

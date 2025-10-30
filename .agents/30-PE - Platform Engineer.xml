@@ -37,34 +37,66 @@
     </responsibilities>
 
     <deliverables>
-        <deliverable path="PE-00-Environments-Setup.md" base-path="platform-engineering" order="1">
-            <template base-path="templates">08-platform-engineering/PE-00-Environments-Setup.template.md</template>
-            <description>Basic environments setup (dev/stage/prod with Docker Compose and deploy scripts) - pragmatic approach</description>
+        <deliverable path="PE-00-Quick-Start.md" base-path="platform-engineering" order="1">
+            <template base-path="templates">08-platform-engineering/PE-00-Quick-Start.md</template>
+            <description>Local development MVP: Docker Compose dev environment, .env setup, logging, health checks</description>
             <sections>
-                <section>Environment Strategy (.env.dev, .env.staging, .env.production)</section>
-                <section>Server Setup Documentation (8+ steps: hostname, Docker, firewall, users, SSH, directories, .env, verification)</section>
-                <section>Traefik Configuration (2 certificateResolvers: staging CA + production CA)</section>
-                <section>Scaling Strategy (decision matrix with users/SLA/cost, 3 migration paths)</section>
-                <section>Remote Deployment Architecture (SSH/SCP, health checks, logging)</section>
+                <section>Environment Strategy (.env.dev for local development)</section>
+                <section>Docker Compose Development Setup</section>
+                <section>Basic Logging and Health Checks</section>
+                <section>Windows Development Guide</section>
             </sections>
             <phase>discovery</phase>
             <type>documentation-strategic</type>
             <mandatory>true</mandatory>
-            <note>Lean infrastructure: PE-00 only, focuses on essential setup (Docker Compose + deploy scripts) + server setup + scaling strategy</note>
+            <note>Quick Start: Essential setup for local development (dev environment only)</note>
         </deliverable>
 
-        <deliverable path="05-infra/README.md" base-path="" order="2">
+        <deliverable path="PE-01-Server-Setup.md" base-path="platform-engineering" order="2">
+            <template base-path="templates">08-platform-engineering/PE-01-Server-Setup.md</template>
+            <description>Production-ready remote server configuration: server hardening, Traefik, remote deployment</description>
+            <sections>
+                <section>Server Hardening (9 steps: UFW, fail2ban, SSH, NTP, Docker, user/groups, directories, .env, verification)</section>
+                <section>Traefik Configuration (2 certificateResolvers: staging CA + production CA, consolidated guide)</section>
+                <section>Remote Deployment (SSH/SCP, health checks, rollback, backup, CI/CD integration)</section>
+                <section>Environment Strategy (.env.staging, .env.production)</section>
+            </sections>
+            <phase>discovery</phase>
+            <type>documentation-strategic</type>
+            <mandatory>true</mandatory>
+            <note>Server Setup: Production infrastructure (staging/production environments)</note>
+        </deliverable>
+
+        <deliverable path="PE-02-Scaling-Strategy.md" base-path="platform-engineering" order="3">
+            <template base-path="templates">08-platform-engineering/PE-02-Scaling-Strategy.md</template>
+            <description>Future growth planning beyond Docker Compose: decision matrix, migration paths, cost comparison</description>
+            <sections>
+                <section>Decision Matrix (users, SLA, cost thresholds)</section>
+                <section>Migration Path 1: Managed Cloud (AWS ECS, Azure ACI, Cloud Run)</section>
+                <section>Migration Path 2: Docker Swarm (not recommended - skip)</section>
+                <section>Migration Path 3: Kubernetes (>50k users)</section>
+                <section>Cost Comparison Tables</section>
+            </sections>
+            <phase>discovery</phase>
+            <type>documentation-strategic</type>
+            <mandatory>true</mandatory>
+            <note>Scaling Strategy: When and how to migrate (future growth beyond Docker Compose)</note>
+        </deliverable>
+
+        <deliverable path="05-infra/README.md" base-path="" order="4">
             <template base-path="templates">08-platform-engineering/README.template.md</template>
             <description>Operational quick reference: Docker commands, deploy scripts, environment setup, troubleshooting</description>
-            <note>Quick start for infrastructure. Links to PE-00 for architecture decisions. Two Document Strategy: README (HOW), PE-00 (WHY/WHAT).</note>
+            <note>Quick start for infrastructure. Links to PE-00, PE-01, PE-02 for architecture decisions. Two Document Strategy: README (HOW), PE docs (WHY/WHAT).</note>
             <phase>discovery</phase>
             <type>documentation-operational</type>
             <mandatory>true</mandatory>
             <purpose>operational</purpose>
             <target-audience>developers and DevOps</target-audience>
             <relationship>
-                <references>PE-00-Environments-Setup.md</references>
-                <principle>README is an INDEX/QUICK-REFERENCE to PE-00, not a duplicate</principle>
+                <references>PE-00-Quick-Start.md</references>
+                <references>PE-01-Server-Setup.md</references>
+                <references>PE-02-Scaling-Strategy.md</references>
+                <principle>README is an INDEX/QUICK-REFERENCE to PE docs, not a duplicate</principle>
             </relationship>
         </deliverable>
         <deliverable path="docker-compose.yml" base-path="project-root">
@@ -166,7 +198,9 @@
         </criteria>
 
         <criteria type="documentation">
-            <criterion>PE-00-Environments-Setup.md created with setup instructions including Traefik configuration</criterion>
+            <criterion>PE-00-Quick-Start.md created with local development setup</criterion>
+            <criterion>PE-01-Server-Setup.md created with server hardening, Traefik configuration, and remote deployment</criterion>
+            <criterion>PE-02-Scaling-Strategy.md created with decision matrix and migration paths</criterion>
             <criterion>Deploy process documented (how to deploy to staging/production)</criterion>
             <criterion>Environment variables documented in .env.example (including LETSENCRYPT_EMAIL, DOMAIN)</criterion>
             <criterion>Database backup/restore procedure documented</criterion>

@@ -2,7 +2,7 @@ name: CD Staging (Auto-Deploy)
 
 # Triggered automatically on push to main branch
 # Deploys to staging server via SSH/SCP using deploy.sh script
-# Integrates with PE-00-Environments-Setup.md deployment strategy
+# Integrates with PE platform engineering docs (PE-00/PE-01/PE-02) deployment strategy
 
 on:
   push:
