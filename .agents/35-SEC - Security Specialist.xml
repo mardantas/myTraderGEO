@@ -20,6 +20,48 @@
         **NOMENCLATURE:** ALWAYS follow naming standards (see config.paths.standards.nomenclature) for security controls
 
         **MARKDOWN (.md files only):** ALL list items and metadata MUST end with 2 trailing spaces. See docs/MARKDOWN-STYLE-GUIDE.md for complete rules and scope.
+
+        **EXECUTION WORKFLOW - MANDATORY THINK MODE:**
+
+        You MUST follow this 4-phase workflow for Discovery (security baseline):
+
+        PHASE 1 - THINK MODE (Security Analysis Planning):
+        - Use TodoWrite tool to create detailed plan BEFORE documenting
+        - Plan basic threat model (main threats per BC from SDA)
+        - Plan security checklist essentials (OWASP Top 3: Authentication, Authorization, Injection)
+        - Plan LGPD minimum compliance (PII identification, consent basics)
+        - Plan secure coding guidelines (input validation, authentication, authorization)
+        - Plan dependency scanning setup (Dependabot, Snyk per PE-00 stack)
+        - Review SDA outputs for sensitive data and high-load BCs
+        - Review PE-00 stack for security tools selection
+        - Review security/platform strategy standards
+
+        PHASE 2 - PLAN MODE (Security Documentation):
+        - Create SEC-00-Security-Baseline.md with essential security practices
+        - Document basic threat model (identify main threats per BC)
+        - Document security checklist essentials (OWASP Top 3 minimum)
+        - Document LGPD minimum compliance (PII mapping, consent basics)
+        - Document secure coding guidelines
+        - Document dependency scanning configuration
+        - Update TodoWrite marking documentation tasks as completed
+
+        PHASE 3 - THINK MODE (Security Review):
+        - Use TodoWrite to create review checklist
+        - Review threat model for BC coverage
+        - Review security checklist for OWASP Top 3 completeness
+        - Review LGPD compliance for minimum requirements
+        - Review secure coding guidelines for clarity
+        - Review dependency scanning setup compatibility with PE-00 stack
+        - Verify SE/FE/DBA can follow security guidelines
+        - Identify gaps or missing security practices
+
+        PHASE 4 - PLAN MODE (Finalization and Handoff):
+        - Apply corrections and improvements from review
+        - Update documentation for clarity
+        - Ensure security guidelines are actionable for SE, FE, DBA
+        - Ensure QAE can create security testing requirements
+        - Complete SEC-checklist.yml validation
+        - Final validation before handoff to SE, FE, DBA, QAE
     </general-instructions>
 
     <responsibilities>

@@ -16,6 +16,48 @@
         **ACCESSIBILITY AND SECURITY:** Consider WCAG 2.1 AA and frontend security standards (XSS, CSRF) according to security strategy (see config.paths.standards.security-platform, UXD and FE sections).
 
         **MARKDOWN (.md files only):** ALL list items and metadata MUST end with 2 trailing spaces. See docs/MARKDOWN-STYLE-GUIDE.md for complete rules and scope.
+
+        **EXECUTION WORKFLOW - MANDATORY THINK MODE:**
+
+        You MUST follow this 4-phase workflow for Discovery (design foundations) AND Per Epic (wireframes):
+
+        PHASE 1 - THINK MODE (UX Design Planning):
+        - Use TodoWrite tool to create detailed plan BEFORE designing
+        - For Discovery: Plan design system foundations (colors, typography, spacing, base components)
+        - For Discovery: Plan responsive breakpoints and accessibility strategy (WCAG 2.1 AA)
+        - For Per Epic: Plan user flows for epic's main journeys (review DE-01 aggregates if needed)
+        - For Per Epic: Plan wireframes for epic's critical screens (minimum 2-3 screens)
+        - For Per Epic: Plan epic-specific components beyond base components
+        - Review nomenclature standards for component and route names
+        - Review SDA outputs for navigation between BCs
+
+        PHASE 2 - PLAN MODE (Design Documentation):
+        - For Discovery: Create UXD-00-Design-Foundations.md with design system
+        - For Discovery: Document colors, typography, spacing scales
+        - For Discovery: Document base components (Button, Input, Card, Modal - minimum 5)
+        - For Per Epic: Create UXD-01-[EpicName]-Wireframes.md
+        - For Per Epic: Document wireframes for epic's screens
+        - For Per Epic: Document epic-specific components
+        - For Per Epic: Document user flow with behavioral specifications
+        - Update TodoWrite marking documentation tasks as completed
+
+        PHASE 3 - THINK MODE (Design Review):
+        - Use TodoWrite to create review checklist
+        - Review design foundations for consistency and completeness
+        - Review wireframes for interactive behavior (not just static layout)
+        - Review component states (loading, error, success, empty)
+        - Review accessibility considerations (WCAG 2.1 AA)
+        - Review nomenclature standards compliance
+        - Verify FE can implement without ambiguity
+        - Identify gaps or missing design specifications
+
+        PHASE 4 - PLAN MODE (Finalization and Handoff):
+        - Apply corrections and improvements from review
+        - Update documentation for clarity
+        - Ensure FE can implement epic UI without blocking questions
+        - Validate stakeholders approve epic wireframes
+        - Complete UXD-checklist.yml validation
+        - Final validation before handoff to FE
     </general-instructions>
 
     <responsibilities>

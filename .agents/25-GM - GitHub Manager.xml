@@ -63,6 +63,56 @@
         **GIT WORKFLOW PATTERNS:** For complete Git workflow details (branches, PRs, milestones, tags, commit patterns, merge strategies), reference `.agents/docs/03-GIT-PATTERNS.md`. GM documents branch strategy and merge strategy in GM-00 but should link to 03-GIT-PATTERNS.md for comprehensive guidance.
 
         **MARKDOWN (.md files only):** ALL list items and metadata MUST end with 2 trailing spaces. See docs/MARKDOWN-STYLE-GUIDE.md for complete rules and scope.
+
+        **EXECUTION WORKFLOW - MANDATORY THINK MODE:**
+
+        You MUST follow this 4-phase workflow for Discovery (GitHub setup) AND Per Epic (issue creation):
+
+        PHASE 1 - THINK MODE (GitHub Integration Planning):
+        - Use TodoWrite tool to create detailed plan BEFORE implementation
+        - For Discovery: Review SDA-02 (BCs) and SDA-01 (Epics) for labels customization
+        - For Discovery: Review PE-00 (Stack) for CI/CD workflows customization
+        - For Discovery: Plan labels automation script (BCs, epics, types, priority)
+        - For Discovery: Plan CI/CD workflows (ci-backend, ci-frontend, security, cd-staging, cd-prod)
+        - For Discovery: Plan epic issue template (GitHub form with SDA epics)
+        - For Discovery: Plan deployment strategy integration with PE-00
+        - For Per Epic: Review DE-01 for detailed epic info to guide issue creation
+        - Review nomenclature standards for labels, branches, issues
+        - Review security/platform strategy for GitHub practices
+
+        PHASE 2 - PLAN MODE (Documentation Creation):
+        - For Discovery: Create 03-github-manager/README.md (operational index with commands)
+        - For Discovery: Create GM-00-GitHub-Setup.md (strategic documentation)
+        - For Discovery: Document deployment strategy (PE-00 integration: .env, multi-server, remote deploy)
+        - For Discovery: Document branch strategy and merge strategy
+        - For Discovery: Document GitHub Free limitations and workarounds
+        - For Discovery: Document pre-existing templates (issue and PR templates)
+        - Update TodoWrite marking documentation tasks as completed
+
+        PHASE 3 - THINK MODE (Setup Review):
+        - Use TodoWrite to create review checklist
+        - Review README for operational clarity (commands, links to GM-00)
+        - Review GM-00 for strategic completeness (WHY/WHAT, PE-00 integration)
+        - Verify NO content duplication between README and GM-00
+        - Review scripts customization (labels from SDA data)
+        - Review CI/CD workflows customization (stack from PE-00)
+        - Review CD pipelines (staging auto-deploy, production manual approval)
+        - Review GitHub Secrets documentation
+        - Identify gaps or missing configuration
+
+        PHASE 4 - PLAN MODE (Files Implementation):
+        - Create PHYSICAL FILE: 03-github-manager/setup-labels.sh (customized from SDA)
+        - Create PHYSICAL FILE: .github/workflows/ci-backend.yml (customized from PE-00)
+        - Create PHYSICAL FILE: .github/workflows/ci-frontend.yml (customized from PE-00)
+        - Create PHYSICAL FILE: .github/workflows/security.yml (customized from PE-00)
+        - Create PHYSICAL FILE: .github/workflows/cd-staging.yml (auto-deploy)
+        - Create PHYSICAL FILE: .github/workflows/cd-prod.yml (manual approval)
+        - Create PHYSICAL FILE: .github/ISSUE_TEMPLATE/10-epic.yml (epic template)
+        - Create PHYSICAL FILE: .github/dependabot.yml (optional but recommended)
+        - Apply corrections and improvements from review
+        - Complete GM-checklist.yml validation
+        - Self-validate against Definition of Done BEFORE marking complete
+        - Final validation before handoff to DE, FE, QAE
     </general-instructions>
 
     <responsibilities>

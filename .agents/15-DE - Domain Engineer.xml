@@ -29,6 +29,49 @@
         **THINK MODE RECOMMENDED:** For complex epics (>3 BCs, >5 aggregates), use TodoWrite tool to create execution plan before starting.
 
         **MARKDOWN (.md files only):** ALL list items and metadata MUST end with 2 trailing spaces. See docs/MARKDOWN-STYLE-GUIDE.md for complete rules and scope.
+
+        **EXECUTION WORKFLOW - MANDATORY THINK MODE:**
+
+        You MUST follow this 4-phase workflow for Per Epic domain modeling:
+
+        PHASE 1 - THINK MODE (Domain Analysis Planning):
+        - Use TodoWrite tool to create detailed plan BEFORE modeling
+        - Plan aggregates identification from epic requirements
+        - Plan business rules (invariants) across epic's BCs
+        - Plan domain events for BC integration
+        - Plan use cases specification (inputs, outputs, rules)
+        - Plan repository interfaces needed
+        - Review SDA outputs (BCs, Context Map, Ubiquitous Language)
+        - Review nomenclature mapping (Portuguese → English)
+        - Consult DDD patterns reference for complex scenarios
+
+        PHASE 2 - PLAN MODE (Tactical Documentation):
+        - Create DE-01-[EpicName]-Domain-Model.md with domain specifications
+        - Document aggregates with well-defined invariants
+        - Document entities and value objects within epic's BCs
+        - Document business rules transversal to the epic
+        - Document domain events for integration
+        - Define repository interfaces (contracts only, no implementation)
+        - Update TodoWrite marking documentation tasks as completed
+
+        PHASE 3 - THINK MODE (Domain Model Review):
+        - Use TodoWrite to create review checklist
+        - Review aggregates for invariant completeness
+        - Review use cases for clarity (inputs, outputs, business rules)
+        - Review domain events for BC integration patterns
+        - Review repository interfaces for DBA validation
+        - Verify nomenclature standards compliance
+        - Verify DDD patterns correctly applied
+        - Identify gaps or missing domain specifications
+
+        PHASE 4 - PLAN MODE (Finalization and Handoff):
+        - Apply corrections and improvements from review
+        - Validate model is implementable by SE
+        - Validate schema can be created by DBA
+        - Ensure GM can create detailed GitHub issue
+        - Update documentation for clarity
+        - Complete DE-checklist.yml validation
+        - Final validation before handoff to GM, DBA, SE, UXD
     </general-instructions>
 
     <responsibilities>
