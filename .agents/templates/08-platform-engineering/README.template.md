@@ -46,7 +46,7 @@ This is a **quick reference guide** for executing infrastructure commands (Docke
 ├── docker/
 │   ├── docker-compose.yml            # Development
 │   ├── docker-compose.staging.yml    # Staging + Traefik
-│   └── docker-compose.production.yml # Production + Traefik + Resource Limits
+│   └── docker-compose.prod.yml # Production + Traefik + Resource Limits
 ├── dockerfiles/
 │   ├── backend/
 │   │   ├── Dockerfile        # Backend production
@@ -169,13 +169,13 @@ docker compose -f 05-infra/docker/docker-compose.staging.yml --env-file 05-infra
 ./05-infra/scripts/deploy.sh production v1.0.0
 
 # View logs
-docker compose -f 05-infra/docker/docker-compose.production.yml --env-file 05-infra/configs/.env.production logs -f
+docker compose -f 05-infra/docker/docker-compose.prod.yml --env-file 05-infra/configs/.env.prod logs -f
 
 # Health check
 curl https://{domain}/health
 
 # Stop (with confirmation)
-docker compose -f 05-infra/docker/docker-compose.production.yml --env-file 05-infra/configs/.env.production down
+docker compose -f 05-infra/docker/docker-compose.prod.yml --env-file 05-infra/configs/.env.prod down
 ```
 
 ---
@@ -244,7 +244,7 @@ docker compose -f 05-infra/docker/docker-compose.production.yml --env-file 05-in
 - Health checks configured
 - Auto-restart policies
 
-**Docker Compose:** `05-infra/docker/docker-compose.production.yml`
+**Docker Compose:** `05-infra/docker/docker-compose.prod.yml`
 
 **Dockerfiles:**
 - Backend: `05-infra/dockerfiles/backend/Dockerfile`
@@ -255,8 +255,8 @@ docker compose -f 05-infra/docker/docker-compose.production.yml --env-file 05-in
 - Backend API: https://api.{domain}
 - Traefik Dashboard: https://traefik.{domain}
   - User: `admin`
-  - Password: configured in `.env.production`
-  - **IP Whitelist:** Configure `YOUR_IP_ADDRESS` in `.env.production` for security
+  - Password: configured in `.env.prod`
+  - **IP Whitelist:** Configure `YOUR_IP_ADDRESS` in `.env.prod` for security
 
 **Note:** All traffic is routed through Traefik (automatic HTTPS with Let's Encrypt trusted CA).
 

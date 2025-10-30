@@ -148,7 +148,7 @@ CREATE USER {project}_readonly WITH PASSWORD 'dev_readonly_123';
 
 #### Step 2: ALTER USER Migration (Staging/Production Passwords)
 
-**File:** [migrations/002_update_production_passwords.sql](migrations/002_update_production_passwords.sql)
+**File:** [migrations/002_update_prod_passwords.sql](migrations/002_update_prod_passwords.sql)
 
 ```sql
 -- This file is COMMITTED to Git WITHOUT real passwords
@@ -160,7 +160,7 @@ CREATE USER {project}_readonly WITH PASSWORD 'dev_readonly_123';
 -- Usage:
 -- export DB_APP_PASSWORD="St@g!ng_SecureP@ss2025!#"
 -- export DB_READONLY_PASSWORD="St@g!ng_ReadOnly2025!#"
--- psql -v app_password="$DB_APP_PASSWORD" -v readonly_password="$DB_READONLY_PASSWORD" -f 002_update_production_passwords.sql
+-- psql -v app_password="$DB_APP_PASSWORD" -v readonly_password="$DB_READONLY_PASSWORD" -f 002_update_prod_passwords.sql
 
 -- Update application user password
 ALTER USER {project}_app WITH PASSWORD :'app_password';
@@ -186,11 +186,11 @@ export DB_READONLY_PASSWORD="[STRONG_PASSWORD_FROM_ENV]"
 psql -h $DB_HOST -U postgres -d {project}_dev \
   -v app_password="$DB_APP_PASSWORD" \
   -v readonly_password="$DB_READONLY_PASSWORD" \
-  -f 04-database/migrations/002_update_production_passwords.sql
+  -f 04-database/migrations/002_update_prod_passwords.sql
 ```
 
 **⚠️ IMPORTANT:**
-- ✅ **DO commit** `002_update_production_passwords.sql` to Git (file contains NO passwords)
+- ✅ **DO commit** `002_update_prod_passwords.sql` to Git (file contains NO passwords)
 - ❌ **DO NOT commit** real passwords (passed via `psql -v` from environment)
 - ✅ **DO document** execution instructions in this README
 - ❌ **DO NOT execute** on development (use dev_password_123 from init script)
@@ -256,18 +256,18 @@ DB_READONLY_PASSWORD=[GENERATED_STRONG_PASSWORD]
    export DB_APP_PASSWORD="[NEW_PASSWORD]"
    psql -h localhost -U postgres -d {project}_dev \
      -v app_password="$DB_APP_PASSWORD" \
-     -f migrations/002_update_production_passwords.sql
+     -f migrations/002_update_prod_passwords.sql
    ```
 
 4. **Restart application:**
    ```bash
-   docker compose -f docker-compose.production.yml \
+   docker compose -f docker-compose.prod.yml \
      --env-file .env.production restart api
    ```
 
 5. **Verify connection:**
    ```bash
-   docker compose -f docker-compose.production.yml \
+   docker compose -f docker-compose.prod.yml \
      --env-file .env.production logs api | grep "Database connection successful"
    ```
 
@@ -442,7 +442,7 @@ Use this checklist during Discovery and per-epic security reviews:
 - [ ] Database users created with least privilege ([01-create-app-user.sql](init-scripts/01-create-app-user.sql))
 - [ ] Development passwords committed to Git (safe defaults)
 - [ ] Staging/production passwords documented (NOT committed)
-- [ ] ALTER USER migration created ([002_update_production_passwords.sql](migrations/002_update_production_passwords.sql))
+- [ ] ALTER USER migration created ([002_update_prod_passwords.sql](migrations/002_update_prod_passwords.sql))
 - [ ] Password rotation procedure documented (this README)
 - [ ] Encryption at rest configured (pgcrypto extension)
 - [ ] Audit logging enabled (pgaudit extension)

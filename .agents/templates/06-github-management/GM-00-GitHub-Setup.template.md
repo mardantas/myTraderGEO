@@ -749,7 +749,7 @@ jobs:
 
 #### CD Production Pipeline (Manual Approval)
 
-**Arquivo:** [.github/workflows/cd-production.yml](.github/workflows/cd-production.yml)
+**Arquivo:** [.github/workflows/cd-prod.yml](.github/workflows/cd-prod.yml)
 
 **Characteristics:**
 - ✅ **Manual trigger:** workflow_dispatch with version input
@@ -786,7 +786,7 @@ jobs:
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY_PRODUCTION }}" > ~/.ssh/id_ed25519
+          echo "${{ secrets.SSH_PRIVATE_KEY_PROD }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
@@ -809,7 +809,7 @@ jobs:
 ```
 
 **GitHub Secrets Required:**
-- `SSH_PRIVATE_KEY_PRODUCTION` - Private key to connect to production server
+- `SSH_PRIVATE_KEY_PROD` - Private key to connect to production server
 - `SSH_KNOWN_HOSTS` - Known hosts file to prevent MITM attacks
 - `DOMAIN` - Your domain (e.g., `example.com`)
 
@@ -842,7 +842,7 @@ This section documents all required GitHub Secrets for remote deployment.
 | Secret Name | Environment | Description | How to Generate |
 |-------------|-------------|-------------|-----------------|
 | `SSH_PRIVATE_KEY_STAGING` | Staging | Private SSH key for staging server | `ssh-keygen -t ed25519 -C "[project]-staging"` → Copy `~/.ssh/id_ed25519` content |
-| `SSH_PRIVATE_KEY_PRODUCTION` | Production | Private SSH key for production server | `ssh-keygen -t ed25519 -C "[project]-production"` → Copy `~/.ssh/id_ed25519` content |
+| `SSH_PRIVATE_KEY_PROD` | Production | Private SSH key for production server | `ssh-keygen -t ed25519 -C "[project]-prod"` → Copy `~/.ssh/id_ed25519` content |
 | `SSH_KNOWN_HOSTS` | Both | Known hosts file to prevent MITM attacks | `ssh-keyscan [project]-stage >> ~/.ssh/known_hosts && ssh-keyscan [project]-prod >> ~/.ssh/known_hosts` → Copy file content |
 | `DOMAIN` | Both | Your domain (e.g., `example.com`) | Manually enter your domain |
 
@@ -888,7 +888,7 @@ cat ~/.ssh/known_hosts_staging
 3. Add:
    - Name: `SSH_PRIVATE_KEY_STAGING`
    - Value: [Paste entire private key content, including -----BEGIN OPENSSH PRIVATE KEY-----]
-4. Repeat for `SSH_PRIVATE_KEY_PRODUCTION`, `SSH_KNOWN_HOSTS`, `DOMAIN`
+4. Repeat for `SSH_PRIVATE_KEY_PROD`, `SSH_KNOWN_HOSTS`, `DOMAIN`
 
 #### 4. Verify SSH Connection
 

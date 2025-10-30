@@ -189,10 +189,10 @@ git clone https://github.com/[YOUR_ORG]/[project].git .
 
 # Create .env files (DO NOT commit to Git!)
 cp .env.example .env.staging   # For staging server
-cp .env.example .env.production # For production server
+cp .env.example .env.prod # For production server
 
 # Edit .env with real secrets
-nano .env.staging   # or .env.production
+nano .env.staging   # or .env.prod
 ```
 
 ### Step 9: Verify Server Setup
@@ -352,7 +352,7 @@ volumes:
 
 ### Docker Compose (Production)
 
-**File:** `docker-compose.production.yml`
+**File:** `docker-compose.prod.yml`
 
 ```yaml
 version: '3.8'
@@ -749,8 +749,8 @@ jobs:
 
 ### Production Environment
 - [ ] Server hardened (Steps 1-9 completed)
-- [ ] `docker-compose.production.yml` created with Traefik
-- [ ] `.env.production` configured with strong passwords (16+ chars)
+- [ ] `docker-compose.prod.yml` created with Traefik
+- [ ] `.env.prod` configured with strong passwords (16+ chars)
 - [ ] DNS points to production server IP
 - [ ] `./deploy.sh production` succeeds
 - [ ] https://{DOMAIN} loads

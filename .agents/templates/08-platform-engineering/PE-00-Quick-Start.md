@@ -203,7 +203,7 @@ LOG_LEVEL=Information
 Create these files (DO NOT commit to git):
 - `.env.dev` (local development) - **Use simple passwords, it's OK for dev**
 - `.env.staging` (staging server) - See PE-01-Server-Setup.md
-- `.env.production` (production server) - See PE-01-Server-Setup.md
+- `.env.prod` (production server) - See PE-01-Server-Setup.md
 
 **Add to .gitignore:**
 ```
@@ -220,7 +220,7 @@ docker compose -f docker-compose.dev.yml --env-file .env.dev up
 docker compose -f docker-compose.staging.yml --env-file .env.staging up
 
 # Production (see PE-01-Server-Setup.md)
-docker compose -f docker-compose.production.yml --env-file .env.production up
+docker compose -f docker-compose.prod.yml --env-file .env.prod up
 ```
 
 ---

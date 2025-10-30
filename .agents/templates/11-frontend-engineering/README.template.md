@@ -237,7 +237,7 @@ docker run -p 80:80 {project}-web:latest
 cp -r dist/* /var/www/html/
 
 # Or use Docker Compose
-docker compose -f ../05-infra/docker/docker-compose.production.yml up -d web
+docker compose -f ../05-infra/docker/docker-compose.prod.yml up -d web
 ```
 
 ---

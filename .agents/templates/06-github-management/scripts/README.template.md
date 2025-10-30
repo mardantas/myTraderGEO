@@ -357,7 +357,7 @@ curl https://api.[DOMAIN]/health
 
    # Required secrets:
    # - SSH_PRIVATE_KEY_STAGING (content of ~/.ssh/[project]_staging_ed25519)
-   # - SSH_PRIVATE_KEY_PRODUCTION (content of ~/.ssh/[project]_production_ed25519)
+   # - SSH_PRIVATE_KEY_PROD (content of ~/.ssh/[project]_prod_ed25519)
    # - SSH_KNOWN_HOSTS (content of ~/.ssh/known_hosts)
    # - DOMAIN (e.g., example.com)
    ```

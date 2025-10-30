@@ -106,7 +106,7 @@ CREATE USER app_user WITH PASSWORD 'dev_password_123';  -- Simple OK for dev
 
 **2. ALTER USER Migration (Staging/Prod):**
 ```sql
--- 002_update_production_passwords.sql (committed to Git - no real passwords!)
+-- 002_update_prod_passwords.sql (committed to Git - no real passwords!)
 -- Execute manually with variables (passwords never committed)
 
 ALTER USER app_user WITH PASSWORD :'app_password';  -- Password via psql -v
@@ -118,7 +118,7 @@ ALTER USER app_user WITH PASSWORD :'app_password';  -- Password via psql -v
 export DB_APP_PASSWORD="St@g!ng_SecureP@ss2025!#"
 psql -U postgres -d mydb \
   -v app_password="$DB_APP_PASSWORD" \
-  -f 002_update_production_passwords.sql
+  -f 002_update_prod_passwords.sql
 ```
 
 ### Password Requirements

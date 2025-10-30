@@ -357,7 +357,7 @@ psql -v app_password="$DB_APP_PASSWORD" -f 002_update_passwords.sql
 
 **Checklist:**
 - [ ] Database passwords NOT hardcoded in Git?
-- [ ] ALTER USER migration created (002_update_production_passwords.sql)?
+- [ ] ALTER USER migration created (002_update_prod_passwords.sql)?
 - [ ] Password rotation procedure documented?
 - [ ] Development uses simple passwords (OK)?
 - [ ] Staging/Prod use strong passwords (16+ chars)?

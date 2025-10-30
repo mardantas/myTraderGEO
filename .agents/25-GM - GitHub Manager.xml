@@ -171,7 +171,7 @@
             <sections>
                 <section>Deployment Strategy (PE-00 Integration) - .env files, multi-server, remote deploy patterns</section>
                 <section>CD Pipelines (staging auto-deploy, production manual approval)</section>
-                <section>GitHub Secrets (SSH_PRIVATE_KEY_STAGING, SSH_PRIVATE_KEY_PRODUCTION, SSH_KNOWN_HOSTS)</section>
+                <section>GitHub Secrets (SSH_PRIVATE_KEY_STAGING, SSH_PRIVATE_KEY_PROD, SSH_KNOWN_HOSTS)</section>
             </sections>
             <phase>discovery</phase>
             <note>Complete reference - explains WHY and WHAT. References files created above. Integrates with PE-00 deployment decisions.</note>
