@@ -278,14 +278,17 @@ Executada para cada épico prioritário, entregando funcionalidade completa pont
 
 **Exemplo:**
 ```
-Épico 1: "Criar e Visualizar Estratégia Bull Call Spread"
+Épico 1: "Criar e Visualizar Estratégias"
   → Atravessa: BC Gestão de Estratégias + BC Dados de Mercado + BC Portfólio
+  → Entrega: CRUD de estratégias (qualquer tipo), visualização, validação
 
 Épico 2: "Calcular Greeks e P&L em Tempo Real"
   → Atravessa: BC Estratégia + BC Risco + BC Dados de Mercado
+  → Entrega: Cálculo automático, atualização real-time, dashboard
 
 Épico 3: "Alertas Automáticos de Risco"
   → Atravessa: BC Risco + BC Estratégia
+  → Entrega: Configuração de alertas, notificações, monitoramento
 ```
 
 **Por quê?**
