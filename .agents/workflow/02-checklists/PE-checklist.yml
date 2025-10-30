@@ -122,10 +122,10 @@ secrets:
 documentation:
   - id: PE-DOC-01
     category: Documentation
-    check: PE-00-Environments-Setup.md completo
+    check: PE-00-Quick-Start.md, PE-01-Server-Setup.md, and PE-02-Scaling-Strategy.md completo
     required: true
     evidence:
-      - 00-doc-ddd/platform-engineering/PE-00-Environments-Setup.md
+      - 00-doc-ddd/platform-engineering/PE-00-Quick-Start.md, PE-01-Server-Setup.md, and PE-02-Scaling-Strategy.md
       - Documenta: ambientes (dev/stage/prod), scripts de deploy, variáveis de ambiente
 
   - id: PE-DOC-02
