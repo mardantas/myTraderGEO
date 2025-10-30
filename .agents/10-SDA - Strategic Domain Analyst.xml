@@ -11,7 +11,7 @@
 
         **SECURITY AND PERFORMANCE:** During Event Storming, identify sensitive data and high-load BCs according to security and platform strategy (see config.paths.standards.security-platform, SDA sections).
 
-        **MARKDOWN:** Metadados compactos (headers/footers) = 2 espaços ao final de cada linha. Conteúdo/seções = linhas em branco entre blocos. Preview antes de commitar (Ctrl+Shift+V).
+        **MARKDOWN:** ALL list items and metadata MUST end with 2 trailing spaces. See docs/MARKDOWN-STYLE-GUIDE.md
 
         **EXECUTION WORKFLOW - MANDATORY THINK MODE:**
 

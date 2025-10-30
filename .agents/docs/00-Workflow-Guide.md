@@ -1,6 +1,6 @@
 # DDD Workflow Guide
 
-**Objetivo:** Guia prático do processo de desenvolvimento Domain-Driven Design (DDD) para projetos pequenos e médios.
+**Objetivo:** Guia prático do processo de desenvolvimento Domain-Driven Design (DDD) para projetos pequenos e médios.  
 
 ---
 
@@ -33,7 +33,7 @@ Este workflow combina **DDD estratégico e tático** com **desenvolvimento ágil
 | 9 | SE | Software Engineer | Por épico | Implementação backend | DE, DBA |
 | 10 | FE | Frontend Engineer | Por épico | Implementação frontend | SE, UXD |
 
-**⚠️ Atenção:** PE (Platform Engineer) **deve executar ANTES** de QAE, SEC e GM na Discovery, pois define o stack tecnológico que estes agentes precisam para escolher ferramentas compatíveis.
+**⚠️ Atenção:** PE (Platform Engineer) **deve executar ANTES** de QAE, SEC e GM na Discovery, pois define o stack tecnológico que estes agentes precisam para escolher ferramentas compatíveis.  
 
 Ver detalhes e **exemplos de invocação** em [01-Agents-Overview.md](01-Agents-Overview.md)
 
@@ -87,16 +87,16 @@ graph TD
 ```
 
 **Legenda:**
-- **Setas sólidas (→):** Fluxo sequencial obrigatório
-- **Setas tracejadas (-.->):** Dependência de bloqueio (PE define tech stack que QAE/SEC/GM precisam)
-- **Cores:**
-  - 🔴 Vermelho: Critical path (PE define stack, QAE é quality gate)
-  - 🟢 Verde: Deploy aprovado
-  - 🟠 Laranja: Deploy bloqueado (retorna para correções)
+- **Setas sólidas (→):** Fluxo sequencial obrigatório  
+- **Setas tracejadas (-.->):** Dependência de bloqueio (PE define tech stack que QAE/SEC/GM precisam)  
+- **Cores:**  
+  - 🔴 Vermelho: Critical path (PE define stack, QAE é quality gate)  
+  - 🟢 Verde: Deploy aprovado  
+  - 🟠 Laranja: Deploy bloqueado (retorna para correções)  
 
 **Fases:**
-- **Discovery (1x):** Executado uma vez no início do projeto (Days 1-4)
-- **Iteration (Nx):** Executado N vezes, uma por épico funcional (Days 1-10 por épico)
+- **Discovery (1x):** Executado uma vez no início do projeto (Days 1-4)  
+- **Iteration (Nx):** Executado N vezes, uma por épico funcional (Days 1-10 por épico)  
 
 ---
 
@@ -108,45 +108,45 @@ Executada uma vez no início para estabelecer a fundação estratégica **mínim
 
 ```
 Dia 1-2: SDA
-  - Event Storming
-  - Context Map
-  - Linguagem Ubíqua
-  - Épicos priorizados (alto nível)
+  - Event Storming  
+  - Context Map  
+  - Linguagem Ubíqua  
+  - Épicos priorizados (alto nível)  
 
 Dia 2-3: [UXD + PE] (PARALELO - Fundações Independentes)
 
   UXD:
-    - Fundamentos de Design (cores, tipografia, componentes base)
+    - Fundamentos de Design (cores, tipografia, componentes base)  
 
   PE:
-    - Define Stack Tecnológico (Backend, Frontend, Database)
-    - Setup de Ambientes (dev/stage/prod com SCRIPTS)
-    - Docker Compose
-    - Setup de banco de dados
-    - Scripts de deploy (ainda não IaC)
+    - Define Stack Tecnológico (Backend, Frontend, Database)  
+    - Setup de Ambientes (dev/stage/prod com SCRIPTS)  
+    - Docker Compose  
+    - Setup de banco de dados  
+    - Scripts de deploy (ainda não IaC)  
 
 Dia 3-4: [QAE + SEC + GM] (PARALELO - Dependem do Stack do PE)
 
   QAE:
-    - Estratégia de Testes baseada no stack do PE
-    - Ferramentas de teste (unit, integration, E2E)
-    - Cobertura mínima e critérios de qualidade
+    - Estratégia de Testes baseada no stack do PE  
+    - Ferramentas de teste (unit, integration, E2E)  
+    - Cobertura mínima e critérios de qualidade  
 
   SEC:
-    - Baseline de Segurança (threat model básico)
-    - Checklist essencial de segurança
-    - LGPD/compliance mínimo
-    - Ferramentas de segurança compatíveis com stack
+    - Baseline de Segurança (threat model básico)  
+    - Checklist essencial de segurança  
+    - LGPD/compliance mínimo  
+    - Ferramentas de segurança compatíveis com stack  
 
   GM:
-    - Setup GitHub (labels, template PR, proteção de branch)
-    - CI/CD básico baseado no stack do PE (build + test)
-    - GitHub Actions (deploy staging/prod)
-    - ❌ NÃO cria issues (épicos ainda não refinados)
+    - Setup GitHub (labels, template PR, proteção de branch)  
+    - CI/CD básico baseado no stack do PE (build + test)  
+    - GitHub Actions (deploy staging/prod)  
+    - ❌ NÃO cria issues (épicos ainda não refinados)  
 ```
 
-**Duração:** 3-4 dias
-**Deliverables:** 7 documentos (SDA: 3, UXD: 1, PE: 1, QAE: 1, SEC: 1, GM: 1)
+**Duração:** 3-4 dias  
+**Deliverables:** 7 documentos (SDA: 3, UXD: 1, PE: 1, QAE: 1, SEC: 1, GM: 1)  
 
 **Dependências Críticas na Discovery:**
 
@@ -162,9 +162,9 @@ SDA (Dia 1-2)
 ```
 
 **Por que esta ordem?**
-- ✅ **PE primeiro:** Define .NET/Node, React/Vue, PostgreSQL/MongoDB → decisões que impactam QAE, SEC, GM
-- ✅ **UXD paralelo com PE:** Design independe de stack técnico
-- ✅ **QAE, SEC, GM depois de PE:** Escolhem ferramentas compatíveis (xUnit vs Jest, OWASP ZAP vs Snyk, GitHub Actions config específico)
+- ✅ **PE primeiro:** Define .NET/Node, React/Vue, PostgreSQL/MongoDB → decisões que impactam QAE, SEC, GM  
+- ✅ **UXD paralelo com PE:** Design independe de stack técnico  
+- ✅ **QAE, SEC, GM depois de PE:** Escolhem ferramentas compatíveis (xUnit vs Jest, OWASP ZAP vs Snyk, GitHub Actions config específico)  
 
 ---
 
@@ -267,8 +267,8 @@ Executada para cada épico prioritário, entregando funcionalidade completa pont
              [Próximo Épico]
 ```
 
-**Duração por épico:** 10 dias (2 semanas)
-**Deliverables:** 3 documentos (DE-01, DBA-01, UXD-01) + código + testes + 1 issue GitHub
+**Duração por épico:** 10 dias (2 semanas)  
+**Deliverables:** 3 documentos (DE-01, DBA-01, UXD-01) + código + testes + 1 issue GitHub  
 
 ---
 
@@ -289,10 +289,10 @@ Executada para cada épico prioritário, entregando funcionalidade completa pont
 ```
 
 **Por quê?**
-- Entrega valor de negócio completo
-- Usuário pode testar funcionalidade ponta-a-ponta
-- Feedback real e útil
-- Integração de BCs validada cedo
+- Entrega valor de negócio completo  
+- Usuário pode testar funcionalidade ponta-a-ponta  
+- Feedback real e útil  
+- Integração de BCs validada cedo  
 
 ### ❌ EVITAR: Épicos por Bounded Context
 
@@ -301,7 +301,7 @@ Executada para cada épico prioritário, entregando funcionalidade completa pont
 Épico 2: "BC Gestão de Risco"
 ```
 
-**Problema:** Usuário não consegue usar nada até que todos os BCs estejam prontos.
+**Problema:** Usuário não consegue usar nada até que todos os BCs estejam prontos.  
 
 ---
 
@@ -338,16 +338,16 @@ SDA: [lê feedback]
 
 ### Tipos de Feedback
 
-- **Correção:** Entregável tem erro que requer ajuste
-- **Melhoria:** Sugestão de aprimoramento
-- **Pergunta:** Esclarecimento necessário
-- **Novo Requisito:** Mudança de escopo
+- **Correção:** Entregável tem erro que requer ajuste  
+- **Melhoria:** Sugestão de aprimoramento  
+- **Pergunta:** Esclarecimento necessário  
+- **Novo Requisito:** Mudança de escopo  
 
 ### Urgência
 
-- 🔴 **Alta:** Bloqueia outro agente
-- 🟡 **Média:** Importante mas não bloqueia
-- 🟢 **Baixa:** Desejável
+- 🔴 **Alta:** Bloqueia outro agente  
+- 🟡 **Média:** Importante mas não bloqueia  
+- 🟢 **Baixa:** Desejável  
 
 ---
 
@@ -363,14 +363,14 @@ Think Mode → Plan Mode → Think Mode → Plan Mode
 ```
 
 ### Fase 1: Think Mode (Arquitetura/Design)
-**Objetivo:** Planejar ANTES de executar
+**Objetivo:** Planejar ANTES de executar  
 
-- **Ferramenta:** TodoWrite
-- **Atividades:**
-  - Decompor tarefa complexa em sub-tarefas
-  - Identificar dependências
-  - Documentar riscos e considerações
-  - Criar plano de execução detalhado
+- **Ferramenta:** TodoWrite  
+- **Atividades:**  
+  - Decompor tarefa complexa em sub-tarefas  
+  - Identificar dependências  
+  - Documentar riscos e considerações  
+  - Criar plano de execução detalhado  
 
 **Exemplo (SE - Software Engineer):**
 ```
@@ -384,22 +384,22 @@ TODO List - Arquitetura:
 ```
 
 ### Fase 2: Plan Mode (Implementação)
-**Objetivo:** Executar o plano
+**Objetivo:** Executar o plano  
 
-- **Atividades:**
-  - Implementar código/documentação seguindo o plano
-  - Marcar tarefas como in_progress → completed
-  - Criar testes conforme implementa
+- **Atividades:**  
+  - Implementar código/documentação seguindo o plano  
+  - Marcar tarefas como in_progress → completed  
+  - Criar testes conforme implementa  
 
 ### Fase 3: Think Mode (Review/Refatoração Conceitual)
-**Objetivo:** Revisar qualidade e identificar melhorias
+**Objetivo:** Revisar qualidade e identificar melhorias  
 
-- **Ferramenta:** TodoWrite
-- **Atividades:**
-  - Verificar cobertura de testes
-  - Validar padrões (DDD, segurança, performance)
-  - Identificar technical debt
-  - Criar checklist de melhorias
+- **Ferramenta:** TodoWrite  
+- **Atividades:**  
+  - Verificar cobertura de testes  
+  - Validar padrões (DDD, segurança, performance)  
+  - Identificar technical debt  
+  - Criar checklist de melhorias  
 
 **Exemplo (SE - Review):**
 ```
@@ -412,12 +412,12 @@ TODO List - Review:
 ```
 
 ### Fase 4: Plan Mode (Aplicar Melhorias)
-**Objetivo:** Refinar e corrigir
+**Objetivo:** Refinar e corrigir  
 
-- **Atividades:**
-  - Aplicar correções identificadas
-  - Refatorar mantendo testes
-  - Validar antes de entregar
+- **Atividades:**  
+  - Aplicar correções identificadas  
+  - Refatorar mantendo testes  
+  - Validar antes de entregar  
 
 ---
 
@@ -449,10 +449,10 @@ TODO List - Review:
 ### 🚀 Como Ativar Think Mode
 
 **Agentes críticos (SDA, PE, SEC, SE, FE) detectam automaticamente** quando:
-- Tarefa envolve >3 deliverables
-- Múltiplos arquivos afetados (>5)
-- Setup inicial de infraestrutura/segurança
-- Implementação de épico completo
+- Tarefa envolve >3 deliverables  
+- Múltiplos arquivos afetados (>5)  
+- Setup inicial de infraestrutura/segurança  
+- Implementação de épico completo  
 
 **Forçar manualmente (se necessário):**
 ```
@@ -474,9 +474,9 @@ Agentes respondem a **linguagem natural** em português. Não é necessário usa
 "[AGENTE], [ação] [escopo]"
 
 Exemplos:
-- "SDA, faça a modelagem estratégica completa do sistema"
-- "DE, modele épico 'Criar Estratégia' nos BCs Strategy + Market Data"
-- "QAE, execute quality gate para épico 'Calculate Greeks'"
+- "SDA, faça a modelagem estratégica completa do sistema"  
+- "DE, modele épico 'Criar Estratégia' nos BCs Strategy + Market Data"  
+- "QAE, execute quality gate para épico 'Calculate Greeks'"  
 ```
 
 **2. Auto-Revisão (antes da entrega):**
@@ -484,9 +484,9 @@ Exemplos:
 "[AGENTE], revise seu trabalho em [deliverable] antes de entregar"
 
 Exemplos:
-- "DE, revise DE-01-Strategy-Domain-Model verificando completude"
-- "DBA, revise índices sugeridos para performance"
-- "UXD, revise wireframes verificando consistência com Design Foundations"
+- "DE, revise DE-01-Strategy-Domain-Model verificando completude"  
+- "DBA, revise índices sugeridos para performance"  
+- "UXD, revise wireframes verificando consistência com Design Foundations"  
 ```
 
 **3. Processar Feedback (de outro agente):**
@@ -494,8 +494,8 @@ Exemplos:
 "[AGENTE], processe FEEDBACK-[NNN]"
 
 Exemplos:
-- "SDA, processe FEEDBACK-003"
-- "DE, analise e resolva FEEDBACK-007 sobre aggregate Strategy"
+- "SDA, processe FEEDBACK-003"  
+- "DE, analise e resolva FEEDBACK-007 sobre aggregate Strategy"  
 ```
 
 **4. Atualização Específica (em deliverable existente):**
@@ -503,16 +503,16 @@ Exemplos:
 "[AGENTE], atualize [deliverable] [ação específica]"
 
 Exemplos:
-- "SDA, atualize Context Map adicionando BC de Notificações"
-- "DBA, adicione índice em Strategy.UserId para query de listagem"
-- "UXD, atualize modal Criar Estratégia com validação real-time"
+- "SDA, atualize Context Map adicionando BC de Notificações"  
+- "DBA, adicione índice em Strategy.UserId para query de listagem"  
+- "UXD, atualize modal Criar Estratégia com validação real-time"  
 ```
 
 **Dicas:**
-- Use linguagem natural e direta
-- Seja específico no escopo (épico, BC, deliverable)
-- Para tarefas complexas, agentes críticos (SDA, PE, SEC, SE, FE) usam Think Mode automaticamente
-- Agentes referenciam automaticamente deliverables de outros agentes (ex: DE lê SDA-02-Context-Map.md)
+- Use linguagem natural e direta  
+- Seja específico no escopo (épico, BC, deliverable)  
+- Para tarefas complexas, agentes críticos (SDA, PE, SEC, SE, FE) usam Think Mode automaticamente  
+- Agentes referenciam automaticamente deliverables de outros agentes (ex: DE lê SDA-02-Context-Map.md)  
 
 > **Para exemplos detalhados por agente, veja [01-Agents-Overview.md](01-Agents-Overview.md)**
 
@@ -536,7 +536,7 @@ Agentes suportam execução em dois modos:
 @SDA: UPDATE deliverable=SDA-02 feedback=FEEDBACK-003
 ```
 
-**Recomendação:** Use modo natural no dia a dia. Modo formal para scripts/automação.
+**Recomendação:** Use modo natural no dia a dia. Modo formal para scripts/automação.  
 
 ---
 
@@ -635,22 +635,22 @@ Este commit marca o início do trabalho na feature [descrição]."
 ## 📊 Métricas de Sucesso
 
 **Discovery:**
-- **Tempo:** 3-4 dias
-- **Docs:** 7 documentos
-- **Overhead:** ~25% do primeiro épico
+- **Tempo:** 3-4 dias  
+- **Docs:** 7 documentos  
+- **Overhead:** ~25% do primeiro épico  
 
 **Por Épico:**
-- **Tempo:** 10 dias úteis (2 semanas)
-- **Docs:** 3 documentos (DE-01, DBA-01, UXD-01)
-- **Frequência de deploy:** Cada épico (2 semanas)
-- **Loop de feedback:** Imediato após deploy
-- **Overhead de documentação:** <20% do tempo
+- **Tempo:** 10 dias úteis (2 semanas)  
+- **Docs:** 3 documentos (DE-01, DBA-01, UXD-01)  
+- **Frequência de deploy:** Cada épico (2 semanas)  
+- **Loop de feedback:** Imediato após deploy  
+- **Overhead de documentação:** <20% do tempo  
 
 ---
 
 ## 🗂️ Configuração de Caminhos
 
-**IMPORTANTE:** Todos os caminhos do workflow são definidos em `workflow-config.json` (única fonte da verdade).
+**IMPORTANTE:** Todos os caminhos do workflow são definidos em `workflow-config.json` (única fonte da verdade).  
 
 ### Como Funciona
 
@@ -668,7 +668,7 @@ Este commit marca o início do trabalho na feature [descrição]."
 "checklists": ".agents/workflow/02-checklists/"
 ```
 
-**Caminho final:** `00-doc-ddd/02-strategic-design/SDA-01-Event-Storming.md`
+**Caminho final:** `00-doc-ddd/02-strategic-design/SDA-01-Event-Storming.md`  
 
 ### Vantagem
 Mudar estrutura de pastas = atualizar **apenas** `workflow-config.json` (zero mudanças nos XMLs).
@@ -683,18 +683,18 @@ O workflow inclui scripts PowerShell para validar nomenclatura e estrutura do pr
 
 #### 1. validate-nomenclature.ps1
 
-**Objetivo:** Valida nomenclatura de documentos, feedbacks e código conforme padrões DDD.
+**Objetivo:** Valida nomenclatura de documentos, feedbacks e código conforme padrões DDD.  
 
-**Localização:** `.agents/scripts/validate-nomenclature.ps1`
+**Localização:** `.agents/scripts/validate-nomenclature.ps1`  
 
 **O que valida:**
-- ✅ Nomenclatura de documentos em `00-doc-ddd/` (SDA-XX, DE-XX, UXD-XX, etc)
-- ✅ Formato de feedbacks (FEEDBACK-NNN-FROM-TO-title.md)
-- ✅ Agentes válidos em feedbacks (SDA, UXD, DE, DBA, SE, FE, QAE, GM, PE, SEC)
-- ✅ Placeholders em documentos ([PROJECT_NAME], [YYYY-MM-DD], [EpicName])
-- ✅ Templates têm extensão `.template.md`
-- ✅ Templates têm placeholders obrigatórios
-- ✅ *(Opcional)* Código backend/frontend (com flag `-CheckCode`)
+- ✅ Nomenclatura de documentos em `00-doc-ddd/` (SDA-XX, DE-XX, UXD-XX, etc)  
+- ✅ Formato de feedbacks (FEEDBACK-NNN-FROM-TO-title.md)  
+- ✅ Agentes válidos em feedbacks (SDA, UXD, DE, DBA, SE, FE, QAE, GM, PE, SEC)  
+- ✅ Placeholders em documentos ([PROJECT_NAME], [YYYY-MM-DD], [EpicName])  
+- ✅ Templates têm extensão `.template.md`  
+- ✅ Templates têm placeholders obrigatórios  
+- ✅ *(Opcional)* Código backend/frontend (com flag `-CheckCode`)  
 
 **Uso:**
 
@@ -715,14 +715,14 @@ O workflow inclui scripts PowerShell para validar nomenclatura e estrutura do pr
 **Validações de Código (se `-CheckCode`):**
 
 Backend (C#):
-- ✅ Classes de domínio usam inglês (não português)
-- ✅ Aggregates têm suporte a Domain Events
-- ✅ Value Objects são immutable (sem setters)
+- ✅ Classes de domínio usam inglês (não português)  
+- ✅ Aggregates têm suporte a Domain Events  
+- ✅ Value Objects são immutable (sem setters)  
 
 Frontend (React):
-- ✅ Componentes seguem PascalCase
-- ✅ Componentes têm `export default`
-- ✅ Hooks seguem padrão `use*`
+- ✅ Componentes seguem PascalCase  
+- ✅ Componentes têm `export default`  
+- ✅ Hooks seguem padrão `use*`  
 
 **Exemplo de Output:**
 ```
@@ -752,18 +752,18 @@ Please fix errors before proceeding.
 
 #### 2. validate-structure.ps1
 
-**Objetivo:** Valida estrutura de pastas, arquivos e agentes do workflow.
+**Objetivo:** Valida estrutura de pastas, arquivos e agentes do workflow.  
 
-**Localização:** `.agents/scripts/validate-structure.ps1`
+**Localização:** `.agents/scripts/validate-structure.ps1`  
 
 **O que valida:**
-- ✅ Pastas obrigatórias existem (`00-doc-ddd/*`, `.agents/templates/*`)
-- ✅ Arquivos de documentação presentes (00-Workflow-Guide.md, 01-Agents-Overview.md, etc)
-- ✅ Agentes XML válidos e estruturados corretamente
-- ✅ Templates obrigatórios presentes
-- ✅ Nomenclatura de documentos existentes
-- ✅ Formato de feedbacks
-- ✅ Detecção de pastas obsoletas
+- ✅ Pastas obrigatórias existem (`00-doc-ddd/*`, `.agents/templates/*`)  
+- ✅ Arquivos de documentação presentes (00-Workflow-Guide.md, 01-Agents-Overview.md, etc)  
+- ✅ Agentes XML válidos e estruturados corretamente  
+- ✅ Templates obrigatórios presentes  
+- ✅ Nomenclatura de documentos existentes  
+- ✅ Formato de feedbacks  
+- ✅ Detecção de pastas obsoletas  
 
 **Uso:**
 
@@ -802,16 +802,16 @@ Please fix errors before proceeding.
 ```
 
 **Agentes XML Validados:**
-- 10-SDA - Strategic Domain Analyst.xml
-- 15-DE - Domain Engineer.xml
-- 20-UXD - User Experience Designer.xml
-- 25-GM - GitHub Manager.xml
-- 30-PE - Platform Engineer.xml
-- 35-SEC - Security Specialist.xml
-- 45-SE - Software Engineer.xml
-- 50-DBA - Database Administrator.xml
-- 55-FE - Frontend Engineer.xml
-- 60-QAE - Quality Assurance Engineer.xml
+- 10-SDA - Strategic Domain Analyst.xml  
+- 15-DE - Domain Engineer.xml  
+- 20-UXD - User Experience Designer.xml  
+- 25-GM - GitHub Manager.xml  
+- 30-PE - Platform Engineer.xml  
+- 35-SEC - Security Specialist.xml  
+- 45-SE - Software Engineer.xml  
+- 50-DBA - Database Administrator.xml  
+- 55-FE - Frontend Engineer.xml  
+- 60-QAE - Quality Assurance Engineer.xml  
 
 **Exemplo de Output:**
 ```
@@ -846,18 +846,18 @@ Please fix errors before proceeding.
 ### 🔄 Quando Executar os Scripts
 
 **Obrigatório:**
-- ✅ **Antes de criar Pull Request** (garante qualidade)
-- ✅ **Após adicionar novos documentos** (valida nomenclatura)
-- ✅ **Após criar novos agentes XML** (valida estrutura)
+- ✅ **Antes de criar Pull Request** (garante qualidade)  
+- ✅ **Após adicionar novos documentos** (valida nomenclatura)  
+- ✅ **Após criar novos agentes XML** (valida estrutura)  
 
 **Recomendado:**
-- ⏰ **Semanalmente** (detecção proativa de problemas)
-- 🆕 **Após onboarding de novo dev** (garante conhecimento dos padrões)
-- 🔧 **Após modificar templates** (valida consistência)
+- ⏰ **Semanalmente** (detecção proativa de problemas)  
+- 🆕 **Após onboarding de novo dev** (garante conhecimento dos padrões)  
+- 🔧 **Após modificar templates** (valida consistência)  
 
 **Opcional:**
-- 🔄 **Antes de cada commit** (git hook - configuração manual)
-- 🚀 **CI/CD** (GitHub Actions - futuro)
+- 🔄 **Antes de cada commit** (git hook - configuração manual)  
+- 🚀 **CI/CD** (GitHub Actions - futuro)  
 
 ---
 
@@ -940,26 +940,26 @@ cd c:\Users\Marco\Projetos\myTraderGEO
 **Problema: Script falha em Linux/Mac**
 
 **Solução:**
-- Scripts PowerShell requerem PowerShell Core (multiplataforma)
-- Instalar: https://github.com/PowerShell/PowerShell
-- Ou executar no Windows
+- Scripts PowerShell requerem PowerShell Core (multiplataforma)  
+- Instalar: https://github.com/PowerShell/PowerShell  
+- Ou executar no Windows  
 
 ---
 
 ## 📚 Referências
 
-- **Agentes:** [01-Agents-Overview.md](01-Agents-Overview.md)
-- **Nomenclatura:** [02-Nomenclature-Standards.md](02-Nomenclature-Standards.md)
-- **Padrões Git:** [03-GIT-PATTERNS.md](03-GIT-PATTERNS.md) - Branches, PRs, Milestones, Tags
-- **Segurança:** [04-Security-And-Platform-Strategy.md](04-Security-And-Platform-Strategy.md)
-- **Padrões DDD:** [05-DDD-Patterns-Reference.md](05-DDD-Patterns-Reference.md)
-- **Padrões de API:** [06-API-Standards.md](06-API-Standards.md)
-- **PE/SEC Checkpoints:** [07-PE-SEC-Checkpoint-Guide.md](07-PE-SEC-Checkpoint-Guide.md)
-- **Fluxo de Feedback:** [08-FEEDBACK-FLOW-GUIDE.md](08-FEEDBACK-FLOW-GUIDE.md)
-- **Config Master:** `workflow-config.json`
+- **Agentes:** [01-Agents-Overview.md](01-Agents-Overview.md)  
+- **Nomenclatura:** [02-Nomenclature-Standards.md](02-Nomenclature-Standards.md)  
+- **Padrões Git:** [03-GIT-PATTERNS.md](03-GIT-PATTERNS.md) - Branches, PRs, Milestones, Tags  
+- **Segurança:** [04-Security-And-Platform-Strategy.md](04-Security-And-Platform-Strategy.md)  
+- **Padrões DDD:** [05-DDD-Patterns-Reference.md](05-DDD-Patterns-Reference.md)  
+- **Padrões de API:** [06-API-Standards.md](06-API-Standards.md)  
+- **PE/SEC Checkpoints:** [07-PE-SEC-Checkpoint-Guide.md](07-PE-SEC-Checkpoint-Guide.md)  
+- **Fluxo de Feedback:** [08-FEEDBACK-FLOW-GUIDE.md](08-FEEDBACK-FLOW-GUIDE.md)  
+- **Config Master:** `workflow-config.json`  
 
 ---
 
-**Versão:** 1.0
-**Data:** 2025-10-09
-**Processo:** Workflow DDD com 10 Agentes (Projetos Pequenos/Médios)
+**Versão:** 1.0  
+**Data:** 2025-10-09  
+**Processo:** Workflow DDD com 10 Agentes (Projetos Pequenos/Médios)  

@@ -1,9 +1,9 @@
 # Agents Overview
 
-**Objective:** Detailed description of the 10 specialized agents executing the simplified DDD workflow for small/medium projects.
+**Objective:** Detailed description of the 10 specialized agents executing the simplified DDD workflow for small/medium projects.  
 
-**Version:** 1.0
-**Date:** 2025-10-09
+**Version:** 1.0  
+**Date:** 2025-10-09  
 
 ---
 
@@ -22,7 +22,7 @@
 | **9** | 45 | SE | Software Engineer | Per epic | Iteration | Code | DE, DBA |
 | **10** | 55 | FE | Frontend Engineer | Per epic | Iteration | Code | SE, UXD |
 
-**⚠️ Critical:** PE must execute BEFORE QAE, SEC, and GM because it defines the tech stack (Backend, Frontend, Database) that these agents need to choose compatible tools.
+**⚠️ Critical:** PE must execute BEFORE QAE, SEC, and GM because it defines the tech stack (Backend, Frontend, Database) that these agents need to choose compatible tools.  
 
 ---
 
@@ -32,15 +32,15 @@
 Discover and map the complete business domain - bounded contexts, strategic epics, ubiquitous language.
 
 ### Responsibilities
-**Discovery (1x at project start):** Event Storming (domain event discovery), Bounded Contexts identification, Context Map (relationships), Ubiquitous Language (glossary), epic prioritization by business value.
+**Discovery (1x at project start):** Event Storming (domain event discovery), Bounded Contexts identification, Context Map (relationships), Ubiquitous Language (glossary), epic prioritization by business value.  
 
 ### When Executes
 **1x at project start** - discovery phase (analyzes entire business domain)
 
 ### Key Deliverables
-- **SDA-01-Event-Storming.md** - Domain events per BC
-- **SDA-02-Context-Map.md** - BCs and relationships
-- **SDA-03-Ubiquitous-Language.md** - Glossary
+- **SDA-01-Event-Storming.md** - Domain events per BC  
+- **SDA-02-Context-Map.md** - BCs and relationships  
+- **SDA-03-Ubiquitous-Language.md** - Glossary  
 
 ### Example Invocations
 ```
@@ -63,13 +63,13 @@ Discover and map the complete business domain - bounded contexts, strategic epic
 → Updates SDA-02-Context-Map.md with new BC and relationship
 ```
 
-**Note:** SDA executes ONLY in Discovery. For epic-specific changes, use DE.
+**Note:** SDA executes ONLY in Discovery. For epic-specific changes, use DE.  
 
 ### Think Mode Policy
 🔴 **MANDATORY** - Discovery involves 3 deliverables (Event Storming, Context Map, Ubiquitous Language)
 
 ### Dependencies
-**Depends on:** None (first agent) | **Blocks:** All other agents (provides BCs, Context Map, UL)
+**Depends on:** None (first agent) | **Blocks:** All other agents (provides BCs, Context Map, UL)  
 
 ### Specification
 [10-SDA - Strategic Domain Analyst.xml](../10-SDA%20-%20Strategic%20Domain%20Analyst.xml)
@@ -82,16 +82,16 @@ Discover and map the complete business domain - bounded contexts, strategic epic
 Design user experience: foundations in Discovery + specific wireframes per epic.
 
 ### Responsibilities
-**Discovery (1x):** Design foundations (colors, typography, base components) independent of tech stack.
-**Per Epic (Nx):** Epic-specific wireframes with detailed components, work in PARALLEL with SE (Days 3-6), FE receives ready wireframes on Day 7.
+**Discovery (1x):** Design foundations (colors, typography, base components) independent of tech stack.  
+**Per Epic (Nx):** Epic-specific wireframes with detailed components, work in PARALLEL with SE (Days 3-6), FE receives ready wireframes on Day 7.  
 
 ### When Executes
-**Discovery:** UXD-00-Design-Foundations (1x)
-**Iteration:** UXD-01-[EpicName]-Wireframes (per epic, parallel with SE)
+**Discovery:** UXD-00-Design-Foundations (1x)  
+**Iteration:** UXD-01-[EpicName]-Wireframes (per epic, parallel with SE)  
 
 ### Key Deliverables
-- **UXD-00-Design-Foundations.md** - Colors, typography, base components (1x)
-- **UXD-01-[EpicName]-Wireframes.md** - Epic-specific wireframes (per epic)
+- **UXD-00-Design-Foundations.md** - Colors, typography, base components (1x)  
+- **UXD-01-[EpicName]-Wireframes.md** - Epic-specific wireframes (per epic)  
 
 ### Example Invocations
 ```
@@ -118,7 +118,7 @@ Design user experience: foundations in Discovery + specific wireframes per epic.
 🟡 **RECOMMENDED** for multiple flows/wireframes (>3 screens)
 
 ### Dependencies
-**Depends on:** SDA (BCs for scope) | **Consumed by:** FE (wireframes for implementation)
+**Depends on:** SDA (BCs for scope) | **Consumed by:** FE (wireframes for implementation)  
 
 ### Specification
 [20-UXD - User Experience Designer.xml](../20-UXD%20-%20User%20Experience%20Designer.xml)
@@ -135,14 +135,14 @@ Define tech stack (Backend, Frontend, Database) and configure basic environments
 Define tech stack, Docker Compose environments (dev/staging/production with Traefik), server setup docs (OS, Docker, firewall, users, SSH), scaling strategy, deploy scripts with remote deployment, environment variables (.env files), logging, health checks.
 
 ### When Executes
-**Discovery:** PE platform engineering documentation (BEFORE GM, SEC, QAE)
-**Per Epic (OPTIONAL):** Performance checkpoint (15-30 min) - See [07-PE-SEC-Checkpoint-Guide.md](07-PE-SEC-Checkpoint-Guide.md) for criteria
+**Discovery:** PE platform engineering documentation (BEFORE GM, SEC, QAE)  
+**Per Epic (OPTIONAL):** Performance checkpoint (15-30 min) - See [07-PE-SEC-Checkpoint-Guide.md](07-PE-SEC-Checkpoint-Guide.md) for criteria  
 
 ### Key Deliverables
-- **PE platform engineering documentation (PE-00-Quick-Start.md, PE-01-Server-Setup.md, PE-02-Scaling-Strategy.md)** - Tech stack + environment configs + server setup + scaling strategy
-- **Docker Compose** files (dev, staging, production with Traefik)
-- **Deploy scripts** (deploy.sh) with SSH remote deployment
-- **PE-EPIC-[N]-Performance-Checkpoint.md** (optional per epic when performance-critical)
+- **PE platform engineering documentation (PE-00-Quick-Start.md, PE-01-Server-Setup.md, PE-02-Scaling-Strategy.md)** - Tech stack + environment configs + server setup + scaling strategy  
+- **Docker Compose** files (dev, staging, production with Traefik)  
+- **Deploy scripts** (deploy.sh) with SSH remote deployment  
+- **PE-EPIC-[N]-Performance-Checkpoint.md** (optional per epic when performance-critical)  
 
 ### Example Invocations
 ```
@@ -170,7 +170,7 @@ Define tech stack, Docker Compose environments (dev/staging/production with Trae
 🔴 **MANDATORY** - Infrastructure setup involves multiple files/configs (Docker Compose, deploy scripts, 3 PE docs)
 
 ### Dependencies
-**Depends on:** SDA (BCs estimate infrastructure) | **Blocks:** GM, QAE, SEC (wait for tech stack)
+**Depends on:** SDA (BCs estimate infrastructure) | **Blocks:** GM, QAE, SEC (wait for tech stack)  
 
 ### Specification
 [30-PE - Platform Engineer.xml](../30-PE%20-%20Platform%20Engineer.xml)
@@ -183,17 +183,17 @@ Define tech stack, Docker Compose environments (dev/staging/production with Trae
 Ensure quality as **QUALITY GATE** at end of each epic - tests pass → approve deploy, tests fail → block deploy.
 
 ### Responsibilities
-**Discovery (AFTER PE):** Test strategy (QAE-00), tools selection based on PE stack (xUnit vs Jest, Playwright vs Cypress), coverage criteria (≥70% domain, ≥60% application).
-**Per Epic (Day 10 - QUALITY GATE):** Integration tests (SE APIs), E2E tests (UXD-01 journeys), regression tests (previous epics), smoke test (critical paths), DECISION: ✅ approve OR ❌ block deploy.
+**Discovery (AFTER PE):** Test strategy (QAE-00), tools selection based on PE stack (xUnit vs Jest, Playwright vs Cypress), coverage criteria (≥70% domain, ≥60% application).  
+**Per Epic (Day 10 - QUALITY GATE):** Integration tests (SE APIs), E2E tests (UXD-01 journeys), regression tests (previous epics), smoke test (critical paths), DECISION: ✅ approve OR ❌ block deploy.  
 
 ### When Executes
-**Discovery:** QAE-00-Test-Strategy (AFTER PE defines stack)
-**Iteration:** Day 10 QUALITY GATE (integration + E2E + regression + smoke)
+**Discovery:** QAE-00-Test-Strategy (AFTER PE defines stack)  
+**Iteration:** Day 10 QUALITY GATE (integration + E2E + regression + smoke)  
 
 ### Key Deliverables
-- **QAE-00-Test-Strategy.md** - Tools, coverage, quality gate criteria
-- **Integration tests** - 02-backend/tests/integration/
-- **E2E tests** - 01-frontend/tests/e2e/
+- **QAE-00-Test-Strategy.md** - Tools, coverage, quality gate criteria  
+- **Integration tests** - 02-backend/tests/integration/  
+- **E2E tests** - 01-frontend/tests/e2e/  
 
 ### Example Invocations
 ```
@@ -222,7 +222,7 @@ Ensure quality as **QUALITY GATE** at end of each epic - tests pass → approve 
 🟢 **OPTIONAL** - Tests have clear structure, but recommended for complete test suites
 
 ### Dependencies
-**Depends on:** SDA (BCs for test strategy), PE (stack for test tools) | **Blocks:** Deploy (quality gate)
+**Depends on:** SDA (BCs for test strategy), PE (stack for test tools) | **Blocks:** Deploy (quality gate)  
 
 ### Specification
 [60-QAE - Quality Assurance Engineer.xml](../60-QAE%20-%20Quality%20Assurance%20Engineer.xml)
@@ -239,12 +239,12 @@ Define essential security baseline: OWASP Top 3, LGPD minimum, authentication/au
 Identify main threats per BC, OWASP Top 3 mitigations (Broken Access Control, Cryptographic Failures, Injection), LGPD minimum (PII mapping, deletion strategy, privacy policy), auth/authz strategy (JWT, domain-level), input validation, secrets management, security tools compatible with PE stack, security monitoring.
 
 ### When Executes
-**Discovery:** SEC-00-Security-Baseline (AFTER PE)
-**Per Epic (OPTIONAL):** Security checkpoint (15-30 min) - See [07-PE-SEC-Checkpoint-Guide.md](07-PE-SEC-Checkpoint-Guide.md) for criteria
+**Discovery:** SEC-00-Security-Baseline (AFTER PE)  
+**Per Epic (OPTIONAL):** Security checkpoint (15-30 min) - See [07-PE-SEC-Checkpoint-Guide.md](07-PE-SEC-Checkpoint-Guide.md) for criteria  
 
 ### Key Deliverables
-- **SEC-00-Security-Baseline.md** - OWASP Top 3 + LGPD + auth strategy + threat identification per BC
-- **SEC-EPIC-[N]-Security-Checkpoint.md** (optional per epic when handles sensitive data/auth)
+- **SEC-00-Security-Baseline.md** - OWASP Top 3 + LGPD + auth strategy + threat identification per BC  
+- **SEC-EPIC-[N]-Security-Checkpoint.md** (optional per epic when handles sensitive data/auth)  
 
 ### Example Invocations
 ```
@@ -272,7 +272,7 @@ Identify main threats per BC, OWASP Top 3 mitigations (Broken Access Control, Cr
 🔴 **MANDATORY** - Security baseline involves threat identification, OWASP Top 3, LGPD compliance
 
 ### Dependencies
-**Depends on:** SDA (BCs, UL for threats), PE (stack for tool selection) | **Blocks:** None (parallel with GM/QAE)
+**Depends on:** SDA (BCs, UL for threats), PE (stack for tool selection) | **Blocks:** None (parallel with GM/QAE)  
 
 ### Specification
 [35-SEC - Security Specialist.xml](../35-SEC%20-%20Security%20Specialist.xml)
@@ -292,15 +292,15 @@ Create setup-labels.sh (from SDA BCs + epics), execute script (creates labels in
 Read DE-01, extract epic info (number, name, BCs, objectives, acceptance criteria), execute epic-create.sh to create milestone + epic issue automatically populated from DE-01.
 
 ### When Executes
-**Discovery:** GitHub setup (AFTER PE defines stack)
-**Per Epic:** Create milestone + epic issue (AFTER DE-01 complete)
+**Discovery:** GitHub setup (AFTER PE defines stack)  
+**Per Epic:** Create milestone + epic issue (AFTER DE-01 complete)  
 
 ### Key Deliverables
-- **GM-00-GitHub-Setup.md** - Documents pragmatic setup (labels, CI/CD, templates)
-- **setup-labels.sh** - Creates labels (agents, BCs, epics, types, priority, status) in GitHub
-- **CI/CD workflows** - ci-backend, ci-frontend, security, cd-staging, cd-production (customized from PE stack)
-- **Epic template** - .github/ISSUE_TEMPLATE/10-epic.yml (GitHub native form)
-- **Git automation scripts** - discovery-start/finish, epic-create, epic-issue-start/finish, epic-close
+- **GM-00-GitHub-Setup.md** - Documents pragmatic setup (labels, CI/CD, templates)  
+- **setup-labels.sh** - Creates labels (agents, BCs, epics, types, priority, status) in GitHub  
+- **CI/CD workflows** - ci-backend, ci-frontend, security, cd-staging, cd-production (customized from PE stack)  
+- **Epic template** - .github/ISSUE_TEMPLATE/10-epic.yml (GitHub native form)  
+- **Git automation scripts** - discovery-start/finish, epic-create, epic-issue-start/finish, epic-close  
 
 ### Example Invocations
 ```
@@ -336,7 +336,7 @@ Read DE-01, extract epic info (number, name, BCs, objectives, acceptance criteri
 🟢 **OPTIONAL** - Scripts are automatable, but recommended for complex Git automation workflows
 
 ### Dependencies
-**Depends on:** SDA (BCs, epics), PE (stack for CI/CD), DE (DE-01 for epic creation) | **Blocks:** None
+**Depends on:** SDA (BCs, epics), PE (stack for CI/CD), DE (DE-01 for epic creation) | **Blocks:** None  
 
 ### Specification
 [25-GM - GitHub Manager.xml](../25-GM%20-%20GitHub%20Manager.xml)
@@ -349,13 +349,13 @@ Read DE-01, extract epic info (number, name, BCs, objectives, acceptance criteri
 Model tactical domain PER EPIC - Aggregates, Entities, Value Objects (does NOT implement code).
 
 ### Responsibilities
-**Per Epic (Nx):** Detailed tactical modeling (Aggregates, Entities, Value Objects, Domain Events), business rules, Use Cases (specifications), Repository interfaces (contracts), integration contracts between epic BCs.
+**Per Epic (Nx):** Detailed tactical modeling (Aggregates, Entities, Value Objects, Domain Events), business rules, Use Cases (specifications), Repository interfaces (contracts), integration contracts between epic BCs.  
 
 ### When Executes
-**Per epic (Nx):** DE-01-[EpicName]-Domain-Model ONLY (Iteration phase)
+**Per epic (Nx):** DE-01-[EpicName]-Domain-Model ONLY (Iteration phase)  
 
 ### Key Deliverables
-- **DE-01-[EpicName]-Domain-Model.md** - Tactical modeling per epic
+- **DE-01-[EpicName]-Domain-Model.md** - Tactical modeling per epic  
 
 ### Example Invocations
 ```
@@ -379,13 +379,13 @@ Model tactical domain PER EPIC - Aggregates, Entities, Value Objects (does NOT i
 → Adds new use case with specifications
 ```
 
-**Note:** DE executes ONLY in Iteration (per epic). For strategic changes, use SDA.
+**Note:** DE executes ONLY in Iteration (per epic). For strategic changes, use SDA.  
 
 ### Think Mode Policy
 🟡 **RECOMMENDED** for complex epics (>3 Aggregates, >5 Use Cases)
 
 ### Dependencies
-**Depends on:** SDA (BCs, Context Map, UL) | **Consumed by:** DBA (schema), SE (implementation), GM (epic creation)
+**Depends on:** SDA (BCs, Context Map, UL) | **Consumed by:** DBA (schema), SE (implementation), GM (epic creation)  
 
 ### Specification
 [15-DE - Domain Engineer.xml](../15-DE%20-%20Domain%20Engineer.xml)
@@ -398,15 +398,15 @@ Model tactical domain PER EPIC - Aggregates, Entities, Value Objects (does NOT i
 Validate and optimize database schema created by DE - indexing, performance, multi-environment password strategy.
 
 ### Responsibilities
-**Per Epic (AFTER DE):** Validate DE-01 schema, indexing strategy, query optimization, performance review, guidance for DE adjustments, multi-environment password strategy (dev simple, staging/prod strong via ALTER USER), security best practices (least privilege, rotation, LGPD/SOC2).
+**Per Epic (AFTER DE):** Validate DE-01 schema, indexing strategy, query optimization, performance review, guidance for DE adjustments, multi-environment password strategy (dev simple, staging/prod strong via ALTER USER), security best practices (least privilege, rotation, LGPD/SOC2).  
 
 ### When Executes
-**Per Epic:** After DE creates schema
+**Per Epic:** After DE creates schema  
 
 ### Key Deliverables
-- **README.md** - Multi-environment password strategy, security best practices
-- **DBA-01-[EpicName]-Schema-Review.md** - Per epic validation
-- **Migrations** - 001_initial_schema.sql (dev passwords), 002_update_production_passwords.sql (ALTER USER)
+- **README.md** - Multi-environment password strategy, security best practices  
+- **DBA-01-[EpicName]-Schema-Review.md** - Per epic validation  
+- **Migrations** - 001_initial_schema.sql (dev passwords), 002_update_production_passwords.sql (ALTER USER)  
 
 ### Example Invocations
 ```
@@ -432,13 +432,13 @@ Validate and optimize database schema created by DE - indexing, performance, mul
 → Small performance optimization based on monitoring
 ```
 
-**Security:** NEVER hardcode passwords in Git. Dev: simple OK. Staging/Prod: strong via ALTER USER. Rotation: quarterly (prod), semi-annual (staging).
+**Security:** NEVER hardcode passwords in Git. Dev: simple OK. Staging/Prod: strong via ALTER USER. Rotation: quarterly (prod), semi-annual (staging).  
 
 ### Think Mode Policy
 🟡 **RECOMMENDED** for complex migrations (>5 files, complex indexes, data transformations)
 
 ### Dependencies
-**Depends on:** DE (schema), PE (database tech) | **Consumed by:** SE (migrations for implementation)
+**Depends on:** DE (schema), PE (database tech) | **Consumed by:** SE (migrations for implementation)  
 
 ### Specification
 [50-DBA - Database Administrator.xml](../50-DBA%20-%20Database%20Administrator.xml)
@@ -451,17 +451,17 @@ Validate and optimize database schema created by DE - indexing, performance, mul
 Implement complete backend based on DE domain model - Domain, Application, Infrastructure, REST APIs.
 
 ### Responsibilities
-**Per Epic (AFTER DE + DBA):** Domain layer (DE-01 Aggregates), Application layer (Use Cases), Infrastructure layer (Repositories, EF Migrations), REST/GraphQL APIs (Controllers, DTOs, OpenAPI), basic unit tests (≥70% coverage domain layer).
+**Per Epic (AFTER DE + DBA):** Domain layer (DE-01 Aggregates), Application layer (Use Cases), Infrastructure layer (Repositories, EF Migrations), REST/GraphQL APIs (Controllers, DTOs, OpenAPI), basic unit tests (≥70% coverage domain layer).  
 
 ### When Executes
 **Per epic** - after DE creates DE-01 and DBA validates schema
 
 ### Key Deliverables
-- **02-backend/src/Domain/** - Aggregates, Entities, Value Objects
-- **02-backend/src/Application/** - Use Cases, Commands, Queries, Handlers
-- **02-backend/src/Infrastructure/** - Repositories, EF Migrations, DB Context
-- **02-backend/src/Api/** - REST Controllers, DTOs, OpenAPI/Swagger
-- **02-backend/tests/unit/** - Domain layer tests ≥70% coverage
+- **02-backend/src/Domain/** - Aggregates, Entities, Value Objects  
+- **02-backend/src/Application/** - Use Cases, Commands, Queries, Handlers  
+- **02-backend/src/Infrastructure/** - Repositories, EF Migrations, DB Context  
+- **02-backend/src/Api/** - REST Controllers, DTOs, OpenAPI/Swagger  
+- **02-backend/tests/unit/** - Domain layer tests ≥70% coverage  
 
 ### Example Invocations
 ```
@@ -486,13 +486,13 @@ Implement complete backend based on DE domain model - Domain, Application, Infra
 → New API endpoint for Epic 2
 ```
 
-**Critical Note:** SE implements AFTER DE (domain model) and DBA (schema validation).
+**Critical Note:** SE implements AFTER DE (domain model) and DBA (schema validation).  
 
 ### Think Mode Policy
 🔴 **MANDATORY** - Backend implementation involves 5 layers (Domain/Application/Infrastructure/API/Tests)
 
 ### Dependencies
-**Depends on:** DE (domain model), DBA (schema validation), PE (tech stack) | **Consumed by:** FE (APIs), QAE (tests)
+**Depends on:** DE (domain model), DBA (schema validation), PE (tech stack) | **Consumed by:** FE (APIs), QAE (tests)  
 
 ### Specification
 [45-SE - Software Engineer.xml](../45-SE%20-%20Software%20Engineer.xml)
@@ -505,16 +505,16 @@ Implement complete backend based on DE domain model - Domain, Application, Infra
 Implement user interfaces following UXD specs - UI components, state management, API integration, accessibility.
 
 ### Responsibilities
-**Per Epic (AFTER SE + UXD):** UI components implementation, frontend skeleton (project structure), state management (Context/Redux), API integration (SE backend), responsiveness and accessibility (WCAG AA), basic component unit tests.
+**Per Epic (AFTER SE + UXD):** UI components implementation, frontend skeleton (project structure), state management (Context/Redux), API integration (SE backend), responsiveness and accessibility (WCAG AA), basic component unit tests.  
 
 ### When Executes
 **Per epic** - after SE (APIs) and UXD (wireframes), works in parallel with SE on Days 3-6
 
 ### Key Deliverables
-- **01-frontend/src/components/** - Reusable UI components
-- **01-frontend/src/pages/** - Page-level components
-- **01-frontend/src/services/** - API integration layer
-- **01-frontend/tests/** - Component unit tests
+- **01-frontend/src/components/** - Reusable UI components  
+- **01-frontend/src/pages/** - Page-level components  
+- **01-frontend/src/services/** - API integration layer  
+- **01-frontend/tests/** - Component unit tests  
 
 ### Example Invocations
 ```
@@ -542,13 +542,13 @@ Implement user interfaces following UXD specs - UI components, state management,
 → UX improvement for async operation
 ```
 
-**Note:** FE implements AFTER SE (APIs) and UXD (wireframes). Works in parallel with SE on Days 3-6.
+**Note:** FE implements AFTER SE (APIs) and UXD (wireframes). Works in parallel with SE on Days 3-6.  
 
 ### Think Mode Policy
 🔴 **MANDATORY** - Frontend implementation involves complete stack (Components/State/API integration/Tests)
 
 ### Dependencies
-**Depends on:** SE (APIs), UXD (wireframes), PE (tech stack) | **Consumed by:** QAE (E2E tests)
+**Depends on:** SE (APIs), UXD (wireframes), PE (tech stack) | **Consumed by:** QAE (E2E tests)  
 
 ### Specification
 [55-FE - Frontend Engineer.xml](../55-FE%20-%20Frontend%20Engineer.xml)
@@ -558,28 +558,28 @@ Implement user interfaces following UXD specs - UI components, state management,
 ## 🔄 Agent Interactions
 
 ### Discovery Phase (Days 1-4)
-**Day 1-2:** SDA (Event Storming, Context Map, Ubiquitous Language, prioritized epics)
+**Day 1-2:** SDA (Event Storming, Context Map, Ubiquitous Language, prioritized epics)  
 
-**Day 2-3 (PARALLEL):** UXD (Design Foundations - independent of tech stack) + PE (Environments Setup - DEFINES tech stack)
+**Day 2-3 (PARALLEL):** UXD (Design Foundations - independent of tech stack) + PE (Environments Setup - DEFINES tech stack)  
 
-**Day 3-4 (PARALLEL, AFTER PE):** QAE (Test Strategy - tools from PE stack) + SEC (Security Baseline - tools from PE stack) + GM (GitHub Setup - CI/CD from PE stack)
+**Day 3-4 (PARALLEL, AFTER PE):** QAE (Test Strategy - tools from PE stack) + SEC (Security Baseline - tools from PE stack) + GM (GitHub Setup - CI/CD from PE stack)  
 
-**Critical:** PE must execute BEFORE QAE, SEC, GM because it defines the tech stack.
+**Critical:** PE must execute BEFORE QAE, SEC, GM because it defines the tech stack.  
 
 ### Iteration Phase (Days 1-10 per epic)
-**Day 1-2:** DE (DE-01-[EpicName]-Domain-Model)
+**Day 1-2:** DE (DE-01-[EpicName]-Domain-Model)  
 
-**Day 2:** GM (reads DE-01, creates milestone + epic issue)
+**Day 2:** GM (reads DE-01, creates milestone + epic issue)  
 
-**Day 2-3:** DBA (validates DE-01 schema, feedback to DE if needed)
+**Day 2-3:** DBA (validates DE-01 schema, feedback to DE if needed)  
 
-**Day 3-6 (PARALLEL):** SE (implements backend: Domain, Application, Infrastructure, API, unit tests ≥70%) + UXD (UXD-01-[EpicName]-Wireframes for FE)
+**Day 3-6 (PARALLEL):** SE (implements backend: Domain, Application, Infrastructure, API, unit tests ≥70%) + UXD (UXD-01-[EpicName]-Wireframes for FE)  
 
-**Day 7-9:** FE (implements UI using UXD-01, integrates with SE APIs)
+**Day 7-9:** FE (implements UI using UXD-01, integrates with SE APIs)  
 
-**Day 10 (QUALITY GATE):** QAE (integration + E2E + regression + smoke tests) → ✅ Approve deploy OR ❌ Block deploy
+**Day 10 (QUALITY GATE):** QAE (integration + E2E + regression + smoke tests) → ✅ Approve deploy OR ❌ Block deploy  
 
-**DEPLOY:** Only if QAE approved
+**DEPLOY:** Only if QAE approved  
 
 ### Feedback Loops
 Any agent can create FEEDBACK for another: SE → DE (ambiguous invariant), FE → UXD (inconsistent wireframe), QAE → SE/FE (failing tests), DBA → DE (schema issues), GM → DE (unclear criteria), etc.
@@ -602,43 +602,43 @@ Any agent can create FEEDBACK for another: SE → DE (ambiguous invariant), FE �
 | FE | 0 (code is documentation) |
 | All | 1 shared template (FEEDBACK) |
 
-**Total:** 12 templates
+**Total:** 12 templates  
 
-**Note:** Templates DE-00 and SE-01 archived (removed in v1.0 - code is primary documentation)
+**Note:** Templates DE-00 and SE-01 archived (removed in v1.0 - code is primary documentation)  
 
 ---
 
 ## 📚 References
 
 ### Documentation
-- **Workflow Guide:** [00-Workflow-Guide.md](00-Workflow-Guide.md)
-- **Nomenclature:** [02-Nomenclature-Standards.md](02-Nomenclature-Standards.md)
-- **Git Patterns:** [03-GIT-PATTERNS.md](03-GIT-PATTERNS.md)
-- **Security & Platform:** [04-Security-And-Platform-Strategy.md](04-Security-And-Platform-Strategy.md)
-- **DDD Patterns:** [05-DDD-Patterns-Reference.md](05-DDD-Patterns-Reference.md)
-- **API Standards:** [06-API-Standards.md](06-API-Standards.md)
+- **Workflow Guide:** [00-Workflow-Guide.md](00-Workflow-Guide.md)  
+- **Nomenclature:** [02-Nomenclature-Standards.md](02-Nomenclature-Standards.md)  
+- **Git Patterns:** [03-GIT-PATTERNS.md](03-GIT-PATTERNS.md)  
+- **Security & Platform:** [04-Security-And-Platform-Strategy.md](04-Security-And-Platform-Strategy.md)  
+- **DDD Patterns:** [05-DDD-Patterns-Reference.md](05-DDD-Patterns-Reference.md)  
+- **API Standards:** [06-API-Standards.md](06-API-Standards.md)  
 
 ### Agent XML Specifications
-- [10-SDA - Strategic Domain Analyst.xml](../10-SDA%20-%20Strategic%20Domain%20Analyst.xml)
-- [15-DE - Domain Engineer.xml](../15-DE%20-%20Domain%20Engineer.xml)
-- [20-UXD - User Experience Designer.xml](../20-UXD%20-%20User%20Experience%20Designer.xml)
-- [25-GM - GitHub Manager.xml](../25-GM%20-%20GitHub%20Manager.xml)
-- [30-PE - Platform Engineer.xml](../30-PE%20-%20Platform%20Engineer.xml)
-- [35-SEC - Security Specialist.xml](../35-SEC%20-%20Security%20Specialist.xml)
-- [45-SE - Software Engineer.xml](../45-SE%20-%20Software%20Engineer.xml)
-- [50-DBA - Database Administrator.xml](../50-DBA%20-%20Database%20Administrator.xml)
-- [55-FE - Frontend Engineer.xml](../55-FE%20-%20Frontend%20Engineer.xml)
-- [60-QAE - Quality Assurance Engineer.xml](../60-QAE%20-%20Quality%20Assurance%20Engineer.xml)
+- [10-SDA - Strategic Domain Analyst.xml](../10-SDA%20-%20Strategic%20Domain%20Analyst.xml)  
+- [15-DE - Domain Engineer.xml](../15-DE%20-%20Domain%20Engineer.xml)  
+- [20-UXD - User Experience Designer.xml](../20-UXD%20-%20User%20Experience%20Designer.xml)  
+- [25-GM - GitHub Manager.xml](../25-GM%20-%20GitHub%20Manager.xml)  
+- [30-PE - Platform Engineer.xml](../30-PE%20-%20Platform%20Engineer.xml)  
+- [35-SEC - Security Specialist.xml](../35-SEC%20-%20Security%20Specialist.xml)  
+- [45-SE - Software Engineer.xml](../45-SE%20-%20Software%20Engineer.xml)  
+- [50-DBA - Database Administrator.xml](../50-DBA%20-%20Database%20Administrator.xml)  
+- [55-FE - Frontend Engineer.xml](../55-FE%20-%20Frontend%20Engineer.xml)  
+- [60-QAE - Quality Assurance Engineer.xml](../60-QAE%20-%20Quality%20Assurance%20Engineer.xml)  
 
 ### Resources
-- **Templates:** `.agents/templates/`
-- **Checklists:** `.agents/workflow/02-checklists/`
-- **Workflow Config:** `workflow-config.json`
+- **Templates:** `.agents/templates/`  
+- **Checklists:** `.agents/workflow/02-checklists/`  
+- **Workflow Config:** `workflow-config.json`  
 
 ---
 
-**Version:** 1.0
-**Date:** 2025-10-09
-**Focus:** Small/Medium Projects
-**Agents:** 10 specialized agents
-**Philosophy:** Simple, pragmatic, value-driven
+**Version:** 1.0  
+**Date:** 2025-10-09  
+**Focus:** Small/Medium Projects  
+**Agents:** 10 specialized agents  
+**Philosophy:** Simple, pragmatic, value-driven  
