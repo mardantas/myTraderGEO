@@ -24,7 +24,7 @@ Este workflow combina **DDD estratégico e tático** com **desenvolvimento ágil
 |-------|-------|--------|----------------|--------|--------------|
 | 1 | SDA | Strategic Domain Analyst | 1x Discovery (Dia 1-2) | Sistema completo | - |
 | 2 | UXD | User Experience Designer | 1x Discovery (Dia 2-3) + Por épico | Fundamentos + Wireframes | SDA |
-| 3 | **PE** | **Platform Engineer** | **1x Discovery (Dia 2-3)** | **Define stack + ambientes** | **SDA** |
+| 3 | PE | Platform Engineer | 1x Discovery (Dia 2-3) | Define stack + ambientes | SDA |
 | 4 | QAE | Quality Assurance Engineer | 1x Discovery (Dia 3-4) + Por épico | Estratégia de testes + Quality gate | **PE** (stack) |
 | 5 | SEC | Security Specialist | 1x Discovery (Dia 3-4) | Baseline de segurança | **PE** (stack) |
 | 6 | GM | GitHub Manager | 1x Discovery (Dia 3-4) + Por épico | Setup CI/CD + Issues | **PE** (stack) |
