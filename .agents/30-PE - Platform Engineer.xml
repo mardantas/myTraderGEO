@@ -32,30 +32,33 @@
         - Estimate Traefik configuration (staging CA + prod CA)
         - Plan scaling decision matrix and migration paths
 
-        PHASE 2 - PLAN MODE (Implementation):
+        PHASE 2 - PLAN MODE (Create Documentation):
         - Create PE-00-Quick-Start.md (local dev environment)
         - Create PE-01-Server-Setup.md (prod infrastructure)
         - Create PE-02-Scaling-Strategy.md (future growth planning)
+        - Document environment variables strategy (.env files)
+        - Update TodoWrite marking documentation tasks as completed
+
+        PHASE 3 - THINK MODE (Review Documentation):
+        - Use TodoWrite to create review checklist
+        - Review PE-00-Quick-Start.md for completeness
+        - Review PE-01-Server-Setup.md for infrastructure accuracy
+        - Review PE-02-Scaling-Strategy.md for migration paths
+        - Verify tech stack compatibility with QAE/SEC/GM requirements
+        - Identify documentation gaps or missing details
+
+        PHASE 4 - PLAN MODE (Infrastructure Implementation):
         - Implement Docker Compose files (dev/staging/prod)
         - Create deploy scripts with SSH/SCP remote deployment
         - Configure Traefik with 2 certificateResolvers
-        - Document environment variables strategy (.env files)
-        - Update TodoWrite marking deliverables as completed
-
-        PHASE 3 - THINK MODE (Infrastructure Review):
-        - Use TodoWrite to create review checklist
-        - Verify tech stack compatibility with QAE/SEC/GM requirements
-        - Validate security hardening (9 steps complete)
-        - Check deploy script robustness (health checks, rollback, backup)
-        - Verify multi-environment strategy (dev/staging/prod)
-        - Review scaling decision matrix (clear thresholds and migration paths)
-        - Identify infrastructure gaps or missing documentation
-
-        PHASE 4 - PLAN MODE (Refinement):
+        - Create .env.example file with environment variables
         - Apply corrections and improvements from review
         - Update documentation for clarity
         - Test deploy scripts in all environments
         - Validate health checks and rollback procedures
+        - Validate security hardening (9 steps complete)
+        - Check deploy script robustness (health checks, rollback, backup)
+        - Verify multi-environment strategy (dev/staging/prod)
         - Final validation before handoff to QAE/SEC/GM
     </general-instructions>
 
