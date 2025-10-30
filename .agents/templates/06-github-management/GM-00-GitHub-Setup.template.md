@@ -585,7 +585,7 @@ This section documents the **deployment strategy** that integrates with PE docs:
 
 **Nomenclature from PE-00:**
 - **Development:** Local docker-compose (`.env.dev` committed)
-- **Staging:** Remote server `[project]-stage` (`.env.staging` NOT committed)
+- **Staging:** Remote server `[project]-staging` (`.env.staging` NOT committed)
 - **Production:** Remote server `[project]-prod` (`.env.production` NOT committed)
 
 ### .env Files Strategy
@@ -622,12 +622,12 @@ YOUR_IP_ADDRESS=203.0.113.0         # Change to YOUR public IP
 
 **PE-00 Deploy Script Pattern:**
 - **Development:** Local deployment (`docker-compose up`)
-- **Staging:** Remote deployment via SSH/SCP to `[project]-stage` server
+- **Staging:** Remote deployment via SSH/SCP to `[project]-staging` server
 - **Production:** Remote deployment via SSH/SCP to `[project]-prod` server
 
 **Server Prerequisites (from PE-00):**
 1. ✅ Server setup complete (8-step process documented in PE-00)
-2. ✅ Hostname configured: `[project]-stage` or `[project]-prod`
+2. ✅ Hostname configured: `[project]-staging` or `[project]-prod`
 3. ✅ UFW firewall (ports 22, 80, 443)
 4. ✅ fail2ban configured (SSH protection)
 5. ✅ Dedicated user `[project]_app` with SSH key access
@@ -648,7 +648,7 @@ YOUR_IP_ADDRESS=203.0.113.0         # Change to YOUR public IP
          │                              ▼
          │                     ┌─────────────────┐
          │                     │  Remote Server  │
-         │                     │  [project]-stage│
+         │                     │  [project]-staging│
          │                     └─────────────────┘
          │
          │ 2. SCP files (docker-compose.yml, configs/)
@@ -670,7 +670,7 @@ YOUR_IP_ADDRESS=203.0.113.0         # Change to YOUR public IP
 # Development (local)
 ./deploy.sh development
 
-# Staging (remote SSH/SCP to [project]-stage)
+# Staging (remote SSH/SCP to [project]-staging)
 ./deploy.sh staging latest
 
 # Production (remote SSH/SCP to [project]-prod)
@@ -743,7 +743,7 @@ jobs:
 - `SSH_KNOWN_HOSTS` - Known hosts file to prevent MITM attacks
 - `DOMAIN` - Your domain (e.g., `example.com`)
 
-**Deploy Target:** `[project]_app@[project]-stage` (from PE-00 server setup)
+**Deploy Target:** `[project]_app@[project]-staging` (from PE-00 server setup)
 
 ---
 
@@ -843,7 +843,7 @@ This section documents all required GitHub Secrets for remote deployment.
 |-------------|-------------|-------------|-----------------|
 | `SSH_PRIVATE_KEY_STAGING` | Staging | Private SSH key for staging server | `ssh-keygen -t ed25519 -C "[project]-staging"` → Copy `~/.ssh/id_ed25519` content |
 | `SSH_PRIVATE_KEY_PROD` | Production | Private SSH key for production server | `ssh-keygen -t ed25519 -C "[project]-prod"` → Copy `~/.ssh/id_ed25519` content |
-| `SSH_KNOWN_HOSTS` | Both | Known hosts file to prevent MITM attacks | `ssh-keyscan [project]-stage >> ~/.ssh/known_hosts && ssh-keyscan [project]-prod >> ~/.ssh/known_hosts` → Copy file content |
+| `SSH_KNOWN_HOSTS` | Both | Known hosts file to prevent MITM attacks | `ssh-keyscan [project]-staging >> ~/.ssh/known_hosts && ssh-keyscan [project]-prod >> ~/.ssh/known_hosts` → Copy file content |
 | `DOMAIN` | Both | Your domain (e.g., `example.com`) | Manually enter your domain |
 
 **Step-by-Step Setup:**
@@ -858,7 +858,7 @@ ssh-keygen -t ed25519 -C "[project]-staging-deploy-key" -f ~/.ssh/[project]_stag
 ssh-keygen -t ed25519 -C "[project]-production-deploy-key" -f ~/.ssh/[project]_production_ed25519
 
 # Generate known_hosts
-ssh-keyscan [project]-stage >> ~/.ssh/known_hosts_staging
+ssh-keyscan [project]-staging >> ~/.ssh/known_hosts_staging
 ssh-keyscan [project]-prod >> ~/.ssh/known_hosts_production
 ```
 
@@ -866,7 +866,7 @@ ssh-keyscan [project]-prod >> ~/.ssh/known_hosts_production
 
 ```bash
 # Staging server
-ssh-copy-id -i ~/.ssh/[project]_staging_ed25519.pub [project]_app@[project]-stage
+ssh-copy-id -i ~/.ssh/[project]_staging_ed25519.pub [project]_app@[project]-staging
 
 # Production server
 ssh-copy-id -i ~/.ssh/[project]_production_ed25519.pub [project]_app@[project]-prod
@@ -894,7 +894,7 @@ cat ~/.ssh/known_hosts_staging
 
 ```bash
 # Test staging connection
-ssh -i ~/.ssh/[project]_staging_ed25519 [project]_app@[project]-stage "echo 'SSH OK'"
+ssh -i ~/.ssh/[project]_staging_ed25519 [project]_app@[project]-staging "echo 'SSH OK'"
 
 # Test production connection
 ssh -i ~/.ssh/[project]_production_ed25519 [project]_app@[project]-prod "echo 'SSH OK'"

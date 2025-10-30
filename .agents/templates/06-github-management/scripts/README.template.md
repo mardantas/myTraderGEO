@@ -337,7 +337,7 @@ curl https://api.[DOMAIN]/health
    ```bash
    # Staging
    ssh-copy-id -i ~/.ssh/[project]_staging_ed25519.pub \
-     [project]_app@[project]-stage
+     [project]_app@[project]-staging
 
    # Production
    ssh-copy-id -i ~/.ssh/[project]_production_ed25519.pub \
@@ -346,7 +346,7 @@ curl https://api.[DOMAIN]/health
 
 3. **Generate known_hosts:**
    ```bash
-   ssh-keyscan [project]-stage >> ~/.ssh/known_hosts
+   ssh-keyscan [project]-staging >> ~/.ssh/known_hosts
    ssh-keyscan [project]-prod >> ~/.ssh/known_hosts
    ```
 

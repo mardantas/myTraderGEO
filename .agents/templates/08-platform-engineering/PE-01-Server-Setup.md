@@ -54,7 +54,7 @@ Configure servidores remotos (staging/production) com segurança, deploy via SSH
 
 ```bash
 # Staging server
-sudo hostnamectl set-hostname [project]-stage
+sudo hostnamectl set-hostname [project]-staging
 
 # Production server
 sudo hostnamectl set-hostname [project]-prod
@@ -475,7 +475,7 @@ Remote deployment uses SSH/SCP for file transfer and remote command execution to
 ### Deployment Flow
 
 ```
-Local Machine → check_ssh_connection() → Remote Server [project]-stage/prod
+Local Machine → check_ssh_connection() → Remote Server [project]-staging/prod
              → SCP files → SSH: docker compose up -d
              → remote_health_check() (HTTPS, 30 attempts × 5s)
              → log_deployment_history()
@@ -550,7 +550,7 @@ deploy_remote() {
     local VER=$2
 
     if [ "$ENV" = "staging" ]; then
-        SERVER_HOST="[project]-stage"
+        SERVER_HOST="[project]-staging"
     elif [ "$ENV" = "production" ]; then
         SERVER_HOST="[project]-prod"
     else

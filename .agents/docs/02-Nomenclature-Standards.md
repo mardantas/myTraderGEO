@@ -318,7 +318,7 @@ docker compose -f docker-compose.prod.yml --env-file .env.prod up -d
 localhost
 
 # Staging server
-myproject-stage
+myproject-staging
 staging.myproject.com
 
 # Prod server
@@ -330,7 +330,7 @@ www.myproject.com
 **Configuração:**
 ```bash
 # Set hostname on server
-sudo hostnamectl set-hostname myproject-stage  # staging
+sudo hostnamectl set-hostname myproject-staging  # staging
 sudo hostnamectl set-hostname myproject-prod   # prod
 ```
 
@@ -338,7 +338,7 @@ sudo hostnamectl set-hostname myproject-prod   # prod
 ```bash
 # deploy.sh pattern
 if [ "$ENV" = "staging" ]; then
-    SERVER_HOST="myproject-stage"
+    SERVER_HOST="myproject-staging"
 elif [ "$ENV" = "prod" ]; then
     SERVER_HOST="myproject-prod"
 fi
