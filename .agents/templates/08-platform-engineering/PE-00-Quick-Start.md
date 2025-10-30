@@ -179,8 +179,8 @@ DB_PASSWORD=dev_password_123
 
 # Database URLs
 DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@database:5432/${DB_NAME}
-DATABASE_URL_STAGING=postgresql://${DB_USER}:${DB_PASSWORD}@staging-db-host:5432/${DB_NAME_STAGING}
-DATABASE_URL_PROD=postgresql://${DB_USER}:${DB_PASSWORD}@prod-db-host:5432/${DB_NAME_PROD}
+DATABASE_URL_STAGING=postgresql://${DB_USER}:${DB_PASSWORD}@staging-db-host:5432/${DB_NAME}
+DATABASE_URL_PROD=postgresql://${DB_USER}:${DB_PASSWORD}@prod-db-host:5432/${DB_NAME}
 
 # API URLs
 API_URL_STAGING=https://api-staging.${DOMAIN}
