@@ -1,8 +1,8 @@
 <!--
 MARKDOWN FORMATTING:
-- Use 2 spaces at end of line for compact line breaks (metadata)
-- Use blank lines between sections for readability (content)
-- Validate in Markdown preview before committing
+- Use 2 spaces at end of line for compact line breaks (metadata)  
+- Use blank lines between sections for readability (content)  
+- Validate in Markdown preview before committing  
 -->
 
 # PE-02: Observability Strategy
@@ -29,11 +29,11 @@ global:
   scrape_interval: 15s
 
 scrape_configs:
-  - job_name: 'kubernetes-pods'
+  - job_name: 'kubernetes-pods'  
     kubernetes_sd_configs:
-    - role: pod
+    - role: pod  
     relabel_configs:
-    - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+    - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]  
       action: keep
       regex: true
 ```
@@ -77,9 +77,9 @@ exporters:
 ### AlertManager Rules
 ```yaml
 groups:
-- name: backend_alerts
+- name: backend_alerts  
   rules:
-  - alert: HighErrorRate
+  - alert: HighErrorRate  
     expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.05
     for: 5m
     labels:
@@ -88,7 +88,7 @@ groups:
       summary: "High error rate detected"
       description: "Error rate is {{ $value | humanizePercentage }}"
 
-  - alert: HighLatency
+  - alert: HighLatency  
     expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 0.5
     for: 5m
     labels:
@@ -98,9 +98,9 @@ groups:
 ### Integration: PagerDuty / Opsgenie
 ```yaml
 receivers:
-- name: 'pagerduty'
+- name: 'pagerduty'  
   pagerduty_configs:
-  - service_key: [SERVICE_KEY]
+  - service_key: [SERVICE_KEY]  
 ```
 
 ---
@@ -108,30 +108,30 @@ receivers:
 ## 📊 Grafana Dashboards
 
 ### Dashboard 1: Application Overview
-- Requests/sec (RPS)
-- p50, p95, p99 Latency
-- Error rate
-- Active users
+- Requests/sec (RPS)  
+- p50, p95, p99 Latency  
+- Error rate  
+- Active users  
 
 ### Dashboard 2: Infrastructure
-- CPU usage (by pod)
-- Memory usage
-- Network I/O
-- Disk I/O
+- CPU usage (by pod)  
+- Memory usage  
+- Network I/O  
+- Disk I/O  
 
 ### Dashboard 3: Business Metrics
-- Orders created/hour
-- Payment success rate
-- User signups
+- Orders created/hour  
+- Payment success rate  
+- User signups  
 
 ---
 
 ## ✅ Definition of Done
 
-- [ ] Prometheus coletando métricas de todos pods
-- [ ] Grafana dashboards criados (Application, Infra, Business)
-- [ ] Logs centralizados (ELK/CloudWatch) funcionando
-- [ ] Distributed tracing (Jaeger) configurado
-- [ ] Alerting (AlertManager + PagerDuty) testado
-- [ ] SLOs documentados (p95 latency, error rate, availability)
-- [ ] PE-checklist.yml completo
+- [ ] Prometheus coletando métricas de todos pods  
+- [ ] Grafana dashboards criados (Application, Infra, Business)  
+- [ ] Logs centralizados (ELK/CloudWatch) funcionando  
+- [ ] Distributed tracing (Jaeger) configurado  
+- [ ] Alerting (AlertManager + PagerDuty) testado  
+- [ ] SLOs documentados (p95 latency, error rate, availability)  
+- [ ] PE-checklist.yml completo  

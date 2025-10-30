@@ -1,8 +1,8 @@
 <!--
 MARKDOWN FORMATTING:
-- Use 2 spaces at end of line for compact line breaks (metadata)
-- Use blank lines between sections for readability (content)
-- Validate in Markdown preview before committing
+- Use 2 spaces at end of line for compact line breaks (metadata)  
+- Use blank lines between sections for readability (content)  
+- Validate in Markdown preview before committing  
 -->
 
 # UXD-01-User-Flows.md
@@ -56,17 +56,17 @@ flowchart TD
 **Passos Detalhados:**  
 
 1. **[Passo 1]**
-   - Screen: [Nome da tela]
-   - Action: [Ação do usuário]
-   - System: [O que sistema faz]
-   - BC: [Bounded Context responsável]
+   - Screen: [Nome da tela]  
+   - Action: [Ação do usuário]  
+   - System: [O que sistema faz]  
+   - BC: [Bounded Context responsável]  
 
 2. **[Passo 2]**
-   - ...
+   - ...  
 
 **Exceções/Erros:**  
-- [Cenário de erro 1] → [Tratamento]
-- [Cenário de erro 2] → [Tratamento]
+- [Cenário de erro 1] → [Tratamento]  
+- [Cenário de erro 2] → [Tratamento]  
 
 ---
 
@@ -96,20 +96,20 @@ flowchart TD
 ## 📱 Considerações de UX
 
 ### Mobile vs Desktop
-- **Mobile:** [Adaptações necessárias]
-- **Desktop:** [Funcionalidades específicas]
+- **Mobile:** [Adaptações necessárias]  
+- **Desktop:** [Funcionalidades específicas]  
 
 ### Acessibilidade
-- **Keyboard Navigation:** [Como navegar sem mouse]
-- **Screen Readers:** [Suporte a leitores de tela]
-- **WCAG Compliance:** [Nível A/AA/AAA]
+- **Keyboard Navigation:** [Como navegar sem mouse]  
+- **Screen Readers:** [Suporte a leitores de tela]  
+- **WCAG Compliance:** [Nível A/AA/AAA]  
 
 ---
 
 ## ✅ Validação
 
-- [ ] Todos os user flows cobrem jornadas críticas
-- [ ] Exceções e erros mapeados
-- [ ] Navegação entre BCs clara
-- [ ] Acessibilidade considerada
-- [ ] Diagramas Mermaid renderizam corretamente
+- [ ] Todos os user flows cobrem jornadas críticas  
+- [ ] Exceções e erros mapeados  
+- [ ] Navegação entre BCs clara  
+- [ ] Acessibilidade considerada  
+- [ ] Diagramas Mermaid renderizam corretamente  

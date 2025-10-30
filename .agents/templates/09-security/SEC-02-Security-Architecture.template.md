@@ -1,8 +1,8 @@
 <!--
 MARKDOWN FORMATTING:
-- Use 2 spaces at end of line for compact line breaks (metadata)
-- Use blank lines between sections for readability (content)
-- Validate in Markdown preview before committing
+- Use 2 spaces at end of line for compact line breaks (metadata)  
+- Use blank lines between sections for readability (content)  
+- Validate in Markdown preview before committing  
 -->
 
 # SEC-02: Security Architecture Review
@@ -66,10 +66,10 @@ Arquitetura de segurança completa usando **Zero-Trust** e **Defense in Depth** 
 
 #### Security Requirements
 
-- [ ] **Confidentiality:** Dados protegidos contra acesso não autorizado
-- [ ] **Integrity:** Dados protegidos contra modificação não autorizada
-- [ ] **Availability:** Sistema disponível quando necessário (SLA 99.9%)
-- [ ] **Non-repudiation:** Ações rastreáveis e auditáveis
+- [ ] **Confidentiality:** Dados protegidos contra acesso não autorizado  
+- [ ] **Integrity:** Dados protegidos contra modificação não autorizada  
+- [ ] **Availability:** Sistema disponível quando necessário (SLA 99.9%)  
+- [ ] **Non-repudiation:** Ações rastreáveis e auditáveis  
 
 #### Security Controls
 
@@ -145,14 +145,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 ```
 
 **Token Expiry:**  
-- Access Token: 15 minutos
-- Refresh Token: 7 dias
-- Rotation obrigatória
+- Access Token: 15 minutos  
+- Refresh Token: 7 dias  
+- Rotation obrigatória  
 
 **MFA:**  
-- [ ] TOTP (Google Authenticator, Authy)
-- [ ] SMS backup (opcional)
-- [ ] Recovery codes
+- [ ] TOTP (Google Authenticator, Authy)  
+- [ ] SMS backup (opcional)  
+- [ ] Recovery codes  
 
 ### Authorization Strategy
 
@@ -385,9 +385,9 @@ builder.Configuration["ConnectionStrings:Default"] = connectionString;
 ```
 
 **Secrets Rotation:**  
-- [ ] Database passwords: rotação a cada 90 dias
-- [ ] API keys: rotação a cada 180 dias
-- [ ] JWT signing keys: rotação a cada 30 dias
+- [ ] Database passwords: rotação a cada 90 dias  
+- [ ] API keys: rotação a cada 180 dias  
+- [ ] JWT signing keys: rotação a cada 30 dias  
 
 ---
 
@@ -398,15 +398,15 @@ builder.Configuration["ConnectionStrings:Default"] = connectionString;
 ```yaml
 # Splunk/Sumo Logic configuration
 logs:
-  - source: application-logs
+  - source: application-logs  
     filter: level >= WARN
     index: security-events
 
-  - source: audit-logs
+  - source: audit-logs  
     filter: event_type IN (Login, AccessDenied, DataExport)
     index: audit-trail
 
-  - source: waf-logs
+  - source: waf-logs  
     filter: action = BLOCK
     index: security-events
 ```
@@ -425,15 +425,15 @@ logs:
 
 ## ✅ Definition of Done
 
-- [ ] Zero-Trust architecture documentado (verify explicitly, least privilege)
-- [ ] Defense in Depth em 7 camadas implementado
-- [ ] Security boundaries entre BCs definidas
-- [ ] Network security configurado (VPC, Security Groups, WAF)
-- [ ] Authentication & Authorization implementados (JWT, domain authz)
-- [ ] Secrets management configurado (Vault/Secrets Manager)
-- [ ] Encryption at rest e in transit habilitado
-- [ ] Security monitoring ativo (SIEM, alerts)
-- [ ] SEC-checklist.yml completo
+- [ ] Zero-Trust architecture documentado (verify explicitly, least privilege)  
+- [ ] Defense in Depth em 7 camadas implementado  
+- [ ] Security boundaries entre BCs definidas  
+- [ ] Network security configurado (VPC, Security Groups, WAF)  
+- [ ] Authentication & Authorization implementados (JWT, domain authz)  
+- [ ] Secrets management configurado (Vault/Secrets Manager)  
+- [ ] Encryption at rest e in transit habilitado  
+- [ ] Security monitoring ativo (SIEM, alerts)  
+- [ ] SEC-checklist.yml completo  
 
 ---
 

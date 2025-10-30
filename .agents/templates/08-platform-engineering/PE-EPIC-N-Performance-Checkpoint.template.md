@@ -1,8 +1,8 @@
 <!--
 MARKDOWN FORMATTING:
-- Use 2 spaces at end of line for compact line breaks (metadata)
-- Use blank lines between sections for readability (content)
-- Validate in Markdown preview before committing
+- Use 2 spaces at end of line for compact line breaks (metadata)  
+- Use blank lines between sections for readability (content)  
+- Validate in Markdown preview before committing  
 -->
 
 # PE-EPIC-[N]-[EpicName]-Performance-Checkpoint
@@ -18,10 +18,10 @@ MARKDOWN FORMATTING:
 ## 🎯 Checkpoint Scope
 
 **Triggered by:**  
-- [ ] Critical performance path introduced (real-time calculations)
-- [ ] Complex database queries (>3 JOINs)
-- [ ] Epic 4+ (post-MVP stability)
-- [ ] Other: [specify]
+- [ ] Critical performance path introduced (real-time calculations)  
+- [ ] Complex database queries (>3 JOINs)  
+- [ ] Epic 4+ (post-MVP stability)  
+- [ ] Other: [specify]  
 
 ---
 
@@ -77,9 +77,9 @@ Example: StrategyService.cs:78 - using .Result (deadlock risk)
 
 **Caching Recommendations:**  
 ```
-- Market data (Greeks, prices): Redis, 5-min expiration
-- User preferences: In-Memory, 1-hour expiration
-- Strategy templates: In-Memory, 1-day expiration
+- Market data (Greeks, prices): Redis, 5-min expiration  
+- User preferences: In-Memory, 1-hour expiration  
+- Strategy templates: In-Memory, 1-day expiration  
 ```
 
 ---
@@ -107,8 +107,8 @@ Example: StrategyService.cs:78 - using .Result (deadlock risk)
 ## 🔄 Feedback Created
 
 **Critical Issues → FEEDBACK to SE/DBA:**  
-- [ ] FEEDBACK-[NNN]-PE-SE-[issue-title].md
-- [ ] FEEDBACK-[NNN]-PE-DBA-[issue-title].md
+- [ ] FEEDBACK-[NNN]-PE-SE-[issue-title].md  
+- [ ] FEEDBACK-[NNN]-PE-DBA-[issue-title].md  
 
 **Blocking Deploy:** ☐ Yes ☑ No  
 
@@ -116,18 +116,18 @@ Example: StrategyService.cs:78 - using .Result (deadlock risk)
 
 ## ✅ Final Verdict
 
-- **✅ Approved:** No critical performance issues, epic can proceed to QAE
-- **⚠️ Issues Found:** Non-blocking issues, feedback created for SE/DBA
-- **🔴 Critical Issues:** Blocking issues, must fix before QAE testing
+- **✅ Approved:** No critical performance issues, epic can proceed to QAE  
+- **⚠️ Issues Found:** Non-blocking issues, feedback created for SE/DBA  
+- **🔴 Critical Issues:** Blocking issues, must fix before QAE testing  
 
 **Summary:** [Brief summary of checkpoint result]  
 
 ---
 
 **Next Steps:**  
-- [ ] SE addresses feedback (if any)
-- [ ] DBA addresses feedback (if any)
-- [ ] Epic proceeds to QAE Quality Gate
+- [ ] SE addresses feedback (if any)  
+- [ ] DBA addresses feedback (if any)  
+- [ ] Epic proceeds to QAE Quality Gate  
 
 ---
 

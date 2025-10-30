@@ -1,8 +1,8 @@
 <!--
 MARKDOWN FORMATTING:
-- Use 2 spaces at end of line for compact line breaks (metadata)
-- Use blank lines between sections for readability (content)
-- Validate in Markdown preview before committing
+- Use 2 spaces at end of line for compact line breaks (metadata)  
+- Use blank lines between sections for readability (content)  
+- Validate in Markdown preview before committing  
 -->
 
 # SEC-EPIC-[N]-[EpicName]-Security-Checkpoint
@@ -18,10 +18,10 @@ MARKDOWN FORMATTING:
 ## 🎯 Checkpoint Scope
 
 **Triggered by:**  
-- [ ] Epic handles sensitive data (PII, credentials, financial)
-- [ ] Authentication/authorization logic introduced
-- [ ] Epic 4+ (post-MVP stability)
-- [ ] Other: [specify]
+- [ ] Epic handles sensitive data (PII, credentials, financial)  
+- [ ] Authentication/authorization logic introduced  
+- [ ] Epic 4+ (post-MVP stability)  
+- [ ] Other: [specify]  
 
 ---
 
@@ -56,9 +56,9 @@ Example: Strategy.cs:78 - No ownership check in Close() method
 
 **Sensitive Data Identified:**  
 ```
-- User email/phone: [Encryption status]
-- API keys: [Storage method]
-- Payment info: [Encryption status]
+- User email/phone: [Encryption status]  
+- API keys: [Storage method]  
+- Payment info: [Encryption status]  
 ```
 
 #### 💉 Injection
@@ -136,11 +136,11 @@ Example: appsettings.json - Database password hardcoded (should be env var)
 
 ### Files Reviewed:
 ```
-- [x] Controllers: [List]
-- [x] Aggregates: [List]
-- [x] Value Objects: [List]
-- [x] Application Services: [List]
-- [x] Frontend Components: [List if applicable]
+- [x] Controllers: [List]  
+- [x] Aggregates: [List]  
+- [x] Value Objects: [List]  
+- [x] Application Services: [List]  
+- [x] Frontend Components: [List if applicable]  
 ```
 
 ---
@@ -159,9 +159,9 @@ Example: appsettings.json - Database password hardcoded (should be env var)
 ## 🔄 Feedback Created
 
 **Critical Issues → FEEDBACK to SE/DE/FE:**  
-- [ ] FEEDBACK-[NNN]-SEC-SE-[issue-title].md
-- [ ] FEEDBACK-[NNN]-SEC-DE-[issue-title].md
-- [ ] FEEDBACK-[NNN]-SEC-FE-[issue-title].md
+- [ ] FEEDBACK-[NNN]-SEC-SE-[issue-title].md  
+- [ ] FEEDBACK-[NNN]-SEC-DE-[issue-title].md  
+- [ ] FEEDBACK-[NNN]-SEC-FE-[issue-title].md  
 
 **Blocking Deploy:** ☐ Yes ☑ No  
 
@@ -182,9 +182,9 @@ Example: appsettings.json - Database password hardcoded (should be env var)
 
 ## ✅ Final Verdict
 
-- **✅ Approved:** No critical security issues, epic can proceed to QAE
-- **⚠️ Issues Found:** Non-blocking issues, feedback created for SE/DE/FE
-- **🔴 Critical Issues:** Blocking issues, must fix before QAE testing
+- **✅ Approved:** No critical security issues, epic can proceed to QAE  
+- **⚠️ Issues Found:** Non-blocking issues, feedback created for SE/DE/FE  
+- **🔴 Critical Issues:** Blocking issues, must fix before QAE testing  
 
 **Summary:** [Brief summary of checkpoint result]  
 
@@ -195,23 +195,23 @@ Example: appsettings.json - Database password hardcoded (should be env var)
 ## 📋 Remediation Actions
 
 **Immediate (Before QAE):**  
-- [ ] [Action 1]
-- [ ] [Action 2]
+- [ ] [Action 1]  
+- [ ] [Action 2]  
 
 **Short-term (Epic N+1):**  
-- [ ] [Action 1]
-- [ ] [Action 2]
+- [ ] [Action 1]  
+- [ ] [Action 2]  
 
 **Long-term (Production):**  
-- [ ] [Action 1]
-- [ ] [Action 2]
+- [ ] [Action 1]  
+- [ ] [Action 2]  
 
 ---
 
 **Next Steps:**  
-- [ ] SE/DE/FE addresses feedback (if any)
-- [ ] Security issues resolved
-- [ ] Epic proceeds to QAE Quality Gate
+- [ ] SE/DE/FE addresses feedback (if any)  
+- [ ] Security issues resolved  
+- [ ] Epic proceeds to QAE Quality Gate  
 
 ---
 

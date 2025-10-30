@@ -1,8 +1,8 @@
 <!--
 MARKDOWN FORMATTING:
-- Use 2 spaces at end of line for compact line breaks (metadata)
-- Use blank lines between sections for readability (content)
-- Validate in Markdown preview before committing
+- Use 2 spaces at end of line for compact line breaks (metadata)  
+- Use blank lines between sections for readability (content)  
+- Validate in Markdown preview before committing  
 -->
 
 # SDA-01-Event-Storming.md
@@ -23,10 +23,10 @@ MARKDOWN FORMATTING:
 
 ## 🎯 Objetivos
 
-- Descobrir eventos de domínio principais
-- Identificar bounded contexts emergentes
-- Mapear processos de negócio
-- Identificar hotspots e complexidades
+- Descobrir eventos de domínio principais  
+- Identificar bounded contexts emergentes  
+- Mapear processos de negócio  
+- Identificar hotspots e complexidades  
 
 ---
 
@@ -41,13 +41,13 @@ MARKDOWN FORMATTING:
 **Eventos Detalhados:**  
 
 1. **[Nome do Evento]**
-   - Trigger: [O que dispara]
-   - Actor: [Quem/O que]
-   - Data: [Dados envolvidos]
-   - Business Rule: [Regra de negócio]
+   - Trigger: [O que dispara]  
+   - Actor: [Quem/O que]  
+   - Data: [Dados envolvidos]  
+   - Business Rule: [Regra de negócio]  
 
 2. **[Próximo Evento]**
-   - ...
+   - ...  
 
 ---
 
@@ -58,8 +58,8 @@ MARKDOWN FORMATTING:
 **Responsabilidade:** [O que faz]  
 
 **Eventos deste contexto:**  
-- [Evento 1]
-- [Evento 2]
+- [Evento 1]  
+- [Evento 2]  
 
 **Complexidade:** [Alta | Média | Baixa]  
 
@@ -87,7 +87,7 @@ MARKDOWN FORMATTING:
 
 ## 🎯 Próximos Passos
 
-- [ ] Criar Context Map com relacionamentos entre BCs
-- [ ] Refinar Ubiquitous Language
-- [ ] Definir épicos por funcionalidade
-- [ ] Priorizar épicos
+- [ ] Criar Context Map com relacionamentos entre BCs  
+- [ ] Refinar Ubiquitous Language  
+- [ ] Definir épicos por funcionalidade  
+- [ ] Priorizar épicos  

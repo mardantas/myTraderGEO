@@ -1,26 +1,26 @@
 <!--
 MARKDOWN FORMATTING:
-- Use 2 spaces at end of line for compact line breaks (metadata)
-- Use blank lines between sections for readability (content)
-- Validate in Markdown preview before committing
+- Use 2 spaces at end of line for compact line breaks (metadata)  
+- Use blank lines between sections for readability (content)  
+- Validate in Markdown preview before committing  
 -->
 
 # PE-02 - Scaling Strategy & Future Growth
 
-**Agent:** PE (Platform Engineer)
-**Phase:** Discovery (1x) - Strategic Planning
-**Scope:** Future growth beyond Docker Compose - NOT for v1.0 implementation
-**Version:** 4.0 (Split from PE-00-Environments-Setup)
+**Agent:** PE (Platform Engineer)  
+**Phase:** Discovery (1x) - Strategic Planning  
+**Scope:** Future growth beyond Docker Compose - NOT for v1.0 implementation  
+**Version:** 4.0 (Split from PE-00-Environments-Setup)  
 
 ---
 
 ## 📋 Metadata
 
-- **Project Name:** [PROJECT_NAME]
-- **Created:** [DATE]
-- **PE Engineer:** [NAME]
-- **Target:** Strategic planning for scaling beyond 1k users
-- **Status:** Reference only - implement when needed
+- **Project Name:** [PROJECT_NAME]  
+- **Created:** [DATE]  
+- **PE Engineer:** [NAME]  
+- **Target:** Strategic planning for scaling beyond 1k users  
+- **Status:** Reference only - implement when needed  
 
 ---
 
@@ -28,8 +28,8 @@ MARKDOWN FORMATTING:
 
 Plan your **future scaling path** from Docker Compose to Managed Cloud or Kubernetes. This guide helps you decide **when and how** to scale your infrastructure as your project grows.
 
-**Foundation:** Start with [PE-00-Quick-Start.md](./PE-00-Quick-Start.md) and [PE-01-Server-Setup.md](./PE-01-Server-Setup.md)
-**Implementation:** Do NOT implement this until you hit growth thresholds below
+**Foundation:** Start with [PE-00-Quick-Start.md](./PE-00-Quick-Start.md) and [PE-01-Server-Setup.md](./PE-01-Server-Setup.md)  
+**Implementation:** Do NOT implement this until you hit growth thresholds below  
 
 ---
 
@@ -50,44 +50,44 @@ Plan your **future scaling path** from Docker Compose to Managed Cloud or Kubern
 
 ### Overview
 
-**Target:** AWS ECS Fargate, Azure Container Instances, or Google Cloud Run
-**Timeline:** 1-2 weeks
-**Complexity:** Low
-**When:** You hit 1k active users OR need 99%+ uptime SLA
+**Target:** AWS ECS Fargate, Azure Container Instances, or Google Cloud Run  
+**Timeline:** 1-2 weeks  
+**Complexity:** Low  
+**When:** You hit 1k active users OR need 99%+ uptime SLA  
 
 ### Why Managed Cloud?
 
-- ✅ **No server management** (fully managed)
-- ✅ **Auto-scaling out of the box** (CPU/memory-based)
-- ✅ **Built-in load balancing** (AWS ALB, Azure Application Gateway, Cloud Load Balancer)
-- ✅ **Pay-per-use pricing** (cost-effective for variable workloads)
-- ✅ **99.9% SLA guaranteed** (cloud provider SLA)
-- ✅ **Easy migration** from Docker Compose (containers already working)
+- ✅ **No server management** (fully managed)  
+- ✅ **Auto-scaling out of the box** (CPU/memory-based)  
+- ✅ **Built-in load balancing** (AWS ALB, Azure Application Gateway, Cloud Load Balancer)  
+- ✅ **Pay-per-use pricing** (cost-effective for variable workloads)  
+- ✅ **99.9% SLA guaranteed** (cloud provider SLA)  
+- ✅ **Easy migration** from Docker Compose (containers already working)  
 
 ### Migration Steps
 
 1. **Containerize** (already done via Docker Compose in PE-00/PE-01)
 2. **Push images to cloud registry**:
-   - AWS: Amazon ECR (Elastic Container Registry)
-   - Azure: Azure Container Registry (ACR)
-   - GCP: Google Container Registry (GCR)
+   - AWS: Amazon ECR (Elastic Container Registry)  
+   - Azure: Azure Container Registry (ACR)  
+   - GCP: Google Container Registry (GCR)  
 
 3. **Create managed database**:
-   - AWS: Amazon RDS for PostgreSQL
-   - Azure: Azure Database for PostgreSQL
-   - GCP: Cloud SQL for PostgreSQL
+   - AWS: Amazon RDS for PostgreSQL  
+   - Azure: Azure Database for PostgreSQL  
+   - GCP: Cloud SQL for PostgreSQL  
 
 4. **Deploy containers to managed service**:
-   - **AWS:** ECS Fargate with Application Load Balancer
-   - **Azure:** Container Instances with Application Gateway
-   - **GCP:** Cloud Run with Cloud Load Balancing
+   - **AWS:** ECS Fargate with Application Load Balancer  
+   - **Azure:** Container Instances with Application Gateway  
+   - **GCP:** Cloud Run with Cloud Load Balancing  
 
 5. **Configure auto-scaling** (CPU/memory-based policies)
 
 6. **Set up monitoring**:
-   - AWS: CloudWatch
-   - Azure: Azure Monitor
-   - GCP: Cloud Logging + Cloud Monitoring
+   - AWS: CloudWatch  
+   - Azure: Azure Monitor  
+   - GCP: Cloud Logging + Cloud Monitoring  
 
 ### AWS ECS Fargate Example
 
@@ -209,27 +209,27 @@ gcloud run deploy api \
 
 ### Cost Optimization Tips
 
-- **Use Spot/Preemptible Instances** for non-critical workloads (70% cost savings)
-- **Right-size containers** (don't over-provision CPU/memory)
-- **Scale to zero on Cloud Run** for staging environments (only pay when used)
-- **Use reserved instances** for production (30-50% discount on AWS RDS, Azure DB)
-- **Implement caching** (Redis/Memcached) to reduce database load
+- **Use Spot/Preemptible Instances** for non-critical workloads (70% cost savings)  
+- **Right-size containers** (don't over-provision CPU/memory)  
+- **Scale to zero on Cloud Run** for staging environments (only pay when used)  
+- **Use reserved instances** for production (30-50% discount on AWS RDS, Azure DB)  
+- **Implement caching** (Redis/Memcached) to reduce database load  
 
 ---
 
 ## 🔀 Migration Path 2: Docker Swarm (SKIP - Not Recommended)
 
-**Status:** ❌ **Skip this option entirely**
+**Status:** ❌ **Skip this option entirely**  
 
 **Why?**
-- Limited adoption and ecosystem compared to Kubernetes
-- Managed cloud services (ECS, AKS, Cloud Run) provide better features and support
-- Kubernetes is the industry standard for container orchestration
+- Limited adoption and ecosystem compared to Kubernetes  
+- Managed cloud services (ECS, AKS, Cloud Run) provide better features and support  
+- Kubernetes is the industry standard for container orchestration  
 
 **When to use Swarm?**
-- Only if you have specific constraints (air-gapped environment, government restrictions on cloud providers)
+- Only if you have specific constraints (air-gapped environment, government restrictions on cloud providers)  
 
-**Recommendation:** Go straight from Docker Compose to Managed Cloud (Path 1) or Kubernetes (Path 3).
+**Recommendation:** Go straight from Docker Compose to Managed Cloud (Path 1) or Kubernetes (Path 3).  
 
 ---
 
@@ -237,31 +237,31 @@ gcloud run deploy api \
 
 ### Overview
 
-**Target:** AWS EKS, Azure AKS, Google GKE
-**Timeline:** 4-8 weeks
-**Complexity:** High
-**When:** >10k active users OR complex microservices architecture (5+ services)
+**Target:** AWS EKS, Azure AKS, Google GKE  
+**Timeline:** 4-8 weeks  
+**Complexity:** High  
+**When:** >10k active users OR complex microservices architecture (5+ services)  
 
 ### When to Migrate to Kubernetes?
 
 Migrate to Kubernetes ONLY if you meet **3 or more** of these criteria:
 
-- ✅ **>10k active users** (need horizontal scaling at pod level)
-- ✅ **Need for multi-region deployment** (disaster recovery, compliance)
-- ✅ **Complex microservices** (5+ independent services)
-- ✅ **Enterprise SLA requirements** (99.9%+ uptime)
-- ✅ **Team has K8s expertise** (or budget to hire DevOps engineers)
-- ✅ **Advanced deployment strategies needed** (blue-green, canary)
-- ✅ **Service mesh requirements** (Istio, Linkerd for mTLS, traffic shaping)
+- ✅ **>10k active users** (need horizontal scaling at pod level)  
+- ✅ **Need for multi-region deployment** (disaster recovery, compliance)  
+- ✅ **Complex microservices** (5+ independent services)  
+- ✅ **Enterprise SLA requirements** (99.9%+ uptime)  
+- ✅ **Team has K8s expertise** (or budget to hire DevOps engineers)  
+- ✅ **Advanced deployment strategies needed** (blue-green, canary)  
+- ✅ **Service mesh requirements** (Istio, Linkerd for mTLS, traffic shaping)  
 
 ### Why Kubernetes?
 
-- ✅ **Industry standard** (massive ecosystem, widespread adoption)
-- ✅ **Multi-cloud portability** (move between AWS/Azure/GCP easily)
-- ✅ **Advanced deployment strategies** (blue-green, canary, rolling updates)
-- ✅ **Horizontal pod autoscaling** (HPA based on CPU, memory, custom metrics)
-- ✅ **Service mesh support** (Istio, Linkerd for zero-trust networking)
-- ✅ **Declarative infrastructure** (GitOps with ArgoCD, Flux)
+- ✅ **Industry standard** (massive ecosystem, widespread adoption)  
+- ✅ **Multi-cloud portability** (move between AWS/Azure/GCP easily)  
+- ✅ **Advanced deployment strategies** (blue-green, canary, rolling updates)  
+- ✅ **Horizontal pod autoscaling** (HPA based on CPU, memory, custom metrics)  
+- ✅ **Service mesh support** (Istio, Linkerd for zero-trust networking)  
+- ✅ **Declarative infrastructure** (GitOps with ArgoCD, Flux)  
 
 ### Migration Steps
 
@@ -270,16 +270,16 @@ Migrate to Kubernetes ONLY if you meet **3 or more** of these criteria:
 3. **Migrate database to managed service** (AWS RDS, Azure Database, Cloud SQL)
 4. **Set up Ingress controller** (NGINX, Traefik, AWS ALB Ingress Controller)
 5. **Configure autoscaling**:
-   - HPA (Horizontal Pod Autoscaler) for pods
-   - Cluster Autoscaler for nodes
+   - HPA (Horizontal Pod Autoscaler) for pods  
+   - Cluster Autoscaler for nodes  
 6. **Implement observability**:
-   - Metrics: Prometheus + Grafana
-   - Logging: Loki or ELK stack
-   - Tracing: Jaeger or Zipkin
+   - Metrics: Prometheus + Grafana  
+   - Logging: Loki or ELK stack  
+   - Tracing: Jaeger or Zipkin  
 7. **Set up CI/CD** (ArgoCD for GitOps, Flux)
 8. **Configure Disaster Recovery**:
-   - Velero for cluster backups
-   - Multi-region replication
+   - Velero for cluster backups  
+   - Multi-region replication  
 
 ### Kubernetes Deployment Example
 
@@ -302,12 +302,12 @@ spec:
         app: api
     spec:
       containers:
-      - name: api
+      - name: api  
         image: [REGISTRY]/[project]-api:latest
         ports:
-        - containerPort: 5000
+        - containerPort: 5000  
         env:
-        - name: DATABASE_URL
+        - name: DATABASE_URL  
           valueFrom:
             secretKeyRef:
               name: db-credentials
@@ -345,13 +345,13 @@ spec:
   minReplicas: 3
   maxReplicas: 10
   metrics:
-  - type: Resource
+  - type: Resource  
     resource:
       name: cpu
       target:
         type: Utilization
         averageUtilization: 70
-  - type: Resource
+  - type: Resource  
     resource:
       name: memory
       target:
@@ -362,20 +362,20 @@ spec:
 ### Best Practices for Kubernetes
 
 **Security:**
-- Use Pod Security Standards (restricted mode)
-- Enable RBAC (Role-Based Access Control)
-- Network Policies for pod-to-pod communication
-- Secret management (AWS Secrets Manager, Azure Key Vault, Google Secret Manager)
+- Use Pod Security Standards (restricted mode)  
+- Enable RBAC (Role-Based Access Control)  
+- Network Policies for pod-to-pod communication  
+- Secret management (AWS Secrets Manager, Azure Key Vault, Google Secret Manager)  
 
 **Reliability:**
-- Pod Disruption Budgets (PDB) to ensure availability during updates
-- Resource requests and limits for predictable performance
-- Anti-affinity rules to spread pods across nodes
+- Pod Disruption Budgets (PDB) to ensure availability during updates  
+- Resource requests and limits for predictable performance  
+- Anti-affinity rules to spread pods across nodes  
 
 **Observability:**
-- Prometheus metrics exporter in all services
-- Structured logging (JSON) for easy parsing
-- Distributed tracing headers (W3C Trace Context)
+- Prometheus metrics exporter in all services  
+- Structured logging (JSON) for easy parsing  
+- Distributed tracing headers (W3C Trace Context)  
 
 ---
 
@@ -394,34 +394,34 @@ spec:
 ### Phase 1: v1.0 - Docker Compose on VPS (0-1k users)
 
 **Current setup** (see [PE-00-Quick-Start.md](./PE-00-Quick-Start.md) and [PE-01-Server-Setup.md](./PE-01-Server-Setup.md)):
-- Get to market fast
-- Validate product-market fit
-- Keep costs low (<$200/mo)
-- 95% uptime is acceptable for early adopters
+- Get to market fast  
+- Validate product-market fit  
+- Keep costs low (<$200/mo)  
+- 95% uptime is acceptable for early adopters  
 
 ### Phase 2: Managed Cloud (1k-10k users)
 
 **When to migrate:**
-- You consistently have >1k active users
-- Revenue justifies $500-1k/mo infrastructure cost
-- Customers demand 99%+ uptime SLA
+- You consistently have >1k active users  
+- Revenue justifies $500-1k/mo infrastructure cost  
+- Customers demand 99%+ uptime SLA  
 
 **Recommended platforms:**
-- **AWS ECS Fargate** (best for .NET apps, mature ecosystem)
-- **Azure Container Instances** (if already on Azure, excellent integration)
-- **Google Cloud Run** (best for serverless workloads, scales to zero)
+- **AWS ECS Fargate** (best for .NET apps, mature ecosystem)  
+- **Azure Container Instances** (if already on Azure, excellent integration)  
+- **Google Cloud Run** (best for serverless workloads, scales to zero)  
 
 ### Phase 3: Kubernetes (>10k users)
 
 **When to migrate:**
-- You reach 10k+ active users AND have team expertise
-- Don't migrate prematurely (YAGNI principle)
-- K8s adds significant complexity (requires dedicated DevOps engineer)
+- You reach 10k+ active users AND have team expertise  
+- Don't migrate prematurely (YAGNI principle)  
+- K8s adds significant complexity (requires dedicated DevOps engineer)  
 
 **Recommended platforms:**
-- **AWS EKS** (most mature, widest ecosystem)
-- **Azure AKS** (best Azure integration, Windows containers support)
-- **Google GKE** (best Kubernetes experience, fastest updates)
+- **AWS EKS** (most mature, widest ecosystem)  
+- **Azure AKS** (best Azure integration, Windows containers support)  
+- **Google GKE** (best Kubernetes experience, fastest updates)  
 
 ---
 
@@ -429,39 +429,39 @@ spec:
 
 To maintain simplicity in small/medium projects, v1.0 **DOES NOT include**:
 
-- ❌ **Full IaC** (Terraform, Bicep, CloudFormation) - scripts are enough
-- ❌ **Observability stack** (Prometheus, Grafana, Jaeger, Loki) - cloud provider monitoring is enough
-- ❌ **Disaster Recovery Plan** (formal RTO/RPO) - database backups are enough
-- ❌ **Blue-Green deployment** - rolling updates are enough
-- ❌ **Canary deployment** - staged rollouts are enough
-- ❌ **Advanced auto-scaling policies** - basic CPU/memory scaling is enough
-- ❌ **Complex VPC/Networking** - default VPC is enough
-- ❌ **Multi-region deployment** - single region is enough
+- ❌ **Full IaC** (Terraform, Bicep, CloudFormation) - scripts are enough  
+- ❌ **Observability stack** (Prometheus, Grafana, Jaeger, Loki) - cloud provider monitoring is enough  
+- ❌ **Disaster Recovery Plan** (formal RTO/RPO) - database backups are enough  
+- ❌ **Blue-Green deployment** - rolling updates are enough  
+- ❌ **Canary deployment** - staged rollouts are enough  
+- ❌ **Advanced auto-scaling policies** - basic CPU/memory scaling is enough  
+- ❌ **Complex VPC/Networking** - default VPC is enough  
+- ❌ **Multi-region deployment** - single region is enough  
 
-**When to add:** When you scale to enterprise or have >100k users.
+**When to add:** When you scale to enterprise or have >100k users.  
 
 ---
 
 ## 📚 Referências
 
 ### Documentação Relacionada
-- **[PE-00-Quick-Start.md](./PE-00-Quick-Start.md)** - Local development MVP (start here)
-- **[PE-01-Server-Setup.md](./PE-01-Server-Setup.md)** - Production server setup (implement this first)
+- **[PE-00-Quick-Start.md](./PE-00-Quick-Start.md)** - Local development MVP (start here)  
+- **[PE-01-Server-Setup.md](./PE-01-Server-Setup.md)** - Production server setup (implement this first)  
 
 ### Recursos do Projeto
-- **Checklist PE:** `.agents/workflow/02-checklists/PE-checklist.yml`
-- **Agent XML:** `.agents/30-PE - Platform Engineer.xml`
-- **Workflow Guide:** `.agents/docs/00-Workflow-Guide.md`
+- **Checklist PE:** `.agents/workflow/02-checklists/PE-checklist.yml`  
+- **Agent XML:** `.agents/30-PE - Platform Engineer.xml`  
+- **Workflow Guide:** `.agents/docs/00-Workflow-Guide.md`  
 
 ### External Resources
-- **AWS ECS:** https://aws.amazon.com/ecs/
-- **Azure Container Instances:** https://azure.microsoft.com/en-us/products/container-instances/
-- **Google Cloud Run:** https://cloud.google.com/run
-- **Kubernetes:** https://kubernetes.io/docs/home/
+- **AWS ECS:** https://aws.amazon.com/ecs/  
+- **Azure Container Instances:** https://azure.microsoft.com/en-us/products/container-instances/  
+- **Google Cloud Run:** https://cloud.google.com/run  
+- **Kubernetes:** https://kubernetes.io/docs/home/  
 
 ---
 
-**Template Version:** 4.0 (Scaling Strategy)
-**Last Updated:** 2025-10-29
-**Split From:** PE-00-Environments-Setup.template.md v3.0
-**Status:** Strategic reference - implement when growth thresholds are met
+**Template Version:** 4.0 (Scaling Strategy)  
+**Last Updated:** 2025-10-29  
+**Split From:** PE-00-Environments-Setup.template.md v3.0  
+**Status:** Strategic reference - implement when growth thresholds are met  

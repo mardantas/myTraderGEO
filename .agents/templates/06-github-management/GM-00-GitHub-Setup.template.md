@@ -1,8 +1,8 @@
 <!--
 MARKDOWN FORMATTING:
-- Use 2 spaces at end of line for compact line breaks (metadata)
-- Use blank lines between sections for readability (content)
-- Validate in Markdown preview before committing
+- Use 2 spaces at end of line for compact line breaks (metadata)  
+- Use blank lines between sections for readability (content)  
+- Validate in Markdown preview before committing  
 -->
 
 # GM-00-GitHub-Setup.md
@@ -19,27 +19,27 @@ MARKDOWN FORMATTING:
 Documentar a configuração do GitHub para o projeto: templates pré-existentes (workflow), workflows CI/CD customizados (stack), labels via script, e automação de milestones/epic issues por épico.
 
 **Versão 1.0 - Philosophy:**  
-- ✅ **Automate HIGH ROI tasks:**
-  - **Discovery (1x):** Labels via script, CI/CD workflows files, Dependabot config, helper scripts
-  - **Per Epic (Nx):** Milestones + Epic issues (executed automatically by GM on Day 2)
-- ✅ **Hybrid approach:** Scripts create base structure (fast, consistent) + User customizes with rich context (DE-01 details)
-- ✅ **GitHub Free adaptations:** NO branch protection (discipline-based workflow documented)
+- ✅ **Automate HIGH ROI tasks:**  
+  - **Discovery (1x):** Labels via script, CI/CD workflows files, Dependabot config, helper scripts  
+  - **Per Epic (Nx):** Milestones + Epic issues (executed automatically by GM on Day 2)  
+- ✅ **Hybrid approach:** Scripts create base structure (fast, consistent) + User customizes with rich context (DE-01 details)  
+- ✅ **GitHub Free adaptations:** NO branch protection (discipline-based workflow documented)  
 
 ---
 
 ## 📖 Como Usar Esta Documentação
 
 **Este documento (GM-00) é a REFERÊNCIA COMPLETA e ESTRATÉGICA:**  
-- **Target:** Team leads, arquitetos, futuros mantenedores
-- **Conteúdo:** Justificativas (POR QUÊ cada decisão), detalhes técnicos completos (O QUÊ foi configurado), integrações com SDA/PE, limitações do GitHub Free e estratégias de mitigação
-- **Estilo:** Completo, detalhado, educacional, documentação DDD formal
-- **Quando consultar:** Para entender estratégia, tomar decisões arquiteturais, modificar configurações
+- **Target:** Team leads, arquitetos, futuros mantenedores  
+- **Conteúdo:** Justificativas (POR QUÊ cada decisão), detalhes técnicos completos (O QUÊ foi configurado), integrações com SDA/PE, limitações do GitHub Free e estratégias de mitigação  
+- **Estilo:** Completo, detalhado, educacional, documentação DDD formal  
+- **Quando consultar:** Para entender estratégia, tomar decisões arquiteturais, modificar configurações  
 
 **Para EXECUÇÃO RÁPIDA de tarefas, consulte:** [03-github-manager/README.md](../../03-github-manager/README.md)  
-- **Target:** Desenvolvedores executando tarefas do dia-a-dia
-- **Conteúdo:** Comandos CLI, checklists de execução, quick start, **links para seções deste documento para detalhes**
-- **Estilo:** Minimalista, imperativo, quick reference, focado em comandos
-- **Quando consultar:** Para executar setup, verificar status, troubleshooting rápido
+- **Target:** Desenvolvedores executando tarefas do dia-a-dia  
+- **Conteúdo:** Comandos CLI, checklists de execução, quick start, **links para seções deste documento para detalhes**  
+- **Estilo:** Minimalista, imperativo, quick reference, focado em comandos  
+- **Quando consultar:** Para executar setup, verificar status, troubleshooting rápido  
 
 **Princípio:** GM-00 explica o **POR QUÊ** e **O QUÊ**, README explica o **COMO executar**.  
 
@@ -74,13 +74,13 @@ Templates disponíveis:
 **Localização:** [.github/PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE.md)  
 
 **Contém:**  
-- Descrição das mudanças
-- Epic/Issue relacionado
-- Agent responsável
-- Bounded Contexts afetados
-- Checklist de testes (unit, integration, E2E)
-- Checklist de qualidade (nomenclature, docs, migrations)
-- Screenshots (se UI)
+- Descrição das mudanças  
+- Epic/Issue relacionado  
+- Agent responsável  
+- Bounded Contexts afetados  
+- Checklist de testes (unit, integration, E2E)  
+- Checklist de qualidade (nomenclature, docs, migrations)  
+- Screenshots (se UI)  
 
 **Status:** ✅ **Pronto para uso** (não criado pelo GM, apenas documentado)  
 
@@ -102,31 +102,31 @@ chmod +x setup-labels.sh
 **Labels criadas:**  
 
 #### Agents (Quem está trabalhando)
-- `agent:SDA`, `agent:UXD`, `agent:DE`, `agent:DBA`, `agent:SE`, `agent:FE`, `agent:QAE`, `agent:GM`, `agent:PE`, `agent:SEC`
+- `agent:SDA`, `agent:UXD`, `agent:DE`, `agent:DBA`, `agent:SE`, `agent:FE`, `agent:QAE`, `agent:GM`, `agent:PE`, `agent:SEC`  
 
 #### Bounded Contexts (Onde está o trabalho) - **From SDA-02-Context-Map.md**
-- `bc:[BC_1]`
-- `bc:[BC_2]`
-- `bc:[BC_3]`
-- *(Customize baseado nos BCs identificados pelo SDA)*
+- `bc:[BC_1]`  
+- `bc:[BC_2]`  
+- `bc:[BC_3]`  
+- *(Customize baseado nos BCs identificados pelo SDA)*  
 
 #### Epics (O que é) - **From SDA-01-Event-Storming.md**
-- `epic:[EPIC_1_SHORT_NAME]`
-- `epic:[EPIC_2_SHORT_NAME]`
-- `epic:[EPIC_3_SHORT_NAME]`
-- *(Customize baseado nos épicos priorizados pelo SDA)*
+- `epic:[EPIC_1_SHORT_NAME]`  
+- `epic:[EPIC_2_SHORT_NAME]`  
+- `epic:[EPIC_3_SHORT_NAME]`  
+- *(Customize baseado nos épicos priorizados pelo SDA)*  
 
 #### Types (Natureza do trabalho)
-- `type:feature`, `type:bug`, `type:refactor`, `type:docs`, `type:test`, `type:chore`
+- `type:feature`, `type:bug`, `type:refactor`, `type:docs`, `type:test`, `type:chore`  
 
 #### Priority
-- `priority:high`, `priority:medium`, `priority:low`
+- `priority:high`, `priority:medium`, `priority:low`  
 
 #### Status
-- `status:blocked`, `status:wip`, `status:review`, `status:ready`
+- `status:blocked`, `status:wip`, `status:review`, `status:ready`  
 
 #### Phase
-- `phase:discovery`, `phase:iteration`
+- `phase:discovery`, `phase:iteration`  
 
 **Verificar:**  
 ```bash
@@ -140,11 +140,11 @@ gh label list --repo [OWNER]/[REPO]
 **Abordagem:** ✅ Criar **sob demanda** (um por vez, quando iniciar cada épico)  
 
 **Por quê sob demanda:**  
-- Baixa frequência (5-10 milestones total no projeto)
-- GitHub UI é rápido (30s cada)
-- Milestones podem mudar (prioridades, datas) - criar apenas quando necessário
-- **Criar incrementalmente:** M0 no Discovery, M1 quando iniciar EPIC-01, M2 quando iniciar EPIC-02, etc
-- **NÃO criar todos de uma vez** - épicos futuros podem mudar completamente
+- Baixa frequência (5-10 milestones total no projeto)  
+- GitHub UI é rápido (30s cada)  
+- Milestones podem mudar (prioridades, datas) - criar apenas quando necessário  
+- **Criar incrementalmente:** M0 no Discovery, M1 quando iniciar EPIC-01, M2 quando iniciar EPIC-02, etc  
+- **NÃO criar todos de uma vez** - épicos futuros podem mudar completamente  
 
 **Script auxiliar criado:** [03-github-manager/scripts/create-milestone.sh](../../../03-github-manager/scripts/create-milestone.sh) ⚙️ ON-DEMAND TOOL  
 
@@ -221,7 +221,7 @@ gh api repos/[OWNER]/[REPO]/milestones -X POST \
 ```
 
 **Formato de due_on:** ISO 8601 format (`YYYY-MM-DDTHH:MM:SSZ`)  
-- Exemplo: `2025-12-31T23:59:59Z` (31 Dec 2025, 23:59:59 UTC)
+- Exemplo: `2025-12-31T23:59:59Z` (31 Dec 2025, 23:59:59 UTC)  
 
 **Verificar milestones criadas:**  
 ```bash
@@ -242,14 +242,14 @@ gh api repos/[OWNER]/[REPO]/milestones
 3. **CLI direto** - Customização total, requer copy-paste
 
 **Quando criar:**  
-- ✅ **APÓS** milestone correspondente criado (M1, M2, etc)
-- ✅ **APÓS** DE-01-{EpicName}-Domain-Model.md estar completo
-- ✅ **Um por vez** (não criar todos os épicos de uma vez)
+- ✅ **APÓS** milestone correspondente criado (M1, M2, etc)  
+- ✅ **APÓS** DE-01-{EpicName}-Domain-Model.md estar completo  
+- ✅ **Um por vez** (não criar todos os épicos de uma vez)  
 
 **Execução Automática (Per Epic - Day 2):**  
-- ⚙️ **GM executa `create-milestone.sh` automaticamente** quando executado por épico
-- ⚙️ **GM executa `create-epic-issue.sh` automaticamente** quando executado por épico
-- ⚠️ **User customiza epic issue** com detalhes completos do DE-01 (1min)
+- ⚙️ **GM executa `create-milestone.sh` automaticamente** quando executado por épico  
+- ⚙️ **GM executa `create-epic-issue.sh` automaticamente** quando executado por épico  
+- ⚠️ **User customiza epic issue** com detalhes completos do DE-01 (1min)  
 
 **Script auxiliar criado:** [03-github-manager/scripts/create-epic-issue.sh](../../../03-github-manager/scripts/create-epic-issue.sh) ⚙️ AUTO-EXECUTED BY GM  
 
@@ -270,14 +270,14 @@ gh api repos/[OWNER]/[REPO]/milestones
 ```
 GitHub UI → New Issue → 🎯 Epic Issue
 → Preencher formulário (2min) com dados do DE-01:
-  - Epic Number: 01
-  - Epic Name: [EPIC_1_NAME]
-  - Milestone: M1: [EPIC_1_NAME]
-  - Priority: priority-high
-  - Description: (copiar de DE-01)
-  - Bounded Contexts: (selecionar do DE-01)
-  - Acceptance Criteria: (copiar de DE-01)
-  - Deliverables checklists: (pré-preenchido por agent)
+  - Epic Number: 01  
+  - Epic Name: [EPIC_1_NAME]  
+  - Milestone: M1: [EPIC_1_NAME]  
+  - Priority: priority-high  
+  - Description: (copiar de DE-01)  
+  - Bounded Contexts: (selecionar do DE-01)  
+  - Acceptance Criteria: (copiar de DE-01)  
+  - Deliverables checklists: (pré-preenchido por agent)  
 → Submit → Issue criada!
 ```
 
@@ -316,8 +316,8 @@ gh issue create --repo [OWNER]/[REPO] \
 
 ## 🎯 Bounded Contexts Involved
 
-- **[BC_1]** (Core): [Brief description from SDA-02]
-- **[BC_2]** (Supporting): [Brief description from SDA-02]
+- **[BC_1]** (Core): [Brief description from SDA-02]  
+- **[BC_2]** (Supporting): [Brief description from SDA-02]  
 
 ## 📊 Objectives
 
@@ -331,59 +331,59 @@ gh issue create --repo [OWNER]/[REPO] \
 
 [From DE-01 - acceptance criteria]
 
-- [ ] Criterion 1
-- [ ] Criterion 2
-- [ ] Criterion 3
+- [ ] Criterion 1  
+- [ ] Criterion 2  
+- [ ] Criterion 3  
 
 ## 📦 Deliverables
 
 ### DE - Domain Engineer
-- [ ] DE-01-[EpicName]-Domain-Model.md (aggregates, entities, VOs, domain events)
-- [ ] Domain events identified and documented
-- [ ] Business rules validated with domain experts
+- [ ] DE-01-[EpicName]-Domain-Model.md (aggregates, entities, VOs, domain events)  
+- [ ] Domain events identified and documented  
+- [ ] Business rules validated with domain experts  
 
 ### DBA - Database Administrator
-- [ ] DBA-01-[EpicName]-Schema-Review.md
-- [ ] EF Core migrations created and tested
-- [ ] Indexes and constraints defined
+- [ ] DBA-01-[EpicName]-Schema-Review.md  
+- [ ] EF Core migrations created and tested  
+- [ ] Indexes and constraints defined  
 
 ### SE - Software Engineer (Backend)
-- [ ] Domain layer implemented (aggregates, entities, VOs)
-- [ ] Application layer implemented (commands, queries, handlers)
-- [ ] API endpoints implemented and documented
-- [ ] Unit tests (>80% coverage)
-- [ ] Integration tests (critical paths)
+- [ ] Domain layer implemented (aggregates, entities, VOs)  
+- [ ] Application layer implemented (commands, queries, handlers)  
+- [ ] API endpoints implemented and documented  
+- [ ] Unit tests (>80% coverage)  
+- [ ] Integration tests (critical paths)  
 
 ### FE - Frontend Engineer
-- [ ] Vue components implemented
-- [ ] Pinia stores implemented
-- [ ] API integration complete
-- [ ] Unit tests (components)
-- [ ] Responsive design validated
+- [ ] Vue components implemented  
+- [ ] Pinia stores implemented  
+- [ ] API integration complete  
+- [ ] Unit tests (components)  
+- [ ] Responsive design validated  
 
 ### QAE - Quality Assurance Engineer (Quality Gate)
-- [ ] E2E tests implemented (Playwright)
-- [ ] Smoke tests passing
-- [ ] Performance baseline validated
-- [ ] QAE-01-[EpicName]-Quality-Gate.md
+- [ ] E2E tests implemented (Playwright)  
+- [ ] Smoke tests passing  
+- [ ] Performance baseline validated  
+- [ ] QAE-01-[EpicName]-Quality-Gate.md  
 
 ## 📋 Definition of Done
 
-- [ ] All deliverables completed and reviewed
-- [ ] All tests passing (unit, integration, E2E)
-- [ ] Code reviewed and approved
-- [ ] Documentation updated
-- [ ] Deployed to staging and validated
-- [ ] Performance baseline met
-- [ ] Security review passed (if required)
-- [ ] Ready for production deployment
+- [ ] All deliverables completed and reviewed  
+- [ ] All tests passing (unit, integration, E2E)  
+- [ ] Code reviewed and approved  
+- [ ] Documentation updated  
+- [ ] Deployed to staging and validated  
+- [ ] Performance baseline met  
+- [ ] Security review passed (if required)  
+- [ ] Ready for production deployment  
 
 ---
 
 **Related Documents:**  
-- DE-01: [Link to domain model when available]
-- SDA-01: [Link to event storming](00-doc-ddd/02-strategic-design/SDA-01-Event-Storming.md)
-- SDA-02: [Link to context map](00-doc-ddd/02-strategic-design/SDA-02-Context-Map.md)
+- DE-01: [Link to domain model when available]  
+- SDA-01: [Link to event storming](00-doc-ddd/02-strategic-design/SDA-01-Event-Storming.md)  
+- SDA-02: [Link to context map](00-doc-ddd/02-strategic-design/SDA-02-Context-Map.md)  
 
 🤖 Generated with GitHub Manager (GM) template
 EOF
@@ -420,17 +420,17 @@ gh issue view [ISSUE_NUMBER] --repo [OWNER]/[REPO]
 ---
 
 **Template contém (quando usar GitHub Form):**  
-- Epic number, name input fields
-- Milestone dropdown (options customizadas com epics do projeto)
-- Priority dropdown (high, medium, low)
-- Bounded Contexts (multiselect from project BCs)
-- Description, objectives, acceptance criteria (text areas)
-- Deliverables checklist (checkboxes por agent: DE, DBA, SE, FE, QAE, PE, SEC)
-- Definition of Done (checkboxes)
+- Epic number, name input fields  
+- Milestone dropdown (options customizadas com epics do projeto)  
+- Priority dropdown (high, medium, low)  
+- Bounded Contexts (multiselect from project BCs)  
+- Description, objectives, acceptance criteria (text areas)  
+- Deliverables checklist (checkboxes por agent: DE, DBA, SE, FE, QAE, PE, SEC)  
+- Definition of Done (checkboxes)  
 
 **Recomendação:**  
-- **GitHub Form** para primeiro epic (aprender estrutura, 2min)
-- **CLI** para epics subsequentes (mais rápido quando conhece estrutura, copy-paste)
+- **GitHub Form** para primeiro epic (aprender estrutura, 2min)  
+- **CLI** para epics subsequentes (mais rápido quando conhece estrutura, copy-paste)  
 
 ---
 
@@ -445,22 +445,22 @@ gh issue view [ISSUE_NUMBER] --repo [OWNER]/[REPO]
 **Stack:** [From PE-00: e.g., .NET 8.0]  
 
 **Triggers:**  
-- Push para `develop`, `main`
-- Pull requests para `develop`, `main`
-- Apenas quando arquivos em `02-backend/` mudam
+- Push para `develop`, `main`  
+- Pull requests para `develop`, `main`  
+- Apenas quando arquivos em `02-backend/` mudam  
 
 **Jobs:**  
 1. **build-and-test**
-   - Setup .NET [VERSION from PE-00]
-   - Restore dependencies
-   - Build (Release)
-   - Run unit tests (`Category=Unit`)
-   - Run integration tests (`Category=Integration`)
-   - Publish test results
+   - Setup .NET [VERSION from PE-00]  
+   - Restore dependencies  
+   - Build (Release)  
+   - Run unit tests (`Category=Unit`)  
+   - Run integration tests (`Category=Integration`)  
+   - Publish test results  
 
 2. **build-docker** (opcional, se usar Docker)
-   - Build Docker image
-   - Cache layers para performance
+   - Build Docker image  
+   - Cache layers para performance  
 
 **Status checks:** ✅ Required before merge (discipline-based, GitHub Free)  
 
@@ -473,23 +473,23 @@ gh issue view [ISSUE_NUMBER] --repo [OWNER]/[REPO]
 **Stack:** [From PE-00: e.g., React 18 + Vite, Node 20.x, npm]  
 
 **Triggers:**  
-- Push para `develop`, `main`
-- Pull requests para `develop`, `main`
-- Apenas quando arquivos em `01-frontend/` mudam
+- Push para `develop`, `main`  
+- Pull requests para `develop`, `main`  
+- Apenas quando arquivos em `01-frontend/` mudam  
 
 **Jobs:**  
 1. **build-and-test**
-   - Setup Node.js [VERSION from PE-00]
-   - Install dependencies ([PACKAGE_MANAGER from PE-00: npm/yarn/pnpm])
-   - Lint code
-   - Type check (TypeScript)
-   - Run unit tests
-   - Build (production)
-   - Upload artifacts (optional)
+   - Setup Node.js [VERSION from PE-00]  
+   - Install dependencies ([PACKAGE_MANAGER from PE-00: npm/yarn/pnpm])  
+   - Lint code  
+   - Type check (TypeScript)  
+   - Run unit tests  
+   - Build (production)  
+   - Upload artifacts (optional)  
 
 2. **build-docker** (opcional, se usar Docker)
-   - Build Docker image
-   - Cache layers para performance
+   - Build Docker image  
+   - Cache layers para performance  
 
 **Status checks:** ✅ Required before merge (discipline-based, GitHub Free)  
 
@@ -500,28 +500,28 @@ gh issue view [ISSUE_NUMBER] --repo [OWNER]/[REPO]
 **Arquivo:** [.github/workflows/security.yml](.github/workflows/security.yml)  
 
 **Triggers:**  
-- Push para `main`, `develop`
-- Pull requests
-- Schedule: Semanal (Sundays, 00:00 UTC)
-- Manual dispatch
+- Push para `main`, `develop`  
+- Pull requests  
+- Schedule: Semanal (Sundays, 00:00 UTC)  
+- Manual dispatch  
 
 **Jobs:**  
 1. **CodeQL Analysis**
-   - Languages: [From PE-00: e.g., csharp, javascript-typescript]
-   - Security-extended queries
-   - Autobuild (for compiled languages)
+   - Languages: [From PE-00: e.g., csharp, javascript-typescript]  
+   - Security-extended queries  
+   - Autobuild (for compiled languages)  
 
 2. **Secret Scanning**
-   - TruffleHog OSS
-   - Detecta secrets commitados
+   - TruffleHog OSS  
+   - Detecta secrets commitados  
 
 3. **Dependency Review** (apenas em PRs)
-   - Fail on: moderate+ severity
-   - Deny licenses: GPL-2.0, GPL-3.0
+   - Fail on: moderate+ severity  
+   - Deny licenses: GPL-2.0, GPL-3.0  
 
 4. **OWASP Dependency Check** (opcional)
-   - Weekly full scan
-   - HTML report gerado
+   - Weekly full scan  
+   - HTML report gerado  
 
 **Reports:** Disponíveis na aba Security do GitHub  
 
@@ -540,10 +540,10 @@ gh issue view [ISSUE_NUMBER] --repo [OWNER]/[REPO]
 | `github-actions` | `/` | Weekly (Mondays, 09:00) | GitHub Actions versions |
 
 **Configuration:**  
-- Open PRs limit: 5 per ecosystem
-- Auto-reviewers: [GITHUB_USERNAME]
-- Labels: `dependencies`, `backend`/`frontend`, `security`
-- Grouped updates: minor + patch together
+- Open PRs limit: 5 per ecosystem  
+- Auto-reviewers: [GITHUB_USERNAME]  
+- Labels: `dependencies`, `backend`/`frontend`, `security`  
+- Grouped updates: minor + patch together  
 
 ---
 
@@ -552,28 +552,28 @@ gh issue view [ISSUE_NUMBER] --repo [OWNER]/[REPO]
 **Arquivo:** [.github/workflows/cd-staging.yml](.github/workflows/cd-staging.yml)  
 
 **Triggers:**  
-- Push para `develop`
-- Manual dispatch
+- Push para `develop`  
+- Manual dispatch  
 
 **Environments:**  
-- **Staging:** [STAGING_URL from PE-00]
+- **Staging:** [STAGING_URL from PE-00]  
 
 **Jobs:**  
 1. **deploy-backend**
-   - Build + Publish
-   - Run migrations
-   - Deploy (Azure/AWS/Docker - customizar)
-   - Health check
+   - Build + Publish  
+   - Run migrations  
+   - Deploy (Azure/AWS/Docker - customizar)  
+   - Health check  
 
 2. **deploy-frontend**
-   - Build (production)
-   - Deploy (S3/Azure Static Web Apps/Vercel - customizar)
-   - Health check
+   - Build (production)  
+   - Deploy (S3/Azure Static Web Apps/Vercel - customizar)  
+   - Health check  
 
 3. **notify**
-   - Slack/Discord/Email notification (optional)
+   - Slack/Discord/Email notification (optional)  
 
-**Status:** ⚠️ **Requires customization** (deployment target from PE-00)
+**Status:** ⚠️ **Requires customization** (deployment target from PE-00)  
 
 ---
 
@@ -584,13 +584,13 @@ This section documents the **deployment strategy** that integrates with PE docs:
 ### Multi-Environment Architecture
 
 **Nomenclature from PE-00:**
-- **Development:** Local docker-compose (`.env.dev` committed)
-- **Staging:** Remote server `[project]-stage` (`.env.staging` NOT committed)
-- **Production:** Remote server `[project]-prod` (`.env.production` NOT committed)
+- **Development:** Local docker-compose (`.env.dev` committed)  
+- **Staging:** Remote server `[project]-staging` (`.env.staging` NOT committed)  
+- **Production:** Remote server `[project]-prod` (`.env.production` NOT committed)  
 
 ### .env Files Strategy
 
-**Principe:** `.env` files contain environment-specific configuration. Development uses safe defaults (committed to Git), staging/production use real secrets (created on server, NEVER committed).
+**Principe:** `.env` files contain environment-specific configuration. Development uses safe defaults (committed to Git), staging/production use real secrets (created on server, NEVER committed).  
 
 | Environment | File | Git Status | Location | Secrets Level |
 |-------------|------|-----------|----------|---------------|
@@ -621,13 +621,13 @@ YOUR_IP_ADDRESS=203.0.113.0         # Change to YOUR public IP
 ### Multi-Server Remote Deployment
 
 **PE-00 Deploy Script Pattern:**
-- **Development:** Local deployment (`docker-compose up`)
-- **Staging:** Remote deployment via SSH/SCP to `[project]-stage` server
-- **Production:** Remote deployment via SSH/SCP to `[project]-prod` server
+- **Development:** Local deployment (`docker-compose up`)  
+- **Staging:** Remote deployment via SSH/SCP to `[project]-staging` server  
+- **Production:** Remote deployment via SSH/SCP to `[project]-prod` server  
 
 **Server Prerequisites (from PE-00):**
 1. ✅ Server setup complete (8-step process documented in PE-00)
-2. ✅ Hostname configured: `[project]-stage` or `[project]-prod`
+2. ✅ Hostname configured: `[project]-staging` or `[project]-prod`
 3. ✅ UFW firewall (ports 22, 80, 443)
 4. ✅ fail2ban configured (SSH protection)
 5. ✅ Dedicated user `[project]_app` with SSH key access
@@ -648,7 +648,7 @@ YOUR_IP_ADDRESS=203.0.113.0         # Change to YOUR public IP
          │                              ▼
          │                     ┌─────────────────┐
          │                     │  Remote Server  │
-         │                     │  [project]-stage│
+         │                     │  [project]-staging│
          │                     └─────────────────┘
          │
          │ 2. SCP files (docker-compose.yml, configs/)
@@ -670,7 +670,7 @@ YOUR_IP_ADDRESS=203.0.113.0         # Change to YOUR public IP
 # Development (local)
 ./deploy.sh development
 
-# Staging (remote SSH/SCP to [project]-stage)
+# Staging (remote SSH/SCP to [project]-staging)
 ./deploy.sh staging latest
 
 # Production (remote SSH/SCP to [project]-prod)
@@ -686,19 +686,19 @@ YOUR_IP_ADDRESS=203.0.113.0         # Change to YOUR public IP
 This section documents the **Continuous Deployment (CD) pipelines** that automate deployments to staging and production environments.
 
 **Philosophy:**
-- **Staging:** Auto-deploy on push to `main` (fast feedback, safe to fail)
-- **Production:** Manual workflow_dispatch with approval (controlled, auditable)
+- **Staging:** Auto-deploy on push to `main` (fast feedback, safe to fail)  
+- **Production:** Manual workflow_dispatch with approval (controlled, auditable)  
 
 #### CD Staging Pipeline (Auto-Deploy)
 
-**Arquivo:** [.github/workflows/cd-staging.yml](.github/workflows/cd-staging.yml)
+**Arquivo:** [.github/workflows/cd-staging.yml](.github/workflows/cd-staging.yml)  
 
 **Characteristics:**
-- ✅ **Automatic:** Triggered on every push to `main`
-- ✅ **Fast feedback:** Deploy immediately after merge
-- ✅ **Safe to fail:** Staging is non-critical environment
-- ✅ **Health checks:** HTTPS check with retry (30x5s)
-- ✅ **Rollback:** Manual via `./deploy.sh staging <previous-version>`
+- ✅ **Automatic:** Triggered on every push to `main`  
+- ✅ **Fast feedback:** Deploy immediately after merge  
+- ✅ **Safe to fail:** Staging is non-critical environment  
+- ✅ **Health checks:** HTTPS check with retry (30x5s)  
+- ✅ **Rollback:** Manual via `./deploy.sh staging <previous-version>`  
 
 **Workflow Structure:**
 
@@ -708,7 +708,7 @@ name: CD Staging (Auto-Deploy)
 on:
   push:
     branches:
-      - main
+      - main  
   workflow_dispatch:
 
 jobs:
@@ -717,10 +717,10 @@ jobs:
     environment: staging
 
     steps:
-      - name: Checkout code
+      - name: Checkout code  
         uses: actions/checkout@v4
 
-      - name: Setup SSH
+      - name: Setup SSH  
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY_STAGING }}" > ~/.ssh/id_ed25519
@@ -728,36 +728,36 @@ jobs:
           echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
 
-      - name: Deploy to Staging
+      - name: Deploy to Staging  
         run: |
           chmod +x ./deploy.sh
           ./deploy.sh staging latest
 
-      - name: Verify Deployment
+      - name: Verify Deployment  
         run: |
           curl -f https://staging.${{ secrets.DOMAIN }}/health || exit 1
 ```
 
 **GitHub Secrets Required:**
-- `SSH_PRIVATE_KEY_STAGING` - Private key to connect to staging server
-- `SSH_KNOWN_HOSTS` - Known hosts file to prevent MITM attacks
-- `DOMAIN` - Your domain (e.g., `example.com`)
+- `SSH_PRIVATE_KEY_STAGING` - Private key to connect to staging server  
+- `SSH_KNOWN_HOSTS` - Known hosts file to prevent MITM attacks  
+- `DOMAIN` - Your domain (e.g., `example.com`)  
 
-**Deploy Target:** `[project]_app@[project]-stage` (from PE-00 server setup)
+**Deploy Target:** `[project]_app@[project]-staging` (from PE-00 server setup)  
 
 ---
 
 #### CD Production Pipeline (Manual Approval)
 
-**Arquivo:** [.github/workflows/cd-production.yml](.github/workflows/cd-production.yml)
+**Arquivo:** [.github/workflows/cd-prod.yml](.github/workflows/cd-prod.yml)  
 
 **Characteristics:**
-- ✅ **Manual trigger:** workflow_dispatch with version input
-- ✅ **Approval required:** GitHub environment protection (production)
-- ✅ **Version control:** Deploys specific version (e.g., `v1.2.3`)
-- ✅ **Audit trail:** All deployments logged in GitHub Actions history
-- ✅ **Health checks:** HTTPS check with retry (30x5s)
-- ✅ **Rollback:** Manual via `./deploy.sh production <previous-version>`
+- ✅ **Manual trigger:** workflow_dispatch with version input  
+- ✅ **Approval required:** GitHub environment protection (production)  
+- ✅ **Version control:** Deploys specific version (e.g., `v1.2.3`)  
+- ✅ **Audit trail:** All deployments logged in GitHub Actions history  
+- ✅ **Health checks:** HTTPS check with retry (30x5s)  
+- ✅ **Rollback:** Manual via `./deploy.sh production <previous-version>`  
 
 **Workflow Structure:**
 
@@ -780,27 +780,27 @@ jobs:
       url: https://${{ secrets.DOMAIN }}
 
     steps:
-      - name: Checkout code
+      - name: Checkout code  
         uses: actions/checkout@v4
 
-      - name: Setup SSH
+      - name: Setup SSH  
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY_PRODUCTION }}" > ~/.ssh/id_ed25519
+          echo "${{ secrets.SSH_PRIVATE_KEY_PROD }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
 
-      - name: Deploy to Production
+      - name: Deploy to Production  
         run: |
           chmod +x ./deploy.sh
           ./deploy.sh production ${{ github.event.inputs.version }}
 
-      - name: Verify Deployment
+      - name: Verify Deployment  
         run: |
           curl -f https://${{ secrets.DOMAIN }}/health || exit 1
 
-      - name: Create Deployment Tag
+      - name: Create Deployment Tag  
         if: github.event.inputs.version != 'latest'
         run: |
           git tag -a deployed-${{ github.event.inputs.version }} \
@@ -809,11 +809,11 @@ jobs:
 ```
 
 **GitHub Secrets Required:**
-- `SSH_PRIVATE_KEY_PRODUCTION` - Private key to connect to production server
-- `SSH_KNOWN_HOSTS` - Known hosts file to prevent MITM attacks
-- `DOMAIN` - Your domain (e.g., `example.com`)
+- `SSH_PRIVATE_KEY_PROD` - Private key to connect to production server  
+- `SSH_KNOWN_HOSTS` - Known hosts file to prevent MITM attacks  
+- `DOMAIN` - Your domain (e.g., `example.com`)  
 
-**Deploy Target:** `[project]_app@[project]-prod` (from PE-00 server setup)
+**Deploy Target:** `[project]_app@[project]-prod` (from PE-00 server setup)  
 
 **Environment Protection Rules (GitHub Settings):**
 1. Go to: Settings → Environments → production
@@ -837,13 +837,13 @@ jobs:
 
 This section documents all required GitHub Secrets for remote deployment.
 
-**Location:** GitHub Repository → Settings → Secrets and variables → Actions
+**Location:** GitHub Repository → Settings → Secrets and variables → Actions  
 
 | Secret Name | Environment | Description | How to Generate |
 |-------------|-------------|-------------|-----------------|
 | `SSH_PRIVATE_KEY_STAGING` | Staging | Private SSH key for staging server | `ssh-keygen -t ed25519 -C "[project]-staging"` → Copy `~/.ssh/id_ed25519` content |
-| `SSH_PRIVATE_KEY_PRODUCTION` | Production | Private SSH key for production server | `ssh-keygen -t ed25519 -C "[project]-production"` → Copy `~/.ssh/id_ed25519` content |
-| `SSH_KNOWN_HOSTS` | Both | Known hosts file to prevent MITM attacks | `ssh-keyscan [project]-stage >> ~/.ssh/known_hosts && ssh-keyscan [project]-prod >> ~/.ssh/known_hosts` → Copy file content |
+| `SSH_PRIVATE_KEY_PROD` | Production | Private SSH key for production server | `ssh-keygen -t ed25519 -C "[project]-prod"` → Copy `~/.ssh/id_ed25519` content |
+| `SSH_KNOWN_HOSTS` | Both | Known hosts file to prevent MITM attacks | `ssh-keyscan [project]-staging >> ~/.ssh/known_hosts && ssh-keyscan [project]-prod >> ~/.ssh/known_hosts` → Copy file content |
 | `DOMAIN` | Both | Your domain (e.g., `example.com`) | Manually enter your domain |
 
 **Step-by-Step Setup:**
@@ -858,7 +858,7 @@ ssh-keygen -t ed25519 -C "[project]-staging-deploy-key" -f ~/.ssh/[project]_stag
 ssh-keygen -t ed25519 -C "[project]-production-deploy-key" -f ~/.ssh/[project]_production_ed25519
 
 # Generate known_hosts
-ssh-keyscan [project]-stage >> ~/.ssh/known_hosts_staging
+ssh-keyscan [project]-staging >> ~/.ssh/known_hosts_staging
 ssh-keyscan [project]-prod >> ~/.ssh/known_hosts_production
 ```
 
@@ -866,7 +866,7 @@ ssh-keyscan [project]-prod >> ~/.ssh/known_hosts_production
 
 ```bash
 # Staging server
-ssh-copy-id -i ~/.ssh/[project]_staging_ed25519.pub [project]_app@[project]-stage
+ssh-copy-id -i ~/.ssh/[project]_staging_ed25519.pub [project]_app@[project]-staging
 
 # Production server
 ssh-copy-id -i ~/.ssh/[project]_production_ed25519.pub [project]_app@[project]-prod
@@ -886,32 +886,32 @@ cat ~/.ssh/known_hosts_staging
 1. Go to GitHub Repository → Settings → Secrets and variables → Actions
 2. Click "New repository secret"
 3. Add:
-   - Name: `SSH_PRIVATE_KEY_STAGING`
-   - Value: [Paste entire private key content, including -----BEGIN OPENSSH PRIVATE KEY-----]
-4. Repeat for `SSH_PRIVATE_KEY_PRODUCTION`, `SSH_KNOWN_HOSTS`, `DOMAIN`
+   - Name: `SSH_PRIVATE_KEY_STAGING`  
+   - Value: [Paste entire private key content, including -----BEGIN OPENSSH PRIVATE KEY-----]  
+4. Repeat for `SSH_PRIVATE_KEY_PROD`, `SSH_KNOWN_HOSTS`, `DOMAIN`
 
 #### 4. Verify SSH Connection
 
 ```bash
 # Test staging connection
-ssh -i ~/.ssh/[project]_staging_ed25519 [project]_app@[project]-stage "echo 'SSH OK'"
+ssh -i ~/.ssh/[project]_staging_ed25519 [project]_app@[project]-staging "echo 'SSH OK'"
 
 # Test production connection
 ssh -i ~/.ssh/[project]_production_ed25519 [project]_app@[project]-prod "echo 'SSH OK'"
 ```
 
 **Security Notes:**
-- ✅ **Separate keys per environment** (staging vs production)
-- ✅ **Ed25519 algorithm** (more secure, faster than RSA)
-- ✅ **GitHub Secrets encrypted** (AES-256-GCM)
-- ✅ **Least privilege** - Keys only have access to `[project]_app` user
-- ❌ **NEVER commit private keys to Git**
-- ❌ **NEVER reuse keys across projects**
+- ✅ **Separate keys per environment** (staging vs production)  
+- ✅ **Ed25519 algorithm** (more secure, faster than RSA)  
+- ✅ **GitHub Secrets encrypted** (AES-256-GCM)  
+- ✅ **Least privilege** - Keys only have access to `[project]_app` user  
+- ❌ **NEVER commit private keys to Git**  
+- ❌ **NEVER reuse keys across projects**  
 
 **Rotation Policy:**
-- **Development:** No rotation (local keys)
-- **Staging:** Rotate annually
-- **Production:** Rotate quarterly
+- **Development:** No rotation (local keys)  
+- **Staging:** Rotate annually  
+- **Production:** Rotate quarterly  
 
 **For full server setup instructions (including user creation, SSH hardening, and firewall configuration), see [PE-01-Server-Setup.md - Server Setup Documentation](../00-doc-ddd/08-platform-engineering/PE-01-Server-Setup.md#server-hardening).**
 
@@ -929,10 +929,10 @@ feature/* → develop → main
 ```
 
 **Regras (aplicadas manualmente):**  
-- ❌ **NUNCA** push direto para `main` ou `develop`
-- ✅ **SEMPRE** criar PR para merge
-- ✅ **SEMPRE** verificar CI status checks antes de merge
-- ✅ **Recomendado:** Pelo menos 1 code review
+- ❌ **NUNCA** push direto para `main` ou `develop`  
+- ✅ **SEMPRE** criar PR para merge  
+- ✅ **SEMPRE** verificar CI status checks antes de merge  
+- ✅ **Recomendado:** Pelo menos 1 code review  
 
 #### Branch Naming Convention
 ```
@@ -978,7 +978,7 @@ git push origin v1.0.0
 gh release create v1.0.0 \
   --title "v1.0.0: [Epic Name]" \
   --notes "- Feature: [description]
-           - Fix: [description]"
+           - Fix: [description]"  
 ```
 
 ---
@@ -1021,106 +1021,106 @@ gh run view [RUN_ID] --repo [OWNER]/[REPO]
 
 ### Discovery (GM-00 - Uma vez)
 
-- [ ] **Labels criadas** via `setup-labels.sh` ✅ AUTOMATED
-  - [ ] Script executado (creates 41 labels, saves ~10min)
-  - [ ] Agents (10 labels)
-  - [ ] Bounded Contexts (do SDA-02)
-  - [ ] Epics (do SDA-01)
-  - [ ] Types, Priority, Status, Phase
-- [ ] **Helper scripts criados** ✅ AUTOMATED
-  - [ ] `create-milestone.sh` (para criar milestones sob demanda)
-  - [ ] `create-epic-issue.sh` (para criar epic issues sob demanda)
-- [ ] **Milestone M0 criado** ⚠️ ON-DEMAND
-  - [ ] M0: Discovery Foundation (30s - UI, script, ou CLI)
-- [ ] **Epic issue template criado** ✅ AUTOMATED
-  - [ ] `.github/ISSUE_TEMPLATE/10-epic.yml` (GitHub form)
-- [ ] **CI/CD Workflows criados** ✅ AUTOMATED
-  - [ ] `ci-backend.yml` (customizado do PE-00)
-  - [ ] `ci-frontend.yml` (customizado do PE-00)
-  - [ ] `security.yml` (languages do PE-00)
-- [ ] **Dependabot** ⚠️ OPTIONAL
-  - [ ] Config file criado OU
-  - [ ] Habilitado via GitHub UI (Settings → Security)
-- [ ] **Documentação criada**
-  - [ ] GM-00: Estratégia e justificativas (POR QUÊ/O QUÊ)
-  - [ ] README: Comandos e quick reference (COMO)
-  - [ ] Scripts auxiliares documentados
-- [ ] **Branch strategy documentada**
-  - [ ] Naming conventions
-  - [ ] PR workflow discipline
-  - [ ] Merge strategy
+- [ ] **Labels criadas** via `setup-labels.sh` ✅ AUTOMATED  
+  - [ ] Script executado (creates 41 labels, saves ~10min)  
+  - [ ] Agents (10 labels)  
+  - [ ] Bounded Contexts (do SDA-02)  
+  - [ ] Epics (do SDA-01)  
+  - [ ] Types, Priority, Status, Phase  
+- [ ] **Helper scripts criados** ✅ AUTOMATED  
+  - [ ] `create-milestone.sh` (para criar milestones sob demanda)  
+  - [ ] `create-epic-issue.sh` (para criar epic issues sob demanda)  
+- [ ] **Milestone M0 criado** ⚠️ ON-DEMAND  
+  - [ ] M0: Discovery Foundation (30s - UI, script, ou CLI)  
+- [ ] **Epic issue template criado** ✅ AUTOMATED  
+  - [ ] `.github/ISSUE_TEMPLATE/10-epic.yml` (GitHub form)  
+- [ ] **CI/CD Workflows criados** ✅ AUTOMATED  
+  - [ ] `ci-backend.yml` (customizado do PE-00)  
+  - [ ] `ci-frontend.yml` (customizado do PE-00)  
+  - [ ] `security.yml` (languages do PE-00)  
+- [ ] **Dependabot** ⚠️ OPTIONAL  
+  - [ ] Config file criado OU  
+  - [ ] Habilitado via GitHub UI (Settings → Security)  
+- [ ] **Documentação criada**  
+  - [ ] GM-00: Estratégia e justificativas (POR QUÊ/O QUÊ)  
+  - [ ] README: Comandos e quick reference (COMO)  
+  - [ ] Scripts auxiliares documentados  
+- [ ] **Branch strategy documentada**  
+  - [ ] Naming conventions  
+  - [ ] PR workflow discipline  
+  - [ ] Merge strategy  
 
 ### Per Epic (Por Iteração - Sob Demanda)
 
 **Quando:** Ao iniciar cada novo épico (após DE-01 completo)  
 
-- [ ] **Milestone criado** ⚙️ ON-DEMAND (um por vez)
-  - [ ] Opção 1: GitHub UI (30s)
-  - [ ] Opção 2: Script `create-milestone.sh` (20s)
-  - [ ] Opção 3: CLI direto
-  - [ ] **NÃO criar todos de uma vez** - apenas quando necessário
-- [ ] **Epic issue criada** ⚙️ ON-DEMAND (após milestone + DE-01)
-  - [ ] APÓS milestone correspondente criado
-  - [ ] APÓS DE-01-{EpicName}-Domain-Model.md completo
-  - [ ] Opção 1: GitHub Form (2min - preferencial)
-  - [ ] Opção 2: Script `create-epic-issue.sh` + edição manual
-  - [ ] Opção 3: CLI direto
-  - [ ] Customizar com detalhes do DE-01
-  - [ ] Assigned to milestone
-  - [ ] Labels: epic, BC, priority
+- [ ] **Milestone criado** ⚙️ ON-DEMAND (um por vez)  
+  - [ ] Opção 1: GitHub UI (30s)  
+  - [ ] Opção 2: Script `create-milestone.sh` (20s)  
+  - [ ] Opção 3: CLI direto  
+  - [ ] **NÃO criar todos de uma vez** - apenas quando necessário  
+- [ ] **Epic issue criada** ⚙️ ON-DEMAND (após milestone + DE-01)  
+  - [ ] APÓS milestone correspondente criado  
+  - [ ] APÓS DE-01-{EpicName}-Domain-Model.md completo  
+  - [ ] Opção 1: GitHub Form (2min - preferencial)  
+  - [ ] Opção 2: Script `create-epic-issue.sh` + edição manual  
+  - [ ] Opção 3: CLI direto  
+  - [ ] Customizar com detalhes do DE-01  
+  - [ ] Assigned to milestone  
+  - [ ] Labels: epic, BC, priority  
 
 ---
 
 ## 🔗 Referências
 
 ### Documentos Consultados
-- **SDA-01 Event Storming:** [00-doc-ddd/02-strategic-design/SDA-01-Event-Storming.md](00-doc-ddd/02-strategic-design/SDA-01-Event-Storming.md) - Epics para labels/milestones
-- **SDA-02 Context Map:** [00-doc-ddd/02-strategic-design/SDA-02-Context-Map.md](00-doc-ddd/02-strategic-design/SDA-02-Context-Map.md) - BCs para labels
-- **PE Platform Engineering:** [00-doc-ddd/08-platform-engineering/PE-00-Quick-Start.md](00-doc-ddd/08-platform-engineering/PE-00-Quick-Start.md), [PE-01-Server-Setup.md](00-doc-ddd/08-platform-engineering/PE-01-Server-Setup.md) - Stack para CI/CD
+- **SDA-01 Event Storming:** [00-doc-ddd/02-strategic-design/SDA-01-Event-Storming.md](00-doc-ddd/02-strategic-design/SDA-01-Event-Storming.md) - Epics para labels/milestones  
+- **SDA-02 Context Map:** [00-doc-ddd/02-strategic-design/SDA-02-Context-Map.md](00-doc-ddd/02-strategic-design/SDA-02-Context-Map.md) - BCs para labels  
+- **PE Platform Engineering:** [00-doc-ddd/08-platform-engineering/PE-00-Quick-Start.md](00-doc-ddd/08-platform-engineering/PE-00-Quick-Start.md), [PE-01-Server-Setup.md](00-doc-ddd/08-platform-engineering/PE-01-Server-Setup.md) - Stack para CI/CD  
 
 ### Scripts Criados
-- [03-github-manager/scripts/setup-labels.sh](../../../03-github-manager/scripts/setup-labels.sh) ✅ ONE-TIME (Discovery)
-- [03-github-manager/scripts/create-milestone.sh](../../../03-github-manager/scripts/create-milestone.sh) ⚙️ ON-DEMAND (Per Epic)
-- [03-github-manager/scripts/create-epic-issue.sh](../../../03-github-manager/scripts/create-epic-issue.sh) ⚙️ ON-DEMAND (Per Epic)
-- [03-github-manager/README.md](../../../03-github-manager/README.md)
+- [03-github-manager/scripts/setup-labels.sh](../../../03-github-manager/scripts/setup-labels.sh) ✅ ONE-TIME (Discovery)  
+- [03-github-manager/scripts/create-milestone.sh](../../../03-github-manager/scripts/create-milestone.sh) ⚙️ ON-DEMAND (Per Epic)  
+- [03-github-manager/scripts/create-epic-issue.sh](../../../03-github-manager/scripts/create-epic-issue.sh) ⚙️ ON-DEMAND (Per Epic)  
+- [03-github-manager/README.md](../../../03-github-manager/README.md)  
 
 ### Workflows Criados
-- [.github/workflows/ci-backend.yml](.github/workflows/ci-backend.yml)
-- [.github/workflows/ci-frontend.yml](.github/workflows/ci-frontend.yml)
-- [.github/workflows/security.yml](.github/workflows/security.yml)
-- [.github/dependabot.yml](.github/dependabot.yml)
-- [.github/workflows/cd-staging.yml](.github/workflows/cd-staging.yml) *(opcional)*
+- [.github/workflows/ci-backend.yml](.github/workflows/ci-backend.yml)  
+- [.github/workflows/ci-frontend.yml](.github/workflows/ci-frontend.yml)  
+- [.github/workflows/security.yml](.github/workflows/security.yml)  
+- [.github/dependabot.yml](.github/dependabot.yml)  
+- [.github/workflows/cd-staging.yml](.github/workflows/cd-staging.yml) *(opcional)*  
 
 ### Templates Pré-Existentes
-- [.github/ISSUE_TEMPLATE/](.github/ISSUE_TEMPLATE/) (8 templates)
-- [.github/PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE.md)
+- [.github/ISSUE_TEMPLATE/](.github/ISSUE_TEMPLATE/) (8 templates)  
+- [.github/PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE.md)  
 
 ---
 
 ## 📝 Notas
 
 ### GitHub Free Limitations
-- ❌ Branch protection rules não disponíveis
-- ❌ Required reviewers não forçados
-- ❌ Required status checks não bloqueiam merge automaticamente
-- ✅ **Mitigation:** Disciplina + PR workflow + CI status visibility
+- ❌ Branch protection rules não disponíveis  
+- ❌ Required reviewers não forçados  
+- ❌ Required status checks não bloqueiam merge automaticamente  
+- ✅ **Mitigation:** Disciplina + PR workflow + CI status visibility  
 
 ### Customização Executada
 `setup-labels.sh` customizado com:
-- ✅ BCs do SDA-02
-- ✅ Epics do SDA-01
-- ✅ Owner/Repo name
+- ✅ BCs do SDA-02  
+- ✅ Epics do SDA-01  
+- ✅ Owner/Repo name  
 
 Epic issue template customizado com:
-- ✅ Milestone dropdown options (project epics)
+- ✅ Milestone dropdown options (project epics)  
 
 CI/CD workflows customizados com:
-- ✅ Stack do PE-00 (backend, frontend, languages)
+- ✅ Stack do PE-00 (backend, frontend, languages)  
 
 ### Passos Manuais Documentados
-- ⚠️ Milestones: Criar via GitHub UI conforme necessário
-- ⚠️ Epic issues: Usar GitHub form template (AFTER DE-01)
-- ⚠️ Dependabot: Habilitar via UI (opcional)
+- ⚠️ Milestones: Criar via GitHub UI conforme necessário  
+- ⚠️ Epic issues: Usar GitHub form template (AFTER DE-01)  
+- ⚠️ Dependabot: Habilitar via UI (opcional)  
 
 ### Próximos Passos
 1. ✅ Discovery completo → Issue #1 fechada

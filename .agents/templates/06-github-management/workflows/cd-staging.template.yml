@@ -38,7 +38,7 @@ jobs:
       - name: Verify SSH Connection
         run: |
           ssh -o BatchMode=yes -o ConnectTimeout=5 \
-            [project]_app@[project]-stage "echo 'SSH connection successful'"
+            [project]_app@[project]-staging "echo 'SSH connection successful'"
 
       - name: Deploy to Staging Server
         run: |

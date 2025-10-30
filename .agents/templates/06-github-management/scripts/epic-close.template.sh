@@ -226,7 +226,7 @@ if [ -n "$RELEASE_VERSION" ]; then
   echo "     npm run test:smoke"
   echo ""
   echo "  3. If tests pass, deploy to production:"
-  echo "     docker compose -f docker-compose.production.yml up -d"
+  echo "     docker compose -f docker-compose.prod.yml up -d"
   echo ""
   echo "  4. Monitor production:"
   echo "     Check logs, metrics, and error rates"

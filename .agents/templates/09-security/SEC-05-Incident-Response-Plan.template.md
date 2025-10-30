@@ -1,8 +1,8 @@
 <!--
 MARKDOWN FORMATTING:
-- Use 2 spaces at end of line for compact line breaks (metadata)
-- Use blank lines between sections for readability (content)
-- Validate in Markdown preview before committing
+- Use 2 spaces at end of line for compact line breaks (metadata)  
+- Use blank lines between sections for readability (content)  
+- Validate in Markdown preview before committing  
 -->
 
 # SEC-05: Incident Response Plan
@@ -80,25 +80,25 @@ ANPD + Customers (if LGPD breach)
 ```yaml
 # AlertManager configuration (Prometheus)
 alerts:
-  - name: HighFailedLoginRate
+  - name: HighFailedLoginRate  
     condition: rate(failed_logins[5m]) > 10
     severity: P1
     action: Notify Security Team
     playbook: playbooks/brute-force-attack.md
 
-  - name: UnauthorizedDatabaseAccess
+  - name: UnauthorizedDatabaseAccess  
     condition: db_access_from_unknown_ip == true
     severity: P0
     action: Block IP + Alert Incident Commander
     playbook: playbooks/database-breach.md
 
-  - name: SuspiciousDataExport
+  - name: SuspiciousDataExport  
     condition: data_export_rows > 10000
     severity: P1
     action: Require approval + Log to SIEM
     playbook: playbooks/data-exfiltration.md
 
-  - name: WAFBlockSpike
+  - name: WAFBlockSpike  
     condition: rate(waf_blocks[5m]) > 100
     severity: P1
     action: Investigate IP + Consider blocking
@@ -107,9 +107,9 @@ alerts:
 
 ### Manual Detection
 
-- [ ] Security team monitors SIEM dashboard (Splunk/Sumo Logic)
-- [ ] Customer reports suspicious activity (support@[DOMAIN])
-- [ ] Third-party security researcher discloses vulnerability
+- [ ] Security team monitors SIEM dashboard (Splunk/Sumo Logic)  
+- [ ] Customer reports suspicious activity (support@[DOMAIN])  
+- [ ] Third-party security researcher discloses vulnerability  
 
 ---
 
@@ -123,9 +123,9 @@ alerts:
 steps:
   1. Receive alert (automated or manual)
   2. Security Lead investigates:
-     - Check logs (audit logs, WAF logs, DB logs)
-     - Identify affected systems/users
-     - Estimate impact (how many users affected?)
+     - Check logs (audit logs, WAF logs, DB logs)  
+     - Identify affected systems/users  
+     - Estimate impact (how many users affected?)  
   3. Classify severity (P0/P1/P2/P3)
   4. If P0/P1: Escalate to Incident Commander
 ```
@@ -153,7 +153,7 @@ grep "suspicious_ip" /var/log/nginx/access.log
 #### Immediate Actions
 
 ```yaml
-- action: Isolate affected systems
+- action: Isolate affected systems  
   example: |
     # Block attacker IP at firewall
     aws ec2 authorize-security-group-ingress \
@@ -162,7 +162,7 @@ grep "suspicious_ip" /var/log/nginx/access.log
       --cidr [ATTACKER-IP]/32 \
       --revoke
 
-- action: Revoke compromised credentials
+- action: Revoke compromised credentials  
   example: |
     # Invalidate JWT tokens
     redis-cli DEL user:123:refresh_token
@@ -170,7 +170,7 @@ grep "suspicious_ip" /var/log/nginx/access.log
     # Force password reset
     UPDATE users SET password_reset_required = true WHERE id = 123;
 
-- action: Take snapshot (forensics)
+- action: Take snapshot (forensics)  
   example: |
     # Snapshot database before changes
     aws rds create-db-snapshot \
@@ -184,11 +184,11 @@ grep "suspicious_ip" /var/log/nginx/access.log
 **Internal Alert (Slack #security-incidents):**  
 
 🚨 INCIDENT P0: Data Breach Detected
-- Severity: P0 (Critical)
-- Affected: ~500 users (emails + hashed passwords exposed)
-- Status: CONTAINED (attacker IP blocked)
-- Next: Eradication phase (credential rotation)
-- War Room: https://zoom.us/j/incident-12345
+- Severity: P0 (Critical)  
+- Affected: ~500 users (emails + hashed passwords exposed)  
+- Status: CONTAINED (attacker IP blocked)  
+- Next: Eradication phase (credential rotation)  
+- War Room: https://zoom.us/j/incident-12345  
 ```
 
 ---
@@ -198,7 +198,7 @@ grep "suspicious_ip" /var/log/nginx/access.log
 **Objective:** Remove attacker access, fix vulnerability.  
 
 ```yaml
-- action: Patch vulnerability
+- action: Patch vulnerability  
   example: |
     # Fix SQL injection (deploy hotfix)
     git checkout -b hotfix/sql-injection-fix
@@ -206,7 +206,7 @@ grep "suspicious_ip" /var/log/nginx/access.log
     git commit -m "Fix CRIT-001: SQL injection in search endpoint"
     git push && deploy to production
 
-- action: Rotate secrets
+- action: Rotate secrets  
   example: |
     # Rotate database password
     aws secretsmanager rotate-secret --secret-id [project]/prod/db-password
@@ -216,12 +216,12 @@ grep "suspicious_ip" /var/log/nginx/access.log
       --secret-id [project]/prod/jwt-key \
       --secret-string "$(openssl rand -base64 32)"
 
-- action: Scan for malware
+- action: Scan for malware  
   example: |
     # Run ClamAV on all servers
     clamscan -r /var/www/html --remove
 
-- action: Review access logs
+- action: Review access logs  
   example: |
     # Identify all actions by attacker
     SELECT * FROM audit_logs WHERE ip_address = '[ATTACKER-IP]';
@@ -234,24 +234,24 @@ grep "suspicious_ip" /var/log/nginx/access.log
 **Objective:** Restore normal operations, monitor for reinfection.  
 
 ```yaml
-- action: Restore from backup (if needed)
+- action: Restore from backup (if needed)  
   example: |
     # Restore database from pre-incident snapshot
     aws rds restore-db-instance-from-db-snapshot \
       --db-instance-identifier [project]-prod-restored \
       --db-snapshot-identifier incident-2025-10-05-snapshot
 
-- action: Deploy hardened configuration
+- action: Deploy hardened configuration  
   example: |
     # Deploy WAF rules (block similar attacks)
     terraform apply -target=aws_wafv2_web_acl.main
 
-- action: Monitor for 48 hours
+- action: Monitor for 48 hours  
   checklist:
-    - [ ] No failed login spikes
-    - [ ] No suspicious data exports
-    - [ ] No WAF blocks from new IPs
-    - [ ] No anomalous database queries
+    - [ ] No failed login spikes  
+    - [ ] No suspicious data exports  
+    - [ ] No WAF blocks from new IPs  
+    - [ ] No anomalous database queries  
 ```
 
 ---
@@ -292,9 +292,9 @@ Developer used string concatenation instead of parameterized query in `OrdersCon
 
 ## Impact
 
-- **Users affected:** 500 users
-- **Data exposed:** Emails + bcrypt hashed passwords (NOT plaintext)
-- **Business impact:** $0 (no financial loss, no service downtime)
+- **Users affected:** 500 users  
+- **Data exposed:** Emails + bcrypt hashed passwords (NOT plaintext)  
+- **Business impact:** $0 (no financial loss, no service downtime)  
 
 ## What Went Well
 
@@ -319,8 +319,8 @@ Developer used string concatenation instead of parameterized query in `OrdersCon
 
 ## LGPD Notification
 
-- [ ] ANPD notified (72 hours deadline): ✅ 2025-10-06 10:00
-- [ ] Affected users notified: ✅ 2025-10-06 12:00 (email sent)
+- [ ] ANPD notified (72 hours deadline): ✅ 2025-10-06 10:00  
+- [ ] Affected users notified: ✅ 2025-10-06 12:00 (email sent)  
 ```
 
 ---
@@ -335,8 +335,8 @@ Developer used string concatenation instead of parameterized query in `OrdersCon
 # Playbook: Database Breach
 
 ## Detection
-- Alert: "UnauthorizedDatabaseAccess" OR "SuspiciousDataExport"
-- Manual: Customer reports data leak
+- Alert: "UnauthorizedDatabaseAccess" OR "SuspiciousDataExport"  
+- Manual: Customer reports data leak  
 
 ## Immediate Actions (15 min)
 1. Block attacker IP:
@@ -374,8 +374,8 @@ Developer used string concatenation instead of parameterized query in `OrdersCon
 # Playbook: DDoS Attack
 
 ## Detection
-- Alert: "WAFBlockSpike" OR "HighTrafficRate"
-- Manual: Service unavailable (503 errors)
+- Alert: "WAFBlockSpike" OR "HighTrafficRate"  
+- Manual: Service unavailable (503 errors)  
 
 ## Immediate Actions (15 min)
 1. Enable CloudFlare "I'm Under Attack" mode
@@ -405,8 +405,8 @@ Developer used string concatenation instead of parameterized query in `OrdersCon
 # Playbook: Ransomware
 
 ## Detection
-- Files encrypted + ransom note
-- Antivirus alert
+- Files encrypted + ransom note  
+- Antivirus alert  
 
 ## Immediate Actions (IMMEDIATE)
 1. DO NOT PAY RANSOM
@@ -448,29 +448,29 @@ Developer used string concatenation instead of parameterized query in `OrdersCon
 
 ### Quarterly Drills
 
-- [ ] **Q1:** Simulate database breach (test playbook/database-breach.md)
-- [ ] **Q2:** Simulate DDoS attack (test playbook/ddos-attack.md)
-- [ ] **Q3:** Simulate ransomware (test playbook/ransomware.md)
-- [ ] **Q4:** Simulate unauthorized access (test playbook/account-takeover.md)
+- [ ] **Q1:** Simulate database breach (test playbook/database-breach.md)  
+- [ ] **Q2:** Simulate DDoS attack (test playbook/ddos-attack.md)  
+- [ ] **Q3:** Simulate ransomware (test playbook/ransomware.md)  
+- [ ] **Q4:** Simulate unauthorized access (test playbook/account-takeover.md)  
 
 **Drill Checklist:**  
-- [ ] Alert mechanisms working? (automated alerts triggered?)
-- [ ] Response time within SLA? (P0: 15 min)
-- [ ] Playbooks up-to-date? (no broken commands)
-- [ ] Team knows their roles? (no confusion)
+- [ ] Alert mechanisms working? (automated alerts triggered?)  
+- [ ] Response time within SLA? (P0: 15 min)  
+- [ ] Playbooks up-to-date? (no broken commands)  
+- [ ] Team knows their roles? (no confusion)  
 
 ---
 
 ## ✅ Definition of Done
 
-- [ ] Incident response plan documentado (5 fases)
-- [ ] Incident Response Team definido (roles + contacts)
-- [ ] Playbooks criados (database breach, DDoS, ransomware)
-- [ ] Automated alerts configurados (SIEM integration)
-- [ ] LGPD breach notification procedure documentado (72h)
-- [ ] Quarterly drills agendados (Q1-Q4)
-- [ ] Post-mortem template criado
-- [ ] SEC-checklist.yml completo
+- [ ] Incident response plan documentado (5 fases)  
+- [ ] Incident Response Team definido (roles + contacts)  
+- [ ] Playbooks criados (database breach, DDoS, ransomware)  
+- [ ] Automated alerts configurados (SIEM integration)  
+- [ ] LGPD breach notification procedure documentado (72h)  
+- [ ] Quarterly drills agendados (Q1-Q4)  
+- [ ] Post-mortem template criado  
+- [ ] SEC-checklist.yml completo  
 
 ---
 

@@ -1,8 +1,8 @@
 <!--
 MARKDOWN FORMATTING:
-- Use 2 spaces at end of line for compact line breaks (metadata)
-- Use blank lines between sections for readability (content)
-- Validate in Markdown preview before committing
+- Use 2 spaces at end of line for compact line breaks (metadata)  
+- Use blank lines between sections for readability (content)  
+- Validate in Markdown preview before committing  
 -->
 
 # GitHub Manager - Quick Reference
@@ -15,8 +15,8 @@ MARKDOWN FORMATTING:
 
 This is a **quick reference guide** for executing GitHub setup tasks. For strategic decisions, justifications, and technical details, consult [GM-00-GitHub-Setup.md](../00-doc-ddd/07-github-management/GM-00-GitHub-Setup.md).
 
-- **This README:** Commands and checklists (HOW to execute)
-- **GM-00:** Justifications and details (WHY and WHAT)
+- **This README:** Commands and checklists (HOW to execute)  
+- **GM-00:** Justifications and details (WHY and WHAT)  
 
 ---
 
@@ -24,13 +24,13 @@ This is a **quick reference guide** for executing GitHub setup tasks. For strate
 
 ### Discovery Phase (One-time)
 
-- [ ] **1. Execute labels script**
+- [ ] **1. Execute labels script**  
   ```bash
   bash 03-github-manager/setup-labels.sh
   ```
   **Details:** [GM-00 Labels Section](../00-doc-ddd/07-github-management/GM-00-GitHub-Setup.md#labels)
 
-- [ ] **2. Create Milestone M0** (GitHub UI - 30 seconds)
+- [ ] **2. Create Milestone M0** (GitHub UI - 30 seconds)  
   ```
   GitHub → Issues → Milestones → New Milestone
   Title: M0: Discovery Foundation
@@ -38,14 +38,14 @@ This is a **quick reference guide** for executing GitHub setup tasks. For strate
   ```
   **Details:** [GM-00 Milestones Section](../00-doc-ddd/07-github-management/GM-00-GitHub-Setup.md#milestones)
 
-- [ ] **3. Verify CI/CD workflows created**
+- [ ] **3. Verify CI/CD workflows created**  
   ```bash
   gh workflow list --repo [OWNER]/[REPO]
   ```
   **Expected:** 3 workflows (ci-backend.yml, ci-frontend.yml, security.yml)
   **Details:** [GM-00 CI/CD Section](../00-doc-ddd/07-github-management/GM-00-GitHub-Setup.md#cicd-workflows)
 
-- [ ] **4. Verify Dependabot enabled**
+- [ ] **4. Verify Dependabot enabled**  
   ```bash
   cat .github/dependabot.yml
   ```
@@ -118,9 +118,9 @@ bash 03-github-manager/scripts/create-epic-issue.sh \
 ```
 
 **⚠️ IMPORTANT:**  
-- Script creates base template automatically
-- **User MUST edit issue after creation** to add complete DE-01 details
-- GM guides user on what to customize (1min)
+- Script creates base template automatically  
+- **User MUST edit issue after creation** to add complete DE-01 details  
+- GM guides user on what to customize (1min)  
 
 **Verify:**  
 ```bash
@@ -158,10 +158,10 @@ bash 03-github-manager/scripts/create-epic-full.sh \
 8. Issue: QAE - Quality Gate
 
 **✅ Advantages:**  
-- Saves ~15min vs creating issues manually
-- Ensures consistency (all issues follow same pattern)
-- All issues linked to milestone automatically
-- Agent labels applied automatically
+- Saves ~15min vs creating issues manually  
+- Ensures consistency (all issues follow same pattern)  
+- All issues linked to milestone automatically  
+- Agent labels applied automatically  
 
 **⚠️ Note:** Still need to customize epic issue with DE-01 details  
 
@@ -197,10 +197,10 @@ bash 03-github-manager/scripts/start-work-on-issue.sh 6
 6. Creates draft PR linked to issue
 
 **✅ Advantages:**  
-- Saves ~3min vs manual setup
-- Ensures correct branch naming (kebab-case, with epic number)
-- Initial commit follows 03-GIT-PATTERNS.md standard
-- PR automatically linked to issue
+- Saves ~3min vs manual setup  
+- Ensures correct branch naming (kebab-case, with epic number)  
+- Initial commit follows 03-GIT-PATTERNS.md standard  
+- PR automatically linked to issue  
 
 **When ready for review:**  
 ```bash
@@ -212,7 +212,7 @@ gh pr ready  # Mark PR as ready for review
 gh pr merge --merge --delete-branch
 ```
 
-**See 03-GIT-PATTERNS.md for:** Complete Git workflow details
+**See 03-GIT-PATTERNS.md for:** Complete Git workflow details  
 
 ---
 
@@ -238,16 +238,16 @@ gh pr merge --merge --delete-branch
 ./deploy.sh production v1.2.3
 ```
 
-**See PE-00 for:** Complete deploy.sh implementation and remote deployment architecture
+**See PE-00 for:** Complete deploy.sh implementation and remote deployment architecture  
 
 ---
 
 ### CD Pipelines (GitHub Actions)
 
 **Staging (Auto-Deploy):**
-- Triggered automatically on push to `main`
-- Deploys latest to staging server
-- No manual action required
+- Triggered automatically on push to `main`  
+- Deploys latest to staging server  
+- No manual action required  
 
 **Monitor deployment:**
 ```bash
@@ -292,7 +292,7 @@ cd ~/[project]
 ./deploy.sh production v1.2.2
 ```
 
-**See GM-00 for:** CD pipelines configuration, GitHub secrets setup, and deployment strategy
+**See GM-00 for:** CD pipelines configuration, GitHub secrets setup, and deployment strategy  
 
 ---
 
@@ -337,7 +337,7 @@ curl https://api.[DOMAIN]/health
    ```bash
    # Staging
    ssh-copy-id -i ~/.ssh/[project]_staging_ed25519.pub \
-     [project]_app@[project]-stage
+     [project]_app@[project]-staging
 
    # Production
    ssh-copy-id -i ~/.ssh/[project]_production_ed25519.pub \
@@ -346,7 +346,7 @@ curl https://api.[DOMAIN]/health
 
 3. **Generate known_hosts:**
    ```bash
-   ssh-keyscan [project]-stage >> ~/.ssh/known_hosts
+   ssh-keyscan [project]-staging >> ~/.ssh/known_hosts
    ssh-keyscan [project]-prod >> ~/.ssh/known_hosts
    ```
 
@@ -357,7 +357,7 @@ curl https://api.[DOMAIN]/health
 
    # Required secrets:
    # - SSH_PRIVATE_KEY_STAGING (content of ~/.ssh/[project]_staging_ed25519)
-   # - SSH_PRIVATE_KEY_PRODUCTION (content of ~/.ssh/[project]_production_ed25519)
+   # - SSH_PRIVATE_KEY_PROD (content of ~/.ssh/[project]_prod_ed25519)
    # - SSH_KNOWN_HOSTS (content of ~/.ssh/known_hosts)
    # - DOMAIN (e.g., example.com)
    ```
@@ -368,7 +368,7 @@ curl https://api.[DOMAIN]/health
 gh secret list --repo [OWNER]/[REPO]
 ```
 
-**See GM-00 for:** Complete GitHub secrets setup with step-by-step instructions
+**See GM-00 for:** Complete GitHub secrets setup with step-by-step instructions  
 
 ---
 
@@ -512,7 +512,7 @@ GitHub → New Issue → Select "🎯 Epic Issue" template
 ```
 
 **Details:** [GM-00 Epic Issues](../00-doc-ddd/07-github-management/GM-00-GitHub-Setup.md#epic-issues)  
-   - **Details:** [GM-00 Issue Strategy](../00-doc-ddd/07-github-management/GM-00-GitHub-Setup.md#issue-strategy)
+   - **Details:** [GM-00 Issue Strategy](../00-doc-ddd/07-github-management/GM-00-GitHub-Setup.md#issue-strategy)  
 
 ---
 
@@ -548,8 +548,8 @@ hotfix/critical-security-patch
 # Create tag
 git tag -a v1.0.0 -m "Release v1.0.0: EPIC-01
 
-- Feature: Description
-- Feature: Description
+- Feature: Description  
+- Feature: Description  
 
 Closes #2"
 
@@ -597,10 +597,10 @@ For strategic decisions, technical details, justifications, and integrations:
 **→ [GM-00-GitHub-Setup.md](../00-doc-ddd/07-github-management/GM-00-GitHub-Setup.md)**
 
 Other references:
-- [03-GIT-PATTERNS.md](../.agents/docs/03-GIT-PATTERNS.md) - Git workflow (branches, PRs, milestones, tags)
-- [SDA-01 Event Storming](../00-doc-ddd/02-strategic-design/SDA-01-Event-Storming.md) - Epics source
-- [SDA-02 Context Map](../00-doc-ddd/02-strategic-design/SDA-02-Context-Map.md) - Bounded Contexts source
-- [PE-00 Environments Setup](../00-doc-ddd/08-platform-engineering/PE-00-Quick-Start.md, PE-01-Server-Setup.md, PE-02-Scaling-Strategy.md) - Stack for CI/CD
+- [03-GIT-PATTERNS.md](../.agents/docs/03-GIT-PATTERNS.md) - Git workflow (branches, PRs, milestones, tags)  
+- [SDA-01 Event Storming](../00-doc-ddd/02-strategic-design/SDA-01-Event-Storming.md) - Epics source  
+- [SDA-02 Context Map](../00-doc-ddd/02-strategic-design/SDA-02-Context-Map.md) - Bounded Contexts source  
+- [PE-00 Environments Setup](../00-doc-ddd/08-platform-engineering/PE-00-Quick-Start.md, PE-01-Server-Setup.md, PE-02-Scaling-Strategy.md) - Stack for CI/CD  
 
 ---
 
