@@ -334,8 +334,8 @@ var apiKey = Environment.GetEnvironmentVariable("API_KEY");
 **Checklist:**
 - [ ] No hardcoded secrets?
 - [ ] .env in .gitignore?
-- [ ] .env.staging and .env.production NOT committed?
-- [ ] Staging/production use strong passwords (16+ chars)?
+- [ ] .env.staging and .env.prod NOT committed?
+- [ ] Staging/prod use strong passwords (16+ chars)?
 
 #### 4. **Multi-Environment Credentials** (Discovery + Per Epic - 5 min)
 
@@ -360,7 +360,7 @@ psql -v app_password="$DB_APP_PASSWORD" -f 002_update_passwords.sql
 - [ ] ALTER USER migration created (002_update_production_passwords.sql)?
 - [ ] Password rotation procedure documented?
 - [ ] Development uses simple passwords (OK)?
-- [ ] Staging/Production use strong passwords (16+ chars)?
+- [ ] Staging/Prod use strong passwords (16+ chars)?
 - [ ] Compliance noted (LGPD Art. 46, SOC2, ISO 27001)?
 
 ---

@@ -497,7 +497,7 @@ gh release create v1.0.0 \
 ```
 Development (local)    → Localhost (docker compose direto)
 Staging (remote)       → Server VPS (SSH/SCP + docker compose remoto)
-Production (remote)    → Server VPS (SSH/SCP + docker compose remoto)
+Prod (remote)    → Server VPS (SSH/SCP + docker compose remoto)
 ```
 
 ### **Local Deployment (Development)**
@@ -513,7 +513,7 @@ Production (remote)    → Server VPS (SSH/SCP + docker compose remoto)
 docker compose -f docker-compose.yml --env-file .env.dev up
 ```
 
-### **Remote Deployment (Staging/Production)**
+### **Remote Deployment (Staging/Prod)**
 
 **Características:**
 - Executa em servidor remoto via SSH
@@ -525,11 +525,11 @@ docker compose -f docker-compose.yml --env-file .env.dev up
 ```bash
 # Hostnames padronizados
 myproject-stage     # staging
-myproject-prod      # production
+myproject-prod      # prod
 
 # Deploy scripts detectam automaticamente
 ./deploy.sh staging     # remote deployment
-./deploy.sh production  # remote deployment
+./deploy.sh prod  # remote deployment
 ```
 
 **Fluxo de Deploy:**
@@ -554,19 +554,19 @@ on:
 ./deploy.sh staging latest
 ```
 
-**Production (Manual approval):**
+**Prod (Manual approval):**
 ```yaml
-# .github/workflows/cd-production.yml
+# .github/workflows/cd-prod.yml
 on:
   workflow_dispatch:
     inputs:
       version:  # e.g., v1.0.0
 
 environment:
-  name: production  # Requires approval
+  name: prod  # Requires approval
 
 # Manual deploy to myproject-prod
-./deploy.sh production ${{ inputs.version }}
+./deploy.sh prod ${{ inputs.version }}
 ```
 
 **GitHub Secrets Required:**
@@ -676,7 +676,7 @@ O GitHub Manager (GM) pode automatizar grande parte do processo Git/GitHub:
 - ✅ **Fase 2:** Criar milestone + issue épica 100% populada (`epic-create.sh`)
 - ✅ **Fase 3:** Criar branch principal do épico (`epic-start.sh`)
 - ✅ **Fase 5:** Validar + merge + deploy staging (`epic-deploy.sh`)
-- ✅ **Fase 6:** Fechar milestone + criar tag/release + deploy production (`epic-close.sh --release`)
+- ✅ **Fase 6:** Fechar milestone + criar tag/release + deploy prod (`epic-close.sh --release`)
 
 **Passos Manuais (requerem humano):**
 - ⚠️ **Fase 4:** Invocar agentes individualmente (DBA, SE, UXD, FE, QAE) - cada um faz commit + push na mesma branch

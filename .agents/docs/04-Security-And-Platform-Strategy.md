@@ -94,7 +94,7 @@
 |-------------|-------------------|---------|-------------------|
 | **Development** | Simple OK (`dev_password_123`) | Committed in `.env.dev` | Never |
 | **Staging** | Strong (16+ chars, complex) | Server only (NOT in Git) | Semi-annual |
-| **Production** | Very Strong (20+ chars, complex) | Server only (NOT in Git) | Quarterly |
+| **Prod** | Very Strong (20+ chars, complex) | Server only (NOT in Git) | Quarterly |
 
 ### Implementation Pattern
 
@@ -104,7 +104,7 @@
 CREATE USER app_user WITH PASSWORD 'dev_password_123';  -- Simple OK for dev
 ```
 
-**2. ALTER USER Migration (Staging/Production):**
+**2. ALTER USER Migration (Staging/Prod):**
 ```sql
 -- 002_update_production_passwords.sql (committed to Git - no real passwords!)
 -- Execute manually with variables (passwords never committed)
@@ -112,7 +112,7 @@ CREATE USER app_user WITH PASSWORD 'dev_password_123';  -- Simple OK for dev
 ALTER USER app_user WITH PASSWORD :'app_password';  -- Password via psql -v
 ```
 
-**3. Execution (Staging/Production):**
+**3. Execution (Staging/Prod):**
 ```bash
 # Passwords passed via environment variables (not in Git, not in bash history)
 export DB_APP_PASSWORD="St@g!ng_SecureP@ss2025!#"
@@ -133,7 +133,7 @@ psql -U postgres -d mydb \
 - ❌ NEVER commit to Git
 - ✅ Rotate semi-annually
 
-**Production:**
+**Prod:**
 - ✅ 20+ characters
 - ✅ High complexity
 - ❌ NEVER commit to Git
@@ -168,7 +168,7 @@ psql -U postgres -d mydb \
 
 **Application Security:**
 - [ ] Traefik HTTPS enforced (redirect HTTP → HTTPS)
-- [ ] Let's Encrypt certificates (staging CA for staging, production CA for production)
+- [ ] Let's Encrypt certificates (staging CA for staging, prod CA for prod)
 - [ ] htpasswd for Traefik dashboard (not exposed publicly)
 
 ### UFW Firewall Configuration

@@ -509,7 +509,7 @@ Obrigado pelo catch! Regression test criado.
 
 O PE Agent passou por evolução significativa desde trabalho inicial:
 - Traefik agora é integrado desde Discovery (não épicos posteriores)
-- Estratégia .env multi-ambiente (dev/staging/production)
+- Estratégia .env multi-ambiente (dev/staging/prod)
 - Comandos docker-compose devem usar --env-file EXPLÍCITO
 - Server setup documentation faltando
 

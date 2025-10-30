@@ -273,7 +273,7 @@ public class StrategyRepository : IStrategyRepository { }
 ├── .env.example          # Template with placeholders
 ├── .env.dev             # Development (localhost) - committed with safe defaults
 ├── .env.staging         # Staging server - NOT committed (create on server)
-└── .env.production      # Production server - NOT committed (create on server)
+└── .env.prod      # Prod server - NOT committed (create on server)
 ```
 
 **Nomenclatura de Variáveis:**
@@ -281,16 +281,16 @@ public class StrategyRepository : IStrategyRepository { }
 # Domain configuration
 DOMAIN=localhost                    # dev
 DOMAIN=staging.myproject.com        # staging
-DOMAIN=myproject.com                # production
+DOMAIN=myproject.com                # prod
 
 # Database credentials (per environment)
 DB_APP_PASSWORD=dev_password_123    # dev (simple OK)
 DB_APP_PASSWORD=St@g!ng_SecureP@ss  # staging (strong)
-DB_APP_PASSWORD=Pr0d_VeryStr0ng!#$  # production (very strong)
+DB_APP_PASSWORD=Pr0d_VeryStr0ng!#$  # prod (very strong)
 
 # Features flags
 FEATURE_ANALYTICS_ENABLED=false     # dev/staging
-FEATURE_ANALYTICS_ENABLED=true      # production
+FEATURE_ANALYTICS_ENABLED=true      # prod
 ```
 
 **Uso em Comandos:**
@@ -298,12 +298,12 @@ FEATURE_ANALYTICS_ENABLED=true      # production
 # SEMPRE usar --env-file explícito
 docker compose -f docker-compose.yml --env-file .env.dev up
 docker compose -f docker-compose.staging.yml --env-file .env.staging up -d
-docker compose -f docker-compose.production.yml --env-file .env.production up -d
+docker compose -f docker-compose.prod.yml --env-file .env.prod up -d
 ```
 
 **Segurança:**
 - ✅ `.env.dev` commitado com valores seguros (localhost, senhas simples)
-- ❌ `.env.staging` e `.env.production` NUNCA commitados (secrets reais)
+- ❌ `.env.staging` e `.env.prod` NUNCA commitados (secrets reais)
 - ✅ `.env.example` commitado como template com placeholders
 
 ---
@@ -321,7 +321,7 @@ localhost
 myproject-stage
 staging.myproject.com
 
-# Production server
+# Prod server
 myproject-prod
 myproject.com
 www.myproject.com
@@ -331,7 +331,7 @@ www.myproject.com
 ```bash
 # Set hostname on server
 sudo hostnamectl set-hostname myproject-stage  # staging
-sudo hostnamectl set-hostname myproject-prod   # production
+sudo hostnamectl set-hostname myproject-prod   # prod
 ```
 
 **Uso em Deploy Scripts:**
@@ -339,7 +339,7 @@ sudo hostnamectl set-hostname myproject-prod   # production
 # deploy.sh pattern
 if [ "$ENV" = "staging" ]; then
     SERVER_HOST="myproject-stage"
-elif [ "$ENV" = "production" ]; then
+elif [ "$ENV" = "prod" ]; then
     SERVER_HOST="myproject-prod"
 fi
 

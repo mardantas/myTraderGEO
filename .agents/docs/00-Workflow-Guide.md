@@ -258,7 +258,7 @@ Executada para cada épico prioritário, entregando funcionalidade completa pont
         │ DEPLOY                                │
         │ - PE: Deploy staging (GitHub Actions) │
         │ - QAE: Smoke test staging             │
-        │ - PE: Deploy production               │
+        │ - PE: Deploy prod               │
         │ - Monitoramento                       │
         └───────────────────────────────────────┘
                         ↓
@@ -606,7 +606,7 @@ Agentes suportam execução em dois modos:
 11. UXD: Criar wireframes (paralelo com SE)
 12. FE: Implementar UI do Épico 1 (consumindo APIs do SE)
 13. QAE: Testar integração + E2E (QUALITY GATE)
-14. PE: Deploy staging → production
+14. PE: Deploy staging → prod
 15. Feedback do usuário
 16. Ajustes se necessário
 ```

@@ -13,7 +13,7 @@
 |-------|---|------|-------|-------|-------|--------------|--------------|
 | **1** | 10 | SDA | Strategic Domain Analyst | Complete system | Discovery (Day 1-2) | 3 docs | - |
 | **2** | 20 | UXD | User Experience Designer | System + Per epic | Discovery (Day 2-3) + Iteration | 1 doc + 1/epic | SDA |
-| **3** | 30 | **PE** | **Platform Engineer** | **Basic setup** | **Discovery (Day 2-3)** | **1 doc + scripts** | **SDA** |
+| **3** | 30 | PE | Platform Engineer | Basic setup | Discovery (Day 2-3) | 1 doc + scripts | SDA |
 | **4** | 60 | QAE | Quality Assurance Engineer | Strategy + Per epic | Discovery (Day 3-4) + Iteration | 1 doc + tests | SDA, **PE (stack)** |
 | **5** | 35 | SEC | Security Specialist | Baseline | Discovery (Day 3-4) | 1 doc | SDA, **PE (stack)** |
 | **6** | 25 | GM | GitHub Manager | Setup + Per epic | Discovery (Day 3-4) + Iteration | 1 doc + issues | SDA, **PE (stack)** |
@@ -128,11 +128,11 @@ Design user experience: foundations in Discovery + specific wireframes per epic.
 ## 30 - PE (Platform Engineer)
 
 ### Objective
-Define tech stack (Backend, Frontend, Database) and configure basic environments (dev/staging/production) with deploy scripts - pragmatic setup for small/medium projects.
+Define tech stack (Backend, Frontend, Database) and configure basic environments (dev/staging/prod) with deploy scripts - pragmatic setup for small/medium projects.
 
 ### Responsibilities
 **Discovery (Day 2-3 - BLOCKS GM/SEC/QAE):**
-Define tech stack, Docker Compose environments (dev/staging/production with Traefik), server setup docs (OS, Docker, firewall, users, SSH), scaling strategy, deploy scripts with remote deployment, environment variables (.env files), logging, health checks.
+Define tech stack, Docker Compose environments (dev/staging/prod with Traefik), server setup docs (OS, Docker, firewall, users, SSH), scaling strategy, deploy scripts with remote deployment, environment variables (.env files), logging, health checks.
 
 ### When Executes
 **Discovery:** PE platform engineering documentation (BEFORE GM, SEC, QAE)  
@@ -140,7 +140,7 @@ Define tech stack, Docker Compose environments (dev/staging/production with Trae
 
 ### Key Deliverables
 - **PE platform engineering documentation (PE-00-Quick-Start.md, PE-01-Server-Setup.md, PE-02-Scaling-Strategy.md)** - Tech stack + environment configs + server setup + scaling strategy  
-- **Docker Compose** files (dev, staging, production with Traefik)  
+- **Docker Compose** files (dev, staging, prod with Traefik)  
 - **Deploy scripts** (deploy.sh) with SSH remote deployment  
 - **PE-EPIC-[N]-Performance-Checkpoint.md** (optional per epic when performance-critical)  
 
@@ -207,8 +207,8 @@ Ensure quality as **QUALITY GATE** at end of each epic - tests pass → approve 
 → Regression tests (previous epics), Smoke test (critical paths)
 → DECISION: ✅ Approve deploy OR ❌ Block deploy + create feedback
 
-"QAE, execute teste de regressão completo antes de deploy production"
-→ Validates all previous epics still work, critical before production
+"QAE, execute teste de regressão completo antes de deploy prod"
+→ Validates all previous epics still work, critical before prod
 
 # Updates
 "QAE, processe FEEDBACK-010 sobre falha intermitente no teste de Greeks"
@@ -286,7 +286,7 @@ Integrate DDD workflow with GitHub: automate labels (script), CI/CD workflows, e
 
 ### Responsibilities
 **Discovery (Day 3-4 - AFTER PE):**
-Create setup-labels.sh (from SDA BCs + epics), execute script (creates labels in GitHub), epic issue template (.github/ISSUE_TEMPLATE/10-epic.yml), CI/CD workflows (ci-backend, ci-frontend, security, cd-staging, cd-production customized from PE stack), Git workflow automation scripts (discovery-start/finish, epic-modeling-start/finish, epic-create, epic-issue-start/finish, epic-close), document setup in GM-00.
+Create setup-labels.sh (from SDA BCs + epics), execute script (creates labels in GitHub), epic issue template (.github/ISSUE_TEMPLATE/10-epic.yml), CI/CD workflows (ci-backend, ci-frontend, security, cd-staging, cd-prod customized from PE stack), Git workflow automation scripts (discovery-start/finish, epic-modeling-start/finish, epic-create, epic-issue-start/finish, epic-close), document setup in GM-00.
 
 **Per Epic (Day 2 - AFTER DE-01):**
 Read DE-01, extract epic info (number, name, BCs, objectives, acceptance criteria), execute epic-create.sh to create milestone + epic issue automatically populated from DE-01.
@@ -298,7 +298,7 @@ Read DE-01, extract epic info (number, name, BCs, objectives, acceptance criteri
 ### Key Deliverables
 - **GM-00-GitHub-Setup.md** - Documents pragmatic setup (labels, CI/CD, templates)  
 - **setup-labels.sh** - Creates labels (agents, BCs, epics, types, priority, status) in GitHub  
-- **CI/CD workflows** - ci-backend, ci-frontend, security, cd-staging, cd-production (customized from PE stack)  
+- **CI/CD workflows** - ci-backend, ci-frontend, security, cd-staging, cd-prod (customized from PE stack)  
 - **Epic template** - .github/ISSUE_TEMPLATE/10-epic.yml (GitHub native form)  
 - **Git automation scripts** - discovery-start/finish, epic-create, epic-issue-start/finish, epic-close  
 
@@ -422,7 +422,7 @@ Validate and optimize database schema created by DE - indexing, performance, mul
 # Security & Performance
 "DBA, processe FEEDBACK-006 sobre senhas hardcoded no Git"
 → Documents multi-environment password strategy (dev simple, staging/prod strong)
-→ Creates ALTER USER migration for staging/production (LGPD/SOC2)
+→ Creates ALTER USER migration for staging/prod (LGPD/SOC2)
 
 "DBA, processe FEEDBACK-007 sobre performance de query com >3 JOINs"
 → Analyzes slow query, suggests composite index or query refactoring
