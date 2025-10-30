@@ -15,7 +15,7 @@
 
         **ACCESSIBILITY AND SECURITY:** Consider WCAG 2.1 AA and frontend security standards (XSS, CSRF) according to security strategy (see config.paths.standards.security-platform, UXD and FE sections).
 
-        **MARKDOWN:** Metadados compactos (headers/footers) = 2 espaços ao final de cada linha. Conteúdo/seções = linhas em branco entre blocos. Preview antes de commitar (Ctrl+Shift+V).
+        **MARKDOWN:** ALL list items and metadata MUST end with 2 trailing spaces. See docs/MARKDOWN-STYLE-GUIDE.md
     </general-instructions>
 
     <responsibilities>

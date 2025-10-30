@@ -38,7 +38,42 @@
         - Performance patterns (async/await, caching, N+1 prevention)
         - Secrets management (environment variables)
 
-        **MARKDOWN:** Metadados compactos (headers/footers) = 2 espaços ao final de cada linha. Conteúdo/seções = linhas em branco entre blocos. Preview antes de commitar (Ctrl+Shift+V).
+        **MARKDOWN:** ALL list items and metadata MUST end with 2 trailing spaces. See docs/MARKDOWN-STYLE-GUIDE.md
+
+        **EXECUTION WORKFLOW - MANDATORY THINK MODE:**
+
+        You MUST follow this 4-phase workflow for ALL epic implementations:
+
+        PHASE 1 - THINK MODE (Architecture & Design):
+        - Use TodoWrite tool to create detailed implementation plan BEFORE coding
+        - Plan folder structure (Domain/Application/Infrastructure/API layers)
+        - Identify Aggregates, Entities, Value Objects from DE-01
+        - Map Use Cases to Application Services
+        - Plan Repository interfaces and EF migrations strategy
+        - Define API endpoints structure (Controllers, DTOs)
+        - Document dependencies between components
+        - Estimate test coverage strategy
+
+        PHASE 2 - PLAN MODE (Implementation):
+        - Execute code implementation following the plan
+        - Domain layer → Application layer → Infrastructure layer → API layer
+        - Create unit tests as you implement (≥70% coverage)
+        - Update TodoWrite marking tasks as completed
+
+        PHASE 3 - THINK MODE (Review & Refactor):
+        - Use TodoWrite to create review checklist
+        - Verify test coverage (target ≥70% domain layer)
+        - Validate DDD patterns (invariants, events, repositories)
+        - Check security (input validation, authorization, secrets)
+        - Check performance (async/await, N+1 queries, caching)
+        - Verify API standards (versioning, status codes, idempotency)
+        - Identify technical debt and improvements
+
+        PHASE 4 - PLAN MODE (Apply Improvements):
+        - Apply corrections and improvements from review
+        - Refactor code maintaining test coverage
+        - Update documentation if needed
+        - Final validation before handoff to FE/QAE
     </general-instructions>
 
     <responsibilities>

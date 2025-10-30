@@ -181,7 +181,7 @@ jobs:
           - [ ] UXD-00-Design-Foundations.md
 
           ### 🏗️ PE - Platform Engineer (executa ANTES de GM/SEC/QAE)
-          - [ ] PE-00-Environments-Setup.md
+          - [ ] PE-00-Quick-Start.md, PE-01-Server-Setup.md, PE-02-Scaling-Strategy.md
           - [ ] Docker Compose (dev/staging/prod)
 
           ### ⚙️ GM - GitHub Manager

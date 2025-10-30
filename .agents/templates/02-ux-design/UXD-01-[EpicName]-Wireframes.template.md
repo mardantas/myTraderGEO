@@ -1,3 +1,10 @@
+<!--
+FORMATTING REQUIREMENTS:
+- Metadata lines must end with 2 spaces before line break for proper Markdown rendering
+- Use arrow notation (→) for layouts to maintain alignment
+- Keep component tables properly formatted with pipe separators
+-->
+
 # UXD-01 - [EpicName] - Wireframes
 
 **Agent:** UXD (User Experience Designer)  
@@ -9,12 +16,12 @@
 
 ## 📋 Metadata
 
-- **Project Name:** [PROJECT_NAME]
-- **Epic:** [EPIC_NAME]
-- **Created:** [DATE]
-- **UX Designer:** [NAME]
-- **Works in Parallel with:** SE (Days 3-6)
-- **Used by:** FE (Days 7-9)
+- **Project Name:** [PROJECT_NAME]  
+- **Epic:** [EPIC_NAME]  
+- **Created:** [DATE]  
+- **UX Designer:** [NAME]  
+- **Works in Parallel with:** SE (Days 3-6)  
+- **Used by:** FE (Days 7-9)  
 
 ---
 
