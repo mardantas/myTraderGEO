@@ -1,6 +1,6 @@
 # Padrões de Nomenclatura DDD
 
-**Objetivo:** Definir convenções de nomenclatura consistentes para documentação e código em projetos DDD.
+**Objetivo:** Definir convenções de nomenclatura consistentes para documentação e código em projetos DDD.  
 
 ---
 
@@ -8,9 +8,9 @@
 
 ### Português para NEGÓCIO, Inglês para TÉCNICO
 
-- **Documentação DDD:** Português brasileiro
-- **Código fonte:** Inglês (padrão indústria)
-- **Mapeamento:** Termos de negócio ↔ classes/namespaces
+- **Documentação DDD:** Português brasileiro  
+- **Código fonte:** Inglês (padrão indústria)  
+- **Mapeamento:** Termos de negócio ↔ classes/namespaces  
 
 ---
 
@@ -20,13 +20,13 @@
 **Divisões lógicas do domínio de negócio**
 
 **Tipos:**
-- **Core:** Funcionalidade central, diferencial competitivo
-- **Supporting:** Suporte necessário ao core
-- **Generic:** Funcionalidade comum (pode usar solução pronta)
+- **Core:** Funcionalidade central, diferencial competitivo  
+- **Supporting:** Suporte necessário ao core  
+- **Generic:** Funcionalidade comum (pode usar solução pronta)  
 
 **Nomenclatura:**
-- Documentação: "Gestão de Estratégias" (português)
-- Namespace: `StrategyManagement` (inglês)
+- Documentação: "Gestão de Estratégias" (português)  
+- Namespace: `StrategyManagement` (inglês)  
 
 ---
 
@@ -66,13 +66,13 @@ Pasta: 02-backend/src/StrategyManagement/
 ### Diretrizes
 
 **Boas Práticas:**
-- ✅ Use português natural para stakeholders
-- ✅ Seja específico ao contexto
-- ✅ Mantenha consistência em todo projeto
+- ✅ Use português natural para stakeholders  
+- ✅ Seja específico ao contexto  
+- ✅ Mantenha consistência em todo projeto  
 
 **Evite:**
-- ❌ Traduções literais forçadas
-- ❌ Anglicismos desnecessários
+- ❌ Traduções literais forçadas  
+- ❌ Anglicismos desnecessários  
 
 ---
 
@@ -80,7 +80,7 @@ Pasta: 02-backend/src/StrategyManagement/
 
 ### Deliverables de Agentes
 
-**Formato:** `[AGENTE]-[NN]-[Titulo-Descritivo].md`
+**Formato:** `[AGENTE]-[NN]-[Titulo-Descritivo].md`  
 
 **Exemplos:**
 ```
@@ -97,7 +97,7 @@ GM-01-GitHub-Setup.md
 
 ### Feedbacks
 
-**Formato:** `FEEDBACK-[NNN]-[FROM]-[TO]-[titulo-curto].md`
+**Formato:** `FEEDBACK-[NNN]-[FROM]-[TO]-[titulo-curto].md`  
 
 **Exemplos:**
 ```
@@ -120,7 +120,7 @@ FEEDBACK-003-QAE-DBA-performance-query-orders.md
 [ProjectName].PaymentManagement.Domain
 ```
 
-**Padrão:** `[ProjectName].[BoundedContext].[Layer]`
+**Padrão:** `[ProjectName].[BoundedContext].[Layer]`  
 
 ---
 
@@ -193,7 +193,7 @@ public class StrategyRepository : IStrategyRepository { }
 
 ### Épicos (GitHub)
 
-**Formato:** `[EPIC-NN] Nome Descritivo da Funcionalidade`
+**Formato:** `[EPIC-NN] Nome Descritivo da Funcionalidade`  
 
 **Exemplos:**
 ```
@@ -203,15 +203,15 @@ public class StrategyRepository : IStrategyRepository { }
 ```
 
 **Características:**
-- Nome em português (negócio)
-- Descreve funcionalidade, não BC
-- Transversal aos bounded contexts
+- Nome em português (negócio)  
+- Descreve funcionalidade, não BC  
+- Transversal aos bounded contexts  
 
 ---
 
 ### Issues (GitHub)
 
-**Formato:** `[AGENTE-BC] Descrição da tarefa`
+**Formato:** `[AGENTE-BC] Descrição da tarefa`  
 
 **Exemplos:**
 ```
@@ -225,7 +225,7 @@ public class StrategyRepository : IStrategyRepository { }
 
 ## 🔢 Numeração de Agentes
 
-**Formato:** Múltiplos de 5 para permitir inserções futuras
+**Formato:** Múltiplos de 5 para permitir inserções futuras  
 
 ```
 10 - SDA (Strategic Domain Analyst)
@@ -256,7 +256,7 @@ public class StrategyRepository : IStrategyRepository { }
 └── 07-github-management/           # GM deliverables
 ```
 
-**Numeração:** Múltiplos de 1, sequencial por fase do processo
+**Numeração:** Múltiplos de 1, sequencial por fase do processo  
 
 ---
 
@@ -264,7 +264,7 @@ public class StrategyRepository : IStrategyRepository { }
 
 ### .env Files (Environment Variables)
 
-**Formato:** `.env.[environment]`
+**Formato:** `.env.[environment]`  
 
 **Estratégia Multi-Ambiente:**
 ```bash
@@ -302,15 +302,15 @@ docker compose -f docker-compose.prod.yml --env-file .env.prod up -d
 ```
 
 **Segurança:**
-- ✅ `.env.dev` commitado com valores seguros (localhost, senhas simples)
-- ❌ `.env.staging` e `.env.prod` NUNCA commitados (secrets reais)
-- ✅ `.env.example` commitado como template com placeholders
+- ✅ `.env.dev` commitado com valores seguros (localhost, senhas simples)  
+- ❌ `.env.staging` e `.env.prod` NUNCA commitados (secrets reais)  
+- ✅ `.env.example` commitado como template com placeholders  
 
 ---
 
 ### Server Hostnames
 
-**Formato:** `[project-name]-[environment]`
+**Formato:** `[project-name]-[environment]`  
 
 **Exemplos:**
 ```bash
@@ -352,16 +352,16 @@ ssh mytrader@$SERVER_HOST "docker compose up -d"
 
 Antes de criar qualquer deliverable, verifique:
 
-- [ ] Nome do arquivo segue padrão `[AGENTE]-[NN]-[Titulo].md`
-- [ ] Termos de negócio em português na documentação
-- [ ] Código em inglês seguindo convenções
-- [ ] Mapeamento claro entre termos PT ↔ código EN
-- [ ] Bounded Contexts nomeados consistentemente
-- [ ] Épicos descrevem funcionalidade (não BC)
-- [ ] Feedbacks seguem formato `FEEDBACK-[NNN]-[FROM]-[TO]-[titulo].md`
-- [ ] .env files seguem padrão `.env.[environment]`
-- [ ] Comandos docker-compose usam `--env-file` explícito
-- [ ] Hostnames de servidores seguem padrão `[project]-[environment]`
+- [ ] Nome do arquivo segue padrão `[AGENTE]-[NN]-[Titulo].md`  
+- [ ] Termos de negócio em português na documentação  
+- [ ] Código em inglês seguindo convenções  
+- [ ] Mapeamento claro entre termos PT ↔ código EN  
+- [ ] Bounded Contexts nomeados consistentemente  
+- [ ] Épicos descrevem funcionalidade (não BC)  
+- [ ] Feedbacks seguem formato `FEEDBACK-[NNN]-[FROM]-[TO]-[titulo].md`  
+- [ ] .env files seguem padrão `.env.[environment]`  
+- [ ] Comandos docker-compose usam `--env-file` explícito  
+- [ ] Hostnames de servidores seguem padrão `[project]-[environment]`  
 
 ---
 
@@ -413,6 +413,6 @@ Pasta: 02-backend/src/Domain/OrderManagement/
 
 ---
 
-**Versão:** 1.0
-**Data:** 2025-10-02
-**Status:** Ativo
+**Versão:** 1.0  
+**Data:** 2025-10-02  
+**Status:** Ativo  
