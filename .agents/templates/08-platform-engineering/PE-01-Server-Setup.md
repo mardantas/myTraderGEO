@@ -16,11 +16,11 @@ MARKDOWN FORMATTING:
 
 ## 📋 Metadata
 
-- **Project Name:** [PROJECT_NAME]
-- **Created:** [DATE]
-- **PE Engineer:** [NAME]
-- **Target:** Staging and production server setup
-- **Security:** UFW, fail2ban, SSH key-based auth, NTP sync
+- **Project Name:** [PROJECT_NAME]  
+- **Created:** [DATE]  
+- **PE Engineer:** [NAME]  
+- **Target:** Staging and production server setup  
+- **Security:** UFW, fail2ban, SSH key-based auth, NTP sync  
 
 ---
 
