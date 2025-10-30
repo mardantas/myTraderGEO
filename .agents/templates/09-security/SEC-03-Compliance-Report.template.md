@@ -1,8 +1,8 @@
 <!--
 MARKDOWN FORMATTING:
-- Use 2 spaces at end of line for compact line breaks (metadata)
-- Use blank lines between sections for readability (content)
-- Validate in Markdown preview before committing
+- Use 2 spaces at end of line for compact line breaks (metadata)  
+- Use blank lines between sections for readability (content)  
+- Validate in Markdown preview before committing  
 -->
 
 # SEC-03: Compliance Report
@@ -122,29 +122,29 @@ public async Task DeleteUser(UserId userId)
 ```yaml
 # Incident Response Plan
 data_breach_detected:
-  - step: 1
+  - step: 1  
     action: Contain breach (isolate affected systems)
     responsible: Security Team
     deadline: Immediate
 
-  - step: 2
+  - step: 2  
     action: Assess impact (quantos usuários afetados?)
     responsible: Security Team
     deadline: 24 hours
 
-  - step: 3
+  - step: 3  
     action: Notify ANPD (Autoridade Nacional de Proteção de Dados)
     responsible: DPO (Data Protection Officer)
     deadline: 72 hours
     template: breach-notification-anpd.md
 
-  - step: 4
+  - step: 4  
     action: Notify affected users (email + dashboard alert)
     responsible: DPO
     deadline: 72 hours
     template: breach-notification-users.md
 
-  - step: 5
+  - step: 5  
     action: Post-mortem and remediation
     responsible: Security Team
     deadline: 7 days
@@ -152,10 +152,10 @@ data_breach_detected:
 
 #### 5. Data Protection Officer (DPO)
 
-- [ ] DPO nomeado: [NOME]
-- [ ] Email de contato público: dpo@[SEU-DOMINIO]
-- [ ] DPO mencionado em Privacy Policy
-- [ ] Canal de comunicação com ANPD estabelecido
+- [ ] DPO nomeado: [NOME]  
+- [ ] Email de contato público: dpo@[SEU-DOMINIO]  
+- [ ] DPO mencionado em Privacy Policy  
+- [ ] Canal de comunicação com ANPD estabelecido  
 
 ---
 
@@ -242,15 +242,15 @@ evidence/
 
 #### Requirement 1-2: Secure Network
 
-- [ ] **1.1** - Firewall configuration (AWS Security Groups)
-- [ ] **2.1** - Change default passwords (no defaults em produção)
-- [ ] **2.2** - Harden systems (remove unused services)
+- [ ] **1.1** - Firewall configuration (AWS Security Groups)  
+- [ ] **2.1** - Change default passwords (no defaults em produção)  
+- [ ] **2.2** - Harden systems (remove unused services)  
 
 #### Requirement 3-4: Protect Cardholder Data
 
-- [ ] **3.4** - Encrypt cardholder data at rest (AES-256)
-- [ ] **3.5** - Never store CVV/CVC (prohibited!)
-- [ ] **4.1** - Encrypt data in transit (TLS 1.2+)
+- [ ] **3.4** - Encrypt cardholder data at rest (AES-256)  
+- [ ] **3.5** - Never store CVV/CVC (prohibited!)  
+- [ ] **4.1** - Encrypt data in transit (TLS 1.2+)  
 
 **RECOMMENDED:** Use payment gateway (Stripe, PayPal) instead of storing card data.  
 
@@ -274,21 +274,21 @@ const paymentIntent = await stripe.paymentIntents.create({
 
 #### Requirement 5-6: Maintain Secure Systems
 
-- [ ] **5.1** - Antivirus on all systems
-- [ ] **6.2** - Patch critical vulnerabilities within 30 days
-- [ ] **6.5** - Secure coding practices (OWASP Top 10)
+- [ ] **5.1** - Antivirus on all systems  
+- [ ] **6.2** - Patch critical vulnerabilities within 30 days  
+- [ ] **6.5** - Secure coding practices (OWASP Top 10)  
 
 #### Requirement 7-9: Access Control
 
-- [ ] **7.1** - Least privilege access
-- [ ] **8.3** - MFA for remote access
-- [ ] **9.1** - Physical access control (cloud provider)
+- [ ] **7.1** - Least privilege access  
+- [ ] **8.3** - MFA for remote access  
+- [ ] **9.1** - Physical access control (cloud provider)  
 
 #### Requirement 10-12: Monitoring & Policies
 
-- [ ] **10.1** - Audit trails (who, what, when, where)
-- [ ] **11.2** - Quarterly vulnerability scans
-- [ ] **12.1** - Security policy established
+- [ ] **10.1** - Audit trails (who, what, when, where)  
+- [ ] **11.2** - Quarterly vulnerability scans  
+- [ ] **12.1** - Security policy established  
 
 ---
 
@@ -300,9 +300,9 @@ const paymentIntent = await stripe.paymentIntents.create({
 
 #### Key Requirements
 
-- [ ] **Instrução CVM 301** - Information security policy
-- [ ] **Instrução CVM 555** - Investor protection (transparency)
-- [ ] **Instrução CVM 505** - Audit trails for trades
+- [ ] **Instrução CVM 301** - Information security policy  
+- [ ] **Instrução CVM 555** - Investor protection (transparency)  
+- [ ] **Instrução CVM 505** - Audit trails for trades  
 
 **Example: Audit trail for trades**
 
@@ -335,22 +335,22 @@ public class Trade : AggregateRoot
 
 **Applies if:** Offering securities to US investors.  
 
-- [ ] **Regulation S-P** - Privacy of consumer financial information
-- [ ] **Regulation SCI** - Systems compliance and integrity
-- [ ] **Rule 17a-4** - Record retention (6 years for trade confirmations)
+- [ ] **Regulation S-P** - Privacy of consumer financial information  
+- [ ] **Regulation SCI** - Systems compliance and integrity  
+- [ ] **Rule 17a-4** - Record retention (6 years for trade confirmations)  
 
 ---
 
 ## ✅ Definition of Done
 
-- [ ] LGPD compliance 100% (data mapping, consent, rights)
-- [ ] SOC2 controls implementados (CC1-CC4)
-- [ ] PCI-DSS compliant (se aplicável) ou gateway terceiro
-- [ ] CVM/SEC compliant (se aplicável)
-- [ ] DPO nomeado e Privacy Policy publicada
-- [ ] Audit evidence coletada e organizada
-- [ ] Compliance audit agendado (anual)
-- [ ] SEC-checklist.yml completo
+- [ ] LGPD compliance 100% (data mapping, consent, rights)  
+- [ ] SOC2 controls implementados (CC1-CC4)  
+- [ ] PCI-DSS compliant (se aplicável) ou gateway terceiro  
+- [ ] CVM/SEC compliant (se aplicável)  
+- [ ] DPO nomeado e Privacy Policy publicada  
+- [ ] Audit evidence coletada e organizada  
+- [ ] Compliance audit agendado (anual)  
+- [ ] SEC-checklist.yml completo  
 
 ---
 

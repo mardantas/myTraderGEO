@@ -1,8 +1,8 @@
 <!--
 MARKDOWN FORMATTING:
-- Use 2 spaces at end of line for compact line breaks (metadata)
-- Use blank lines between sections for readability (content)
-- Validate in Markdown preview before committing
+- Use 2 spaces at end of line for compact line breaks (metadata)  
+- Use blank lines between sections for readability (content)  
+- Validate in Markdown preview before committing  
 -->
 
 # UXD-00 - Design Foundations
@@ -16,11 +16,11 @@ MARKDOWN FORMATTING:
 
 ## 📋 Metadata
 
-- **Project Name:** [PROJECT_NAME]
-- **Created:** [DATE]
-- **UX Designer:** [NAME]
-- **Target:** Small/Medium Projects
-- **Approach:** Foundations only (detailed wireframes per epic)
+- **Project Name:** [PROJECT_NAME]  
+- **Created:** [DATE]  
+- **UX Designer:** [NAME]  
+- **Target:** Small/Medium Projects  
+- **Approach:** Foundations only (detailed wireframes per epic)  
 
 ---
 
@@ -105,19 +105,19 @@ Estabelecer as fundações do design para todo o sistema: cores, tipografia, com
 ### Font Families
 
 **Primary Font:** [Font Name] (e.g., Inter, Roboto, Open Sans)  
-- **Usage:** Body text, UI elements
-- **Weights:** 400 (Regular), 500 (Medium), 700 (Bold)
-- **Source:** [Google Fonts / System Font]
+- **Usage:** Body text, UI elements  
+- **Weights:** 400 (Regular), 500 (Medium), 700 (Bold)  
+- **Source:** [Google Fonts / System Font]  
 
 **Heading Font:** [Font Name] (e.g., Poppins, Montserrat)  
-- **Usage:** Headings (H1-H6)
-- **Weights:** 600 (SemiBold), 700 (Bold)
-- **Source:** [Google Fonts / System Font]
+- **Usage:** Headings (H1-H6)  
+- **Weights:** 600 (SemiBold), 700 (Bold)  
+- **Source:** [Google Fonts / System Font]  
 
 **Monospace Font:** [Font Name] (e.g., Fira Code, JetBrains Mono)  
-- **Usage:** Code snippets, data displays
-- **Weights:** 400 (Regular)
-- **Source:** [Google Fonts / System Font]
+- **Usage:** Code snippets, data displays  
+- **Weights:** 400 (Regular)  
+- **Source:** [Google Fonts / System Font]  
 
 ### Type Scale
 
@@ -166,151 +166,151 @@ body { font-family: var(--font-primary); font-size: var(--font-size-body); }
 ### Buttons
 
 **Primary Button**
-- Background: `var(--color-primary)`
-- Text: White
-- Border Radius: 4px (or 8px for rounded)
-- Padding: 10px 24px
-- Hover: `var(--color-primary-dark)`
-- Disabled: `var(--color-text-disabled)`, opacity 0.5
+- Background: `var(--color-primary)`  
+- Text: White  
+- Border Radius: 4px (or 8px for rounded)  
+- Padding: 10px 24px  
+- Hover: `var(--color-primary-dark)`  
+- Disabled: `var(--color-text-disabled)`, opacity 0.5  
 
 **Secondary Button**
-- Background: Transparent
-- Text: `var(--color-primary)`
-- Border: 1px solid `var(--color-primary)`
-- Border Radius: 4px
-- Padding: 10px 24px
-- Hover: Background `var(--color-primary-light)` 10% opacity
+- Background: Transparent  
+- Text: `var(--color-primary)`  
+- Border: 1px solid `var(--color-primary)`  
+- Border Radius: 4px  
+- Padding: 10px 24px  
+- Hover: Background `var(--color-primary-light)` 10% opacity  
 
 **Danger Button**
-- Background: `var(--color-error)`
-- Text: White
-- Border Radius: 4px
-- Padding: 10px 24px
+- Background: `var(--color-error)`  
+- Text: White  
+- Border Radius: 4px  
+- Padding: 10px 24px  
 
 **Sizes:**  
-- Small: padding 6px 16px, font-size 12px
-- Medium: padding 10px 24px, font-size 14px
-- Large: padding 14px 32px, font-size 16px
+- Small: padding 6px 16px, font-size 12px  
+- Medium: padding 10px 24px, font-size 14px  
+- Large: padding 14px 32px, font-size 16px  
 
 ### Input Fields
 
 **Text Input**
-- Border: 1px solid `var(--color-border)`
-- Border Radius: 4px
-- Padding: 10px 12px
-- Font Size: 14px
-- Focus: Border `var(--color-primary)`, box-shadow 0 0 0 2px rgba(primary, 0.2)
-- Error: Border `var(--color-error)`
-- Disabled: Background `var(--color-surface)`, cursor not-allowed
+- Border: 1px solid `var(--color-border)`  
+- Border Radius: 4px  
+- Padding: 10px 12px  
+- Font Size: 14px  
+- Focus: Border `var(--color-primary)`, box-shadow 0 0 0 2px rgba(primary, 0.2)  
+- Error: Border `var(--color-error)`  
+- Disabled: Background `var(--color-surface)`, cursor not-allowed  
 
 **Select Dropdown**
-- Same as text input
-- Dropdown icon: chevron-down (right side)
+- Same as text input  
+- Dropdown icon: chevron-down (right side)  
 
 **Checkbox / Radio**
-- Size: 20px × 20px
-- Border: 2px solid `var(--color-border)`
-- Checked: Background `var(--color-primary)`, checkmark white
+- Size: 20px × 20px  
+- Border: 2px solid `var(--color-border)`  
+- Checked: Background `var(--color-primary)`, checkmark white  
 
 **Label**
-- Font Size: 14px
-- Font Weight: 500
-- Color: `var(--color-text-primary)`
-- Margin Bottom: 4px
+- Font Size: 14px  
+- Font Weight: 500  
+- Color: `var(--color-text-primary)`  
+- Margin Bottom: 4px  
 
 ### Cards
 
 **Standard Card**
-- Background: White
-- Border: 1px solid `var(--color-border)` (or none for shadow only)
-- Border Radius: 8px
-- Padding: 16px (or 24px for larger cards)
-- Box Shadow: 0 1px 3px rgba(0,0,0,0.1)
-- Hover: Box shadow 0 4px 6px rgba(0,0,0,0.15)
+- Background: White  
+- Border: 1px solid `var(--color-border)` (or none for shadow only)  
+- Border Radius: 8px  
+- Padding: 16px (or 24px for larger cards)  
+- Box Shadow: 0 1px 3px rgba(0,0,0,0.1)  
+- Hover: Box shadow 0 4px 6px rgba(0,0,0,0.15)  
 
 **Card Header**
-- Font Size: 18px (H4)
-- Font Weight: 600
-- Margin Bottom: 12px
+- Font Size: 18px (H4)  
+- Font Weight: 600  
+- Margin Bottom: 12px  
 
 **Card Content**
-- Font Size: 14px
-- Line Height: 1.5
+- Font Size: 14px  
+- Line Height: 1.5  
 
 ### Tables
 
 **Table Header**
-- Background: `var(--color-surface)`
-- Font Weight: 600
-- Font Size: 14px
-- Padding: 12px 16px
-- Border Bottom: 2px solid `var(--color-border)`
+- Background: `var(--color-surface)`  
+- Font Weight: 600  
+- Font Size: 14px  
+- Padding: 12px 16px  
+- Border Bottom: 2px solid `var(--color-border)`  
 
 **Table Row**
-- Padding: 12px 16px
-- Border Bottom: 1px solid `var(--color-border)`
-- Hover: Background `var(--color-surface)`
+- Padding: 12px 16px  
+- Border Bottom: 1px solid `var(--color-border)`  
+- Hover: Background `var(--color-surface)`  
 
 **Table Cell**
-- Font Size: 14px
-- Align: left (text), right (numbers)
+- Font Size: 14px  
+- Align: left (text), right (numbers)  
 
 ### Alerts / Notifications
 
 **Success Alert**
-- Background: `var(--color-success)` 10% opacity
-- Border Left: 4px solid `var(--color-success)`
-- Icon: checkmark-circle (success green)
+- Background: `var(--color-success)` 10% opacity  
+- Border Left: 4px solid `var(--color-success)`  
+- Icon: checkmark-circle (success green)  
 
 **Warning Alert**
-- Background: `var(--color-warning)` 10% opacity
-- Border Left: 4px solid `var(--color-warning)`
-- Icon: alert-triangle (warning orange)
+- Background: `var(--color-warning)` 10% opacity  
+- Border Left: 4px solid `var(--color-warning)`  
+- Icon: alert-triangle (warning orange)  
 
 **Error Alert**
-- Background: `var(--color-error)` 10% opacity
-- Border Left: 4px solid `var(--color-error)`
-- Icon: alert-circle (error red)
+- Background: `var(--color-error)` 10% opacity  
+- Border Left: 4px solid `var(--color-error)`  
+- Icon: alert-circle (error red)  
 
 **Info Alert**
-- Background: `var(--color-info)` 10% opacity
-- Border Left: 4px solid `var(--color-info)`
-- Icon: info-circle (info blue)
+- Background: `var(--color-info)` 10% opacity  
+- Border Left: 4px solid `var(--color-info)`  
+- Icon: info-circle (info blue)  
 
 ### Modals
 
 **Modal Overlay**
-- Background: rgba(0,0,0,0.5)
-- Position: fixed, full screen
-- Z-index: 1000
+- Background: rgba(0,0,0,0.5)  
+- Position: fixed, full screen  
+- Z-index: 1000  
 
 **Modal Container**
-- Background: White
-- Border Radius: 8px
-- Max Width: 600px (or 90% on mobile)
-- Padding: 24px
-- Box Shadow: 0 10px 25px rgba(0,0,0,0.3)
+- Background: White  
+- Border Radius: 8px  
+- Max Width: 600px (or 90% on mobile)  
+- Padding: 24px  
+- Box Shadow: 0 10px 25px rgba(0,0,0,0.3)  
 
 **Modal Header**
-- Font Size: 20px (H3)
-- Font Weight: 600
-- Margin Bottom: 16px
+- Font Size: 20px (H3)  
+- Font Weight: 600  
+- Margin Bottom: 16px  
 
 **Modal Footer**
-- Margin Top: 24px
-- Text Align: right
-- Buttons: Cancel (secondary) + Confirm (primary)
+- Margin Top: 24px  
+- Text Align: right  
+- Buttons: Cancel (secondary) + Confirm (primary)  
 
 ### Loading States
 
 **Spinner**
-- Size: 24px × 24px (small), 48px × 48px (large)
-- Color: `var(--color-primary)`
-- Animation: rotate 1s linear infinite
+- Size: 24px × 24px (small), 48px × 48px (large)  
+- Color: `var(--color-primary)`  
+- Animation: rotate 1s linear infinite  
 
 **Skeleton**
-- Background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)
-- Animation: shimmer 1.5s infinite
+- Background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)  
+- Animation: shimmer 1.5s infinite  
 
 ---
 
@@ -319,44 +319,44 @@ body { font-family: var(--font-primary); font-size: var(--font-size-body); }
 ### Top Navigation Bar
 
 **Desktop:**  
-- Height: 64px
-- Logo: Left (max height 40px)
-- Menu Items: Center or Left after logo
-- User Profile: Right (avatar + dropdown)
-- Background: White
-- Box Shadow: 0 1px 3px rgba(0,0,0,0.1)
+- Height: 64px  
+- Logo: Left (max height 40px)  
+- Menu Items: Center or Left after logo  
+- User Profile: Right (avatar + dropdown)  
+- Background: White  
+- Box Shadow: 0 1px 3px rgba(0,0,0,0.1)  
 
 **Mobile:**  
-- Height: 56px
-- Hamburger menu: Left
-- Logo: Center
-- User profile icon: Right
+- Height: 56px  
+- Hamburger menu: Left  
+- Logo: Center  
+- User profile icon: Right  
 
 ### Sidebar Navigation (if applicable)
 
 **Desktop:**  
-- Width: 240px (collapsed: 64px)
-- Position: Fixed left
-- Menu items: Icon + Label
-- Active item: Background `var(--color-primary)` 10%, border-left `var(--color-primary)` 4px
+- Width: 240px (collapsed: 64px)  
+- Position: Fixed left  
+- Menu items: Icon + Label  
+- Active item: Background `var(--color-primary)` 10%, border-left `var(--color-primary)` 4px  
 
 **Mobile:**  
-- Drawer: slides from left
-- Overlay: background rgba(0,0,0,0.5)
+- Drawer: slides from left  
+- Overlay: background rgba(0,0,0,0.5)  
 
 ### Breadcrumbs
 
-- Font Size: 14px
-- Separator: "/" or ">" (color: `var(--color-text-secondary)`)
-- Current page: Font Weight 500, no link
-- Example: Home / Dashboard / Orders / Order #123
+- Font Size: 14px  
+- Separator: "/" or ">" (color: `var(--color-text-secondary)`)  
+- Current page: Font Weight 500, no link  
+- Example: Home / Dashboard / Orders / Order #123  
 
 ### Tabs
 
-- Border Bottom: 2px solid `var(--color-border)`
-- Active Tab: Border Bottom 2px solid `var(--color-primary)`, font weight 500
-- Inactive Tab: Color `var(--color-text-secondary)`
-- Hover: Color `var(--color-primary)`
+- Border Bottom: 2px solid `var(--color-border)`  
+- Active Tab: Border Bottom 2px solid `var(--color-primary)`, font weight 500  
+- Inactive Tab: Color `var(--color-text-secondary)`  
+- Hover: Color `var(--color-primary)`  
 
 ---
 
@@ -376,9 +376,9 @@ body { font-family: var(--font-primary); font-size: var(--font-size-body); }
 
 ### Layout Grid
 
-- **Desktop:** 12 columns, 24px gutter
-- **Tablet:** 8 columns, 16px gutter
-- **Mobile:** 4 columns, 16px gutter
+- **Desktop:** 12 columns, 24px gutter  
+- **Tablet:** 8 columns, 16px gutter  
+- **Mobile:** 4 columns, 16px gutter  
 
 ---
 
@@ -419,27 +419,27 @@ body { font-family: var(--font-primary); font-size: var(--font-size-body); }
 
 ### Color Contrast
 
-- **Normal text:** Minimum 4.5:1 contrast ratio (WCAG AA)
-- **Large text (18px+):** Minimum 3:1 contrast ratio
-- **UI components:** Minimum 3:1 contrast ratio
+- **Normal text:** Minimum 4.5:1 contrast ratio (WCAG AA)  
+- **Large text (18px+):** Minimum 3:1 contrast ratio  
+- **UI components:** Minimum 3:1 contrast ratio  
 
 ### Keyboard Navigation
 
-- All interactive elements must be keyboard accessible (Tab, Enter, Space)
-- Focus state visible: outline 2px solid `var(--color-primary)`
-- Skip to main content link (for screen readers)
+- All interactive elements must be keyboard accessible (Tab, Enter, Space)  
+- Focus state visible: outline 2px solid `var(--color-primary)`  
+- Skip to main content link (for screen readers)  
 
 ### ARIA Labels
 
-- Buttons: `aria-label` if no visible text
-- Icons: `aria-hidden="true"` if decorative, `aria-label` if functional
-- Forms: `aria-describedby` for error messages
+- Buttons: `aria-label` if no visible text  
+- Icons: `aria-hidden="true"` if decorative, `aria-label` if functional  
+- Forms: `aria-describedby` for error messages  
 
 ### Screen Reader Support
 
-- Semantic HTML: `<header>`, `<nav>`, `<main>`, `<footer>`
-- Headings hierarchy: H1 → H2 → H3 (no skipping levels)
-- Alt text for images (empty alt="" if decorative)
+- Semantic HTML: `<header>`, `<nav>`, `<main>`, `<footer>`  
+- Headings hierarchy: H1 → H2 → H3 (no skipping levels)  
+- Alt text for images (empty alt="" if decorative)  
 
 ---
 
@@ -448,22 +448,22 @@ body { font-family: var(--font-primary); font-size: var(--font-size-body); }
 ### Icon Library
 
 **Selected Library:** [Choose one]  
-- [ ] Material Icons (Google)
-- [ ] Heroicons (Tailwind)
-- [ ] Feather Icons
-- [ ] Font Awesome
-- [ ] Custom SVG icons
+- [ ] Material Icons (Google)  
+- [ ] Heroicons (Tailwind)  
+- [ ] Feather Icons  
+- [ ] Font Awesome  
+- [ ] Custom SVG icons  
 
 **Icon Sizes:**  
-- Small: 16px × 16px
-- Medium: 24px × 24px (default)
-- Large: 32px × 32px
+- Small: 16px × 16px  
+- Medium: 24px × 24px (default)  
+- Large: 32px × 32px  
 
 **Common Icons:**  
-- Navigation: home, search, menu, close, chevron-down, chevron-right
-- Actions: edit, delete, add, save, cancel, refresh
-- Status: check-circle (success), alert-triangle (warning), x-circle (error), info-circle (info)
-- User: user, settings, logout, profile
+- Navigation: home, search, menu, close, chevron-down, chevron-right  
+- Actions: edit, delete, add, save, cancel, refresh  
+- Status: check-circle (success), alert-triangle (warning), x-circle (error), info-circle (info)  
+- User: user, settings, logout, profile  
 
 ---
 
@@ -471,20 +471,20 @@ body { font-family: var(--font-primary); font-size: var(--font-size-body); }
 
 ### Photos
 
-- **Aspect Ratios:** 16:9 (hero), 4:3 (cards), 1:1 (avatars)
-- **Quality:** High resolution, optimized for web (WebP format preferred)
-- **Placeholder:** Skeleton or solid color background during load
+- **Aspect Ratios:** 16:9 (hero), 4:3 (cards), 1:1 (avatars)  
+- **Quality:** High resolution, optimized for web (WebP format preferred)  
+- **Placeholder:** Skeleton or solid color background during load  
 
 ### Avatars
 
-- **Size:** 32px (small), 40px (default), 64px (large), 120px (profile)
-- **Shape:** Circle (users), rounded square (teams/organizations)
-- **Fallback:** Initials on colored background (use user ID hash for color)
+- **Size:** 32px (small), 40px (default), 64px (large), 120px (profile)  
+- **Shape:** Circle (users), rounded square (teams/organizations)  
+- **Fallback:** Initials on colored background (use user ID hash for color)  
 
 ### Illustrations (optional)
 
-- **Style:** [Describe style - flat, outlined, 3D, etc.]
-- **Usage:** Empty states, onboarding, error pages
+- **Style:** [Describe style - flat, outlined, 3D, etc.]  
+- **Usage:** Empty states, onboarding, error pages  
 
 ---
 
@@ -492,65 +492,65 @@ body { font-family: var(--font-primary); font-size: var(--font-size-body); }
 
 ### Form Layout
 
-- **Label position:** Top (mobile-friendly) or Left (desktop, if space allows)
-- **Field width:** Full width on mobile, max 400px on desktop
-- **Field spacing:** 16px between fields
-- **Required fields:** Asterisk (*) after label OR "Required" text
+- **Label position:** Top (mobile-friendly) or Left (desktop, if space allows)  
+- **Field width:** Full width on mobile, max 400px on desktop  
+- **Field spacing:** 16px between fields  
+- **Required fields:** Asterisk (*) after label OR "Required" text  
 
 ### Validation
 
-- **Timing:** On blur (after user leaves field) OR on submit
-- **Error display:** Below field, red text, with error icon
-- **Success display:** Green checkmark icon (optional)
+- **Timing:** On blur (after user leaves field) OR on submit  
+- **Error display:** Below field, red text, with error icon  
+- **Success display:** Green checkmark icon (optional)  
 
 ### Error Messages
 
-- **Format:** Clear, actionable (e.g., "Email is required" not "Invalid input")
-- **Position:** Below field
-- **Style:** Color `var(--color-error)`, font size 12px
+- **Format:** Clear, actionable (e.g., "Email is required" not "Invalid input")  
+- **Position:** Below field  
+- **Style:** Color `var(--color-error)`, font size 12px  
 
 ---
 
 ## ✅ Design Foundations Checklist
 
-- [ ] Color palette defined (primary, secondary, neutral, semantic)
-- [ ] Typography scale defined (font families, sizes, weights)
-- [ ] Base components specified (buttons, inputs, cards, tables, alerts, modals)
-- [ ] Navigation patterns defined (top nav, sidebar, breadcrumbs, tabs)
-- [ ] Spacing system defined (8px grid)
-- [ ] Responsive breakpoints defined
-- [ ] Accessibility guidelines documented
-- [ ] Icon library selected
-- [ ] Imagery guidelines defined
-- [ ] Forms guidelines defined
+- [ ] Color palette defined (primary, secondary, neutral, semantic)  
+- [ ] Typography scale defined (font families, sizes, weights)  
+- [ ] Base components specified (buttons, inputs, cards, tables, alerts, modals)  
+- [ ] Navigation patterns defined (top nav, sidebar, breadcrumbs, tabs)  
+- [ ] Spacing system defined (8px grid)  
+- [ ] Responsive breakpoints defined  
+- [ ] Accessibility guidelines documented  
+- [ ] Icon library selected  
+- [ ] Imagery guidelines defined  
+- [ ] Forms guidelines defined  
 
 ---
 
 ## 🚀 Next Steps
 
 1. **Implement Design System** (FE team)
-   - Create reusable components based on this spec
-   - Set up CSS variables / Tailwind config
+   - Create reusable components based on this spec  
+   - Set up CSS variables / Tailwind config  
 
 2. **Create Wireframes per Epic** (UXD per epic)
-   - Use these foundations consistently
-   - Create UXD-01-[EpicName]-Wireframes for each epic
+   - Use these foundations consistently  
+   - Create UXD-01-[EpicName]-Wireframes for each epic  
 
 3. **Validation**
-   - Review with stakeholders
-   - Test components across breakpoints
-   - Validate accessibility (contrast, keyboard nav)
+   - Review with stakeholders  
+   - Test components across breakpoints  
+   - Validate accessibility (contrast, keyboard nav)  
 
 ---
 
 ## 📚 References
 
-- **Workflow Guide:** `.agents/00-Workflow-Guide.md`
-- **Agent XML:** `.agents/20-UXD - User Experience Designer.xml`
-- **Design Resources:**
-  - Material Design: https://material.io/design
-  - Tailwind UI: https://tailwindui.com
-  - Refactoring UI: https://refactoringui.com
+- **Workflow Guide:** `.agents/00-Workflow-Guide.md`  
+- **Agent XML:** `.agents/20-UXD - User Experience Designer.xml`  
+- **Design Resources:**  
+  - Material Design: https://material.io/design  
+  - Tailwind UI: https://tailwindui.com  
+  - Refactoring UI: https://refactoringui.com  
 
 ---
 

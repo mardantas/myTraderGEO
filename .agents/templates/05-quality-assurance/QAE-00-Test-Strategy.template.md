@@ -1,8 +1,8 @@
 <!--
 MARKDOWN FORMATTING:
-- Use 2 spaces at end of line for compact line breaks (metadata)
-- Use blank lines between sections for readability (content)
-- Validate in Markdown preview before committing
+- Use 2 spaces at end of line for compact line breaks (metadata)  
+- Use blank lines between sections for readability (content)  
+- Validate in Markdown preview before committing  
 -->
 
 # QAE-01-Test-Strategy.md
@@ -32,9 +32,9 @@ Definir estratégia abrangente de testes para o projeto, estabelecendo pirâmide
 ```
 
 **Distribuição Target:**  
-- **Unit Tests:** 60-70% dos testes
-- **Integration Tests:** 20-30% dos testes
-- **E2E Tests:** 5-10% dos testes
+- **Unit Tests:** 60-70% dos testes  
+- **Integration Tests:** 20-30% dos testes  
+- **E2E Tests:** 5-10% dos testes  
 
 ---
 
@@ -48,10 +48,10 @@ Definir estratégia abrangente de testes para o projeto, estabelecendo pirâmide
 #### Backend (Domain Layer)
 
 **O que testar:**  
-- Aggregates: Business rules, invariantes
-- Value Objects: Validações, imutabilidade
-- Domain Events: Geração correta
-- Use Cases: Orquestração lógica
+- Aggregates: Business rules, invariantes  
+- Value Objects: Validações, imutabilidade  
+- Domain Events: Geração correta  
+- Use Cases: Orquestração lógica  
 
 **Framework:** xUnit, NUnit ou MSTest  
 **Mocking:** Moq, NSubstitute  
@@ -90,9 +90,9 @@ public class StrategyTests
 #### Frontend (Components)
 
 **O que testar:**  
-- Componentes: Rendering, props, events
-- Hooks: State management logic
-- Utilities: Pure functions
+- Componentes: Rendering, props, events  
+- Hooks: State management logic  
+- Utilities: Pure functions  
 
 **Framework:** Jest, Vitest, Testing Library  
 
@@ -125,10 +125,10 @@ describe('StrategyCard', () => {
 #### API Integration Tests
 
 **O que testar:**  
-- Controllers + Use Cases + Repositories
-- Database interactions (real DB ou in-memory)
-- Authentication/Authorization
-- Error handling end-to-end
+- Controllers + Use Cases + Repositories  
+- Database interactions (real DB ou in-memory)  
+- Authentication/Authorization  
+- Error handling end-to-end  
 
 **Framework:** xUnit com WebApplicationFactory  
 **Database:** TestContainers (Docker) ou In-Memory SQLite  
@@ -170,9 +170,9 @@ public class StrategyApiTests : IClassFixture<WebApplicationFactory<Program>>
 #### Cross-BC Integration Tests
 
 **O que testar:**  
-- Domain Events entre BCs
-- Eventual consistency
-- Saga/Process Managers
+- Domain Events entre BCs  
+- Eventual consistency  
+- Saga/Process Managers  
 
 **Exemplo:**  
 ```csharp
@@ -199,22 +199,22 @@ public async Task WhenStrategyCreated_RiskBCShouldCreateRiskProfile()
 **Responsável:** QAE (full ownership)  
 
 **O que testar:**  
-- User journeys completas
-- Fluxos críticos de negócio
-- Integração frontend + backend + database
+- User journeys completas  
+- Fluxos críticos de negócio  
+- Integração frontend + backend + database  
 
 **Framework:** Playwright, Cypress, Selenium  
 
 **User Journeys:**  
 
 1. **Happy Path: Criar Estratégia Completa**
-   - Login → Dashboard → Criar Estratégia → Configurar Legs → Salvar → Ver Greeks
+   - Login → Dashboard → Criar Estratégia → Configurar Legs → Salvar → Ver Greeks  
 
 2. **Error Handling: Criar Estratégia Inválida**
-   - Tentar criar estratégia sem legs → Ver erro → Corrigir → Sucesso
+   - Tentar criar estratégia sem legs → Ver erro → Corrigir → Sucesso  
 
 3. **Cross-BC Flow: Estratégia → Risco**
-   - Criar estratégia → Ver alerta de risco → Ajustar → Risco OK
+   - Criar estratégia → Ver alerta de risco → Ajustar → Risco OK  
 
 **Exemplo (Playwright):**  
 ```typescript
@@ -256,10 +256,10 @@ test('should create bull call spread strategy', async ({ page }) => {
 **Responsável:** QAE (colaboração com PE se disponível)  
 
 **O que testar:**  
-- Response time de APIs críticas
-- Database query performance
-- Frontend rendering performance
-- Load testing (concurrent users)
+- Response time de APIs críticas  
+- Database query performance  
+- Frontend rendering performance  
+- Load testing (concurrent users)  
 
 **Tools:** k6, Artillery, JMeter  
 
@@ -297,23 +297,23 @@ export default function () {
 **Responsável:** QAE (colaboração com SEC se disponível)  
 
 **O que testar:**  
-- Authentication/Authorization
-- SQL Injection
-- XSS (Cross-Site Scripting)
-- CSRF (Cross-Site Request Forgery)
-- OWASP Top 10
+- Authentication/Authorization  
+- SQL Injection  
+- XSS (Cross-Site Scripting)  
+- CSRF (Cross-Site Request Forgery)  
+- OWASP Top 10  
 
 **Tools:** OWASP ZAP, Burp Suite (manual), Dependabot (dependencies)  
 
 **Checklist:**  
 
-- [ ] Authentication required para endpoints protegidos
-- [ ] Authorization: Users só vêem seus próprios dados
-- [ ] Input validation: Rejeita SQL injection attempts
-- [ ] XSS protection: Outputs são sanitizados
-- [ ] CSRF tokens em formulários
-- [ ] HTTPS obrigatório
-- [ ] Secrets não expostos em código
+- [ ] Authentication required para endpoints protegidos  
+- [ ] Authorization: Users só vêem seus próprios dados  
+- [ ] Input validation: Rejeita SQL injection attempts  
+- [ ] XSS protection: Outputs são sanitizados  
+- [ ] CSRF tokens em formulários  
+- [ ] HTTPS obrigatório  
+- [ ] Secrets não expostos em código  
 
 ---
 
@@ -338,20 +338,20 @@ export default function () {
 # .github/workflows/ci.yml
 
 stages:
-  - unit-tests:
+  - unit-tests:  
       run: dotnet test --filter Category=Unit
       fail-fast: true
 
-  - integration-tests:
+  - integration-tests:  
       run: dotnet test --filter Category=Integration
       requires: [unit-tests]
 
-  - e2e-tests:
+  - e2e-tests:  
       run: npm run test:e2e
       requires: [integration-tests]
       only: [main, develop]
 
-  - quality-gates:
+  - quality-gates:  
       coverage: 70%
       fails-if-below: true
 ```
@@ -359,13 +359,13 @@ stages:
 ### Quality Gates
 
 **Blocking (PR não pode mergear):**  
-- ❌ Unit tests falhando
-- ❌ Integration tests críticos falhando
-- ❌ Coverage < 70%
+- ❌ Unit tests falhando  
+- ❌ Integration tests críticos falhando  
+- ❌ Coverage < 70%  
 
 **Warning (PR pode mergear mas avisa):**  
-- ⚠️ E2E tests falhando (flaky tests)
-- ⚠️ Performance degradation > 20%
+- ⚠️ E2E tests falhando (flaky tests)  
+- ⚠️ Performance degradation > 20%  
 
 ---
 
@@ -411,11 +411,11 @@ public void Bug123_WhenStrategyHasNoLegs_ShouldNotCalculateGreeks()
 
 ### Continuous
 
-- **Daily:** Unit tests (CI)
-- **Per PR:** Unit + Integration tests
-- **Nightly:** E2E tests completos
-- **Weekly:** Performance tests
-- **Monthly:** Security audits
+- **Daily:** Unit tests (CI)  
+- **Per PR:** Unit + Integration tests  
+- **Nightly:** E2E tests completos  
+- **Weekly:** Performance tests  
+- **Monthly:** Security audits  
 
 ---
 
@@ -455,13 +455,13 @@ public void Bug123_WhenStrategyHasNoLegs_ShouldNotCalculateGreeks()
 
 **Uma feature só está DONE quando:**  
 
-- [ ] Unit tests escritos (DE/FE) e expandidos (QAE)
-- [ ] Integration tests criados (QAE)
-- [ ] E2E test do happy path criado (QAE)
-- [ ] Coverage >= 70% para código modificado
-- [ ] Todos os testes passando no CI
-- [ ] Performance benchmarks não degradados
-- [ ] Security checklist verificado
+- [ ] Unit tests escritos (DE/FE) e expandidos (QAE)  
+- [ ] Integration tests criados (QAE)  
+- [ ] E2E test do happy path criado (QAE)  
+- [ ] Coverage >= 70% para código modificado  
+- [ ] Todos os testes passando no CI  
+- [ ] Performance benchmarks não degradados  
+- [ ] Security checklist verificado  
 
 ---
 
@@ -506,10 +506,10 @@ public class StrategyFaker : Faker<Strategy>
 
 ## 🔗 Referências
 
-- **DE Tactical Model:** Para entender domain logic a testar
-- **FE Components:** Para entender UI a testar
-- **API Specs:** Para integration test cases
-- **User Flows (UXD):** Para E2E test scenarios
+- **DE Tactical Model:** Para entender domain logic a testar  
+- **FE Components:** Para entender UI a testar  
+- **API Specs:** Para integration test cases  
+- **User Flows (UXD):** Para E2E test scenarios  
 
 ---
 

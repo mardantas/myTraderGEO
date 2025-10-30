@@ -1,11 +1,11 @@
 <!--
 FORMATTING REQUIREMENTS:
-- All metadata lines (with **bold:**) must end with 2 spaces before line break
-- Use blank lines between sections for readability
-- Validate in Markdown preview before committing
-- Replace [NNN] with 3-digit number (e.g., 001, 010, 123)
-- Replace [FROM] and [TO] with agent codes (e.g., DE, UXD, GM)
-- Replace [titulo-curto] with kebab-case description
+- All metadata lines (with **bold:**) must end with 2 spaces before line break  
+- Use blank lines between sections for readability  
+- Validate in Markdown preview before committing  
+- Replace [NNN] with 3-digit number (e.g., 001, 010, 123)  
+- Replace [FROM] and [TO] with agent codes (e.g., DE, UXD, GM)  
+- Replace [titulo-curto] with kebab-case description  
 -->
 
 # FEEDBACK-[NNN]-[FROM]-[TO]-[titulo-curto].md
@@ -21,15 +21,15 @@ FORMATTING REQUIREMENTS:
 **Status:** 🔴 Aberto  
 
 **Tipo:**  
-- [ ] Correção (deliverable já entregue precisa ajuste)
-- [ ] Melhoria (sugestão de enhancement)
-- [ ] Dúvida (esclarecimento necessário)
-- [ ] Novo Requisito (mudança de escopo)
+- [ ] Correção (deliverable já entregue precisa ajuste)  
+- [ ] Melhoria (sugestão de enhancement)  
+- [ ] Dúvida (esclarecimento necessário)  
+- [ ] Novo Requisito (mudança de escopo)  
 
 **Urgência:** [🔴 Alta | 🟡 Média | 🟢 Baixa]  
 
 **Deliverable(s) Afetado(s):**  
-- [lista de deliverables]
+- [lista de deliverables]  
 
 ---
 
@@ -46,8 +46,8 @@ FORMATTING REQUIREMENTS:
 ## 💥 Impacto Estimado
 
 **Outros deliverables afetados:**  
-- [ ] [deliverable-1]
-- [ ] [deliverable-2]
+- [ ] [deliverable-1]  
+- [ ] [deliverable-2]  
 
 **Esforço estimado:** [horas/dias]  
 **Risco:** [🟢 Baixo | 🟡 Médio | 🔴 Alto]  
@@ -71,7 +71,7 @@ FORMATTING REQUIREMENTS:
 [Descrição do que foi feito]
 
 **Deliverables Atualizados:**  
-- [x] [deliverable] - [descrição da mudança]
+- [x] [deliverable] - [descrição da mudança]  
 
 **Referência Git Commit:** [hash] (opcional)  
 

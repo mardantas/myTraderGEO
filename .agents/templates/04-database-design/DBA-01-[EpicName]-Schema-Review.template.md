@@ -1,8 +1,8 @@
 <!--
 MARKDOWN FORMATTING:
-- Use 2 spaces at end of line for compact line breaks (metadata)
-- Use blank lines between sections for readability (content)
-- Validate in Markdown preview before committing
+- Use 2 spaces at end of line for compact line breaks (metadata)  
+- Use blank lines between sections for readability (content)  
+- Validate in Markdown preview before committing  
 -->
 
 # DBA-01-[EpicName]-Schema-Review.md
@@ -108,9 +108,9 @@ MARKDOWN FORMATTING:
 | `[ChildTable]` | `IX_[Child]_Parent_Status` | `[Parent]Id, Status` | NONCLUSTERED COVERING | Query composta frequente |
 
 **Prioridade:**  
-- 🔴 **Alta:** `IX_[Child]_ParentId` (blocking FK queries)
-- 🟡 **Média:** `IX_[Table]_Status` (performance improvement)
-- 🟢 **Baixa:** `IX_[Table]_CreatedAt` (nice to have)
+- 🔴 **Alta:** `IX_[Child]_ParentId` (blocking FK queries)  
+- 🟡 **Média:** `IX_[Table]_Status` (performance improvement)  
+- 🟢 **Baixa:** `IX_[Table]_CreatedAt` (nice to have)  
 
 ---
 
@@ -149,16 +149,16 @@ CHECK (UpdatedAt IS NULL OR UpdatedAt >= CreatedAt);
 **Estratégia:** Separate schemas, NO foreign keys between BCs  
 
 **Schemas:**  
-- `[BC1]`: Schema `[BC1Name]`
-- `[BC2]`: Schema `[BC2Name]`
+- `[BC1]`: Schema `[BC1Name]`  
+- `[BC2]`: Schema `[BC2Name]`  
 
 **Integração:**  
-- Via Domain Events (aplicação)
-- Via Materialized Views (read model) se necessário
+- Via Domain Events (aplicação)  
+- Via Materialized Views (read model) se necessário  
 
 **❌ NÃO FAZER:**  
-- Foreign Keys entre schemas de BCs diferentes
-- Joins diretos entre tabelas de BCs diferentes
+- Foreign Keys entre schemas de BCs diferentes  
+- Joins diretos entre tabelas de BCs diferentes  
 
 ---
 
@@ -169,8 +169,8 @@ CHECK (UpdatedAt IS NULL OR UpdatedAt >= CreatedAt);
 **Estratégia:** Optimistic Concurrency (EF Core)  
 
 **Implementação:**  
-- Coluna `Version` (ROWVERSION/TIMESTAMP) em tabelas principais
-- EF Core tracked entities com concurrency token
+- Coluna `Version` (ROWVERSION/TIMESTAMP) em tabelas principais  
+- EF Core tracked entities com concurrency token  
 
 **Validação:**  
 ```sql
@@ -198,13 +198,13 @@ WHERE COLUMN_NAME = 'Version'
 ## 📈 Scalability Considerations
 
 ### Current Volume Estimates
-- `[Table]`: ~[N] records/month
-- `[ChildTable]`: ~[N*10] records/month (10 children per parent)
+- `[Table]`: ~[N] records/month  
+- `[ChildTable]`: ~[N*10] records/month (10 children per parent)  
 
 ### Partitioning Strategy (Future)
 **Quando considerar:**  
-- `[Table]` > 10M records
-- Queries por time range (particionar por `CreatedAt`)
+- `[Table]` > 10M records  
+- Queries por time range (particionar por `CreatedAt`)  
 
 **Não implementar agora** (MVP não precisa)
 
@@ -237,26 +237,26 @@ Criar migration adicional com:
 ## ✅ Checklist de Validação
 
 ### Schema Design
-- [ ] Tabelas normalizadas adequadamente
-- [ ] Foreign Keys corretos com CASCADE apropriado
-- [ ] Data types otimizados (VARCHAR sizes, etc)
-- [ ] Nullable correto (NOT NULL onde obrigatório)
+- [ ] Tabelas normalizadas adequadamente  
+- [ ] Foreign Keys corretos com CASCADE apropriado  
+- [ ] Data types otimizados (VARCHAR sizes, etc)  
+- [ ] Nullable correto (NOT NULL onde obrigatório)  
 
 ### Performance
-- [ ] **CRÍTICO:** Indexes em todas as FKs
-- [ ] Indexes em colunas de filtro frequente
-- [ ] Indexes compostos para queries complexas
-- [ ] Covering indexes onde apropriado
+- [ ] **CRÍTICO:** Indexes em todas as FKs  
+- [ ] Indexes em colunas de filtro frequente  
+- [ ] Indexes compostos para queries complexas  
+- [ ] Covering indexes onde apropriado  
 
 ### Data Integrity
-- [ ] CHECK constraints para enums/status
-- [ ] Data validation constraints
-- [ ] Concurrency control (Version column)
+- [ ] CHECK constraints para enums/status  
+- [ ] Data validation constraints  
+- [ ] Concurrency control (Version column)  
 
 ### Best Practices
-- [ ] Schemas separados por BC
-- [ ] NO FKs entre BCs diferentes
-- [ ] Naming conventions consistentes
+- [ ] Schemas separados por BC  
+- [ ] NO FKs entre BCs diferentes  
+- [ ] Naming conventions consistentes  
 
 ---
 
@@ -480,12 +480,12 @@ mb.AlterColumn<string>("Email", "Users", nullable: false);
 
 Antes de fazer merge do PR:
 
-- [ ] `Down()` migration testada localmente?
-- [ ] Colunas NOT NULL têm default value ou são nullable inicialmente?
-- [ ] Breaking changes usam Expand/Contract (3 deploys)?
-- [ ] Dados críticos não são perdidos em `Down()`?
-- [ ] Aplicação antiga continua funcionando após `Up()`?
-- [ ] Rollback testado: `update → rollback → update novamente`?
+- [ ] `Down()` migration testada localmente?  
+- [ ] Colunas NOT NULL têm default value ou são nullable inicialmente?  
+- [ ] Breaking changes usam Expand/Contract (3 deploys)?  
+- [ ] Dados críticos não são perdidos em `Down()`?  
+- [ ] Aplicação antiga continua funcionando após `Up()`?  
+- [ ] Rollback testado: `update → rollback → update novamente`?  
 
 ---
 
@@ -560,8 +560,8 @@ backup-strategy:
 ```
 
 ### Restore Test
-- [ ] Backup restaurado com sucesso em ambiente de teste?
-- [ ] Procedimento de restore documentado?
+- [ ] Backup restaurado com sucesso em ambiente de teste?  
+- [ ] Procedimento de restore documentado?  
 
 **⚠️ Para Produção:** Considerar geo-replication e DR secundário quando tiver usuários reais.  
 
@@ -629,16 +629,16 @@ COMMIT;
 **Schema Quality Score:** [X]/10  
 
 **Approval Status:**  
-- [ ] ✅ **APPROVED** - Schema pronto para produção
-- [x] ⚠️ **APPROVED WITH CHANGES** - Implementar ações Priority 1
-- [ ] ❌ **REJECTED** - Redesign necessário
+- [ ] ✅ **APPROVED** - Schema pronto para produção  
+- [x] ⚠️ **APPROVED WITH CHANGES** - Implementar ações Priority 1  
+- [ ] ❌ **REJECTED** - Redesign necessário  
 
 **Checklist MVP:**  
-- [ ] Backup strategy configurado
-- [ ] Data retention policy documentado
-- [ ] Transaction isolation definido para operações críticas
-- [ ] Indexes em todas FK
-- [ ] Concurrency control (Version column)
+- [ ] Backup strategy configurado  
+- [ ] Data retention policy documentado  
+- [ ] Transaction isolation definido para operações críticas  
+- [ ] Indexes em todas FK  
+- [ ] Concurrency control (Version column)  
 
 **Next Steps:**  
 1. DE implementa ações Priority 1 (indexes, constraints)
@@ -650,6 +650,6 @@ COMMIT;
 
 ## 🔗 Referências
 
-- **DE Tactical Model:** `00-doc-ddd/04-tactical-design/DE-01-[EpicName]-Tactical-Model.md`
-- **EF Migrations:** `02-backend/src/Infrastructure/Persistence/Migrations/`
-- **Repository Interfaces:** Verificar queries em `DE-01` para entender index needs
+- **DE Tactical Model:** `00-doc-ddd/04-tactical-design/DE-01-[EpicName]-Tactical-Model.md`  
+- **EF Migrations:** `02-backend/src/Infrastructure/Persistence/Migrations/`  
+- **Repository Interfaces:** Verificar queries em `DE-01` para entender index needs  

@@ -1,16 +1,16 @@
 <!--
 MARKDOWN FORMATTING:
-- Use 2 spaces at end of line for compact line breaks (metadata)
-- Use blank lines between sections for readability (content)
-- Validate in Markdown preview before committing
+- Use 2 spaces at end of line for compact line breaks (metadata)  
+- Use blank lines between sections for readability (content)  
+- Validate in Markdown preview before committing  
 -->
 
 # PE-00 - Quick Start (Local Development MVP)
 
-**Agent:** PE (Platform Engineer)
-**Phase:** Discovery (1x)
-**Scope:** Minimal viable setup for local development with Docker Compose
-**Version:** 4.0 (Split from PE-00-Environments-Setup)
+**Agent:** PE (Platform Engineer)  
+**Phase:** Discovery (1x)  
+**Scope:** Minimal viable setup for local development with Docker Compose  
+**Version:** 4.0 (Split from PE-00-Environments-Setup)  
 
 ---
 
@@ -28,8 +28,8 @@ MARKDOWN FORMATTING:
 
 Configure um ambiente de desenvolvimento local funcional em **menos de 15 minutos**. Este guia cobre APENAS o necessário para começar a desenvolver localmente.
 
-**Para deploy remoto e produção:** Veja [PE-01-Server-Setup.md](./PE-01-Server-Setup.md)
-**Para estratégia de escalabilidade:** Veja [PE-02-Scaling-Strategy.md](./PE-02-Scaling-Strategy.md)
+**Para deploy remoto e produção:** Veja [PE-01-Server-Setup.md](./PE-01-Server-Setup.md)  
+**Para estratégia de escalabilidade:** Veja [PE-02-Scaling-Strategy.md](./PE-02-Scaling-Strategy.md)  
 
 ---
 
@@ -47,12 +47,12 @@ Configure um ambiente de desenvolvimento local funcional em **menos de 15 minuto
 
 ### Hosting Strategy (Future Reference)
 
-**Selected Approach:** [Choose one for staging/production]
-- [ ] Single VPS (Contabo, DigitalOcean, Linode)
-- [ ] Cloud Platform (AWS, Azure, GCP) - básico
-- [ ] Managed Container Service (AWS ECS, Azure Container Instances)
+**Selected Approach:** [Choose one for staging/production]  
+- [ ] Single VPS (Contabo, DigitalOcean, Linode)  
+- [ ] Cloud Platform (AWS, Azure, GCP) - básico  
+- [ ] Managed Container Service (AWS ECS, Azure Container Instances)  
 
-**Justification:** [Why this choice fits small/medium project needs]
+**Justification:** [Why this choice fits small/medium project needs]  
 
 ---
 
@@ -60,7 +60,7 @@ Configure um ambiente de desenvolvimento local funcional em **menos de 15 minuto
 
 ### Development Environment
 
-**File:** `docker-compose.dev.yml`
+**File:** `docker-compose.dev.yml`  
 
 ```yaml
 version: '3.8'
@@ -72,14 +72,14 @@ services:
       context: ./02-backend
       dockerfile: Dockerfile.dev
     ports:
-      - "5000:5000"
+      - "5000:5000"  
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - DATABASE_URL=${DATABASE_URL}
+      - ASPNETCORE_ENVIRONMENT=Development  
+      - DATABASE_URL=${DATABASE_URL}  
     volumes:
-      - ./02-backend:/app
+      - ./02-backend:/app  
     depends_on:
-      - database
+      - database  
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
       interval: 30s
@@ -92,25 +92,25 @@ services:
       context: ./01-frontend
       dockerfile: Dockerfile.dev
     ports:
-      - "3000:3000"
+      - "3000:3000"  
     environment:
-      - VITE_API_URL=http://localhost:5000
+      - VITE_API_URL=http://localhost:5000  
     volumes:
-      - ./01-frontend:/app
+      - ./01-frontend:/app  
     depends_on:
-      - api
+      - api  
 
   # Database
   database:
     image: postgres:15-alpine
     ports:
-      - "5432:5432"
+      - "5432:5432"  
     environment:
-      - POSTGRES_DB=${DB_NAME}
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}  
+      - POSTGRES_USER=${DB_USER}  
+      - POSTGRES_PASSWORD=${DB_PASSWORD}  
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data  
 
 volumes:
   postgres_data:
@@ -123,29 +123,29 @@ volumes:
 **Traefik v3.0** é usado em **staging e production** (não em development) para:
 
 1. **SSL Automático (Let's Encrypt)**
-   - Certificados HTTPS automáticos
-   - Staging: usa Let's Encrypt staging CA (não polui rate limits)
-   - Production: usa Let's Encrypt production CA (certificados trusted)
+   - Certificados HTTPS automáticos  
+   - Staging: usa Let's Encrypt staging CA (não polui rate limits)  
+   - Production: usa Let's Encrypt production CA (certificados trusted)  
 
 2. **Routing Declarativo**
-   - Configuração via labels Docker (simples)
-   - Não precisa editar arquivos nginx.conf complexos
-   - Auto-discovery de serviços
+   - Configuração via labels Docker (simples)  
+   - Não precisa editar arquivos nginx.conf complexos  
+   - Auto-discovery de serviços  
 
 3. **Load Balancing Nativo**
-   - Preparado para escalar horizontalmente
-   - Múltiplas réplicas do mesmo serviço
+   - Preparado para escalar horizontalmente  
+   - Múltiplas réplicas do mesmo serviço  
 
 4. **Dashboard de Monitoramento**
-   - Interface web para visualizar rotas e serviços
-   - Útil para troubleshooting
+   - Interface web para visualizar rotas e serviços  
+   - Útil para troubleshooting  
 
 ### Quando NÃO Usar Traefik
 
 **Development (localhost):**
-- ❌ Sem domínio real → sem SSL necessário
-- ❌ Acesso direto via `localhost:3000`, `localhost:5000` é mais simples
-- ❌ Hot reload funciona melhor sem proxy reverso
+- ❌ Sem domínio real → sem SSL necessário  
+- ❌ Acesso direto via `localhost:3000`, `localhost:5000` é mais simples  
+- ❌ Hot reload funciona melhor sem proxy reverso  
 
 **Para configuração completa de Traefik (staging/production), veja [PE-01-Server-Setup.md](./PE-01-Server-Setup.md)**
 
@@ -155,7 +155,7 @@ volumes:
 
 ### .env.example
 
-**Location:** Project root
+**Location:** Project root  
 
 ```bash
 # Project
@@ -201,9 +201,9 @@ LOG_LEVEL=Information
 ### Environment-Specific Files
 
 Create these files (DO NOT commit to git):
-- `.env.dev` (local development) - **Use simple passwords, it's OK for dev**
-- `.env.staging` (staging server) - See PE-01-Server-Setup.md
-- `.env.prod` (production server) - See PE-01-Server-Setup.md
+- `.env.dev` (local development) - **Use simple passwords, it's OK for dev**  
+- `.env.staging` (staging server) - See PE-01-Server-Setup.md  
+- `.env.prod` (production server) - See PE-01-Server-Setup.md  
 
 **Add to .gitignore:**
 ```
@@ -230,8 +230,8 @@ docker compose -f docker-compose.prod.yml --env-file .env.prod up
 ### Docker Logging
 
 All containers configured with JSON logging:
-- **max-size:** 10m (development)
-- **max-file:** 3 (development)
+- **max-size:** 10m (development)  
+- **max-file:** 3 (development)  
 
 ### Log Access
 
@@ -251,7 +251,7 @@ docker compose -f docker-compose.dev.yml --env-file .env.dev logs --tail=100 api
 
 ### API Health Endpoint
 
-**Implementation Required:** `GET /health`
+**Implementation Required:** `GET /health`  
 
 ```csharp
 // Example: ASP.NET Core
@@ -263,7 +263,7 @@ app.MapGet("/health", () =>
 
 ### Health Check Script
 
-**Location:** `scripts/health-check.sh`
+**Location:** `scripts/health-check.sh`  
 
 ```bash
 #!/bin/bash
@@ -290,7 +290,7 @@ fi
 
 ### deploy_local Function
 
-**Location:** `scripts/deploy.sh` (excerpt)
+**Location:** `scripts/deploy.sh` (excerpt)  
 
 ```bash
 #!/bin/bash
@@ -372,54 +372,54 @@ Docker Desktop no Windows armazena **named volumes** no sistema de arquivos do W
 ```
 
 **Vantagens:**
-- ✅ Performance otimizada (60x mais rápido que bind mounts para databases)
-- ✅ Funciona identicamente em Windows/Linux/Mac
-- ✅ Docker gerencia automaticamente (não precisa gerenciamento manual)
+- ✅ Performance otimizada (60x mais rápido que bind mounts para databases)  
+- ✅ Funciona identicamente em Windows/Linux/Mac  
+- ✅ Docker gerencia automaticamente (não precisa gerenciamento manual)  
 
 **Bind mounts** para código-fonte (hot reload) continuam funcionando normalmente:
 ```yaml
 volumes:
-  - ./02-backend:/app  # Hot reload funciona via WSL2 file watching
-  - ./01-frontend:/app # Hot reload funciona via WSL2 file watching
+  - ./02-backend:/app  # Hot reload funciona via WSL2 file watching  
+  - ./01-frontend:/app # Hot reload funciona via WSL2 file watching  
 ```
 
 ### Backups em Development
 
 **Não há necessidade de backups** no ambiente de desenvolvimento:
-- Dados são efêmeros e podem ser recriados com migrations + seed data
-- Para resetar o banco: `docker compose down -v && docker compose up -d`
-- Git já versiona migrations e seed data
+- Dados são efêmeros e podem ser recriados com migrations + seed data  
+- Para resetar o banco: `docker compose down -v && docker compose up -d`  
+- Git já versiona migrations e seed data  
 
 **Backups são importantes apenas em staging/production** (ver [PE-01-Server-Setup.md](./PE-01-Server-Setup.md)).
 
 ### Pré-requisitos Windows
 
-- **Docker Desktop for Windows** (com WSL2 backend habilitado)
-- **Git for Windows** (inclui Git Bash)
-- **Windows 10/11** com WSL2 configurado
+- **Docker Desktop for Windows** (com WSL2 backend habilitado)  
+- **Git for Windows** (inclui Git Bash)  
+- **Windows 10/11** com WSL2 configurado  
 
 ### Troubleshooting Windows
 
 **Problema: Hot reload não funciona**
-- Solução: Certifique-se que Docker Desktop está usando WSL2 backend (não Hyper-V)
-- Verificar: Docker Desktop → Settings → General → "Use the WSL 2 based engine"
+- Solução: Certifique-se que Docker Desktop está usando WSL2 backend (não Hyper-V)  
+- Verificar: Docker Desktop → Settings → General → "Use the WSL 2 based engine"  
 
 **Problema: Performance lenta**
-- Solução: Manter o projeto dentro do filesystem WSL2 (`\\wsl$\Ubuntu\home\user\projects\`) ao invés de `C:\Users\...`
-- Alternativa: Se precisar manter em `C:\`, usar named volumes para databases (já configurado nos templates)
+- Solução: Manter o projeto dentro do filesystem WSL2 (`\\wsl$\Ubuntu\home\user\projects\`) ao invés de `C:\Users\...`  
+- Alternativa: Se precisar manter em `C:\`, usar named volumes para databases (já configurado nos templates)  
 
 ---
 
 ## ✅ Checklist de Validação
 
 ### Development Environment
-- [ ] `docker-compose.dev.yml` criado
-- [ ] `.env.dev` configurado (copiar de `.env.example` e ajustar)
-- [ ] `docker compose -f docker-compose.dev.yml --env-file .env.dev up` funciona localmente
-- [ ] API responde em `http://localhost:5000/health`
-- [ ] Frontend carrega em `http://localhost:3000`
-- [ ] Database conecta corretamente
-- [ ] Hot reload funciona (alterar código e ver mudanças sem rebuild)
+- [ ] `docker-compose.dev.yml` criado  
+- [ ] `.env.dev` configurado (copiar de `.env.example` e ajustar)  
+- [ ] `docker compose -f docker-compose.dev.yml --env-file .env.dev up` funciona localmente  
+- [ ] API responde em `http://localhost:5000/health`  
+- [ ] Frontend carrega em `http://localhost:3000`  
+- [ ] Database conecta corretamente  
+- [ ] Hot reload funciona (alterar código e ver mudanças sem rebuild)  
 
 ---
 
@@ -427,28 +427,28 @@ volumes:
 
 Este é um guia **mínimo** para desenvolvimento local. **NÃO incluímos:**
 
-- ❌ Server setup remoto (veja [PE-01-Server-Setup.md](./PE-01-Server-Setup.md))
-- ❌ Configuração Traefik (staging/production)
-- ❌ Deploy scripts completos (remote deployment)
-- ❌ Backup strategy (production)
-- ❌ CI/CD integration
-- ❌ Scaling strategy (veja [PE-02-Scaling-Strategy.md](./PE-02-Scaling-Strategy.md))
+- ❌ Server setup remoto (veja [PE-01-Server-Setup.md](./PE-01-Server-Setup.md))  
+- ❌ Configuração Traefik (staging/production)  
+- ❌ Deploy scripts completos (remote deployment)  
+- ❌ Backup strategy (production)  
+- ❌ CI/CD integration  
+- ❌ Scaling strategy (veja [PE-02-Scaling-Strategy.md](./PE-02-Scaling-Strategy.md))  
 
 ---
 
 ## 📚 Referências
 
 ### Documentação Relacionada
-- **[PE-01-Server-Setup.md](./PE-01-Server-Setup.md)** - Setup de servidor remoto e deploy em staging/production
-- **[PE-02-Scaling-Strategy.md](./PE-02-Scaling-Strategy.md)** - Estratégia de escalabilidade e crescimento
+- **[PE-01-Server-Setup.md](./PE-01-Server-Setup.md)** - Setup de servidor remoto e deploy em staging/production  
+- **[PE-02-Scaling-Strategy.md](./PE-02-Scaling-Strategy.md)** - Estratégia de escalabilidade e crescimento  
 
 ### Recursos do Projeto
-- **Checklist PE:** `.agents/workflow/02-checklists/PE-checklist.yml`
-- **Agent XML:** `.agents/30-PE - Platform Engineer.xml`
-- **Workflow Guide:** `.agents/docs/00-Workflow-Guide.md`
+- **Checklist PE:** `.agents/workflow/02-checklists/PE-checklist.yml`  
+- **Agent XML:** `.agents/30-PE - Platform Engineer.xml`  
+- **Workflow Guide:** `.agents/docs/00-Workflow-Guide.md`  
 
 ---
 
-**Template Version:** 4.0 (Quick Start)
-**Last Updated:** 2025-10-29
-**Split From:** PE-00-Environments-Setup.template.md v3.0
+**Template Version:** 4.0 (Quick Start)  
+**Last Updated:** 2025-10-29  
+**Split From:** PE-00-Environments-Setup.template.md v3.0  

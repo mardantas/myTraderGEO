@@ -1,8 +1,8 @@
 <!--
 MARKDOWN FORMATTING:
-- Use 2 spaces at end of line for compact line breaks (metadata)
-- Use blank lines between sections for readability (content)
-- Validate in Markdown preview before committing
+- Use 2 spaces at end of line for compact line breaks (metadata)  
+- Use blank lines between sections for readability (content)  
+- Validate in Markdown preview before committing  
 -->
 
 # PE-01: Infrastructure Design
@@ -23,31 +23,31 @@ Documentar o design completo da infraestrutura cloud/on-prem, incluindo IaC, net
 ## 📋 Stack Tecnológica
 
 ### Cloud Provider / Hosting
-- [ ] **Contabo VPS** (✅ RECOMENDADO - €14.99/mês, 8 vCPU, 30GB RAM, 400GB SSD NVMe)
-- [ ] **Hetzner** (alternativa europeia similar)
-- [ ] **DigitalOcean** (Droplets - mais caro, mas boa UX)
-- [ ] **AWS** (EC2 - mais caro, ideal para enterprise)
-- [ ] **Azure** (VMs - mais caro, ideal para enterprise)
-- [ ] **On-Premise** (Self-hosted)
+- [ ] **Contabo VPS** (✅ RECOMENDADO - €14.99/mês, 8 vCPU, 30GB RAM, 400GB SSD NVMe)  
+- [ ] **Hetzner** (alternativa europeia similar)  
+- [ ] **DigitalOcean** (Droplets - mais caro, mas boa UX)  
+- [ ] **AWS** (EC2 - mais caro, ideal para enterprise)  
+- [ ] **Azure** (VMs - mais caro, ideal para enterprise)  
+- [ ] **On-Premise** (Self-hosted)  
 
 ### Infrastructure as Code
-- [ ] **Terraform** (✅ RECOMENDADO - funciona com qualquer provider)
-- [ ] **Docker Compose** (para setup inicial simples em 1 servidor)
-- [ ] **Ansible** (alternativa para provisionamento)
+- [ ] **Terraform** (✅ RECOMENDADO - funciona com qualquer provider)  
+- [ ] **Docker Compose** (para setup inicial simples em 1 servidor)  
+- [ ] **Ansible** (alternativa para provisionamento)  
 
 ### Container Orchestration
-- [ ] **Docker Swarm** (✅ RECOMENDADO - começa com 1 servidor, escala conforme necessário)
-- [ ] **Kubernetes** (opcional - só se projeto crescer muito >20 serviços)
+- [ ] **Docker Swarm** (✅ RECOMENDADO - começa com 1 servidor, escala conforme necessário)  
+- [ ] **Kubernetes** (opcional - só se projeto crescer muito >20 serviços)  
 
 ### Backend
-- [ ] **.NET 8+** (✅ RECOMENDADO - performance, EF Core, MediatR para DDD)
-- [ ] **Node.js** (alternativa)
-- [ ] **Java/Spring** (alternativa enterprise)
+- [ ] **.NET 8+** (✅ RECOMENDADO - performance, EF Core, MediatR para DDD)  
+- [ ] **Node.js** (alternativa)  
+- [ ] **Java/Spring** (alternativa enterprise)  
 
 ### Frontend
-- [ ] **Vue 3** (✅ RECOMENDADO - Composition API, Pinia, Vite)
-- [ ] **React** (alternativa)
-- [ ] **Angular** (alternativa enterprise)
+- [ ] **Vue 3** (✅ RECOMENDADO - Composition API, Pinia, Vite)  
+- [ ] **React** (alternativa)  
+- [ ] **Angular** (alternativa enterprise)  
 
 ---
 
@@ -102,8 +102,8 @@ Tudo roda em Docker (single-node Swarm ou Compose)
 | **Production** | Produção | https://app.[YOUR-DOMAIN] | Contabo VPS (1 servidor inicial) |
 
 **Evolução futura:**  
-- 2 servidores: 1 manager + 1 worker (HA)
-- 3+ servidores: 1 manager + 2+ workers (scale horizontal)
+- 2 servidores: 1 manager + 1 worker (HA)  
+- 3+ servidores: 1 manager + 2+ workers (scale horizontal)  
 
 ---
 
@@ -118,21 +118,21 @@ Servidor:
 
 Firewall (ufw):
   Portas abertas:
-    - 22 (SSH - APENAS seu IP)
-    - 80 (HTTP - redirect para HTTPS)
-    - 443 (HTTPS)
-    - 2377 (Docker Swarm - quando adicionar nodes)
+    - 22 (SSH - APENAS seu IP)  
+    - 80 (HTTP - redirect para HTTPS)  
+    - 443 (HTTPS)  
+    - 2377 (Docker Swarm - quando adicionar nodes)  
 
 Docker Networks:
-  - bridge (default - dev local)
-  - app-network (overlay - para Swarm)
-  - monitoring-network (overlay - Prometheus/Grafana)
+  - bridge (default - dev local)  
+  - app-network (overlay - para Swarm)  
+  - monitoring-network (overlay - Prometheus/Grafana)  
 
 CloudFlare (Free):
-  - DNS: app.[YOUR-DOMAIN] → [SEU-IP-PUBLICO]
-  - CDN: Cache assets estáticos (Vue build)
-  - DDoS Protection: Automatic
-  - SSL: Full (strict) - certificado Certbot no servidor
+  - DNS: app.[YOUR-DOMAIN] → [SEU-IP-PUBLICO]  
+  - CDN: Cache assets estáticos (Vue build)  
+  - DDoS Protection: Automatic  
+  - SSL: Full (strict) - certificado Certbot no servidor  
 ```
 
 ### Firewall Setup (ufw)
@@ -186,11 +186,11 @@ docker node ls
 ```
 
 **Spec do Servidor:**  
-- **CPU:** 8 vCPU (AMD Ryzen)
-- **RAM:** 30GB DDR4
-- **Storage:** 400GB NVMe SSD
-- **Network:** 1 Gbit/s
-- **Custo:** €14.99/mês (~R$90/mês)
+- **CPU:** 8 vCPU (AMD Ryzen)  
+- **RAM:** 30GB DDR4  
+- **Storage:** 400GB NVMe SSD  
+- **Network:** 1 Gbit/s  
+- **Custo:** €14.99/mês (~R$90/mês)  
 
 ### Deployments (Docker Compose - Single Node)
 
@@ -202,16 +202,16 @@ services:
   nginx:
     image: nginx:alpine
     ports:
-      - "80:80"
-      - "443:443"
+      - "80:80"  
+      - "443:443"  
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./ssl:/etc/nginx/ssl:ro
-      - frontend-build:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro  
+      - ./ssl:/etc/nginx/ssl:ro  
+      - frontend-build:/usr/share/nginx/html:ro  
     depends_on:
-      - backend
+      - backend  
     networks:
-      - app-network
+      - app-network  
 
   frontend:
     image: [YOUR-REGISTRY]/frontend:latest
@@ -219,7 +219,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     volumes:
-      - frontend-build:/app/dist
+      - frontend-build:/app/dist  
     command: echo "Build complete"
 
   backend:
@@ -228,19 +228,19 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings__DefaultConnection=Host=db;Database=myapp;Username=postgres;Password=${DB_PASSWORD}
-      - Redis__ConnectionString=redis:6379
+      - ASPNETCORE_ENVIRONMENT=Production  
+      - ConnectionStrings__DefaultConnection=Host=db;Database=myapp;Username=postgres;Password=${DB_PASSWORD}  
+      - Redis__ConnectionString=redis:6379  
     depends_on:
-      - db
-      - redis
+      - db  
+      - redis  
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
     networks:
-      - app-network
+      - app-network  
     deploy:
       resources:
         limits:
@@ -254,9 +254,9 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data  
     networks:
-      - app-network
+      - app-network  
     deploy:
       resources:
         limits:
@@ -265,7 +265,7 @@ services:
   redis:
     image: redis:7-alpine
     networks:
-      - app-network
+      - app-network  
     deploy:
       resources:
         limits:
@@ -274,23 +274,23 @@ services:
   prometheus:
     image: prom/prometheus:latest
     ports:
-      - "9090:9090"
+      - "9090:9090"  
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - prometheus-data:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro  
+      - prometheus-data:/prometheus  
     networks:
-      - app-network
+      - app-network  
 
   grafana:
     image: grafana/grafana:latest
     ports:
-      - "3000:3000"
+      - "3000:3000"  
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}  
     volumes:
-      - grafana-data:/var/lib/grafana
+      - grafana-data:/var/lib/grafana  
     networks:
-      - app-network
+      - app-network  
 
 volumes:
   postgres-data:
@@ -354,9 +354,9 @@ docker stack deploy -c docker-compose.yml myapp
 **Início:** Usar volume do Contabo (400GB disponível)  
 
 **Quando crescer:** Migrar para object storage:  
-- **Backblaze B2** ($0.005/GB/mês) - mais barato
-- **AWS S3** ($0.023/GB/mês)
-- **Contabo Object Storage** (€2.49/mês 250GB)
+- **Backblaze B2** ($0.005/GB/mês) - mais barato  
+- **AWS S3** ($0.023/GB/mês)  
+- **Contabo Object Storage** (€2.49/mês 250GB)  
 
 ---
 
@@ -397,7 +397,7 @@ fi
 **Prometheus Alert Example:**  
 ```yaml
 # prometheus/alerts.yml
-- alert: HighCPUUsage
+- alert: HighCPUUsage  
   expr: avg(rate(container_cpu_usage_seconds_total[5m])) > 0.75
   for: 5m
   annotations:
@@ -445,7 +445,7 @@ spec:
   target:
     name: db-credentials
   data:
-  - secretKey: url
+  - secretKey: url  
     remoteRef:
       key: [project]-production-db-credentials
       property: url
@@ -470,18 +470,18 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v3  
 
-    - name: Configure AWS credentials
+    - name: Configure AWS credentials  
       uses: aws-actions/configure-aws-credentials@v2
       with:
         role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
         aws-region: us-east-1
 
-    - name: Update kubeconfig
+    - name: Update kubeconfig  
       run: aws eks update-kubeconfig --name [project]-production
 
-    - name: Deploy to Kubernetes (Blue-Green)
+    - name: Deploy to Kubernetes (Blue-Green)  
       run: |
         kubectl apply -f kubernetes/backend-deployment-green.yaml
         kubectl rollout status deployment/backend-api-green
@@ -493,26 +493,26 @@ jobs:
 ## ✅ Definition of Done
 
 ### Infrastructure
-- [ ] IaC completo (Terraform/Bicep) versionado no git
-- [ ] Ambientes criados (dev, staging, production)
-- [ ] Networking configurado (VPC, subnets, security groups)
-- [ ] Compute resources provisionados (Kubernetes/ECS)
+- [ ] IaC completo (Terraform/Bicep) versionado no git  
+- [ ] Ambientes criados (dev, staging, production)  
+- [ ] Networking configurado (VPC, subnets, security groups)  
+- [ ] Compute resources provisionados (Kubernetes/ECS)  
 
 ### Security
-- [ ] Secrets management configurado (Vault/Secrets Manager)
-- [ ] Network security (WAF, Security Groups)
-- [ ] Encryption at rest e in transit
+- [ ] Secrets management configurado (Vault/Secrets Manager)  
+- [ ] Network security (WAF, Security Groups)  
+- [ ] Encryption at rest e in transit  
 
 ### Scalability
-- [ ] HPA configurado (CPU, Memory, custom metrics)
-- [ ] Cluster autoscaler habilitado
-- [ ] Load balancer com health checks
+- [ ] HPA configurado (CPU, Memory, custom metrics)  
+- [ ] Cluster autoscaler habilitado  
+- [ ] Load balancer com health checks  
 
 ### Validation
-- [ ] Terraform plan executado sem erros
-- [ ] Infra provisionada com sucesso
-- [ ] Health checks passando
-- [ ] PE-checklist.yml completo
+- [ ] Terraform plan executado sem erros  
+- [ ] Infra provisionada com sucesso  
+- [ ] Health checks passando  
+- [ ] PE-checklist.yml completo  
 
 ---
 

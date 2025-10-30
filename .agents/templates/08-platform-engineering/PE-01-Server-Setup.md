@@ -1,16 +1,16 @@
 <!--
 MARKDOWN FORMATTING:
-- Use 2 spaces at end of line for compact line breaks (metadata)
-- Use blank lines between sections for readability (content)
-- Validate in Markdown preview before committing
+- Use 2 spaces at end of line for compact line breaks (metadata)  
+- Use blank lines between sections for readability (content)  
+- Validate in Markdown preview before committing  
 -->
 
 # PE-01 - Server Setup & Remote Deployment
 
-**Agent:** PE (Platform Engineer)
-**Phase:** Discovery (1x)
-**Scope:** Production-ready remote server configuration and deployment
-**Version:** 4.0 (Split from PE-00-Environments-Setup)
+**Agent:** PE (Platform Engineer)  
+**Phase:** Discovery (1x)  
+**Scope:** Production-ready remote server configuration and deployment  
+**Version:** 4.0 (Split from PE-00-Environments-Setup)  
 
 ---
 
@@ -28,8 +28,8 @@ MARKDOWN FORMATTING:
 
 Configure servidores remotos (staging/production) com segurança, deploy via SSH/SCP, e Traefik para SSL automático.
 
-**Foundation:** Veja [PE-00-Quick-Start.md](./PE-00-Quick-Start.md) para setup local primeiro
-**Future scaling:** Veja [PE-02-Scaling-Strategy.md](./PE-02-Scaling-Strategy.md) quando precisar escalar
+**Foundation:** Veja [PE-00-Quick-Start.md](./PE-00-Quick-Start.md) para setup local primeiro  
+**Future scaling:** Veja [PE-02-Scaling-Strategy.md](./PE-02-Scaling-Strategy.md) quando precisar escalar  
 
 ---
 
@@ -39,16 +39,16 @@ Configure servidores remotos (staging/production) com segurança, deploy via SSH
 
 **9-step process** para configurar servidores staging/production do zero.
 
-**Target:** Linux server (Ubuntu 22.04 LTS or Debian 12)
-**Time:** ~30 minutes per server
-**Security:** UFW firewall, fail2ban, SSH key-based auth, NTP time sync
+**Target:** Linux server (Ubuntu 22.04 LTS or Debian 12)  
+**Time:** ~30 minutes per server  
+**Security:** UFW firewall, fail2ban, SSH key-based auth, NTP time sync  
 
 ### Prerequisites
 
-- ✅ Root or sudo access to server
-- ✅ SSH access to server
-- ✅ Domain DNS pointing to server IP (for Let's Encrypt SSL)
-- ✅ SSH key pair generated (`ssh-keygen -t ed25519 -C "[PROJECT_NAME]-[environment]"`)
+- ✅ Root or sudo access to server  
+- ✅ SSH access to server  
+- ✅ Domain DNS pointing to server IP (for Let's Encrypt SSL)  
+- ✅ SSH key pair generated (`ssh-keygen -t ed25519 -C "[PROJECT_NAME]-[environment]"`)  
 
 ### Step 1: Set Hostname
 
@@ -155,7 +155,7 @@ sudo grep -E '^(PasswordAuthentication|PubkeyAuthentication)' /etc/ssh/sshd_conf
 sudo systemctl restart sshd
 ```
 
-**⚠️ IMPORTANT:** Test SSH login with key BEFORE logging out of root session!
+**⚠️ IMPORTANT:** Test SSH login with key BEFORE logging out of root session!  
 
 ```bash
 # From your local machine, test SSH login
@@ -172,7 +172,7 @@ sudo apt install chrony -y
 timedatectl status
 ```
 
-**Why:** Accurate time is critical for audit logs (LGPD Art. 46, SOC2, ISO 27001), TLS certificates, database timestamps.
+**Why:** Accurate time is critical for audit logs (LGPD Art. 46, SOC2, ISO 27001), TLS certificates, database timestamps.  
 
 ### Step 8: Create Project Directory Structure
 
@@ -224,11 +224,11 @@ echo "8. Directory: $(test -d ~/[project] && echo 'OK' || echo 'MISSING')"
 3. **Built-in Load Balancing** - Ready for horizontal scaling with multiple service replicas
 4. **Dashboard** - Web UI for monitoring routes and services
 
-**Not in development:** localhost needs no SSL or reverse proxy; see [PE-00-Quick-Start.md](./PE-00-Quick-Start.md).
+**Not in development:** localhost needs no SSL or reverse proxy; see [PE-00-Quick-Start.md](./PE-00-Quick-Start.md).  
 
 ### Traefik Configuration
 
-**File:** `05-infra/configs/traefik.yml`
+**File:** `05-infra/configs/traefik.yml`  
 
 ```yaml
 api:
@@ -273,7 +273,7 @@ providers:
 
 ### Docker Compose (Staging)
 
-**File:** `docker-compose.staging.yml`
+**File:** `docker-compose.staging.yml`  
 
 ```yaml
 version: '3.8'
@@ -282,63 +282,63 @@ services:
   traefik:
     image: traefik:v3.0
     command:
-      - "--configFile=/etc/traefik/traefik.yml"
+      - "--configFile=/etc/traefik/traefik.yml"  
     ports:
-      - "80:80"
-      - "443:443"
+      - "80:80"  
+      - "443:443"  
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./05-infra/configs/traefik.yml:/etc/traefik/traefik.yml:ro
-      - traefik-letsencrypt:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock:ro  
+      - ./05-infra/configs/traefik.yml:/etc/traefik/traefik.yml:ro  
+      - traefik-letsencrypt:/letsencrypt  
     networks:
-      - web
+      - web  
     restart: unless-stopped
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.traefik.rule=Host(`traefik-staging.${DOMAIN}`)"
-      - "traefik.http.routers.traefik.entrypoints=websecure"
-      - "traefik.http.routers.traefik.tls.certresolver=letsencrypt-staging"
-      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.enable=true"  
+      - "traefik.http.routers.traefik.rule=Host(`traefik-staging.${DOMAIN}`)"  
+      - "traefik.http.routers.traefik.entrypoints=websecure"  
+      - "traefik.http.routers.traefik.tls.certresolver=letsencrypt-staging"  
+      - "traefik.http.routers.traefik.service=api@internal"  
 
   api:
     image: ${DOCKER_REGISTRY}/api:staging
     environment:
-      - ASPNETCORE_ENVIRONMENT=Staging
-      - DATABASE_URL=${DATABASE_URL_STAGING}
+      - ASPNETCORE_ENVIRONMENT=Staging  
+      - DATABASE_URL=${DATABASE_URL_STAGING}  
     networks:
-      - web
-      - backend
+      - web  
+      - backend  
     restart: unless-stopped
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.api-staging.rule=Host(`api-staging.${DOMAIN}`)"
-      - "traefik.http.routers.api-staging.entrypoints=websecure"
-      - "traefik.http.routers.api-staging.tls.certresolver=letsencrypt-staging"
-      - "traefik.http.services.api-staging.loadbalancer.server.port=5000"
+      - "traefik.enable=true"  
+      - "traefik.http.routers.api-staging.rule=Host(`api-staging.${DOMAIN}`)"  
+      - "traefik.http.routers.api-staging.entrypoints=websecure"  
+      - "traefik.http.routers.api-staging.tls.certresolver=letsencrypt-staging"  
+      - "traefik.http.services.api-staging.loadbalancer.server.port=5000"  
 
   frontend:
     image: ${DOCKER_REGISTRY}/frontend:staging
     environment:
-      - VITE_API_URL=https://api-staging.${DOMAIN}
+      - VITE_API_URL=https://api-staging.${DOMAIN}  
     networks:
-      - web
+      - web  
     restart: unless-stopped
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.frontend-staging.rule=Host(`staging.${DOMAIN}`)"
-      - "traefik.http.routers.frontend-staging.entrypoints=websecure"
-      - "traefik.http.routers.frontend-staging.tls.certresolver=letsencrypt-staging"
+      - "traefik.enable=true"  
+      - "traefik.http.routers.frontend-staging.rule=Host(`staging.${DOMAIN}`)"  
+      - "traefik.http.routers.frontend-staging.entrypoints=websecure"  
+      - "traefik.http.routers.frontend-staging.tls.certresolver=letsencrypt-staging"  
 
   database:
     image: postgres:15-alpine
     environment:
-      - POSTGRES_DB=${DB_NAME_STAGING}
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME_STAGING}  
+      - POSTGRES_USER=${DB_USER}  
+      - POSTGRES_PASSWORD=${DB_PASSWORD}  
     volumes:
-      - postgres_staging_data:/var/lib/postgresql/data
+      - postgres_staging_data:/var/lib/postgresql/data  
     networks:
-      - backend
+      - backend  
     restart: unless-stopped
 
 networks:
@@ -352,7 +352,7 @@ volumes:
 
 ### Docker Compose (Production)
 
-**File:** `docker-compose.prod.yml`
+**File:** `docker-compose.prod.yml`  
 
 ```yaml
 version: '3.8'
@@ -361,34 +361,34 @@ services:
   traefik:
     image: traefik:v3.0
     command:
-      - "--configFile=/etc/traefik/traefik.yml"
+      - "--configFile=/etc/traefik/traefik.yml"  
     ports:
-      - "80:80"
-      - "443:443"
+      - "80:80"  
+      - "443:443"  
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./05-infra/configs/traefik.yml:/etc/traefik/traefik.yml:ro
-      - traefik-letsencrypt:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock:ro  
+      - ./05-infra/configs/traefik.yml:/etc/traefik/traefik.yml:ro  
+      - traefik-letsencrypt:/letsencrypt  
     networks:
-      - web
+      - web  
     restart: always
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN}`)"
-      - "traefik.http.routers.traefik.entrypoints=websecure"
-      - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.traefik.middlewares=ipwhitelist"
-      - "traefik.http.middlewares.ipwhitelist.ipwhitelist.sourcerange=${YOUR_IP_ADDRESS}/32"
+      - "traefik.enable=true"  
+      - "traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN}`)"  
+      - "traefik.http.routers.traefik.entrypoints=websecure"  
+      - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"  
+      - "traefik.http.routers.traefik.middlewares=ipwhitelist"  
+      - "traefik.http.middlewares.ipwhitelist.ipwhitelist.sourcerange=${YOUR_IP_ADDRESS}/32"  
 
   api:
     image: ${DOCKER_REGISTRY}/api:${VERSION}
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-      - DATABASE_URL=${DATABASE_URL_PROD}
-      - JWT_SECRET=${JWT_SECRET_PROD}
+      - ASPNETCORE_ENVIRONMENT=Production  
+      - DATABASE_URL=${DATABASE_URL_PROD}  
+      - JWT_SECRET=${JWT_SECRET_PROD}  
     networks:
-      - web
-      - backend
+      - web  
+      - backend  
     restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
@@ -396,34 +396,34 @@ services:
       timeout: 10s
       retries: 3
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.api-prod.rule=Host(`api.${DOMAIN}`)"
-      - "traefik.http.routers.api-prod.entrypoints=websecure"
-      - "traefik.http.routers.api-prod.tls.certresolver=letsencrypt"
+      - "traefik.enable=true"  
+      - "traefik.http.routers.api-prod.rule=Host(`api.${DOMAIN}`)"  
+      - "traefik.http.routers.api-prod.entrypoints=websecure"  
+      - "traefik.http.routers.api-prod.tls.certresolver=letsencrypt"  
 
   frontend:
     image: ${DOCKER_REGISTRY}/frontend:${VERSION}
     environment:
-      - VITE_API_URL=https://api.${DOMAIN}
+      - VITE_API_URL=https://api.${DOMAIN}  
     networks:
-      - web
+      - web  
     restart: always
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.frontend-prod.rule=Host(`${DOMAIN}`)"
-      - "traefik.http.routers.frontend-prod.entrypoints=websecure"
-      - "traefik.http.routers.frontend-prod.tls.certresolver=letsencrypt"
+      - "traefik.enable=true"  
+      - "traefik.http.routers.frontend-prod.rule=Host(`${DOMAIN}`)"  
+      - "traefik.http.routers.frontend-prod.entrypoints=websecure"  
+      - "traefik.http.routers.frontend-prod.tls.certresolver=letsencrypt"  
 
   database:
     image: postgres:15-alpine
     environment:
-      - POSTGRES_DB=${DB_NAME_PROD}
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME_PROD}  
+      - POSTGRES_USER=${DB_USER}  
+      - POSTGRES_PASSWORD=${DB_PASSWORD}  
     volumes:
-      - postgres_prod_data:/var/lib/postgresql/data
+      - postgres_prod_data:/var/lib/postgresql/data  
     networks:
-      - backend
+      - backend  
     restart: always
 
 networks:
@@ -438,14 +438,14 @@ volumes:
 ### Service Access
 
 **Staging:**
-- Frontend: https://staging.{DOMAIN}
-- API: https://api-staging.{DOMAIN}
-- Dashboard: https://traefik-staging.{DOMAIN}
+- Frontend: https://staging.{DOMAIN}  
+- API: https://api-staging.{DOMAIN}  
+- Dashboard: https://traefik-staging.{DOMAIN}  
 
 **Production:**
-- Frontend: https://{DOMAIN}
-- API: https://api.{DOMAIN}
-- Dashboard: https://traefik.{DOMAIN} (IP whitelist required)
+- Frontend: https://{DOMAIN}  
+- API: https://api.{DOMAIN}  
+- Dashboard: https://traefik.{DOMAIN} (IP whitelist required)  
 
 ### Troubleshooting
 
@@ -483,7 +483,7 @@ Local Machine → check_ssh_connection() → Remote Server [project]-staging/pro
 
 ### deploy.sh - Remote Deployment
 
-**Location:** Project root
+**Location:** Project root  
 
 ```bash
 #!/bin/bash
@@ -615,7 +615,7 @@ bash deploy.sh production v1.2.3
 
 ### rollback.sh
 
-**Location:** Project root
+**Location:** Project root  
 
 ```bash
 #!/bin/bash
@@ -657,7 +657,7 @@ bash rollback.sh production v1.2.2
 
 ### Database Backup Script
 
-**Location:** `scripts/backup-db.sh`
+**Location:** `scripts/backup-db.sh`  
 
 ```bash
 #!/bin/bash
@@ -685,8 +685,8 @@ ls -t $BACKUP_DIR/${ENVIRONMENT}_*.sql | tail -n +8 | xargs rm -f
 ### Backup Schedule
 
 **Recommended:**
-- **Staging:** Manual backups before major changes
-- **Production:** Daily backups (cron job)
+- **Staging:** Manual backups before major changes  
+- **Production:** Daily backups (cron job)  
 
 **Cron example (production):**
 ```cron
@@ -699,7 +699,7 @@ ls -t $BACKUP_DIR/${ENVIRONMENT}_*.sql | tail -n +8 | xargs rm -f
 
 ### GitHub Actions Workflow
 
-**Location:** `.github/workflows/deploy.yml`
+**Location:** `.github/workflows/deploy.yml`  
 
 ```yaml
 name: Deploy
@@ -707,16 +707,16 @@ name: Deploy
 on:
   push:
     branches:
-      - main  # production
-      - staging
+      - main  # production  
+      - staging  
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3  
 
-      - name: Set environment
+      - name: Set environment  
         run: |
           if [ "${{ github.ref }}" == "refs/heads/main" ]; then
             echo "ENVIRONMENT=production" >> $GITHUB_ENV
@@ -724,7 +724,7 @@ jobs:
             echo "ENVIRONMENT=staging" >> $GITHUB_ENV
           fi
 
-      - name: Deploy
+      - name: Deploy  
         run: |
           chmod +x deploy.sh
           ./deploy.sh ${{ env.ENVIRONMENT }}
@@ -738,41 +738,41 @@ jobs:
 ## ✅ Validation Checklist
 
 ### Staging Environment
-- [ ] Server hardened (Steps 1-9 completed)
-- [ ] `docker-compose.staging.yml` created with Traefik
-- [ ] `.env.staging` configured with real secrets
-- [ ] DNS points to staging server IP
-- [ ] `./deploy.sh staging` succeeds
-- [ ] https://staging.{DOMAIN} loads
-- [ ] https://api-staging.{DOMAIN}/health returns 200
-- [ ] SSL certificate issued (Let's Encrypt staging CA)
+- [ ] Server hardened (Steps 1-9 completed)  
+- [ ] `docker-compose.staging.yml` created with Traefik  
+- [ ] `.env.staging` configured with real secrets  
+- [ ] DNS points to staging server IP  
+- [ ] `./deploy.sh staging` succeeds  
+- [ ] https://staging.{DOMAIN} loads  
+- [ ] https://api-staging.{DOMAIN}/health returns 200  
+- [ ] SSL certificate issued (Let's Encrypt staging CA)  
 
 ### Production Environment
-- [ ] Server hardened (Steps 1-9 completed)
-- [ ] `docker-compose.prod.yml` created with Traefik
-- [ ] `.env.prod` configured with strong passwords (16+ chars)
-- [ ] DNS points to production server IP
-- [ ] `./deploy.sh production` succeeds
-- [ ] https://{DOMAIN} loads
-- [ ] https://api.{DOMAIN}/health returns 200
-- [ ] SSL certificate issued (Let's Encrypt production CA - trusted)
-- [ ] Backups scheduled (cron)
+- [ ] Server hardened (Steps 1-9 completed)  
+- [ ] `docker-compose.prod.yml` created with Traefik  
+- [ ] `.env.prod` configured with strong passwords (16+ chars)  
+- [ ] DNS points to production server IP  
+- [ ] `./deploy.sh production` succeeds  
+- [ ] https://{DOMAIN} loads  
+- [ ] https://api.{DOMAIN}/health returns 200  
+- [ ] SSL certificate issued (Let's Encrypt production CA - trusted)  
+- [ ] Backups scheduled (cron)  
 
 ---
 
 ## 📚 Referências
 
 ### Documentação Relacionada
-- **[PE-00-Quick-Start.md](./PE-00-Quick-Start.md)** - Local development MVP
-- **[PE-02-Scaling-Strategy.md](./PE-02-Scaling-Strategy.md)** - Future growth and scaling
+- **[PE-00-Quick-Start.md](./PE-00-Quick-Start.md)** - Local development MVP  
+- **[PE-02-Scaling-Strategy.md](./PE-02-Scaling-Strategy.md)** - Future growth and scaling  
 
 ### Recursos do Projeto
-- **Checklist PE:** `.agents/workflow/02-checklists/PE-checklist.yml`
-- **Agent XML:** `.agents/30-PE - Platform Engineer.xml`
-- **Workflow Guide:** `.agents/docs/00-Workflow-Guide.md`
+- **Checklist PE:** `.agents/workflow/02-checklists/PE-checklist.yml`  
+- **Agent XML:** `.agents/30-PE - Platform Engineer.xml`  
+- **Workflow Guide:** `.agents/docs/00-Workflow-Guide.md`  
 
 ---
 
-**Template Version:** 4.0 (Server Setup)
-**Last Updated:** 2025-10-29
-**Split From:** PE-00-Environments-Setup.template.md v3.0
+**Template Version:** 4.0 (Server Setup)  
+**Last Updated:** 2025-10-29  
+**Split From:** PE-00-Environments-Setup.template.md v3.0  

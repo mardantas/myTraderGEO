@@ -1,8 +1,8 @@
 <!--
 MARKDOWN FORMATTING:
-- Use 2 spaces at end of line for compact line breaks (metadata)
-- Use blank lines between sections for readability (content)
-- Validate in Markdown preview before committing
+- Use 2 spaces at end of line for compact line breaks (metadata)  
+- Use blank lines between sections for readability (content)  
+- Validate in Markdown preview before committing  
 -->
 
 # SDA-02-Context-Map.md
@@ -23,9 +23,9 @@ MARKDOWN FORMATTING:
 | [Nome BC 3] | **Generic** | Commodity, disponível no mercado | Buy/SaaS (Auth0, SendGrid, etc) |
 
 **Legenda:**  
-- **Core Domain:** Diferencial competitivo, algoritmos proprietários, regras únicas de negócio
-- **Supporting Domain:** Suporta o core mas não é diferencial (pode ser simples)
-- **Generic Domain:** Commodity, pode comprar pronto ou usar biblioteca open-source
+- **Core Domain:** Diferencial competitivo, algoritmos proprietários, regras únicas de negócio  
+- **Supporting Domain:** Suporta o core mas não é diferencial (pode ser simples)  
+- **Generic Domain:** Commodity, pode comprar pronto ou usar biblioteca open-source  
 
 ---
 
@@ -61,9 +61,9 @@ Downstream aceita modelo do upstream sem negociação (ex: API externa).
 **CRUCIAL para sistemas externos!** Camada de tradução protege domínio interno.
 
 **Quando usar ACL:**  
-- Integração com APIs externas (brokers, pagamento, etc)
-- Sistema legado com modelo diferente
-- Proteção do domínio contra mudanças externas
+- Integração com APIs externas (brokers, pagamento, etc)  
+- Sistema legado com modelo diferente  
+- Proteção do domínio contra mudanças externas  
 
 **Exemplo:**  
 ```
@@ -130,8 +130,8 @@ graph LR
 ### Epic 1: [Nome da Funcionalidade]
 
 **Bounded Contexts Envolvidos:**  
-- [BC1]: [responsabilidade neste épico]
-- [BC2]: [responsabilidade neste épico]
+- [BC1]: [responsabilidade neste épico]  
+- [BC2]: [responsabilidade neste épico]  
 
 **Valor de Negócio:** [Alto/Médio/Baixo]  
 **Prioridade:** [1, 2, 3...]  
