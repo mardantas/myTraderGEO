@@ -62,7 +62,7 @@
 
         **GIT WORKFLOW PATTERNS:** For complete Git workflow details (branches, PRs, milestones, tags, commit patterns, merge strategies), reference `.agents/docs/03-GIT-PATTERNS.md`. GM documents branch strategy and merge strategy in GM-00 but should link to 03-GIT-PATTERNS.md for comprehensive guidance.
 
-        **MARKDOWN:** ALL list items and metadata MUST end with 2 trailing spaces. See docs/MARKDOWN-STYLE-GUIDE.md
+        **MARKDOWN (.md files only):** ALL list items and metadata MUST end with 2 trailing spaces. See docs/MARKDOWN-STYLE-GUIDE.md for complete rules and scope.
     </general-instructions>
 
     <responsibilities>

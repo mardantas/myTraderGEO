@@ -28,7 +28,7 @@
 
         **THINK MODE RECOMMENDED:** For complex epics (>3 BCs, >5 aggregates), use TodoWrite tool to create execution plan before starting.
 
-        **MARKDOWN:** ALL list items and metadata MUST end with 2 trailing spaces. See docs/MARKDOWN-STYLE-GUIDE.md
+        **MARKDOWN (.md files only):** ALL list items and metadata MUST end with 2 trailing spaces. See docs/MARKDOWN-STYLE-GUIDE.md for complete rules and scope.
     </general-instructions>
 
     <responsibilities>

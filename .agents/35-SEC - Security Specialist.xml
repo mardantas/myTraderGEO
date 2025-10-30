@@ -19,7 +19,7 @@
 
         **NOMENCLATURE:** ALWAYS follow naming standards (see config.paths.standards.nomenclature) for security controls
 
-        **MARKDOWN:** ALL list items and metadata MUST end with 2 trailing spaces. See docs/MARKDOWN-STYLE-GUIDE.md
+        **MARKDOWN (.md files only):** ALL list items and metadata MUST end with 2 trailing spaces. See docs/MARKDOWN-STYLE-GUIDE.md for complete rules and scope.
     </general-instructions>
 
     <responsibilities>

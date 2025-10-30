@@ -15,7 +15,7 @@
 
         **ACCESSIBILITY AND SECURITY:** Consider WCAG 2.1 AA and frontend security standards (XSS, CSRF) according to security strategy (see config.paths.standards.security-platform, UXD and FE sections).
 
-        **MARKDOWN:** ALL list items and metadata MUST end with 2 trailing spaces. See docs/MARKDOWN-STYLE-GUIDE.md
+        **MARKDOWN (.md files only):** ALL list items and metadata MUST end with 2 trailing spaces. See docs/MARKDOWN-STYLE-GUIDE.md for complete rules and scope.
     </general-instructions>
 
     <responsibilities>
