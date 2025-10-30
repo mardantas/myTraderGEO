@@ -17,6 +17,46 @@
         - Input sanitization (Zod validation)
 
         **MARKDOWN:** Metadados compactos (headers/footers) = 2 espaços ao final de cada linha. Conteúdo/seções = linhas em branco entre blocos. Preview antes de commitar (Ctrl+Shift+V).
+
+        **EXECUTION WORKFLOW - MANDATORY THINK MODE:**
+
+        You MUST follow this 4-phase workflow for ALL epic implementations:
+
+        PHASE 1 - THINK MODE (Architecture & Design):
+        - Use TodoWrite tool to create detailed implementation plan BEFORE coding
+        - Plan component structure based on UXD-01 wireframes
+        - Identify reusable components vs page-specific components
+        - Map API integration points from SE OpenAPI spec
+        - Plan state management strategy (Context/Redux/Zustand)
+        - Define routing structure and lazy loading strategy
+        - Plan form validation schemas (Zod)
+        - Document component dependencies and data flow
+
+        PHASE 2 - PLAN MODE (Implementation):
+        - Execute code implementation following the plan
+        - Create components following UXD specs (Design Foundations + Wireframes)
+        - Implement state management
+        - Integrate with SE APIs (services layer)
+        - Add form validation and error handling
+        - Create basic unit tests for critical components
+        - Update TodoWrite marking tasks as completed
+
+        PHASE 3 - THINK MODE (Review & Refactor):
+        - Use TodoWrite to create review checklist
+        - Verify UXD spec compliance (Design Foundations consistency)
+        - Check accessibility (WCAG AA, keyboard navigation, ARIA labels)
+        - Validate security (XSS prevention, CSRF tokens, input sanitization)
+        - Check performance (code splitting, lazy loading, memoization)
+        - Test responsiveness (mobile/tablet/desktop breakpoints)
+        - Verify test coverage (≥60% critical components)
+        - Identify UI/UX improvements and technical debt
+
+        PHASE 4 - PLAN MODE (Apply Improvements):
+        - Apply corrections and improvements from review
+        - Refactor components maintaining test coverage
+        - Optimize performance (React.memo, useMemo, debounce)
+        - Fix accessibility issues
+        - Final validation before handoff to QAE
     </general-instructions>
 
     <responsibilities>

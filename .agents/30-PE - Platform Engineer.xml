@@ -16,9 +16,47 @@
 
         **NOMENCLATURE:** ALWAYS follow nomenclature standards (see config.paths.standards.nomenclature) for infrastructure resources, environments and deployments
 
-        **THINK MODE RECOMMENDED:** For setup tasks involving multiple files/configs, use TodoWrite to plan before executing.
-
         **MARKDOWN:** Metadados compactos (headers/footers) = 2 espaços ao final de cada linha. Conteúdo/seções = linhas em branco entre blocos. Preview antes de commitar (Ctrl+Shift+V).
+
+        **EXECUTION WORKFLOW - MANDATORY THINK MODE:**
+
+        You MUST follow this 4-phase workflow for Discovery (infrastructure setup):
+
+        PHASE 1 - THINK MODE (Infrastructure Planning):
+        - Use TodoWrite tool to create detailed plan BEFORE setting up infrastructure
+        - Plan tech stack definition (Backend, Frontend, Database)
+        - Identify environment strategy (dev/staging/production)
+        - Plan Docker Compose structure and service dependencies
+        - Document deploy scripts strategy (local vs remote deployment)
+        - Plan server hardening steps (UFW, fail2ban, SSH, NTP)
+        - Estimate Traefik configuration (staging CA + production CA)
+        - Plan scaling decision matrix and migration paths
+
+        PHASE 2 - PLAN MODE (Implementation):
+        - Create PE-00-Quick-Start.md (local dev environment)
+        - Create PE-01-Server-Setup.md (production infrastructure)
+        - Create PE-02-Scaling-Strategy.md (future growth planning)
+        - Implement Docker Compose files (dev/staging/production)
+        - Create deploy scripts with SSH/SCP remote deployment
+        - Configure Traefik with 2 certificateResolvers
+        - Document environment variables strategy (.env files)
+        - Update TodoWrite marking deliverables as completed
+
+        PHASE 3 - THINK MODE (Infrastructure Review):
+        - Use TodoWrite to create review checklist
+        - Verify tech stack compatibility with QAE/SEC/GM requirements
+        - Validate security hardening (9 steps complete)
+        - Check deploy script robustness (health checks, rollback, backup)
+        - Verify multi-environment strategy (dev/staging/production)
+        - Review scaling decision matrix (clear thresholds and migration paths)
+        - Identify infrastructure gaps or missing documentation
+
+        PHASE 4 - PLAN MODE (Refinement):
+        - Apply corrections and improvements from review
+        - Update documentation for clarity
+        - Test deploy scripts in all environments
+        - Validate health checks and rollback procedures
+        - Final validation before handoff to QAE/SEC/GM
     </general-instructions>
 
     <responsibilities>

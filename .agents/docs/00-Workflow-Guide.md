@@ -351,6 +351,116 @@ SDA: [lê feedback]
 
 ---
 
+## 🎯 Think Mode vs Plan Mode
+
+### Workflow Ideal: 4 Fases
+
+Agentes complexos (SDA, PE, SEC, SE, FE) seguem um workflow de 4 fases para garantir qualidade:
+
+```
+Think Mode → Plan Mode → Think Mode → Plan Mode
+(Arquitetura) (Implementação) (Review) (Correções)
+```
+
+### Fase 1: Think Mode (Arquitetura/Design)
+**Objetivo:** Planejar ANTES de executar
+
+- **Ferramenta:** TodoWrite
+- **Atividades:**
+  - Decompor tarefa complexa em sub-tarefas
+  - Identificar dependências
+  - Documentar riscos e considerações
+  - Criar plano de execução detalhado
+
+**Exemplo (SE - Software Engineer):**
+```
+TODO List - Arquitetura:
+1. Estrutura de pastas (Domain/Application/Infrastructure/API)
+2. Definir Aggregates (Strategy, Position)
+3. Definir Use Cases (CreateStrategy, CalculateGreeks)
+4. Planejar Repositories (IStrategyRepository)
+5. Planejar Controllers (StrategyController)
+6. Estimar cobertura de testes (≥70%)
+```
+
+### Fase 2: Plan Mode (Implementação)
+**Objetivo:** Executar o plano
+
+- **Atividades:**
+  - Implementar código/documentação seguindo o plano
+  - Marcar tarefas como in_progress → completed
+  - Criar testes conforme implementa
+
+### Fase 3: Think Mode (Review/Refatoração Conceitual)
+**Objetivo:** Revisar qualidade e identificar melhorias
+
+- **Ferramenta:** TodoWrite
+- **Atividades:**
+  - Verificar cobertura de testes
+  - Validar padrões (DDD, segurança, performance)
+  - Identificar technical debt
+  - Criar checklist de melhorias
+
+**Exemplo (SE - Review):**
+```
+TODO List - Review:
+1. Verificar cobertura de testes (target ≥70%)
+2. Validar invariantes em Value Objects
+3. Checar async/await em Use Cases
+4. Revisar DTOs vs Domain Models (leak?)
+5. Validar input validation em 100% VOs
+```
+
+### Fase 4: Plan Mode (Aplicar Melhorias)
+**Objetivo:** Refinar e corrigir
+
+- **Atividades:**
+  - Aplicar correções identificadas
+  - Refatorar mantendo testes
+  - Validar antes de entregar
+
+---
+
+### 📊 Política de Think Mode por Agente
+
+| Agente | Política | Quando Usar |
+|--------|----------|-------------|
+| **SDA** | 🔴 MANDATORY | Event Storming completo (3 docs) |
+| **PE** | 🔴 MANDATORY | Infraestrutura (múltiplos arquivos/configs) |
+| **SEC** | 🔴 MANDATORY | Threat modeling, compliance |
+| **SE** | 🔴 MANDATORY | Backend completo (5 camadas) |
+| **FE** | 🔴 MANDATORY | Frontend completo (components/state/API) |
+| **DE** | 🟡 RECOMMENDED | Modelagem tática complexa (>3 Aggregates) |
+| **UXD** | 🟡 RECOMMENDED | Múltiplos flows/wireframes |
+| **DBA** | 🟡 RECOMMENDED | Migrations complexas (>5 arquivos) |
+| **GM** | 🟢 OPTIONAL | Scripts automatizáveis |
+| **QAE** | 🟢 OPTIONAL | Testes (estrutura clara) |
+
+### ✅ Benefícios do Think Mode
+
+| Benefício | Descrição |
+|-----------|-----------|
+| 🔍 **Transparência** | Você vê EXATAMENTE o que será feito antes de acontecer |
+| 🛡️ **Prevenção de Erros** | Previne erros custosos em infraestrutura e código |
+| 📋 **Rastreabilidade** | Histórico completo de tarefas executadas |
+| 🎯 **Foco** | Agente não se perde em tarefas complexas |
+| 🔧 **Debugging** | Facilita identificar onde algo falhou |
+
+### 🚀 Como Ativar Think Mode
+
+**Agentes críticos (SDA, PE, SEC, SE, FE) detectam automaticamente** quando:
+- Tarefa envolve >3 deliverables
+- Múltiplos arquivos afetados (>5)
+- Setup inicial de infraestrutura/segurança
+- Implementação de épico completo
+
+**Forçar manualmente (se necessário):**
+```
+"Execute em THINK MODE: crie TODO list antes de executar"
+```
+
+---
+
 ## 🎭 Modos de Execução dos Agentes
 
 ### Como se Comunicar com Agentes
@@ -401,7 +511,7 @@ Exemplos:
 **Dicas:**
 - Use linguagem natural e direta
 - Seja específico no escopo (épico, BC, deliverable)
-- Para tarefas complexas, considere pedir ao agente para usar [Think Mode](09-THINK-MODE-GUIDE.md)
+- Para tarefas complexas, agentes críticos (SDA, PE, SEC, SE, FE) usam Think Mode automaticamente
 - Agentes referenciam automaticamente deliverables de outros agentes (ex: DE lê SDA-02-Context-Map.md)
 
 > **Para exemplos detalhados por agente, veja [01-Agents-Overview.md](01-Agents-Overview.md)**
@@ -846,7 +956,6 @@ cd c:\Users\Marco\Projetos\myTraderGEO
 - **Padrões de API:** [06-API-Standards.md](06-API-Standards.md)
 - **PE/SEC Checkpoints:** [07-PE-SEC-Checkpoint-Guide.md](07-PE-SEC-Checkpoint-Guide.md)
 - **Fluxo de Feedback:** [08-FEEDBACK-FLOW-GUIDE.md](08-FEEDBACK-FLOW-GUIDE.md)
-- **Think Mode:** [09-THINK-MODE-GUIDE.md](09-THINK-MODE-GUIDE.md)
 - **Config Master:** `workflow-config.json`
 
 ---

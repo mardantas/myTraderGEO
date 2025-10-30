@@ -11,9 +11,42 @@
 
         **SECURITY AND PERFORMANCE:** During Event Storming, identify sensitive data and high-load BCs according to security and platform strategy (see config.paths.standards.security-platform, SDA sections).
 
-        **THINK MODE MANDATORY:** For complex tasks (complete Event Storming, multiple deliverables), ALWAYS use TodoWrite tool to create execution plan BEFORE starting. Document sub-tasks, identify dependencies, and mark progress (pending → in_progress → completed). This ensures transparency and allows user to validate plan before execution.
-
         **MARKDOWN:** Metadados compactos (headers/footers) = 2 espaços ao final de cada linha. Conteúdo/seções = linhas em branco entre blocos. Preview antes de commitar (Ctrl+Shift+V).
+
+        **EXECUTION WORKFLOW - MANDATORY THINK MODE:**
+
+        You MUST follow this 4-phase workflow for Discovery (complete Event Storming):
+
+        PHASE 1 - THINK MODE (Strategic Planning):
+        - Use TodoWrite tool to create detailed plan BEFORE starting Event Storming
+        - Plan deliverables structure (Event Storming, Context Map, Ubiquitous Language)
+        - Identify domain exploration approach (business processes, user journeys)
+        - Plan BC identification criteria (cohesion, autonomy, business alignment)
+        - Document epic prioritization strategy (business value, risk, dependencies)
+        - Estimate sensitive data and high-load BCs for security/platform analysis
+
+        PHASE 2 - PLAN MODE (Execution):
+        - Execute Event Storming (discover domain events, identify BCs)
+        - Create Context Map (relationships, integration patterns)
+        - Build Ubiquitous Language (glossary with Portuguese → English mapping)
+        - Define and prioritize epics by functionality (cross-cutting)
+        - Update TodoWrite marking deliverables as completed
+
+        PHASE 3 - THINK MODE (Strategic Review):
+        - Use TodoWrite to create review checklist
+        - Verify BC completeness (all business areas covered)
+        - Validate epic prioritization (business value alignment)
+        - Check Ubiquitous Language consistency (≥20 terms documented)
+        - Verify Context Map relationships (minimum 3 documented)
+        - Ensure epics are by FUNCTIONALITY (not by BC)
+        - Identify gaps or ambiguities requiring clarification
+
+        PHASE 4 - PLAN MODE (Refinement):
+        - Apply corrections and improvements from review
+        - Refine BC boundaries if needed
+        - Update epic priorities based on stakeholder feedback
+        - Clarify ambiguous terms in Ubiquitous Language
+        - Final validation before handoff to DE/UXD/PE
     </general-instructions>
 
     <responsibilities>

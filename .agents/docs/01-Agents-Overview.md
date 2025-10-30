@@ -65,6 +65,9 @@ Discover and map the complete business domain - bounded contexts, strategic epic
 
 **Note:** SDA executes ONLY in Discovery. For epic-specific changes, use DE.
 
+### Think Mode Policy
+🔴 **MANDATORY** - Discovery involves 3 deliverables (Event Storming, Context Map, Ubiquitous Language)
+
 ### Dependencies
 **Depends on:** None (first agent) | **Blocks:** All other agents (provides BCs, Context Map, UL)
 
@@ -110,6 +113,9 @@ Design user experience: foundations in Discovery + specific wireframes per epic.
 "UXD, processe FEEDBACK-005 do FE sobre comportamento do botão Adicionar Perna"
 → Clarifies ambiguous spec, updates UXD-01 with interaction states
 ```
+
+### Think Mode Policy
+🟡 **RECOMMENDED** for multiple flows/wireframes (>3 screens)
 
 ### Dependencies
 **Depends on:** SDA (BCs for scope) | **Consumed by:** FE (wireframes for implementation)
@@ -160,6 +166,9 @@ Define tech stack, Docker Compose environments (dev/staging/production with Trae
 → Aligns PE-00 with updated agent spec (Traefik staging CA, server docs)
 ```
 
+### Think Mode Policy
+🔴 **MANDATORY** - Infrastructure setup involves multiple files/configs (Docker Compose, deploy scripts, 3 PE docs)
+
 ### Dependencies
 **Depends on:** SDA (BCs estimate infrastructure) | **Blocks:** GM, QAE, SEC (wait for tech stack)
 
@@ -209,6 +218,9 @@ Ensure quality as **QUALITY GATE** at end of each epic - tests pass → approve 
 → Adds test to validate domain invariant
 ```
 
+### Think Mode Policy
+🟢 **OPTIONAL** - Tests have clear structure, but recommended for complete test suites
+
 ### Dependencies
 **Depends on:** SDA (BCs for test strategy), PE (stack for test tools) | **Blocks:** Deploy (quality gate)
 
@@ -255,6 +267,9 @@ Identify main threats per BC, OWASP Top 3 mitigations (Broken Access Control, Cr
 "SEC, adicione checklist de validação de input para Value Objects"
 → Updates SEC-00 with validation patterns for domain layer
 ```
+
+### Think Mode Policy
+🔴 **MANDATORY** - Security baseline involves threat identification, OWASP Top 3, LGPD compliance
 
 ### Dependencies
 **Depends on:** SDA (BCs, UL for threats), PE (stack for tool selection) | **Blocks:** None (parallel with GM/QAE)
@@ -317,6 +332,9 @@ Read DE-01, extract epic info (number, name, BCs, objectives, acceptance criteri
 → Updates GM-00 deployment section, aligns scripts with .env strategy
 ```
 
+### Think Mode Policy
+🟢 **OPTIONAL** - Scripts are automatable, but recommended for complex Git automation workflows
+
 ### Dependencies
 **Depends on:** SDA (BCs, epics), PE (stack for CI/CD), DE (DE-01 for epic creation) | **Blocks:** None
 
@@ -362,6 +380,9 @@ Model tactical domain PER EPIC - Aggregates, Entities, Value Objects (does NOT i
 ```
 
 **Note:** DE executes ONLY in Iteration (per epic). For strategic changes, use SDA.
+
+### Think Mode Policy
+🟡 **RECOMMENDED** for complex epics (>3 Aggregates, >5 Use Cases)
 
 ### Dependencies
 **Depends on:** SDA (BCs, Context Map, UL) | **Consumed by:** DBA (schema), SE (implementation), GM (epic creation)
@@ -413,6 +434,9 @@ Validate and optimize database schema created by DE - indexing, performance, mul
 
 **Security:** NEVER hardcode passwords in Git. Dev: simple OK. Staging/Prod: strong via ALTER USER. Rotation: quarterly (prod), semi-annual (staging).
 
+### Think Mode Policy
+🟡 **RECOMMENDED** for complex migrations (>5 files, complex indexes, data transformations)
+
 ### Dependencies
 **Depends on:** DE (schema), PE (database tech) | **Consumed by:** SE (migrations for implementation)
 
@@ -463,6 +487,9 @@ Implement complete backend based on DE domain model - Domain, Application, Infra
 ```
 
 **Critical Note:** SE implements AFTER DE (domain model) and DBA (schema validation).
+
+### Think Mode Policy
+🔴 **MANDATORY** - Backend implementation involves 5 layers (Domain/Application/Infrastructure/API/Tests)
 
 ### Dependencies
 **Depends on:** DE (domain model), DBA (schema validation), PE (tech stack) | **Consumed by:** FE (APIs), QAE (tests)
@@ -516,6 +543,9 @@ Implement user interfaces following UXD specs - UI components, state management,
 ```
 
 **Note:** FE implements AFTER SE (APIs) and UXD (wireframes). Works in parallel with SE on Days 3-6.
+
+### Think Mode Policy
+🔴 **MANDATORY** - Frontend implementation involves complete stack (Components/State/API integration/Tests)
 
 ### Dependencies
 **Depends on:** SE (APIs), UXD (wireframes), PE (tech stack) | **Consumed by:** QAE (E2E tests)
