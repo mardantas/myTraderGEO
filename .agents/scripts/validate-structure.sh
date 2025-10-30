@@ -160,7 +160,9 @@ required_templates=(
     ".agents/templates/05-quality-assurance/QAE-00-Test-Strategy.template.md"
     ".agents/templates/06-github-management/GM-00-GitHub-Setup.template.md"
     ".agents/templates/07-feedback/FEEDBACK.template.md"
-    ".agents/templates/08-platform-engineering/PE-00-Environments-Setup.template.md"
+    ".agents/templates/08-platform-engineering/PE-00-Quick-Start.md",
+    ".agents/templates/08-platform-engineering/PE-01-Server-Setup.md",
+    ".agents/templates/08-platform-engineering/PE-02-Scaling-Strategy.md"
     ".agents/templates/08-platform-engineering/PE-EPIC-N-Performance-Checkpoint.template.md"
     ".agents/templates/09-security/SEC-00-Security-Baseline.template.md"
     ".agents/templates/09-security/SEC-EPIC-N-Security-Checkpoint.template.md"

@@ -28,12 +28,13 @@
       "Bash(git checkout:*)",
       "Bash(git add:*)",
       "Bash(git rm:*)",
-      "Bash(git merge:*)",
       "Bash(do echo \"=== $f ===\")",
       "Bash(git commit:*)",
-      "Bash(git pull:*)",
-      "Bash(git push:*)",
-      "Bash(bash 03-github-manager/scripts/epic-modeling-finish.sh 1)"
+      "Bash(echo:*)",
+      "Bash(01-Agents-Overview.md )",
+      "Bash(03-GIT-PATTERNS.md )",
+      "Bash(07-PE-SEC-Checkpoint-Guide.md )",
+      "Bash(08-FEEDBACK-FLOW-GUIDE.md)"
     ],
     "deny": [],
     "ask": []

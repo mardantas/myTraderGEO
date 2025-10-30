@@ -28,7 +28,7 @@
 
         **THINK MODE RECOMMENDED:** For complex epics (>3 BCs, >5 aggregates), use TodoWrite tool to create execution plan before starting.
 
-        **MARKDOWN:** Metadados compactos (headers/footers) = 2 espaços ao final de cada linha. Conteúdo/seções = linhas em branco entre blocos. Preview antes de commitar (Ctrl+Shift+V).
+        **MARKDOWN:** ALL list items and metadata MUST end with 2 trailing spaces. See docs/MARKDOWN-STYLE-GUIDE.md
     </general-instructions>
 
     <responsibilities>

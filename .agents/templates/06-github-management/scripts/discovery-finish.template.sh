@@ -83,7 +83,7 @@ deliverables=(
   "00-doc-ddd/02-strategic-design/SDA-03-Ubiquitous-Language.md"
   "00-doc-ddd/03-ux-design/UXD-00-Design-Foundations.md"
   "00-doc-ddd/07-github-management/GM-00-GitHub-Setup.md"
-  "00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md"
+  "00-doc-ddd/08-platform-engineering/PE-00-Quick-Start.md, PE-01-Server-Setup.md, PE-02-Scaling-Strategy.md"
   "00-doc-ddd/09-security/SEC-00-Security-Baseline.md"
   "00-doc-ddd/06-quality-assurance/QAE-00-Test-Strategy.md"
 )
@@ -164,7 +164,7 @@ Todos os deliverables finalizados:
 - SDA-03-Ubiquitous-Language.md
 - UXD-00-Design-Foundations.md
 - GM-00-GitHub-Setup.md
-- PE-00-Environments-Setup.md
+- PE-00-Quick-Start.md, PE-01-Server-Setup.md, PE-02-Scaling-Strategy.md
 - SEC-00-Security-Baseline.md
 - QAE-00-Test-Strategy.md
 

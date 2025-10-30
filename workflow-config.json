@@ -229,6 +229,6 @@
       "Rastreabilidade completa de tarefas",
       "Facilita debugging quando algo falha"
     ],
-    "guide": ".agents/workflow/THINK-MODE-GUIDE.md"
+    "guide": ".agents/docs/09-THINK-MODE-GUIDE.md"
   }
 }

@@ -139,7 +139,7 @@ body:
     attributes:
       label: Deliverables PE
       value: |
-        - [ ] **PE-00-Environments-Setup.md** - Documentação dos ambientes
+        - [ ] **PE-00-Quick-Start.md, PE-01-Server-Setup.md, PE-02-Scaling-Strategy.md** - Documentação dos ambientes
         - [ ] `docker-compose.dev.yml` - Ambiente de desenvolvimento
         - [ ] `docker-compose.staging.yml` - Ambiente de staging
         - [ ] `docker-compose.prod.yml` - Ambiente de produção

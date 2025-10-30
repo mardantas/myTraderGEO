@@ -1,8 +1,11 @@
 <!--
-MARKDOWN FORMATTING:
-- Use 2 spaces at end of line for compact line breaks (metadata)
-- Use blank lines between sections for readability (content)
+FORMATTING REQUIREMENTS:
+- All metadata lines (with **bold:**) must end with 2 spaces before line break
+- Use blank lines between sections for readability
 - Validate in Markdown preview before committing
+- Replace [NNN] with 3-digit number (e.g., 001, 010, 123)
+- Replace [FROM] and [TO] with agent codes (e.g., DE, UXD, GM)
+- Replace [titulo-curto] with kebab-case description
 -->
 
 # FEEDBACK-[NNN]-[FROM]-[TO]-[titulo-curto].md

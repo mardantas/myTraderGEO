@@ -260,6 +260,94 @@ public class StrategyRepository : IStrategyRepository { }
 
 ---
 
+## 🔧 Nomenclatura de Configuração
+
+### .env Files (Environment Variables)
+
+**Formato:** `.env.[environment]`
+
+**Estratégia Multi-Ambiente:**
+```bash
+# Repository structure
+05-infra/configs/
+├── .env.example          # Template with placeholders
+├── .env.dev             # Development (localhost) - committed with safe defaults
+├── .env.staging         # Staging server - NOT committed (create on server)
+└── .env.prod      # Prod server - NOT committed (create on server)
+```
+
+**Nomenclatura de Variáveis:**
+```bash
+# Domain configuration
+DOMAIN=localhost                    # dev
+DOMAIN=staging.myproject.com        # staging
+DOMAIN=myproject.com                # prod
+
+# Database credentials (per environment)
+DB_APP_PASSWORD=dev_password_123    # dev (simple OK)
+DB_APP_PASSWORD=St@g!ng_SecureP@ss  # staging (strong)
+DB_APP_PASSWORD=Pr0d_VeryStr0ng!#$  # prod (very strong)
+
+# Features flags
+FEATURE_ANALYTICS_ENABLED=false     # dev/staging
+FEATURE_ANALYTICS_ENABLED=true      # prod
+```
+
+**Uso em Comandos:**
+```bash
+# SEMPRE usar --env-file explícito
+docker compose -f docker-compose.yml --env-file .env.dev up
+docker compose -f docker-compose.staging.yml --env-file .env.staging up -d
+docker compose -f docker-compose.prod.yml --env-file .env.prod up -d
+```
+
+**Segurança:**
+- ✅ `.env.dev` commitado com valores seguros (localhost, senhas simples)
+- ❌ `.env.staging` e `.env.prod` NUNCA commitados (secrets reais)
+- ✅ `.env.example` commitado como template com placeholders
+
+---
+
+### Server Hostnames
+
+**Formato:** `[project-name]-[environment]`
+
+**Exemplos:**
+```bash
+# Development (local)
+localhost
+
+# Staging server
+myproject-stage
+staging.myproject.com
+
+# Prod server
+myproject-prod
+myproject.com
+www.myproject.com
+```
+
+**Configuração:**
+```bash
+# Set hostname on server
+sudo hostnamectl set-hostname myproject-stage  # staging
+sudo hostnamectl set-hostname myproject-prod   # prod
+```
+
+**Uso em Deploy Scripts:**
+```bash
+# deploy.sh pattern
+if [ "$ENV" = "staging" ]; then
+    SERVER_HOST="myproject-stage"
+elif [ "$ENV" = "prod" ]; then
+    SERVER_HOST="myproject-prod"
+fi
+
+ssh mytrader@$SERVER_HOST "docker compose up -d"
+```
+
+---
+
 ## ✅ Checklist de Nomenclatura
 
 Antes de criar qualquer deliverable, verifique:
@@ -271,6 +359,9 @@ Antes de criar qualquer deliverable, verifique:
 - [ ] Bounded Contexts nomeados consistentemente
 - [ ] Épicos descrevem funcionalidade (não BC)
 - [ ] Feedbacks seguem formato `FEEDBACK-[NNN]-[FROM]-[TO]-[titulo].md`
+- [ ] .env files seguem padrão `.env.[environment]`
+- [ ] Comandos docker-compose usam `--env-file` explícito
+- [ ] Hostnames de servidores seguem padrão `[project]-[environment]`
 
 ---
 

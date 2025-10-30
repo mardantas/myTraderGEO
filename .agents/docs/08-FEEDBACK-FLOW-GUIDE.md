@@ -481,6 +481,72 @@ Obrigado pelo catch! Regression test criado.
 
 ---
 
+### Exemplo 4: User solicita evolução da especificação do PE (PE)
+
+**Cenário:** User percebe que especificação do PE Agent evoluiu mas artefatos criados estão desalinhados.
+
+**Arquivo:** `FEEDBACK-004-USER-PE-Agent-Specification-Evolution.md`
+
+```markdown
+# FEEDBACK-004-USER-PE-Agent-Specification-Evolution
+
+**Solicitante:** User (Product Owner)
+**Destinatário:** PE (Agent)
+**Data Abertura:** 2025-01-27
+**Status:** ✅ Resolvido
+
+## 📋 Tipo
+
+- [x] Correção (deliverable já entregue precisa ajuste)
+- [x] Melhoria (sugestão de enhancement)
+
+## 🎯 Contexto
+
+**Deliverable Afetado:** PE platform engineering documentation (PE-00-Quick-Start.md, PE-01-Server-Setup.md, PE-02-Scaling-Strategy.md)
+**Bounded Context:** Infra
+
+## 📝 Descrição
+
+O PE Agent passou por evolução significativa desde trabalho inicial:
+- Traefik agora é integrado desde Discovery (não épicos posteriores)
+- Estratégia .env multi-ambiente (dev/staging/prod)
+- Comandos docker-compose devem usar --env-file EXPLÍCITO
+- Server setup documentation faltando
+
+Necessário revisar todos os artefatos contra especificação atual.
+
+## 💡 Sugestão de Solução
+
+Fase 1: Auditoria (identificar gaps)
+Fase 2: Correções (implementar)
+Fase 3: Validação (quality checklist)
+
+---
+
+## 💬 Resposta do Destinatário
+
+**Data Resposta:** 2025-01-28
+**Status:** ✅ Resolvido
+
+### Ações Tomadas
+
+- [x] Adicionado letsencrypt-staging certificateResolver
+- [x] docker-compose.staging.yml usa staging CA
+- [x] .env.example com instruções multi-ambiente
+- [x] PE-00: Comandos com --env-file .env.dev
+- [x] PE-00: Seção Network Architecture (multi-server)
+- [x] README: Comandos com --env-file explícito
+
+### Arquivos Modificados
+
+- PE platform engineering documentation (PE-00-Quick-Start.md, PE-01-Server-Setup.md, PE-02-Scaling-Strategy.md) (+250 linhas)
+- 05-infra/configs/traefik.yml (2 certificateResolvers)
+- 05-infra/configs/.env.example (instruções de uso)
+- 05-infra/README.md (separação estratégico/operacional)
+```
+
+---
+
 ## 🔢 Numeração de Feedbacks
 
 ### Estratégia

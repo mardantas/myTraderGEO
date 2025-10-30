@@ -15,7 +15,7 @@ MARKDOWN FORMATTING:
 
 ## 📋 About This Document
 
-This is a **quick reference guide** for executing infrastructure commands (Docker, deploy, environment setup). For strategic decisions, architecture details, and trade-offs, consult [PE-00-Environments-Setup.md](../00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md).
+This is a **quick reference guide** for executing infrastructure commands (Docker, deploy, environment setup). For strategic decisions, architecture details, and trade-offs, consult [PE-00-Quick-Start.md, PE-01-Server-Setup.md, and PE-02-Scaling-Strategy.md](../00-doc-ddd/08-platform-engineering/PE-00-Quick-Start.md, PE-01-Server-Setup.md, and PE-02-Scaling-Strategy.md).
 
 **Document Separation:**  
 - **This README:** Commands and checklists (HOW to execute)
@@ -346,7 +346,7 @@ This section connects operational README with strategic documentation.
 
 | Artifact | Purpose | When to Consult |
 |----------|---------|------------------|
-| **[PE-00-Environments-Setup.md](../00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md)** | Strategic infrastructure decisions (Docker architecture, Traefik config, resource planning, trade-offs) | To understand **WHY** infrastructure is designed this way, evaluate alternatives, modify architecture |
+| **[PE-00-Quick-Start.md, PE-01-Server-Setup.md, and PE-02-Scaling-Strategy.md](../00-doc-ddd/08-platform-engineering/PE-00-Quick-Start.md, PE-01-Server-Setup.md, and PE-02-Scaling-Strategy.md)** | Strategic infrastructure decisions (Docker architecture, Traefik config, resource planning, trade-offs) | To understand **WHY** infrastructure is designed this way, evaluate alternatives, modify architecture |
 | **[FEEDBACK-XXX-PE-{Topic}.md](../00-doc-ddd/00-feedback/FEEDBACK-XXX-PE-{Topic}.md)** | Resolutions: {Feedback topic summary} | To understand infrastructure improvements, security enhancements |
 | **[SEC-00-Security-Baseline.md](../00-doc-ddd/09-security/SEC-00-Security-Baseline.md)** | Security baseline (Infrastructure Security section) | To understand security benefits, HTTPS enforcement, secrets management |
 | **[DBA-01-{EpicName}-Database-Design-Decisions.md](../00-doc-ddd/05-database-design/DBA-01-{EpicName}-Database-Design-Decisions.md)** | Database design decisions | To understand database schema, migrations, connection strings |
@@ -357,7 +357,7 @@ This section connects operational README with strategic documentation.
 
 ### Internal Documentation
 
-- **Platform Engineering Setup:** [00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md](../00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md)
+- **Platform Engineering Setup:** [00-doc-ddd/08-platform-engineering/PE-00-Quick-Start.md, PE-01-Server-Setup.md, and PE-02-Scaling-Strategy.md](../00-doc-ddd/08-platform-engineering/PE-00-Quick-Start.md, PE-01-Server-Setup.md, and PE-02-Scaling-Strategy.md)
   - Docker architecture decisions
   - Traefik configuration details
   - Resource planning and trade-offs
@@ -529,7 +529,7 @@ Docker Desktop stores named volumes in WSL2 filesystem:
 - **No backups needed** in development (recreate with migrations + seeds)
 - **Reset database:** `docker compose down -v && docker compose up -d`
 
-For detailed Windows configuration and troubleshooting, see [PE-00-Environments-Setup.md](../00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md#-desenvolvimento-no-windows).
+For detailed Windows configuration and troubleshooting, see [PE-00-Quick-Start.md, PE-01-Server-Setup.md, and PE-02-Scaling-Strategy.md](../00-doc-ddd/08-platform-engineering/PE-00-Quick-Start.md, PE-01-Server-Setup.md, and PE-02-Scaling-Strategy.md#-desenvolvimento-no-windows).
 
 ---
 
