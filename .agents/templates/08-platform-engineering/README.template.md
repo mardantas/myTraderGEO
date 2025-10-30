@@ -1,8 +1,8 @@
 <!--
 MARKDOWN FORMATTING:
-- Use 2 spaces at end of line for compact line breaks (metadata)
-- Use blank lines between sections for readability (content)
-- Validate in Markdown preview before committing
+- Use 2 spaces at end of line for compact line breaks (metadata)  
+- Use blank lines between sections for readability (content)  
+- Validate in Markdown preview before committing  
 -->
 
 # 05-infra - {PROJECT_NAME} Infrastructure
@@ -18,8 +18,8 @@ MARKDOWN FORMATTING:
 This is a **quick reference guide** for executing infrastructure commands (Docker, deploy, environment setup). For strategic decisions, architecture details, and trade-offs, consult [PE-00-Quick-Start.md, PE-01-Server-Setup.md, and PE-02-Scaling-Strategy.md](../00-doc-ddd/08-platform-engineering/PE-00-Quick-Start.md, PE-01-Server-Setup.md, and PE-02-Scaling-Strategy.md).
 
 **Document Separation:**  
-- **This README:** Commands and checklists (HOW to execute)
-- **PE-00:** Architecture decisions, justifications, and trade-offs (WHY and WHAT)
+- **This README:** Commands and checklists (HOW to execute)  
+- **PE-00:** Architecture decisions, justifications, and trade-offs (WHY and WHAT)  
 
 **Principle:** README is an INDEX/QUICK-REFERENCE to PE-00, not a duplicate.  
 
@@ -27,12 +27,12 @@ This is a **quick reference guide** for executing infrastructure commands (Docke
 
 ## 🎯 Technology Stack
 
-- **Backend:** {BACKEND_STACK} (e.g., .NET 8 + ASP.NET Core + Entity Framework Core + SignalR)
-- **Frontend:** {FRONTEND_STACK} (e.g., Vue 3 + TypeScript + Vite + Pinia + PrimeVue)
-- **Database:** PostgreSQL 15+
-- **Containerization:** Docker + Docker Compose
-- **Web Server (Frontend):** Nginx (serves static Vue.js files in production)
-- **Reverse Proxy/Load Balancer:** Traefik v3.0 (HTTPS, automatic SSL, load balancing - staging/production)
+- **Backend:** {BACKEND_STACK} (e.g., .NET 8 + ASP.NET Core + Entity Framework Core + SignalR)  
+- **Frontend:** {FRONTEND_STACK} (e.g., Vue 3 + TypeScript + Vite + Pinia + PrimeVue)  
+- **Database:** PostgreSQL 15+  
+- **Containerization:** Docker + Docker Compose  
+- **Web Server (Frontend):** Nginx (serves static Vue.js files in production)  
+- **Reverse Proxy/Load Balancer:** Traefik v3.0 (HTTPS, automatic SSL, load balancing - staging/production)  
 
 ---
 
@@ -46,7 +46,7 @@ This is a **quick reference guide** for executing infrastructure commands (Docke
 ├── docker/
 │   ├── docker-compose.yml            # Development
 │   ├── docker-compose.staging.yml    # Staging + Traefik
-│   └── docker-compose.production.yml # Production + Traefik + Resource Limits
+│   └── docker-compose.prod.yml # Production + Traefik + Resource Limits
 ├── dockerfiles/
 │   ├── backend/
 │   │   ├── Dockerfile        # Backend production
@@ -89,12 +89,12 @@ docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs
 ```
 
 **Access:**  
-- Frontend ({FRONTEND_FRAMEWORK} + Vite): http://localhost:5173
-- Backend API ({BACKEND_FRAMEWORK}): http://localhost:5000
-- Database (PostgreSQL): localhost:5432
-- PgAdmin (optional): http://localhost:8080
-  - Email: `admin@{project}.local`
-  - Password: `admin123`
+- Frontend ({FRONTEND_FRAMEWORK} + Vite): http://localhost:5173  
+- Backend API ({BACKEND_FRAMEWORK}): http://localhost:5000  
+- Database (PostgreSQL): localhost:5432  
+- PgAdmin (optional): http://localhost:8080  
+  - Email: `admin@{project}.local`  
+  - Password: `admin123`  
 
 ### 3. Staging - Deploy to Staging
 
@@ -169,13 +169,13 @@ docker compose -f 05-infra/docker/docker-compose.staging.yml --env-file 05-infra
 ./05-infra/scripts/deploy.sh production v1.0.0
 
 # View logs
-docker compose -f 05-infra/docker/docker-compose.production.yml --env-file 05-infra/configs/.env.production logs -f
+docker compose -f 05-infra/docker/docker-compose.prod.yml --env-file 05-infra/configs/.env.prod logs -f
 
 # Health check
 curl https://{domain}/health
 
 # Stop (with confirmation)
-docker compose -f 05-infra/docker/docker-compose.production.yml --env-file 05-infra/configs/.env.production down
+docker compose -f 05-infra/docker/docker-compose.prod.yml --env-file 05-infra/configs/.env.prod down
 ```
 
 ---
@@ -185,80 +185,80 @@ docker compose -f 05-infra/docker/docker-compose.production.yml --env-file 05-in
 ### Development
 
 **Characteristics:**  
-- Hot reload enabled (backend and frontend)
-- Mounted volumes for development
-- Detailed logs (Information level)
-- PgAdmin included for database management
-- JWT expiration: 60 minutes
-- No resource limits
+- Hot reload enabled (backend and frontend)  
+- Mounted volumes for development  
+- Detailed logs (Information level)  
+- PgAdmin included for database management  
+- JWT expiration: 60 minutes  
+- No resource limits  
 
 **Docker Compose:** `05-infra/docker/docker-compose.yml`  
 
 **Dockerfiles:**  
-- Backend: `05-infra/dockerfiles/backend/Dockerfile.dev`
-- Frontend: `05-infra/dockerfiles/frontend/Dockerfile.dev`
+- Backend: `05-infra/dockerfiles/backend/Dockerfile.dev`  
+- Frontend: `05-infra/dockerfiles/frontend/Dockerfile.dev`  
 
 **Access:**  
-- Frontend: http://localhost:5173 (Vite dev server)
-- Backend: http://localhost:5000
-- Database: localhost:5432
+- Frontend: http://localhost:5173 (Vite dev server)  
+- Backend: http://localhost:5000  
+- Database: localhost:5432  
 
 ---
 
 ### Staging
 
 **Characteristics:**  
-- Production build (optimized)
-- Traefik reverse proxy (HTTPS with Let's Encrypt staging)
-- Automated SSL certificates (staging CA)
-- Resource limits (moderate)
-- Logs: Warning level
-- JWT expiration: 30 minutes
+- Production build (optimized)  
+- Traefik reverse proxy (HTTPS with Let's Encrypt staging)  
+- Automated SSL certificates (staging CA)  
+- Resource limits (moderate)  
+- Logs: Warning level  
+- JWT expiration: 30 minutes  
 
 **Docker Compose:** `05-infra/docker/docker-compose.staging.yml`  
 
 **Dockerfiles:**  
-- Backend: `05-infra/dockerfiles/backend/Dockerfile`
-- Frontend: `05-infra/dockerfiles/frontend/Dockerfile` (Nginx)
+- Backend: `05-infra/dockerfiles/backend/Dockerfile`  
+- Frontend: `05-infra/dockerfiles/frontend/Dockerfile` (Nginx)  
 
 **Access:**
-- Frontend: https://staging.{domain}
-- Backend API: https://api-staging.{domain}
-- Traefik Dashboard: https://traefik-staging.{domain}
-  - User: `admin`
-  - Password: `change_me` (change in `.env.staging`)
+- Frontend: https://staging.{domain}  
+- Backend API: https://api-staging.{domain}  
+- Traefik Dashboard: https://traefik-staging.{domain}  
+  - User: `admin`  
+  - Password: `change_me` (change in `.env.staging`)  
 
-**Note:** All traffic is routed through Traefik (automatic HTTPS with Let's Encrypt staging CA).
+**Note:** All traffic is routed through Traefik (automatic HTTPS with Let's Encrypt staging CA).  
 
 ---
 
 ### Production
 
 **Characteristics:**
-- Production build (fully optimized)
-- Traefik reverse proxy (HTTPS with Let's Encrypt production)
-- Automated SSL certificates (trusted CA)
-- Strict resource limits (CPU, memory)
-- Logs: Error level only
-- JWT expiration: 15 minutes
-- Health checks configured
-- Auto-restart policies
+- Production build (fully optimized)  
+- Traefik reverse proxy (HTTPS with Let's Encrypt production)  
+- Automated SSL certificates (trusted CA)  
+- Strict resource limits (CPU, memory)  
+- Logs: Error level only  
+- JWT expiration: 15 minutes  
+- Health checks configured  
+- Auto-restart policies  
 
-**Docker Compose:** `05-infra/docker/docker-compose.production.yml`
+**Docker Compose:** `05-infra/docker/docker-compose.prod.yml`  
 
 **Dockerfiles:**
-- Backend: `05-infra/dockerfiles/backend/Dockerfile`
-- Frontend: `05-infra/dockerfiles/frontend/Dockerfile` (Nginx)
+- Backend: `05-infra/dockerfiles/backend/Dockerfile`  
+- Frontend: `05-infra/dockerfiles/frontend/Dockerfile` (Nginx)  
 
 **Access:**
-- Frontend: https://{domain}
-- Backend API: https://api.{domain}
-- Traefik Dashboard: https://traefik.{domain}
-  - User: `admin`
-  - Password: configured in `.env.production`
-  - **IP Whitelist:** Configure `YOUR_IP_ADDRESS` in `.env.production` for security
+- Frontend: https://{domain}  
+- Backend API: https://api.{domain}  
+- Traefik Dashboard: https://traefik.{domain}  
+  - User: `admin`  
+  - Password: configured in `.env.prod`  
+  - **IP Whitelist:** Configure `YOUR_IP_ADDRESS` in `.env.prod` for security  
 
-**Note:** All traffic is routed through Traefik (automatic HTTPS with Let's Encrypt trusted CA).
+**Note:** All traffic is routed through Traefik (automatic HTTPS with Let's Encrypt trusted CA).  
 
 ---
 
@@ -266,7 +266,7 @@ docker compose -f 05-infra/docker/docker-compose.production.yml --env-file 05-in
 
 ### Development
 
-**File:** `05-infra/configs/.env.dev` (local, gitignored)
+**File:** `05-infra/configs/.env.dev` (local, gitignored)  
 
 **Required Variables:**
 ```bash
@@ -290,15 +290,15 @@ SMTP_PASSWORD=your_mailtrap_password
 
 ### Staging/Production
 
-**Storage:** GitHub Secrets (Settings → Secrets and variables → Actions)
+**Storage:** GitHub Secrets (Settings → Secrets and variables → Actions)  
 
 **Required Secrets:**
-- `DB_PASSWORD_STAGING` / `DB_PASSWORD_PRODUCTION`
-- `JWT_SECRET_STAGING` / `JWT_SECRET_PRODUCTION`
-- `SMTP_PASSWORD_STAGING` / `SMTP_PASSWORD_PRODUCTION`
-- `LETSENCRYPT_EMAIL` - Email for Let's Encrypt SSL certificates
-- `DOMAIN` - Your domain (e.g., `example.com`)
-- `YOUR_IP_ADDRESS` - Your IP for Traefik Dashboard whitelist (production only)
+- `DB_PASSWORD_STAGING` / `DB_PASSWORD_PRODUCTION`  
+- `JWT_SECRET_STAGING` / `JWT_SECRET_PRODUCTION`  
+- `SMTP_PASSWORD_STAGING` / `SMTP_PASSWORD_PRODUCTION`  
+- `LETSENCRYPT_EMAIL` - Email for Let's Encrypt SSL certificates  
+- `DOMAIN` - Your domain (e.g., `example.com`)  
+- `YOUR_IP_ADDRESS` - Your IP for Traefik Dashboard whitelist (production only)  
 
 **Deployment:** Secrets injected via GitHub Actions workflow or manual `docker compose` with `--env-file`  
 
@@ -357,26 +357,26 @@ This section connects operational README with strategic documentation.
 
 ### Internal Documentation
 
-- **Platform Engineering Setup:** [00-doc-ddd/08-platform-engineering/PE-00-Quick-Start.md, PE-01-Server-Setup.md, and PE-02-Scaling-Strategy.md](../00-doc-ddd/08-platform-engineering/PE-00-Quick-Start.md, PE-01-Server-Setup.md, and PE-02-Scaling-Strategy.md)
-  - Docker architecture decisions
-  - Traefik configuration details
-  - Resource planning and trade-offs
+- **Platform Engineering Setup:** [00-doc-ddd/08-platform-engineering/PE-00-Quick-Start.md, PE-01-Server-Setup.md, and PE-02-Scaling-Strategy.md](../00-doc-ddd/08-platform-engineering/PE-00-Quick-Start.md, PE-01-Server-Setup.md, and PE-02-Scaling-Strategy.md)  
+  - Docker architecture decisions  
+  - Traefik configuration details  
+  - Resource planning and trade-offs  
 
-- **Security Baseline:** [00-doc-ddd/09-security/SEC-00-Security-Baseline.md](../00-doc-ddd/09-security/SEC-00-Security-Baseline.md)
-  - Infrastructure security section
-  - HTTPS/TLS enforcement
-  - Secrets management strategy
+- **Security Baseline:** [00-doc-ddd/09-security/SEC-00-Security-Baseline.md](../00-doc-ddd/09-security/SEC-00-Security-Baseline.md)  
+  - Infrastructure security section  
+  - HTTPS/TLS enforcement  
+  - Secrets management strategy  
 
-- **Database Setup:** [04-database/README.md](../../04-database/README.md)
-  - Database users and permissions
-  - Migration execution
+- **Database Setup:** [04-database/README.md](../../04-database/README.md)  
+  - Database users and permissions  
+  - Migration execution  
 
 ### External Documentation
 
-- **Docker Compose Documentation:** https://docs.docker.com/compose/
-- **Traefik Documentation:** https://doc.traefik.io/traefik/
-- **Nginx Documentation:** https://nginx.org/en/docs/
-- **Let's Encrypt:** https://letsencrypt.org/docs/
+- **Docker Compose Documentation:** https://docs.docker.com/compose/  
+- **Traefik Documentation:** https://doc.traefik.io/traefik/  
+- **Nginx Documentation:** https://nginx.org/en/docs/  
+- **Let's Encrypt:** https://letsencrypt.org/docs/  
 
 ---
 
@@ -492,9 +492,9 @@ docker compose restart web
 
 ### Prerequisites
 
-- **Docker Desktop for Windows** (WSL2 backend enabled)
-- **Git for Windows** (includes Git Bash)
-- **Windows 10/11** with WSL2 configured
+- **Docker Desktop for Windows** (WSL2 backend enabled)  
+- **Git for Windows** (includes Git Bash)  
+- **Windows 10/11** with WSL2 configured  
 
 ### Running Bash Scripts
 
@@ -519,15 +519,15 @@ Docker Desktop stores named volumes in WSL2 filesystem:
 ```
 
 **Benefits:**  
-- Optimized performance (60x faster than bind mounts for databases)
-- Works identically across Windows/Linux/Mac
-- Automatically managed by Docker (no manual intervention needed)
+- Optimized performance (60x faster than bind mounts for databases)  
+- Works identically across Windows/Linux/Mac  
+- Automatically managed by Docker (no manual intervention needed)  
 
 ### Development Notes
 
-- **Hot reload works** via bind mounts (WSL2 file watching)
-- **No backups needed** in development (recreate with migrations + seeds)
-- **Reset database:** `docker compose down -v && docker compose up -d`
+- **Hot reload works** via bind mounts (WSL2 file watching)  
+- **No backups needed** in development (recreate with migrations + seeds)  
+- **Reset database:** `docker compose down -v && docker compose up -d`  
 
 For detailed Windows configuration and troubleshooting, see [PE-00-Quick-Start.md, PE-01-Server-Setup.md, and PE-02-Scaling-Strategy.md](../00-doc-ddd/08-platform-engineering/PE-00-Quick-Start.md, PE-01-Server-Setup.md, and PE-02-Scaling-Strategy.md#-desenvolvimento-no-windows).
 

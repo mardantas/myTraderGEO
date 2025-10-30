@@ -1,8 +1,8 @@
 <!--
 MARKDOWN FORMATTING:
-- Use 2 spaces at end of line for compact line breaks (metadata)
-- Use blank lines between sections for readability (content)
-- Validate in Markdown preview before committing
+- Use 2 spaces at end of line for compact line breaks (metadata)  
+- Use blank lines between sections for readability (content)  
+- Validate in Markdown preview before committing  
 -->
 
 # UXD-02-Wireframes.md
@@ -82,15 +82,15 @@ Definir wireframes (low-fidelity) das telas críticas do sistema, especificando 
 6. **Pagination:** Navegação entre páginas
 
 **Interações:**  
-- Click em [+ Novo]: Abre modal/navegação para criar novo item
-- Click em {Edit}: Edita item inline ou modal
-- Click em {Del}: Confirmação + delete
-- Buscar: Filtra lista em tempo real
+- Click em [+ Novo]: Abre modal/navegação para criar novo item  
+- Click em {Edit}: Edita item inline ou modal  
+- Click em {Del}: Confirmação + delete  
+- Buscar: Filtra lista em tempo real  
 
 **Estados:**  
-- Loading: Skeleton/spinner enquanto carrega
-- Empty: Mensagem "Nenhum item encontrado"
-- Error: Mensagem de erro clara
+- Loading: Skeleton/spinner enquanto carrega  
+- Empty: Mensagem "Nenhum item encontrado"  
+- Error: Mensagem de erro clara  
 
 ---
 
@@ -130,43 +130,43 @@ graph LR
 
 ### Breakpoints
 
-- **Mobile:** < 768px
-- **Tablet:** 768px - 1024px
-- **Desktop:** > 1024px
+- **Mobile:** < 768px  
+- **Tablet:** 768px - 1024px  
+- **Desktop:** > 1024px  
 
 ### Adaptações Mobile
 
 **[Tela Principal]:**  
-- Navegação: Hamburger menu
-- Tabela: Card list vertical
-- Filtros: Bottom sheet
+- Navegação: Hamburger menu  
+- Tabela: Card list vertical  
+- Filtros: Bottom sheet  
 
 ---
 
 ## 🎨 Design System Preview
 
 ### Cores Principais
-- Primary: [#cor ou descrição]
-- Secondary: [#cor]
-- Success: [#cor]
-- Error: [#cor]
+- Primary: [#cor ou descrição]  
+- Secondary: [#cor]  
+- Success: [#cor]  
+- Error: [#cor]  
 
 ### Typography
-- Headings: [Font family, sizes]
-- Body: [Font family, size]
-- Code: [Monospace font]
+- Headings: [Font family, sizes]  
+- Body: [Font family, size]  
+- Code: [Monospace font]  
 
 ### Spacing
-- Base unit: [8px, 4px, etc]
-- Margins/Padding: Múltiplos do base unit
+- Base unit: [8px, 4px, etc]  
+- Margins/Padding: Múltiplos do base unit  
 
 ---
 
 ## ✅ Validação
 
-- [ ] Wireframes das telas críticas completos
-- [ ] Layout responsivo considerado
-- [ ] Componentes reutilizáveis identificados
-- [ ] Navegação entre telas clara
-- [ ] Estados (loading, empty, error) definidos
-- [ ] Acessibilidade básica (keyboard nav, labels)
+- [ ] Wireframes das telas críticas completos  
+- [ ] Layout responsivo considerado  
+- [ ] Componentes reutilizáveis identificados  
+- [ ] Navegação entre telas clara  
+- [ ] Estados (loading, empty, error) definidos  
+- [ ] Acessibilidade básica (keyboard nav, labels)  

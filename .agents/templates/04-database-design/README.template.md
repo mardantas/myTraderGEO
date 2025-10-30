@@ -1,8 +1,8 @@
 <!--
 MARKDOWN FORMATTING:
-- Use 2 spaces at end of line for compact line breaks (metadata)
-- Use blank lines between sections for readability (content)
-- Validate in Markdown preview before committing
+- Use 2 spaces at end of line for compact line breaks (metadata)  
+- Use blank lines between sections for readability (content)  
+- Validate in Markdown preview before committing  
 -->
 
 # 04-database - Database Scripts & Migrations
@@ -18,8 +18,8 @@ MARKDOWN FORMATTING:
 This is a **quick reference guide** for executing database migrations and managing database users. For strategic decisions, database design details, and trade-offs, consult [DBA-01-{EpicName}-Database-Design-Decisions.md](../00-doc-ddd/05-database-design/DBA-01-{EpicName}-Database-Design-Decisions.md).
 
 **Document Separation:**  
-- **This README:** Commands and checklists (HOW to execute)
-- **DBA-01:** Design decisions, justifications, and trade-offs (WHY and WHAT)
+- **This README:** Commands and checklists (HOW to execute)  
+- **DBA-01:** Design decisions, justifications, and trade-offs (WHY and WHAT)  
 
 **Principle:** README is an INDEX/QUICK-REFERENCE to DBA-01, not a duplicate.  
 
@@ -67,10 +67,10 @@ The application should use dedicated users with limited permissions, following t
 ### Security Benefits
 
 ✅ **SQL Injection Mitigated:** Even if attacker gains access via SQL injection:
-- ❌ CANNOT drop databases (`DROP DATABASE` blocked)
-- ❌ CANNOT create superusers (`CREATE ROLE` blocked)
-- ❌ CANNOT access system databases (`template0`, `template1`, `postgres`)
-- ❌ CANNOT execute administrative commands (`ALTER SYSTEM`)
+- ❌ CANNOT drop databases (`DROP DATABASE` blocked)  
+- ❌ CANNOT create superusers (`CREATE ROLE` blocked)  
+- ❌ CANNOT access system databases (`template0`, `template1`, `postgres`)  
+- ❌ CANNOT execute administrative commands (`ALTER SYSTEM`)  
 
 ✅ **Defense in Depth:** Bug in application cannot cause catastrophic damage (limited to CRUD operations)
 
@@ -99,7 +99,7 @@ Users are created automatically by the script:
 
 **Execution:** Automatic on first PostgreSQL container initialization via `/docker-entrypoint-initdb.d/`  
 
-**Idempotency:** ✅ Yes (uses `IF NOT EXISTS` - safe to re-execute)
+**Idempotency:** ✅ Yes (uses `IF NOT EXISTS` - safe to re-execute)  
 
 ---
 
@@ -121,16 +121,16 @@ Database passwords must follow a **multi-environment strategy** where developmen
 
 ### Implementation Pattern: ALTER USER Migration
 
-**Problem:** If we commit passwords to Git (even in migrations), they become visible in repository history.
+**Problem:** If we commit passwords to Git (even in migrations), they become visible in repository history.  
 
-**Solution:** Use a **two-step approach**:
+**Solution:** Use a **two-step approach**:  
 
 1. **Init script (committed to Git):** Creates users with development passwords
 2. **ALTER USER migration (committed WITHOUT real passwords):** Updates passwords for staging/production via environment variables
 
 #### Step 1: Init Script (Development Passwords)
 
-**File:** [init-scripts/01-create-app-user.sql](init-scripts/01-create-app-user.sql)
+**File:** [init-scripts/01-create-app-user.sql](init-scripts/01-create-app-user.sql)  
 
 ```sql
 -- This file is COMMITTED to Git with DEV passwords
@@ -142,13 +142,13 @@ CREATE USER {project}_readonly WITH PASSWORD 'dev_readonly_123';
 -- Grant permissions...
 ```
 
-**Execution:** Automatic on first PostgreSQL container initialization
+**Execution:** Automatic on first PostgreSQL container initialization  
 
 ---
 
 #### Step 2: ALTER USER Migration (Staging/Production Passwords)
 
-**File:** [migrations/002_update_production_passwords.sql](migrations/002_update_production_passwords.sql)
+**File:** [migrations/002_update_prod_passwords.sql](migrations/002_update_prod_passwords.sql)  
 
 ```sql
 -- This file is COMMITTED to Git WITHOUT real passwords
@@ -160,7 +160,7 @@ CREATE USER {project}_readonly WITH PASSWORD 'dev_readonly_123';
 -- Usage:
 -- export DB_APP_PASSWORD="St@g!ng_SecureP@ss2025!#"
 -- export DB_READONLY_PASSWORD="St@g!ng_ReadOnly2025!#"
--- psql -v app_password="$DB_APP_PASSWORD" -v readonly_password="$DB_READONLY_PASSWORD" -f 002_update_production_passwords.sql
+-- psql -v app_password="$DB_APP_PASSWORD" -v readonly_password="$DB_READONLY_PASSWORD" -f 002_update_prod_passwords.sql
 
 -- Update application user password
 ALTER USER {project}_app WITH PASSWORD :'app_password';
@@ -186,14 +186,14 @@ export DB_READONLY_PASSWORD="[STRONG_PASSWORD_FROM_ENV]"
 psql -h $DB_HOST -U postgres -d {project}_dev \
   -v app_password="$DB_APP_PASSWORD" \
   -v readonly_password="$DB_READONLY_PASSWORD" \
-  -f 04-database/migrations/002_update_production_passwords.sql
+  -f 04-database/migrations/002_update_prod_passwords.sql
 ```
 
 **⚠️ IMPORTANT:**
-- ✅ **DO commit** `002_update_production_passwords.sql` to Git (file contains NO passwords)
-- ❌ **DO NOT commit** real passwords (passed via `psql -v` from environment)
-- ✅ **DO document** execution instructions in this README
-- ❌ **DO NOT execute** on development (use dev_password_123 from init script)
+- ✅ **DO commit** `002_update_prod_passwords.sql` to Git (file contains NO passwords)  
+- ❌ **DO NOT commit** real passwords (passed via `psql -v` from environment)  
+- ✅ **DO document** execution instructions in this README  
+- ❌ **DO NOT execute** on development (use dev_password_123 from init script)  
 
 ---
 
@@ -231,7 +231,7 @@ DB_READONLY_PASSWORD=[GENERATED_STRONG_PASSWORD]
 
 ### Password Rotation Procedure
 
-**When:** Quarterly (production), Semi-annual (staging)
+**When:** Quarterly (production), Semi-annual (staging)  
 
 **Steps:**
 
@@ -256,18 +256,18 @@ DB_READONLY_PASSWORD=[GENERATED_STRONG_PASSWORD]
    export DB_APP_PASSWORD="[NEW_PASSWORD]"
    psql -h localhost -U postgres -d {project}_dev \
      -v app_password="$DB_APP_PASSWORD" \
-     -f migrations/002_update_production_passwords.sql
+     -f migrations/002_update_prod_passwords.sql
    ```
 
 4. **Restart application:**
    ```bash
-   docker compose -f docker-compose.production.yml \
+   docker compose -f docker-compose.prod.yml \
      --env-file .env.production restart api
    ```
 
 5. **Verify connection:**
    ```bash
-   docker compose -f docker-compose.production.yml \
+   docker compose -f docker-compose.prod.yml \
      --env-file .env.production logs api | grep "Database connection successful"
    ```
 
@@ -282,7 +282,7 @@ DB_READONLY_PASSWORD=[GENERATED_STRONG_PASSWORD]
 
 ### 1. Least Privilege Access
 
-**Principle:** Grant only the minimum permissions necessary for each user.
+**Principle:** Grant only the minimum permissions necessary for each user.  
 
 **Implementation:**
 
@@ -300,16 +300,16 @@ ALTER USER {project}_app WITH SUPERUSER;  -- ❌ DO NOT DO THIS!
 ```
 
 **Security Benefits:**
-- ✅ SQL injection attacks limited to CRUD operations
-- ✅ Cannot DROP DATABASE or CREATE ROLE
-- ✅ Cannot access other databases
-- ✅ Defense in depth (limits damage from application bugs)
+- ✅ SQL injection attacks limited to CRUD operations  
+- ✅ Cannot DROP DATABASE or CREATE ROLE  
+- ✅ Cannot access other databases  
+- ✅ Defense in depth (limits damage from application bugs)  
 
 ---
 
 ### 2. Encryption at Rest
 
-**Principle:** Sensitive data should be encrypted in the database.
+**Principle:** Sensitive data should be encrypted in the database.  
 
 **Implementation:**
 
@@ -349,9 +349,9 @@ DB_ENCRYPTION_KEY=[GENERATED_STRONG_KEY_32_CHARS]
 ```
 
 **Security Benefits:**
-- ✅ Compliance with LGPD Art. 46 (technical measures for personal data protection)
-- ✅ Protection against database file theft
-- ✅ Audit trail for decryption operations
+- ✅ Compliance with LGPD Art. 46 (technical measures for personal data protection)  
+- ✅ Protection against database file theft  
+- ✅ Audit trail for decryption operations  
 
 ---
 
@@ -365,7 +365,7 @@ DB_ENCRYPTION_KEY=[GENERATED_STRONG_KEY_32_CHARS]
 | **Staging** | Semi-annual (6 months) | DBA / DevOps | ⚠️ Manual |
 | **Production** | Quarterly (3 months) | DBA / Security Team | ⚠️ Manual |
 
-**Procedure:** See [Password Rotation Procedure](#password-rotation-procedure) above
+**Procedure:** See [Password Rotation Procedure](#password-rotation-procedure) above  
 
 ---
 
@@ -390,7 +390,7 @@ DB_ENCRYPTION_KEY=[GENERATED_STRONG_KEY_32_CHARS]
 
 ### 5. Audit Logging
 
-**Principle:** Log all administrative actions for security audits.
+**Principle:** Log all administrative actions for security audits.  
 
 **Implementation (PostgreSQL Audit Extension):**
 
@@ -414,22 +414,22 @@ SELECT * FROM pg_stat_statements WHERE query LIKE '%ALTER USER%';
 database:
   image: postgres:15-alpine
   command:
-    - "postgres"
-    - "-c"
-    - "pgaudit.log=write,ddl"
+    - "postgres"  
+    - "-c"  
+    - "pgaudit.log=write,ddl"  
   environment:
-    - POSTGRES_DB={project}_dev
+    - POSTGRES_DB={project}_dev  
 ```
 
 **Audit Log Location:**
 
-- **Docker:** `docker compose logs database | grep AUDIT`
-- **Server:** `/var/log/postgresql/postgresql-15-main.log`
+- **Docker:** `docker compose logs database | grep AUDIT`  
+- **Server:** `/var/log/postgresql/postgresql-15-main.log`  
 
 **Compliance Benefits:**
-- ✅ SOC2: Audit trail for all database changes
-- ✅ ISO 27001: Monitoring and logging requirement
-- ✅ LGPD: Evidence of technical measures for data protection
+- ✅ SOC2: Audit trail for all database changes  
+- ✅ ISO 27001: Monitoring and logging requirement  
+- ✅ LGPD: Evidence of technical measures for data protection  
 
 ---
 
@@ -439,31 +439,31 @@ Use this checklist during Discovery and per-epic security reviews:
 
 #### Discovery Phase (DBA-00)
 
-- [ ] Database users created with least privilege ([01-create-app-user.sql](init-scripts/01-create-app-user.sql))
-- [ ] Development passwords committed to Git (safe defaults)
-- [ ] Staging/production passwords documented (NOT committed)
-- [ ] ALTER USER migration created ([002_update_production_passwords.sql](migrations/002_update_production_passwords.sql))
-- [ ] Password rotation procedure documented (this README)
-- [ ] Encryption at rest configured (pgcrypto extension)
-- [ ] Audit logging enabled (pgaudit extension)
+- [ ] Database users created with least privilege ([01-create-app-user.sql](init-scripts/01-create-app-user.sql))  
+- [ ] Development passwords committed to Git (safe defaults)  
+- [ ] Staging/production passwords documented (NOT committed)  
+- [ ] ALTER USER migration created ([002_update_prod_passwords.sql](migrations/002_update_prod_passwords.sql))  
+- [ ] Password rotation procedure documented (this README)  
+- [ ] Encryption at rest configured (pgcrypto extension)  
+- [ ] Audit logging enabled (pgaudit extension)  
 
 #### Per Epic (DBA-01-{EpicName})
 
-- [ ] Sensitive columns identified (CPF, email, payment data)
-- [ ] Encryption implemented for sensitive data
-- [ ] Migration scripts use transactions (BEGIN/COMMIT/ROLLBACK)
-- [ ] Seed data does NOT contain real personal data
-- [ ] Query performance estimated (<100ms for critical queries)
-- [ ] Indexes created for critical queries (documented in DBA-01)
+- [ ] Sensitive columns identified (CPF, email, payment data)  
+- [ ] Encryption implemented for sensitive data  
+- [ ] Migration scripts use transactions (BEGIN/COMMIT/ROLLBACK)  
+- [ ] Seed data does NOT contain real personal data  
+- [ ] Query performance estimated (<100ms for critical queries)  
+- [ ] Indexes created for critical queries (documented in DBA-01)  
 
 #### Staging/Production Deployment
 
-- [ ] ALTER USER migration executed (staging/production ONLY)
-- [ ] Strong passwords set (16+ staging, 20+ production)
-- [ ] Connection string updated in .env (on server)
-- [ ] Application restarted and verified
-- [ ] Password rotation scheduled (calendar reminder)
-- [ ] Audit logs reviewed (no unauthorized access)
+- [ ] ALTER USER migration executed (staging/production ONLY)  
+- [ ] Strong passwords set (16+ staging, 20+ production)  
+- [ ] Connection string updated in .env (on server)  
+- [ ] Application restarted and verified  
+- [ ] Password rotation scheduled (calendar reminder)  
+- [ ] Audit logs reviewed (no unauthorized access)  
 
 ---
 
@@ -626,27 +626,27 @@ This section connects operational README with strategic documentation.
 
 ### Internal Documentation
 
-- **Database Design Decisions:** [00-doc-ddd/05-database-design/DBA-01-{EpicName}-Database-Design-Decisions.md](../00-doc-ddd/05-database-design/DBA-01-{EpicName}-Database-Design-Decisions.md)
-  - Modeling decisions (Value Objects, indexes, constraints)
-  - Expected queries and performance estimates
-  - Trade-offs and technical justifications
+- **Database Design Decisions:** [00-doc-ddd/05-database-design/DBA-01-{EpicName}-Database-Design-Decisions.md](../00-doc-ddd/05-database-design/DBA-01-{EpicName}-Database-Design-Decisions.md)  
+  - Modeling decisions (Value Objects, indexes, constraints)  
+  - Expected queries and performance estimates  
+  - Trade-offs and technical justifications  
 
-- **Platform Engineering Setup:** [00-doc-ddd/08-platform-engineering/PE-00-Quick-Start.md (local dev) and PE-01-Server-Setup.md (server setup)](../00-doc-ddd/08-platform-engineering/PE-00-Quick-Start.md (local dev) and PE-01-Server-Setup.md (server setup))
-  - Docker Compose configuration
-  - Connection strings per environment
-  - Volume mounts and init-scripts
+- **Platform Engineering Setup:** [00-doc-ddd/08-platform-engineering/PE-00-Quick-Start.md (local dev) and PE-01-Server-Setup.md (server setup)](../00-doc-ddd/08-platform-engineering/PE-00-Quick-Start.md (local dev) and PE-01-Server-Setup.md (server setup))  
+  - Docker Compose configuration  
+  - Connection strings per environment  
+  - Volume mounts and init-scripts  
 
-- **Security Baseline:** [00-doc-ddd/09-security/SEC-00-Security-Baseline.md](../00-doc-ddd/09-security/SEC-00-Security-Baseline.md)
-  - Database User Segregation section
-  - Security benefits documented
+- **Security Baseline:** [00-doc-ddd/09-security/SEC-00-Security-Baseline.md](../00-doc-ddd/09-security/SEC-00-Security-Baseline.md)  
+  - Database User Segregation section  
+  - Security benefits documented  
 
 ### External Documentation
 
-- **PostgreSQL Documentation:** https://www.postgresql.org/docs/15/
-- **PostgreSQL GRANT Documentation:** https://www.postgresql.org/docs/15/sql-grant.html
-- **PostgreSQL User Management:** https://www.postgresql.org/docs/15/user-manag.html
-- **CIS PostgreSQL Benchmark:** https://www.cisecurity.org/benchmark/postgresql
-  - Section 2.1: Database User Segregation
+- **PostgreSQL Documentation:** https://www.postgresql.org/docs/15/  
+- **PostgreSQL GRANT Documentation:** https://www.postgresql.org/docs/15/sql-grant.html  
+- **PostgreSQL User Management:** https://www.postgresql.org/docs/15/user-manag.html  
+- **CIS PostgreSQL Benchmark:** https://www.cisecurity.org/benchmark/postgresql  
+  - Section 2.1: Database User Segregation  
 
 ---
 

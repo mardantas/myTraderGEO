@@ -1,8 +1,8 @@
 <!--
 MARKDOWN FORMATTING:
-- Use 2 spaces at end of line for compact line breaks (metadata)
-- Use blank lines between sections for readability (content)
-- Validate in Markdown preview before committing
+- Use 2 spaces at end of line for compact line breaks (metadata)  
+- Use blank lines between sections for readability (content)  
+- Validate in Markdown preview before committing  
 -->
 
 # 01-frontend - {PROJECT_NAME} Frontend Application
@@ -19,8 +19,8 @@ MARKDOWN FORMATTING:
 This is a **quick reference guide** for building, running, and debugging the frontend application. For strategic UI/UX decisions, component design details, and architectural patterns, consult [FE-01-{EpicName}-Implementation-Report.md](../00-doc-ddd/06-frontend-design/FE-01-{EpicName}-Implementation-Report.md) and [UXD-01-{EpicName}-Wireframes.md](../00-doc-ddd/03-ux-design/UXD-01-{EpicName}-Wireframes.md).
 
 **Document Separation:**  
-- **This README:** Commands and checklists (HOW to execute)
-- **FE-01 / UXD-01:** Design decisions, UI patterns, and trade-offs (WHY and WHAT)
+- **This README:** Commands and checklists (HOW to execute)  
+- **FE-01 / UXD-01:** Design decisions, UI patterns, and trade-offs (WHY and WHAT)  
 
 **Principle:** README is an INDEX/QUICK-REFERENCE, not a duplicate.  
 
@@ -28,14 +28,14 @@ This is a **quick reference guide** for building, running, and debugging the fro
 
 ## 🎯 Technology Stack
 
-- **Framework:** {FRAMEWORK} (e.g., Vue 3)
-- **Language:** TypeScript
-- **Build Tool:** {BUILD_TOOL} (e.g., Vite)
-- **State Management:** {STATE_MGMT} (e.g., Pinia)
-- **UI Library:** {UI_LIBRARY} (e.g., PrimeVue)
-- **HTTP Client:** {HTTP_CLIENT} (e.g., Axios)
-- **Form Validation:** {VALIDATION} (e.g., Zod)
-- **Testing:** {TEST_FRAMEWORK} (e.g., Vitest + Vue Test Utils)
+- **Framework:** {FRAMEWORK} (e.g., Vue 3)  
+- **Language:** TypeScript  
+- **Build Tool:** {BUILD_TOOL} (e.g., Vite)  
+- **State Management:** {STATE_MGMT} (e.g., Pinia)  
+- **UI Library:** {UI_LIBRARY} (e.g., PrimeVue)  
+- **HTTP Client:** {HTTP_CLIENT} (e.g., Axios)  
+- **Form Validation:** {VALIDATION} (e.g., Zod)  
+- **Testing:** {TEST_FRAMEWORK} (e.g., Vitest + Vue Test Utils)  
 
 ---
 
@@ -130,8 +130,8 @@ docker compose -f ../05-infra/docker/docker-compose.yml up web -d
 ```
 
 **Access:**  
-- Frontend: http://localhost:5173
-- Hot Reload: Enabled (auto-refresh on code changes)
+- Frontend: http://localhost:5173  
+- Hot Reload: Enabled (auto-refresh on code changes)  
 
 ---
 
@@ -215,10 +215,10 @@ npm run build
 ```
 
 **Build Optimizations:**  
-- Code splitting (lazy loading)
-- Tree shaking (remove unused code)
-- Minification (smaller bundle size)
-- Asset optimization (images, fonts)
+- Code splitting (lazy loading)  
+- Tree shaking (remove unused code)  
+- Minification (smaller bundle size)  
+- Asset optimization (images, fonts)  
 
 ### Docker Build
 
@@ -237,7 +237,7 @@ docker run -p 80:80 {project}-web:latest
 cp -r dist/* /var/www/html/
 
 # Or use Docker Compose
-docker compose -f ../05-infra/docker/docker-compose.production.yml up -d web
+docker compose -f ../05-infra/docker/docker-compose.prod.yml up -d web
 ```
 
 ---
@@ -528,17 +528,17 @@ This section connects operational README with strategic documentation.
 
 ### Internal Documentation
 
-- **Frontend Implementation:** [00-doc-ddd/06-frontend-design/FE-01-{EpicName}-Implementation-Report.md](../00-doc-ddd/06-frontend-design/FE-01-{EpicName}-Implementation-Report.md)
-- **UX Design:** [00-doc-ddd/03-ux-design/UXD-01-{EpicName}-Wireframes.md](../00-doc-ddd/03-ux-design/UXD-01-{EpicName}-Wireframes.md)
-- **Security Baseline:** [00-doc-ddd/09-security/SEC-00-Security-Baseline.md](../00-doc-ddd/09-security/SEC-00-Security-Baseline.md)
+- **Frontend Implementation:** [00-doc-ddd/06-frontend-design/FE-01-{EpicName}-Implementation-Report.md](../00-doc-ddd/06-frontend-design/FE-01-{EpicName}-Implementation-Report.md)  
+- **UX Design:** [00-doc-ddd/03-ux-design/UXD-01-{EpicName}-Wireframes.md](../00-doc-ddd/03-ux-design/UXD-01-{EpicName}-Wireframes.md)  
+- **Security Baseline:** [00-doc-ddd/09-security/SEC-00-Security-Baseline.md](../00-doc-ddd/09-security/SEC-00-Security-Baseline.md)  
 
 ### External Documentation
 
-- **{FRAMEWORK} Documentation:** {DOCS_URL} (e.g., https://vuejs.org/)
-- **TypeScript Documentation:** https://www.typescriptlang.org/docs/
-- **{BUILD_TOOL} Documentation:** {BUILD_DOCS_URL} (e.g., https://vitejs.dev/)
-- **{STATE_MGMT} Documentation:** {STATE_DOCS_URL} (e.g., https://pinia.vuejs.org/)
-- **{UI_LIBRARY} Documentation:** {UI_DOCS_URL} (e.g., https://primevue.org/)
+- **{FRAMEWORK} Documentation:** {DOCS_URL} (e.g., https://vuejs.org/)  
+- **TypeScript Documentation:** https://www.typescriptlang.org/docs/  
+- **{BUILD_TOOL} Documentation:** {BUILD_DOCS_URL} (e.g., https://vitejs.dev/)  
+- **{STATE_MGMT} Documentation:** {STATE_DOCS_URL} (e.g., https://pinia.vuejs.org/)  
+- **{UI_LIBRARY} Documentation:** {UI_DOCS_URL} (e.g., https://primevue.org/)  
 
 ---
 

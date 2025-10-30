@@ -1,8 +1,8 @@
 <!--
 MARKDOWN FORMATTING:
-- Use 2 spaces at end of line for compact line breaks (metadata)
-- Use blank lines between sections for readability (content)
-- Validate in Markdown preview before committing
+- Use 2 spaces at end of line for compact line breaks (metadata)  
+- Use blank lines between sections for readability (content)  
+- Validate in Markdown preview before committing  
 -->
 
 # DE-01-[EpicName]-Tactical-Model.md
@@ -206,8 +206,8 @@ public interface I[Aggregate]Repository
 
 **Mecanismo:** Domain Events  
 **Eventos Publicados por [BC1]:**  
-- `[Event1]` → Consumido por [BC2] para [ação]
-- `[Event2]` → Consumido por [BC2] para [ação]
+- `[Event1]` → Consumido por [BC2] para [ação]  
+- `[Event2]` → Consumido por [BC2] para [ação]  
 
 **Fluxo:**  
 ```
@@ -262,12 +262,12 @@ public class [UseCaseName]Handler : IRequestHandler<[UseCaseCommand], [Result]>
 ```
 
 **Aggregates Envolvidos:**  
-- [Aggregate1] (modify)
-- [Aggregate2] (read-only)
+- [Aggregate1] (modify)  
+- [Aggregate2] (read-only)  
 
 **Domain Events Gerados:**  
-- `[Event1]`
-- `[Event2]`
+- `[Event1]`  
+- `[Event2]`  
 
 ---
 
@@ -317,22 +317,22 @@ classDiagram
 
 ## ✅ Validação
 
-- [ ] Aggregates definidos com invariantes claros
-- [ ] Boundaries dos aggregates respeitados (não muito grandes)
-- [ ] Domain Events identificados para integrações
-- [ ] Repository interfaces definidas
-- [ ] Use Cases mapeados
-- [ ] Validações de negócio no domínio (não na aplicação)
-- [ ] Nomenclatura consistente (PT → EN conforme padrões)
+- [ ] Aggregates definidos com invariantes claros  
+- [ ] Boundaries dos aggregates respeitados (não muito grandes)  
+- [ ] Domain Events identificados para integrações  
+- [ ] Repository interfaces definidas  
+- [ ] Use Cases mapeados  
+- [ ] Validações de negócio no domínio (não na aplicação)  
+- [ ] Nomenclatura consistente (PT → EN conforme padrões)  
 
 ---
 
 ## 📝 Notas de Implementação para DE
 
 **Tecnologias:**  
-- Framework: [.NET 8, etc]
-- ORM: [EF Core 8]
-- Event Bus: [MediatR, RabbitMQ, etc]
+- Framework: [.NET 8, etc]  
+- ORM: [EF Core 8]  
+- Event Bus: [MediatR, RabbitMQ, etc]  
 
 **Estrutura de Pastas:**  
 ```
@@ -359,6 +359,6 @@ classDiagram
 
 ## 🔗 Referências
 
-- **SDA Context Map:** `00-doc-ddd/02-strategic-design/SDA-02-Context-Map.md`
-- **Ubiquitous Language:** `00-doc-ddd/02-strategic-design/SDA-03-Ubiquitous-Language.md`
-- **DBA Schema Review:** `00-doc-ddd/05-database-design/DBA-01-[EpicName]-Schema-Review.md` (após criar)
+- **SDA Context Map:** `00-doc-ddd/02-strategic-design/SDA-02-Context-Map.md`  
+- **Ubiquitous Language:** `00-doc-ddd/02-strategic-design/SDA-03-Ubiquitous-Language.md`  
+- **DBA Schema Review:** `00-doc-ddd/05-database-design/DBA-01-[EpicName]-Schema-Review.md` (após criar)  

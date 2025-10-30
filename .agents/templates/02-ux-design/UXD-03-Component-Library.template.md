@@ -1,8 +1,8 @@
 <!--
 MARKDOWN FORMATTING:
-- Use 2 spaces at end of line for compact line breaks (metadata)
-- Use blank lines between sections for readability (content)
-- Validate in Markdown preview before committing
+- Use 2 spaces at end of line for compact line breaks (metadata)  
+- Use blank lines between sections for readability (content)  
+- Validate in Markdown preview before committing  
 -->
 
 # UXD-03-Component-Library.md
@@ -53,20 +53,20 @@ Definir biblioteca de componentes reutilizáveis para garantir consistência vis
 ### 2. Input Fields
 
 **Tipos:**  
-- Text input
-- Number input
-- Email input
-- Password input
-- Textarea
-- Date picker
-- Time picker
+- Text input  
+- Number input  
+- Email input  
+- Password input  
+- Textarea  
+- Date picker  
+- Time picker  
 
 **Estados:**  
-- Default
-- Focus
-- Error (com mensagem)
-- Disabled
-- Read-only
+- Default  
+- Focus  
+- Error (com mensagem)  
+- Disabled  
+- Read-only  
 
 **Props:**  
 ```typescript
@@ -86,10 +86,10 @@ Definir biblioteca de componentes reutilizáveis para garantir consistência vis
 ### 3. Select/Dropdown
 
 **Variantes:**  
-- Single select
-- Multi select
-- Searchable select
-- Grouped options
+- Single select  
+- Multi select  
+- Searchable select  
+- Grouped options  
 
 **Props:**  
 ```typescript
@@ -107,10 +107,10 @@ Definir biblioteca de componentes reutilizáveis para garantir consistência vis
 ### 4. Cards
 
 **Tipos:**  
-- Basic card (título + conteúdo)
-- Interactive card (clicável)
-- Status card (com badge)
-- Metric card (número + label)
+- Basic card (título + conteúdo)  
+- Interactive card (clicável)  
+- Status card (com badge)  
+- Metric card (número + label)  
 
 **Estrutura:**  
 ```
@@ -129,12 +129,12 @@ Definir biblioteca de componentes reutilizáveis para garantir consistência vis
 ### 5. Tables/Data Grids
 
 **Funcionalidades:**  
-- Sorting (ordenação por coluna)
-- Filtering (filtro por coluna)
-- Pagination
-- Row selection
-- Row actions
-- Responsive (card view em mobile)
+- Sorting (ordenação por coluna)  
+- Filtering (filtro por coluna)  
+- Pagination  
+- Row selection  
+- Row actions  
+- Responsive (card view em mobile)  
 
 **Props:**  
 ```typescript
@@ -152,10 +152,10 @@ Definir biblioteca de componentes reutilizáveis para garantir consistência vis
 ### 6. Modals/Dialogs
 
 **Tipos:**  
-- Confirmation dialog
-- Form modal
-- Info modal
-- Full screen modal
+- Confirmation dialog  
+- Form modal  
+- Info modal  
+- Full screen modal  
 
 **Tamanhos:** Small (400px), Medium (600px), Large (800px), Full screen  
 
@@ -175,10 +175,10 @@ Definir biblioteca de componentes reutilizáveis para garantir consistência vis
 ### 7. Alerts/Notifications
 
 **Tipos:**  
-- Success (verde)
-- Warning (amarelo)
-- Error (vermelho)
-- Info (azul)
+- Success (verde)  
+- Warning (amarelo)  
+- Error (vermelho)  
+- Info (azul)  
 
 **Positions:** Top-right, Top-center, Bottom-right  
 **Auto-dismiss:** Sim/Não (timeout configurável)  
@@ -188,10 +188,10 @@ Definir biblioteca de componentes reutilizáveis para garantir consistência vis
 ### 8. Loading States
 
 **Componentes:**  
-- Spinner (circular)
-- Linear progress bar
-- Skeleton loader (para conteúdo)
-- Overlay loading (fullscreen)
+- Spinner (circular)  
+- Linear progress bar  
+- Skeleton loader (para conteúdo)  
+- Overlay loading (fullscreen)  
 
 ---
 
@@ -275,11 +275,11 @@ Definir biblioteca de componentes reutilizáveis para garantir consistência vis
 ### Grid System
 
 **Breakpoints:**  
-- xs: 0-640px
-- sm: 640px-768px
-- md: 768px-1024px
-- lg: 1024px-1280px
-- xl: 1280px+
+- xs: 0-640px  
+- sm: 640px-768px  
+- md: 768px-1024px  
+- lg: 1024px-1280px  
+- xl: 1280px+  
 
 **Columns:** 12-column grid  
 
@@ -287,9 +287,9 @@ Definir biblioteca de componentes reutilizáveis para garantir consistência vis
 
 ### Containers
 
-- Container (max-width com breakpoints)
-- Fluid container (100% width)
-- Section (com padding vertical)
+- Container (max-width com breakpoints)  
+- Fluid container (100% width)  
+- Section (com padding vertical)  
 
 ---
 
@@ -307,11 +307,11 @@ Definir biblioteca de componentes reutilizáveis para garantir consistência vis
 
 ## ✅ Validação
 
-- [ ] Todos componentes base definidos
-- [ ] Props/atributos documentados
-- [ ] Variantes e estados especificados
-- [ ] Design tokens definidos
-- [ ] Grid system documentado
-- [ ] Componentes contexto-específicos identificados
-- [ ] Responsividade considerada
-- [ ] Acessibilidade (ARIA labels, keyboard nav)
+- [ ] Todos componentes base definidos  
+- [ ] Props/atributos documentados  
+- [ ] Variantes e estados especificados  
+- [ ] Design tokens definidos  
+- [ ] Grid system documentado  
+- [ ] Componentes contexto-específicos identificados  
+- [ ] Responsividade considerada  
+- [ ] Acessibilidade (ARIA labels, keyboard nav)  

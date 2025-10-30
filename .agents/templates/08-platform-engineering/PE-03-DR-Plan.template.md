@@ -1,8 +1,8 @@
 <!--
 MARKDOWN FORMATTING:
-- Use 2 spaces at end of line for compact line breaks (metadata)
-- Use blank lines between sections for readability (content)
-- Validate in Markdown preview before committing
+- Use 2 spaces at end of line for compact line breaks (metadata)  
+- Use blank lines between sections for readability (content)  
+- Validate in Markdown preview before committing  
 -->
 
 # PE-03: Disaster Recovery Plan
@@ -66,10 +66,10 @@ spec:
   schedule: "0 1 * * *"  # 1 AM daily
   template:
     includedNamespaces:
-    - production
+    - production  
     storageLocation: aws-us-east-1
     volumeSnapshotLocations:
-    - aws-us-east-1
+    - aws-us-east-1  
 ```
 
 ---
@@ -132,10 +132,10 @@ velero restore create --from-backup daily-backup-20251006
    ```
 
 4. **Document Results**
-   - ✅ RTO achieved: [X] minutos (target: 60 min)
-   - ✅ RPO achieved: [Y] minutos (target: 15 min)
-   - ❌ Issues found: [listar problemas]
-   - 📝 Improvements: [ações de melhoria]
+   - ✅ RTO achieved: [X] minutos (target: 60 min)  
+   - ✅ RPO achieved: [Y] minutos (target: 15 min)  
+   - ❌ Issues found: [listar problemas]  
+   - 📝 Improvements: [ações de melhoria]  
 
 ---
 
@@ -153,8 +153,8 @@ velero restore create --from-backup daily-backup-20251006
 6. Resume writes
 
 **Post-Incident:**  
-- Root cause analysis
-- Update backup strategy if needed
+- Root cause analysis  
+- Update backup strategy if needed  
 
 ---
 
@@ -168,8 +168,8 @@ velero restore create --from-backup daily-backup-20251006
 4. Communicate downtime to users
 
 **Post-Incident:**  
-- Implement multi-region if not exists
-- Review RTO/RPO targets
+- Implement multi-region if not exists  
+- Review RTO/RPO targets  
 
 ---
 
@@ -196,14 +196,14 @@ resource "aws_cloudwatch_metric_alarm" "backup_failure" {
 
 ## ✅ Definition of Done
 
-- [ ] Backup automatizado configurado (DB, app, storage)
-- [ ] RTO documentado e testado (≤ 1 hora)
-- [ ] RPO documentado e testado (≤ 15 minutos)
-- [ ] Cross-region backup habilitado (se multi-region)
-- [ ] DR drill agendado (mensal) e executado com sucesso
-- [ ] Runbooks de restore criados e validados
-- [ ] Backup monitoring/alerting configurado
-- [ ] PE-checklist.yml completo
+- [ ] Backup automatizado configurado (DB, app, storage)  
+- [ ] RTO documentado e testado (≤ 1 hora)  
+- [ ] RPO documentado e testado (≤ 15 minutos)  
+- [ ] Cross-region backup habilitado (se multi-region)  
+- [ ] DR drill agendado (mensal) e executado com sucesso  
+- [ ] Runbooks de restore criados e validados  
+- [ ] Backup monitoring/alerting configurado  
+- [ ] PE-checklist.yml completo  
 
 ---
 

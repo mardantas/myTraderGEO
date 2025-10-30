@@ -15,15 +15,15 @@ on:
         type: string
 
 env:
-  ENVIRONMENT: production
+  ENVIRONMENT: prod
 
 jobs:
-  deploy-production:
+  deploy-prod:
     name: Deploy to Production
     runs-on: ubuntu-latest
 
     environment:
-      name: production
+      name: prod
       url: https://${{ secrets.DOMAIN }}
 
     steps:
@@ -45,7 +45,7 @@ jobs:
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY_PRODUCTION }}" > ~/.ssh/id_ed25519
+          echo "${{ secrets.SSH_PRIVATE_KEY_PROD }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts

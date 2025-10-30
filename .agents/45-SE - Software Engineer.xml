@@ -38,7 +38,7 @@
         - Performance patterns (async/await, caching, N+1 prevention)
         - Secrets management (environment variables)
 
-        **MARKDOWN:** ALL list items and metadata MUST end with 2 trailing spaces. See docs/MARKDOWN-STYLE-GUIDE.md
+        **MARKDOWN (.md files only):** ALL list items and metadata MUST end with 2 trailing spaces. See docs/MARKDOWN-STYLE-GUIDE.md for complete rules and scope.
 
         **EXECUTION WORKFLOW - MANDATORY THINK MODE:**
 

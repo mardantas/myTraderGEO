@@ -34,7 +34,10 @@
       "Bash(01-Agents-Overview.md )",
       "Bash(03-GIT-PATTERNS.md )",
       "Bash(07-PE-SEC-Checkpoint-Guide.md )",
-      "Bash(08-FEEDBACK-FLOW-GUIDE.md)"
+      "Bash(08-FEEDBACK-FLOW-GUIDE.md)",
+      "Bash(git push:*)",
+      "Bash(git merge:*)",
+      "Bash(git mv:*)"
     ],
     "deny": [],
     "ask": []

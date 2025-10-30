@@ -1,8 +1,8 @@
 <!--
 MARKDOWN FORMATTING:
-- Use 2 spaces at end of line for compact line breaks (metadata)
-- Use blank lines between sections for readability (content)
-- Validate in Markdown preview before committing
+- Use 2 spaces at end of line for compact line breaks (metadata)  
+- Use blank lines between sections for readability (content)  
+- Validate in Markdown preview before committing  
 -->
 
 # PE-04: Production Deployment
@@ -68,10 +68,10 @@ spec:
         version: blue
     spec:
       containers:
-      - name: api
+      - name: api  
         image: [REGISTRY]/backend-api:v1.0.0
         ports:
-        - containerPort: 8080
+        - containerPort: 8080  
 
 ---
 # kubernetes/deployment-green.yaml
@@ -95,10 +95,10 @@ spec:
         version: green
     spec:
       containers:
-      - name: api
+      - name: api  
         image: [REGISTRY]/backend-api:v1.1.0  # Nova versão
         ports:
-        - containerPort: 8080
+        - containerPort: 8080  
 
 ---
 # kubernetes/service.yaml
@@ -111,7 +111,7 @@ spec:
     app: backend-api
     version: blue  # Switch para "green" quando deployar
   ports:
-  - protocol: TCP
+  - protocol: TCP  
     port: 80
     targetPort: 8080
   type: LoadBalancer
@@ -134,18 +134,18 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v3  
 
-    - name: Build and Push Docker Image
+    - name: Build and Push Docker Image  
       run: |
         docker build -t [REGISTRY]/backend-api:${{ github.sha }} .
         docker push [REGISTRY]/backend-api:${{ github.sha }}
 
-    - name: Configure kubectl
+    - name: Configure kubectl  
       run: |
         aws eks update-kubeconfig --name [project]-production
 
-    - name: Deploy GREEN (new version)
+    - name: Deploy GREEN (new version)  
       run: |
         # Update image in green deployment
         kubectl set image deployment/backend-api-green \
@@ -155,7 +155,7 @@ jobs:
         # Wait for rollout
         kubectl rollout status deployment/backend-api-green -n production
 
-    - name: Smoke Tests (GREEN environment)
+    - name: Smoke Tests (GREEN environment)  
       run: |
         # Get GREEN pod IP
         POD_IP=$(kubectl get pod -l version=green -n production \
@@ -167,7 +167,7 @@ jobs:
         # Test critical endpoints
         curl -f http://$POD_IP:8080/api/v1/orders || exit 1
 
-    - name: Switch Traffic (BLUE → GREEN)
+    - name: Switch Traffic (BLUE → GREEN)  
       run: |
         # Update service selector
         kubectl patch service backend-api -n production \
@@ -175,7 +175,7 @@ jobs:
 
         echo "Traffic switched to GREEN"
 
-    - name: Monitor for 5 minutes
+    - name: Monitor for 5 minutes  
       run: |
         # Watch for errors
         for i in {1..10}; do
@@ -187,13 +187,13 @@ jobs:
           sleep 30
         done
 
-    - name: Cleanup OLD (BLUE)
+    - name: Cleanup OLD (BLUE)  
       if: success()
       run: |
         kubectl scale deployment/backend-api-blue --replicas=0 -n production
         echo "BLUE deployment scaled down"
 
-    - name: Rollback (if failure)
+    - name: Rollback (if failure)  
       if: failure()
       run: |
         # Switch back to BLUE
@@ -228,17 +228,17 @@ metadata:
   name: backend-api
 spec:
   hosts:
-  - backend-api
+  - backend-api  
   http:
-  - match:
-    - uri:
+  - match:  
+    - uri:  
         prefix: /api
     route:
-    - destination:
+    - destination:  
         host: backend-api
         subset: v1
       weight: 90  # 90% para versão antiga
-    - destination:
+    - destination:  
         host: backend-api
         subset: v2
       weight: 10  # 10% para nova versão (canary)
@@ -349,24 +349,24 @@ echo "✅ All smoke tests passed"
 
 ## ✅ Definition of Done
 
-- [ ] Blue-Green deployment configurado (Kubernetes manifests)
-- [ ] CD pipeline produção criado (.github/workflows/cd-production.yml)
-- [ ] Smoke tests automatizados (passando)
-- [ ] Rollback procedure testado (consegue voltar versão anterior)
-- [ ] Health checks configurados (liveness, readiness)
-- [ ] Monitoring pós-deploy (5-30 min observation window)
-- [ ] Runbook de deploy documentado
-- [ ] Runbook de rollback documentado
-- [ ] PE-checklist.yml completo
+- [ ] Blue-Green deployment configurado (Kubernetes manifests)  
+- [ ] CD pipeline produção criado (.github/workflows/cd-production.yml)  
+- [ ] Smoke tests automatizados (passando)  
+- [ ] Rollback procedure testado (consegue voltar versão anterior)  
+- [ ] Health checks configurados (liveness, readiness)  
+- [ ] Monitoring pós-deploy (5-30 min observation window)  
+- [ ] Runbook de deploy documentado  
+- [ ] Runbook de rollback documentado  
+- [ ] PE-checklist.yml completo  
 
 ---
 
 **Checklist de Deploy Produção:**  
 
-- [ ] 1. Deploy GREEN (nova versão)
-- [ ] 2. Smoke tests (GREEN isolado)
-- [ ] 3. Switch traffic (BLUE → GREEN)
-- [ ] 4. Monitor por 30 min (erro < 1%, latência OK)
-- [ ] 5. Se OK: destroy BLUE
-- [ ] 6. Se FALHA: rollback (GREEN → BLUE)
-- [ ] 7. Post-mortem (se houver rollback)
+- [ ] 1. Deploy GREEN (nova versão)  
+- [ ] 2. Smoke tests (GREEN isolado)  
+- [ ] 3. Switch traffic (BLUE → GREEN)  
+- [ ] 4. Monitor por 30 min (erro < 1%, latência OK)  
+- [ ] 5. Se OK: destroy BLUE  
+- [ ] 6. Se FALHA: rollback (GREEN → BLUE)  
+- [ ] 7. Post-mortem (se houver rollback)  

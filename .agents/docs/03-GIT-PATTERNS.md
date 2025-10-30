@@ -524,7 +524,7 @@ docker compose -f docker-compose.yml --env-file .env.dev up
 **Servidor patterns:**
 ```bash
 # Hostnames padronizados
-myproject-stage     # staging
+myproject-staging     # staging
 myproject-prod      # prod
 
 # Deploy scripts detectam automaticamente
@@ -550,7 +550,7 @@ on:
   push:
     branches: [main]
 
-# Auto-deploy to myproject-stage
+# Auto-deploy to myproject-staging
 ./deploy.sh staging latest
 ```
 
@@ -571,7 +571,7 @@ environment:
 
 **GitHub Secrets Required:**
 - `SSH_PRIVATE_KEY_STAGING`
-- `SSH_PRIVATE_KEY_PRODUCTION`
+- `SSH_PRIVATE_KEY_PROD`
 - `SSH_KNOWN_HOSTS`
 
 ### **Prerequisites for Remote Deploy**
