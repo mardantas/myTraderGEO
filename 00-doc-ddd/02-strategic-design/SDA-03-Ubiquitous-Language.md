@@ -3,7 +3,6 @@
 **Projeto:** myTraderGEO  
 **Data:** 2025-10-12  
 **Versão:** 1.0  
-**Workflow:** Think→Plan 4-fases (conforme [.agents/10-SDA - Strategic Domain Analyst.xml](../../.agents/10-SDA%20-%20Strategic%20Domain%20Analyst.xml))  
 
 ---
 
