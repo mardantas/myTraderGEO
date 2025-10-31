@@ -1,20 +1,19 @@
 # UXD-00 - Design Foundations
 
-- **Agente:** UXD (User Experience Designer)
-- **Fase:** Discovery (1x)
-- **Escopo:** Fundamentos de design para todo o sistema
-- **Versão:** 1.0
+**Agent:** UXD (User Experience Designer)  
+**Phase:** Discovery (1x)  
+**Scope:** Design foundations for the entire system  
+**Version:** 3.0 (Simplified)  
 
 ---
 
 ## 📋 Metadata
 
-- **Project Name:** myTraderGEO
-- **Created:** 2025-10-14
-- **UX Designer:** UXD Agent
-- **Target:** Trading platform for Brazilian market (B3)
-- **Approach:** Foundations only (detailed wireframes per epic)
-- **Design Philosophy:** Professional, high-density, clarity for financial decisions
+- **Project Name:** myTraderGEO  
+- **Created:** 2025-10-14  
+- **UX Designer:** UXD Agent  
+- **Target:** Trading platform for Brazilian market (B3)  
+- **Approach:** Foundations only (detailed wireframes per epic)  
 
 ---
 
@@ -1265,11 +1264,11 @@ Dashboard > Estratégias > Criar Estratégia > Instanciar Template
 
 ---
 
-**Document Version:** 1.0  
+**Document Version:** 3.0 (Simplified)  
 **Date Created:** 2025-10-14  
-**Last Updated:** 2025-10-14  
-**Next Document:** UXD-01-[EpicName]-Wireframes (per epic)  
-**Status:** ✅ Complete - Ready for FE Implementation  
+**Last Updated:** 2025-10-31  
+**Next Document:** UXD-01-[EpicName]-Wireframes (per epic)    
+**Status:** ✅ Complete - Ready for FE Implementation    
 
 ---
 
