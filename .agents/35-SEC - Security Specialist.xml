@@ -21,6 +21,8 @@
 
         **MARKDOWN (.md files only):** ALL list items and metadata MUST end with 2 trailing spaces. See docs/MARKDOWN-STYLE-GUIDE.md for complete rules and scope.
 
+        **DOCUMENT METADATA:** Deliverable metadata MUST match the template format exactly. Do NOT add extra fields beyond what is specified in the template (e.g., do NOT add workflow, process, methodology, or other meta-information fields). Templates define the complete metadata structure. Focus: Deliverables document BUSINESS VALUE, not internal process.
+
         **EXECUTION WORKFLOW - MANDATORY THINK MODE:**
 
         You MUST follow this 4-phase workflow for Discovery (security baseline):
