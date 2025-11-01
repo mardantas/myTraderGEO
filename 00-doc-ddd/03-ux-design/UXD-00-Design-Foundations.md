@@ -1,11 +1,13 @@
 # UXD-00 - Design Foundations
 
 **Agent:** UXD (User Experience Designer)  
+**Project:** myTraderGEO  
+**Date:** 2025-10-14  
 **Phase:** Discovery (1x)  
 **Scope:** Design foundations for the entire system  
-**Version:** 3.0 (Simplified)  
-
----
+**Version:** 3.0  
+  
+---  
 
 ## 📋 Metadata
 
