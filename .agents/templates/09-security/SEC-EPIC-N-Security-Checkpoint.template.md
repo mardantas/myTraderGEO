@@ -7,13 +7,14 @@ MARKDOWN FORMATTING:
 
 # SEC-EPIC-[N]-[EpicName]-Security-Checkpoint
 
-**Epic:** [Epic Number and Name]  
-**Reviewer:** SEC (Security Specialist)  
+**Agent:** SEC (Security Specialist)  
+**Project:** [PROJECT_NAME]  
 **Date:** [YYYY-MM-DD]  
-**Duration:** 15-30 min  
+**Epic:** [EPIC_NUMBER]: [EPIC_NAME]  
 **Status:** ✅ Approved / ⚠️ Issues Found / 🔴 Critical Issues  
-
----
+**Duration:** 15-30 min  
+  
+---  
 
 ## 🎯 Checkpoint Scope
 

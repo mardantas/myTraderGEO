@@ -7,11 +7,14 @@ MARKDOWN FORMATTING:
 
 # GM-00-GitHub-Setup.md
 
-**Projeto:** [PROJECT_NAME]  
-**Data:** [YYYY-MM-DD]  
-**GitHub Manager:** GM Agent (v1.0)  
+**Agent:** GM (GitHub Manager)  
+**Project:** [PROJECT_NAME]  
+**Date:** [YYYY-MM-DD]  
+**Phase:** Discovery  
+**Scope:** GitHub repository setup with templates, workflows, and automation  
+**Version:** 1.0  
 **Repository:** [GITHUB_OWNER]/[REPO_NAME]  
-
+  
 ---
 
 ## 🎯 Objetivo
