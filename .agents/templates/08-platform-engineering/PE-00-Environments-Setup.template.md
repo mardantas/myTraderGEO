@@ -7,21 +7,21 @@ MARKDOWN FORMATTING:
 
 # PE-00 - Environments Setup
 
-**Agent:** PE (Platform Engineer)
-**Phase:** Discovery (1x)
-**Scope:** Basic environments with Docker Compose and deploy scripts
-**Version:** 1.0
+**Agent:** PE (Platform Engineer)  
+**Phase:** Discovery (1x)  
+**Scope:** Basic environments with Docker Compose and deploy scripts  
+**Version:** 1.0  
 
 ---
 
 ## 📋 Metadata
 
-- **Project Name:** [PROJECT_NAME]
-- **Created:** [DATE]
-- **PE Engineer:** [NAME]
-- **Target:** [PROJECT_TARGET]
-- **Approach:** Docker Compose + Scripts (NOT full IaC)
-- **Complexity:** [COMPLEXITY_LEVEL]
+- **Project Name:** [PROJECT_NAME]  
+- **Created:** [DATE]  
+- **PE Engineer:** [NAME]  
+- **Target:** [PROJECT_TARGET]  
+- **Approach:** Docker Compose + Scripts (NOT full IaC)  
+- **Complexity:** [COMPLEXITY_LEVEL]  
 
 ---
 
@@ -29,7 +29,7 @@ MARKDOWN FORMATTING:
 
 Configurar ambientes básicos (dev, staging, production) com Docker Compose e scripts de deploy simples para [PROJECT_NAME].
 
-**Filosofia:** Pragmatic infrastructure - essencial para começar desenvolvimento rapidamente e deploy incremental por épico.
+**Filosofia:** Pragmatic infrastructure - essencial para começar desenvolvimento rapidamente e deploy incremental por épico.  
 
 ---
 
@@ -41,15 +41,15 @@ Configurar ambientes básicos (dev, staging, production) com Docker Compose e sc
 - [BENEFIT_1]
 - [BENEFIT_2]
 - [BENEFIT_3]
-- [BENEFIT_N]
+- [BENEFIT_N]  
 
 **Decisões Técnicas:**
-- **Runtime:** [RUNTIME_VERSION]
-- **Web Framework:** [FRAMEWORK]
-- **ORM:** [ORM_CHOICE]
+- **Runtime:** [RUNTIME_VERSION]  
+- **Web Framework:** [FRAMEWORK]  
+- **ORM:** [ORM_CHOICE]  
 - **Real-time:** [REAL_TIME_TECH]
-- **Logging:** [LOGGING_LIBRARY]
-- **Testing:** [TEST_FRAMEWORKS]
+- **Logging:** [LOGGING_LIBRARY]  
+- **Testing:** [TEST_FRAMEWORKS]  
 
 ---
 
@@ -59,18 +59,18 @@ Configurar ambientes básicos (dev, staging, production) com Docker Compose e sc
 - [BENEFIT_1]
 - [BENEFIT_2]
 - [BENEFIT_3]
-- [BENEFIT_N]
+- [BENEFIT_N]  
 
 **Decisões Técnicas:**
-- **Framework:** [FRAMEWORK_VERSION]
-- **Build Tool:** [BUILD_TOOL]
-- **Language:** [LANGUAGE]
-- **State Management:** [STATE_MGMT]
-- **Router:** [ROUTER]
-- **HTTP Client:** [HTTP_CLIENT]
+- **Framework:** [FRAMEWORK_VERSION]  
+- **Build Tool:** [BUILD_TOOL]  
+- **Language:** [LANGUAGE]  
+- **State Management:** [STATE_MGMT]  
+- **Router:** [ROUTER]  
+- **HTTP Client:** [HTTP_CLIENT]  
 - **Real-time:** [REAL_TIME_CLIENT]
-- **UI Components:** [UI_LIBRARY]
-- **Testing:** [TEST_FRAMEWORKS]
+- **UI Components:** [UI_LIBRARY]  
+- **Testing:** [TEST_FRAMEWORKS]  
 
 ---
 
@@ -80,13 +80,13 @@ Configurar ambientes básicos (dev, staging, production) com Docker Compose e sc
 - [BENEFIT_1]
 - [BENEFIT_2]
 - [BENEFIT_3]
-- [BENEFIT_N]
+- [BENEFIT_N]  
 
 **Decisões Técnicas:**
 - **Versão:** [VERSION]
-- **Connection Pooling:** [POOLING_STRATEGY]
-- **Backup Strategy:** [BACKUP_APPROACH]
-- **Migrations:** [MIGRATION_TOOL]
+- **Connection Pooling:** [POOLING_STRATEGY]  
+- **Backup Strategy:** [BACKUP_APPROACH]  
+- **Migrations:** [MIGRATION_TOOL]  
 
 ---
 
@@ -104,13 +104,13 @@ Configurar ambientes básicos (dev, staging, production) com Docker Compose e sc
 
 ### Hosting Strategy
 
-**Selected Approach:** [HOSTING_APPROACH]
+**Selected Approach:** [HOSTING_APPROACH]  
 
 **Justificativa:**
 - [REASON_1]
 - [REASON_2]
 - [REASON_3]
-- [MIGRATION_PATH]
+- [MIGRATION_PATH]  
 
 **Providers Recomendados:**
 - [PROVIDER_1] - [REGION] - [PRICE]
@@ -240,8 +240,8 @@ traefik.[DOMAIN]          A    [PROD_IP]
 ## 🖥️ Setup Inicial do Servidor (Infraestrutura Base)
 
 **Aplicável a:** Staging (`[project]-stage`) e Production (`[project]-prod`)
-**Provider:** [VPS_PROVIDER]
-**OS Required:** [OS_DISTRO] - clean install
+**Provider:** [VPS_PROVIDER]  
+**OS Required:** [OS_DISTRO] - clean install  
 
 Esta seção documenta o **setup completo do servidor do zero**, desde a instalação do sistema operacional até o servidor pronto para receber deploy. As instruções são genéricas para qualquer VPS.
 
@@ -255,8 +255,8 @@ Esta seção documenta o **setup completo do servidor do zero**, desde a instala
 - **Domínio configurado** (DNS A records apontando para o IP do servidor)
 
 **Servidores:**
-- **Staging:** Hostname `[project]-stage` (ex: IP [STAGING_IP])
-- **Production:** Hostname `[project]-prod` (ex: IP [PROD_IP])
+- **Staging:** Hostname `[project]-stage` (ex: IP [STAGING_IP])  
+- **Production:** Hostname `[project]-prod` (ex: IP [PROD_IP])  
 
 ---
 
@@ -312,7 +312,7 @@ sudo apt-get install -y \
 
 ### Etapa 2: Instalação Docker Engine
 
-**Fonte oficial:** [https://docs.docker.com/engine/install/](https://docs.docker.com/engine/install/)
+**Fonte oficial:** [https://docs.docker.com/engine/install/](https://docs.docker.com/engine/install/)  
 
 ```bash
 # Remover versões antigas (se existirem)
@@ -751,9 +751,9 @@ docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs
 
 ### Health Checks
 
-- **Backend:** `GET /health` → JSON status (database, services)
-- **Frontend:** `GET /health` → "healthy"
-- **Traefik:** Dashboard em `https://traefik.[DOMAIN]`
+- **Backend:** `GET /health` → JSON status (database, services)  
+- **Frontend:** `GET /health` → "healthy"  
+- **Traefik:** Dashboard em `https://traefik.[DOMAIN]`  
 
 ---
 
@@ -777,7 +777,7 @@ Traefik v3.0 (Reverse Proxy + Let's Encrypt)
 
 ### Traefik + Let's Encrypt (Automático)
 
-**Implementado:** `05-infra/configs/traefik.yml` + Docker Compose labels
+**Implementado:** `05-infra/configs/traefik.yml` + Docker Compose labels  
 
 **Funcionalidades:**
 - ✅ HTTP → HTTPS redirect automático
@@ -850,10 +850,10 @@ labels:
 | A | traefik | [PROD_IP] | ⚠️ DNS Only |
 
 **SSL/TLS Settings:**
-- **SSL Mode:** Full (Strict) ← IMPORTANTE
-- **Always Use HTTPS:** Enabled
-- **Minimum TLS Version:** 1.2
-- **Opportunistic Encryption:** Enabled
+- **SSL Mode:** Full (Strict) ← IMPORTANTE  
+- **Always Use HTTPS:** Enabled  
+- **Minimum TLS Version:** 1.2  
+- **Opportunistic Encryption:** Enabled  
 
 **Firewall Rules (opcional):**
 - Rate limiting adicional no Cloudflare
@@ -862,7 +862,7 @@ labels:
 
 ### Traefik Dashboard
 
-**Acesso:** `https://traefik.[DOMAIN]`
+**Acesso:** `https://traefik.[DOMAIN]`  
 
 **Autenticação:** Basic Auth (configurado via `.env`)
 
@@ -913,8 +913,8 @@ Docker Desktop armazena named volumes no filesystem WSL2:
 ```
 
 **Benefícios:**
-- **Performance:** ~60x mais rápido que bind mounts para databases
-- **Compatibilidade:** Funciona identicamente em Windows/Linux/Mac
+- **Performance:** ~60x mais rápido que bind mounts para databases  
+- **Compatibilidade:** Funciona identicamente em Windows/Linux/Mac  
 - **Gestão automática:** Docker gerencia espaço e backups
 
 **Quando usar bind mounts:**
@@ -925,11 +925,11 @@ Docker Desktop armazena named volumes no filesystem WSL2:
 
 **Problema: Performance lenta**
 - **Solução:** Manter projeto dentro do filesystem WSL2
-- **Alternativa:** Se precisar manter em `C:\`, usar named volumes para databases (já configurado)
+- **Alternativa:** Se precisar manter em `C:\`, usar named volumes para databases (já configurado)  
 
 **Problema: Scripts Bash não executam**
-- **Verificar:** Docker Desktop → Settings → General → "Use the WSL 2 based engine"
-- **Verificar:** Git Bash instalado (`git --version`)
+- **Verificar:** Docker Desktop → Settings → General → "Use the WSL 2 based engine"  
+- **Verificar:** Git Bash instalado (`git --version`)  
 
 ---
 
@@ -1063,5 +1063,5 @@ Docker Desktop armazena named volumes no filesystem WSL2:
 
 ---
 
-**Template Version:** 1.0
-**Last Updated:** [DATE]
+**Template Version:** 1.0  
+**Last Updated:** [DATE]  
