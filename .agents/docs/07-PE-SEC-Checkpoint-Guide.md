@@ -10,7 +10,7 @@
 ## 🎯 Visão Geral
 
 **PE** (Platform Engineer) e **SEC** (Security Specialist) executam **baseline obrigatório** na Discovery (1x):
-- **PE platform engineering documentation (PE-00-Quick-Start.md, PE-01-Server-Setup.md, PE-02-Scaling-Strategy.md)**: Docker Compose, scripts deploy, env vars, logs, health checks, server setup
+- **PE-00-Environments-Setup.md**: Complete infrastructure guide - Docker Compose, deploy scripts, env vars, logs, health checks, server setup (9 steps), Traefik, scaling strategy
 - **SEC-00-Security-Baseline.md**: OWASP Top 3, LGPD mínimo, auth strategy, input validation, secrets management
 
 Durante **iteração por épico**, checkpoints são **OPCIONAIS** por padrão, mas **OBRIGATÓRIOS** se o épico atender aos critérios de decisão abaixo.
