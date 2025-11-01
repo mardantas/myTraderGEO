@@ -1,10 +1,19 @@
 # PE-00 - Environments Setup
 
-**Agent:** PE (Platform Engineer)  
-**Phase:** Discovery (1x)  
-**Scope:** Basic environments with Docker Compose and deploy scripts  
-**Version:** 1.0  
-**Date:** 2025-10-14  
+> **⚠️ DEPRECATED - 2025-10-31**
+>
+> Este documento monolítico foi substituído por 3 documentos focados (v4.0):
+> - **[PE-00-Quick-Start.md](./PE-00-Quick-Start.md)** - Local development MVP
+> - **[PE-01-Server-Setup.md](./PE-01-Server-Setup.md)** - Production server setup
+> - **[PE-02-Scaling-Strategy.md](./PE-02-Scaling-Strategy.md)** - Future growth strategy
+>
+> Use os novos documentos para referência atualizada.
+
+**Agent:** PE (Platform Engineer)
+**Phase:** Discovery (1x)
+**Scope:** Basic environments with Docker Compose and deploy scripts
+**Version:** 1.0
+**Date:** 2025-10-14
 
 ---
 
