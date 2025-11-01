@@ -1,17 +1,11 @@
 # PE-00 - Environments Setup
 
-> **⚠️ DEPRECATED - 2025-11-01**
->
-> Este documento foi substituído pelo documento oficial consolidado:
-> - **[PE-00-Environments-Setup.md](./PE-00-Environments-Setup.md)** - Official consolidated infrastructure guide
->
-> Use o novo documento para referência atualizada.
 
-**Agent:** PE (Platform Engineer)
-**Phase:** Discovery (1x)
-**Scope:** Basic environments with Docker Compose and deploy scripts
-**Version:** 1.0
-**Date:** 2025-10-14
+**Agent:** PE (Platform Engineer)  
+**Phase:** Discovery (1x)  
+**Scope:** Basic environments with Docker Compose and deploy scripts  
+**Version:** 1.0  
+**Date:** 2025-10-14  
 
 ---
 
