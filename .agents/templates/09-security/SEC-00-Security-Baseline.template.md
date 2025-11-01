@@ -7,10 +7,12 @@ MARKDOWN FORMATTING:
 
 # SEC-00 - Security Baseline
 
-**Agent:** SEC (Security Specialist)  
-**Phase:** Discovery (1x)  
-**Scope:** Essential security baseline for small/medium projects  
-**Version:** 3.0 (Simplified)  
+**Agent:** SEC (Security Specialist)
+**Project:** [PROJECT_NAME]
+**Date:** [YYYY-MM-DD]
+**Phase:** Discovery (1x)
+**Scope:** Essential security baseline for small/medium projects
+**Version:** 3.0
 
 ---
 

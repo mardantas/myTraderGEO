@@ -5,11 +5,14 @@ MARKDOWN FORMATTING:
 - Validate in Markdown preview before committing  
 -->
 
-# QAE-01-Test-Strategy.md
+# QAE-00-Test-Strategy.md
 
-**Projeto:** [PROJECT_NAME]  
-**Data:** [YYYY-MM-DD]  
-**QA Engineer:** QAE Agent  
+**Agent:** QAE (Quality Assurance Engineer)
+**Project:** [PROJECT_NAME]
+**Date:** [YYYY-MM-DD]
+**Phase:** Discovery
+**Scope:** Comprehensive testing strategy and quality standards
+**Version:** 1.0
 
 ---
 
