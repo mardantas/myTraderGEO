@@ -1,6 +1,22 @@
 # 05-infra - myTraderGEO Infrastructure
 
-Configuração completa de infraestrutura Docker para os ambientes Development, Staging e Production do myTraderGEO.
+**Projeto:** myTraderGEO  
+**Stack:** .NET 8 + Vue 3 + PostgreSQL + Docker  
+**Responsible Agent:** PE Agent  
+  
+---  
+
+## 📋 About This Document
+
+This is a **quick reference guide** for executing infrastructure commands (Docker, deploy, environment setup). For strategic decisions, architecture details, and trade-offs, consult [PE-00-Environments-Setup.md](../00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md).
+
+**Document Separation:**
+- **This README:** Commands and checklists (HOW to execute)
+- **PE-00:** Architecture decisions, justifications, and trade-offs (WHY and WHAT)
+
+**Principle:** README is an INDEX/QUICK-REFERENCE to PE-00, not a duplicate.
+
+---
 
 ## Stack Tecnológico
 
@@ -8,18 +24,22 @@ Configuração completa de infraestrutura Docker para os ambientes Development, 
 - **Frontend:** Vue 3 + TypeScript + Vite + Pinia + PrimeVue
 - **Database:** PostgreSQL 15
 - **Containerização:** Docker + Docker Compose
-- **Proxy/Load Balancer:** Nginx (production frontend)
+- **Web Server (Frontend):** Nginx (serve arquivos estáticos Vue.js em production)
+- **Reverse Proxy/Load Balancer:** Traefik v3.0 (HTTPS, SSL automático, load balancing - staging/production)
 
 ## Estrutura de Pastas
+
+### Repositório Git (05-infra/)
 
 ```
 05-infra/
 ├── configs/
-│   └── .env.example          # Template de variáveis de ambiente
+│   ├── .env.example          # Template de variáveis de ambiente
+│   └── traefik.yml           # Traefik static configuration
 ├── docker/
 │   ├── docker-compose.yml            # Development
-│   ├── docker-compose.staging.yml    # Staging
-│   └── docker-compose.production.yml # Production
+│   ├── docker-compose.staging.yml    # Staging + Traefik
+│   └── docker-compose.production.yml # Production + Traefik + Resource Limits
 ├── dockerfiles/
 │   ├── backend/
 │   │   ├── Dockerfile        # Backend production
@@ -34,29 +54,70 @@ Configuração completa de infraestrutura Docker para os ambientes Development, 
     └── restore-database.sh   # Restore do banco (TODO)
 ```
 
+### Servidor Remoto (Staging/Production)
+
+**Hostnames:**
+- **Staging:** `mytrader-stage`
+- **Production:** `mytrader-prod`
+
+**Convenção:** Arquivos de deploy ficam em `/home/mytrader/mytrader-app/`
+
+```
+/home/mytrader/mytrader-app/
+├── app/                       # Deploy artifacts
+│   ├── docker-compose.yml     # Copiado de 05-infra/docker/docker-compose.{env}.yml
+│   ├── .env                   # Secrets (criado manualmente, NÃO versionado)
+│   └── configs/
+│       └── traefik.yml        # Copiado de 05-infra/configs/traefik.yml
+├── backups/                   # Database backups
+│   └── postgres/
+├── scripts/                   # Helper scripts
+│   ├── backup-db.sh
+│   └── restore-db.sh
+└── logs/                      # Aggregated logs (opcional)
+```
+
+**Pré-requisitos do Servidor:**
+
+Antes de realizar o primeiro deploy, o servidor precisa ter a infraestrutura base instalada:
+
+| Requisito | Versão Mínima | Status |
+|-----------|---------------|--------|
+| **OS** | Debian 12 (Bookworm) | Obrigatório |
+| **Docker Engine** | 27.0+ | Obrigatório |
+| **Docker Compose Plugin** | v2.0+ | Obrigatório |
+| **Firewall (UFW)** | Portas 22, 80, 443 | Obrigatório |
+| **Fail2ban** | Latest | Recomendado |
+| **User mytrader** | Grupos: mytrader + docker | Obrigatório |
+| **SSH Keys** | Ed25519 ou RSA 4096 | Obrigatório |
+| **NTP (chrony)** | Latest | Recomendado |
+| **Htpasswd** | apache2-utils | Obrigatório |
+
+**Setup inicial do servidor (passo a passo completo):** Ver [PE-00 - Setup Inicial do Servidor](../00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md#-setup-inicial-do-servidor-infraestrutura-base)
+
 ## Quick Start
 
 ### 1. Configurar Variáveis de Ambiente
 
 ```bash
 # Copiar template
-cp 05-infra/configs/.env.example 05-infra/configs/.env
+cp 05-infra/configs/.env.example 05-infra/configs/.env.dev
 
 # Editar .env com suas credenciais
-nano 05-infra/configs/.env
+nano 05-infra/configs/.env.dev
 ```
 
 ### 2. Development - Iniciar Ambiente Local
 
 ```bash
 # Subir todos os serviços
-docker compose -f 05-infra/docker/docker-compose.yml up -d
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev up -d
 
 # Verificar logs
-docker compose -f 05-infra/docker/docker-compose.yml logs -f
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev logs -f
 
 # Parar serviços
-docker compose -f 05-infra/docker/docker-compose.yml down
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev down
 ```
 
 **Acessar:**
@@ -228,6 +289,25 @@ Script para restore de backups do PostgreSQL.
 - Encoding: UTF-8
 - Locale: pt_BR.UTF-8
 
+**Usuários PostgreSQL (Princípio do Menor Privilégio):**
+
+| Usuário | Uso | Permissões | Connection String |
+|---------|-----|------------|-------------------|
+| `postgres` | **Admin (DBA apenas)** | Superuser - **NUNCA** usar na aplicação | N/A |
+| `mytrader_app` | **Aplicação .NET** | SELECT, INSERT, UPDATE, DELETE, CREATE (migrations) | ✅ Usar nas connection strings |
+| `mytrader_readonly` | **Analytics, Backups** | SELECT apenas | Apenas para leitura |
+
+⚠️ **IMPORTANTE - SEGURANÇA:**
+- A aplicação **NUNCA** deve usar o usuário `postgres`
+- Sempre usar `mytrader_app` nas connection strings
+- Violação do Princípio do Menor Privilégio = vulnerabilidade de segurança
+
+**Criação Automática dos Usuários:**
+Os usuários `mytrader_app` e `mytrader_readonly` são criados automaticamente pelo script:
+- `04-database/init-scripts/01-create-app-user.sql`
+
+Este script é executado na primeira inicialização do container PostgreSQL.
+
 ## Variáveis de Ambiente
 
 Todas as variáveis estão documentadas em `05-infra/configs/.env.example`.
@@ -323,7 +403,7 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
 **Ver logs:**
 ```bash
 # Development
-docker compose -f 05-infra/docker/docker-compose.yml logs -f api
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev logs -f api
 
 # Production
 docker compose -f 05-infra/docker/docker-compose.production.yml logs -f api
@@ -363,20 +443,20 @@ Referrer-Policy: strict-origin-when-cross-origin
 
 ```bash
 # Verificar logs
-docker compose -f 05-infra/docker/docker-compose.yml logs api
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev logs api
 
 # Verificar health
-docker compose -f 05-infra/docker/docker-compose.yml ps
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev ps
 ```
 
 ### Database connection failed
 
 ```bash
 # Verificar se database está healthy
-docker compose -f 05-infra/docker/docker-compose.yml ps database
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev ps database
 
 # Testar conexão manual
-docker compose -f 05-infra/docker/docker-compose.yml exec database psql -U postgres -d mytrader_dev
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev exec database psql -U postgres -d mytrader_dev
 ```
 
 ### Hot reload não funciona
@@ -394,12 +474,67 @@ docker compose -f 05-infra/docker/docker-compose.yml exec database psql -U postg
 
 ```bash
 # Parar serviços conflitantes
-docker compose -f 05-infra/docker/docker-compose.yml down
+docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev down
 
 # Ou alterar porta no docker-compose.yml
 ports:
   - "5001:8080"  # Usar 5001 ao invés de 5000
 ```
+
+## 🪟 Desenvolvimento no Windows
+
+### Pré-requisitos
+
+- **Docker Desktop for Windows** (WSL2 backend habilitado)
+- **Git for Windows** (inclui Git Bash)
+- **Windows 10/11** com WSL2 configurado
+
+### Executar Scripts Bash
+
+**Opção 1: Git Bash (Recomendado)**
+```bash
+bash ./05-infra/scripts/deploy.sh staging
+bash ./05-infra/scripts/backup-database.sh
+```
+
+**Opção 2: WSL2**
+```bash
+wsl bash ./05-infra/scripts/deploy.sh staging
+```
+
+### Named Volumes no Windows
+
+Docker Desktop armazena named volumes no filesystem WSL2:
+```
+\\wsl$\docker-desktop-data\data\docker\volumes\
+```
+
+**Benefícios:**
+- **Performance:** ~60x mais rápido que bind mounts para databases
+- **Compatibilidade:** Funciona identicamente em Windows/Linux/Mac
+- **Gestão:** Docker gerencia automaticamente o armazenamento
+
+### Troubleshooting Windows
+
+**Performance lenta (Development):**
+- Verificar que Docker Desktop usa WSL2 backend (não Hyper-V)
+- Mover código para dentro do WSL2 filesystem: `\\wsl$\Ubuntu\home\user\mytrader`
+- Database usa named volume (já otimizado)
+
+**Scripts bash não executam:**
+```bash
+# Use Git Bash (incluído no Git for Windows)
+bash ./05-infra/scripts/deploy.sh development
+
+# Ou configure WSL2
+wsl --install
+wsl --set-default-version 2
+```
+
+**Volumes não sincronizam:**
+- Hot reload funciona em Windows se código está no filesystem Windows
+- Para melhor performance, considere desenvolver dentro do WSL2
+- Named volumes (database) não precisam sincronização
 
 ## CI/CD Integration
 
@@ -427,25 +562,29 @@ docker push ghcr.io/seu-usuario/mytrader-api:v1.0.0
 
 ## Roadmap
 
-### Epic 1 (Atual - Discovery)
+### Epic 1 (Concluído - Discovery)
 - [x] Docker Compose para todos os ambientes
 - [x] Dockerfiles (dev e production)
 - [x] Script de deploy básico
 - [x] Health checks
 - [x] Logging strategy
+- [x] Traefik reverse proxy (staging + production)
+- [x] HTTPS com Let's Encrypt automático
+- [x] Nginx web server (frontend production)
 
 ### Epic 2 (Planning)
-- [ ] Scripts de backup/restore
-- [ ] Migrations automáticas
+- [ ] Scripts de backup/restore automatizados
+- [ ] Migrations automáticas no deploy
 - [ ] S3 integration para backups
 - [ ] Monitoring básico (Prometheus/Grafana)
+- [ ] Alerting (Alertmanager)
 
-### Epic 3+ (Implementation)
-- [ ] HTTPS com Let's Encrypt
-- [ ] Load balancer (Traefik/HAProxy)
+### Epic 3+ (Future - Scalability)
 - [ ] Kubernetes migration
-- [ ] Auto-scaling
+- [ ] Auto-scaling (horizontal pod autoscaling)
+- [ ] Multi-region deployment
 - [ ] Disaster recovery procedures
+- [ ] CDN integration (Cloudflare + S3)
 
 ## Documentação Relacionada
 
@@ -463,6 +602,6 @@ Para questões sobre infraestrutura, consultar:
 
 ---
 
-**Última atualização:** 2025-10-14
+**Última atualização:** 2025-10-28
 **Fase:** Discovery (Epic 1)
-**Status:** ✅ Infraestrutura base definida
+**Status:** ✅ Infraestrutura base definida + Setup completo do servidor documentado (Debian 12, Docker, UFW, fail2ban)

@@ -1,9 +1,9 @@
 # GM-00-GitHub-Setup.md
 
-**Projeto:** myTraderGEO
-**Data:** 2025-10-18
-**GitHub Manager:** GM Agent (v1.0)
-**Repository:** mardantas/myTraderGEO
+**Projeto:** myTraderGEO  
+**Data:** 2025-10-18  
+**GitHub Manager:** GM Agent (v1.0)  
+**Repository:** mardantas/myTraderGEO  
 
 ---
 
@@ -28,15 +28,15 @@ Documentar a configuração do GitHub para o projeto: templates pré-existentes 
 - **Estilo:** Completo, detalhado, educacional, documentação DDD formal
 - **Quando consultar:** Para entender estratégia, tomar decisões arquiteturais, modificar configurações
 
-**Para EXECUÇÃO RÁPIDA de tarefas, consulte:** [03-github-manager/README.md](../../03-github-manager/README.md)
+**Para EXECUÇÃO RÁPIDA de tarefas, consulte:** [03-github-manager/README.md](../../03-github-manager/README.md)  
 - **Target:** Desenvolvedores executando tarefas do dia-a-dia
 - **Conteúdo:** Comandos CLI, checklists de execução, quick start, **links para seções deste documento para detalhes**
 - **Estilo:** Minimalista, imperativo, quick reference, focado em comandos
 - **Quando consultar:** Para executar setup, verificar status, troubleshooting rápido
 
-**Princípio:** GM-00 explica o **POR QUÊ** e **O QUÊ**, README explica o **COMO executar**.
+**Princípio:** GM-00 explica o **POR QUÊ** e **O QUÊ**, README explica o **COMO executar**.  
 
-**Evitamos duplicação:** O README contém apenas comandos e links para seções específicas deste documento, não repete explicações.
+**Evitamos duplicação:** O README contém apenas comandos e links para seções específicas deste documento, não repete explicações.  
 
 ---
 
@@ -46,7 +46,7 @@ Os seguintes recursos **já existem** no projeto (copiados do workflow template 
 
 ### 📋 Issue Templates
 
-**Localização:** [.github/ISSUE_TEMPLATE/](.github/ISSUE_TEMPLATE/)
+**Localização:** [.github/ISSUE_TEMPLATE/](.github/ISSUE_TEMPLATE/)  
 
 Templates disponíveis:
 
@@ -58,13 +58,13 @@ Templates disponíveis:
 | `40-user-story.yml` | User stories | User stories (se usar metodologia ágil) |
 | `99-bug.yml` | Bug reports | Reportar bugs |
 
-**Status:** ✅ **Prontos para uso** (não criados pelo GM, apenas documentados)
+**Status:** ✅ **Prontos para uso** (não criados pelo GM, apenas documentados)  
 
 ---
 
 ### 🔀 Pull Request Template
 
-**Localização:** [.github/PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE.md)
+**Localização:** [.github/PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE.md)  
 
 **Contém:**
 - Descrição das mudanças
@@ -75,7 +75,7 @@ Templates disponíveis:
 - Checklist de qualidade (nomenclature, docs, migrations)
 - Screenshots (se UI)
 
-**Status:** ✅ **Pronto para uso** (não criado pelo GM, apenas documentado)
+**Status:** ✅ **Pronto para uso** (não criado pelo GM, apenas documentado)  
 
 ---
 
@@ -83,7 +83,7 @@ Templates disponíveis:
 
 ### 🏷️ Labels
 
-**Localização:** Criadas via script [03-github-manager/setup-labels.sh](../../../03-github-manager/setup-labels.sh)
+**Localização:** Criadas via script [03-github-manager/setup-labels.sh](../../../03-github-manager/setup-labels.sh)  
 
 **Executar:**
 ```bash
@@ -130,7 +130,7 @@ gh label list --repo mardantas/myTraderGEO
 
 ### 🎯 Milestones
 
-**Abordagem:** ✅ Criar **sob demanda** (um por vez, quando iniciar cada épico)
+**Abordagem:** ✅ Criar **sob demanda** (um por vez, quando iniciar cada épico)  
 
 **Por quê sob demanda:**
 - Baixa frequência (5-10 milestones total no projeto)
@@ -139,7 +139,7 @@ gh label list --repo mardantas/myTraderGEO
 - **Criar incrementalmente:** M0 no Discovery, M1 quando iniciar EPIC-01, M2 quando iniciar EPIC-02, etc
 - **NÃO criar todos de uma vez** - épicos futuros podem mudar completamente
 
-**Script auxiliar criado:** [03-github-manager/scripts/create-milestone.sh](../../../03-github-manager/scripts/create-milestone.sh) ⚙️ ON-DEMAND TOOL
+**Script auxiliar criado:** [03-github-manager/scripts/create-milestone.sh](../../../03-github-manager/scripts/create-milestone.sh) ⚙️ ON-DEMAND TOOL  
 
 **Milestones Planejados (conforme SDA-01 épicos):**
 
@@ -213,7 +213,7 @@ gh api repos/mardantas/myTraderGEO/milestones -X POST \
 # Repetir para M3, M4, M5...
 ```
 
-**Formato de due_on:** ISO 8601 format (`YYYY-MM-DDTHH:MM:SSZ`)
+**Formato de due_on:** ISO 8601 format (`YYYY-MM-DDTHH:MM:SSZ`)  
 - Exemplo: `2025-12-31T23:59:59Z` (31 Dec 2025, 23:59:59 UTC)
 
 **Verificar milestones criadas:**
@@ -225,9 +225,9 @@ gh api repos/mardantas/myTraderGEO/milestones
 
 ### 🎯 Epic Issues
 
-**Localização do Template:** [.github/ISSUE_TEMPLATE/10-epic.yml](.github/ISSUE_TEMPLATE/10-epic.yml)
+**Localização do Template:** [.github/ISSUE_TEMPLATE/10-epic.yml](.github/ISSUE_TEMPLATE/10-epic.yml)  
 
-**Abordagem:** ✅ Criar **sob demanda** (um por vez, após milestone criado e DE-01 completo)
+**Abordagem:** ✅ Criar **sob demanda** (um por vez, após milestone criado e DE-01 completo)  
 
 **Opções disponíveis:**
 1. **GitHub Form** (preferencial) - UX melhor, validação automática, 2min
@@ -244,7 +244,7 @@ gh api repos/mardantas/myTraderGEO/milestones
 - ⚙️ **GM executa `create-epic-issue.sh` automaticamente** quando executado por épico
 - ⚠️ **User customiza epic issue** com detalhes completos do DE-01 (1min)
 
-**Script auxiliar criado:** [03-github-manager/scripts/create-epic-issue.sh](../../../03-github-manager/scripts/create-epic-issue.sh) ⚙️ AUTO-EXECUTED BY GM
+**Script auxiliar criado:** [03-github-manager/scripts/create-epic-issue.sh](../../../03-github-manager/scripts/create-epic-issue.sh) ⚙️ AUTO-EXECUTED BY GM  
 
 ---
 
@@ -303,9 +303,9 @@ gh issue create --repo mardantas/myTraderGEO \
   --body "$(cat <<'EOF'
 ## 📋 Epic Overview
 
-**Epic Number:** 01
-**Epic Name:** [EPIC_1_NAME]
-**Business Value:** [From DE-01: Why this epic is important]
+**Epic Number:** 01  
+**Epic Name:** [EPIC_1_NAME]  
+**Business Value:** [From DE-01: Why this epic is important]  
 
 ## 🎯 Bounded Contexts Involved
 
@@ -429,13 +429,13 @@ gh issue view [ISSUE_NUMBER] --repo mardantas/myTraderGEO
 
 ### ⚙️ CI/CD Workflows
 
-**Localização:** `.github/workflows/` (criados pelo GM, customizados baseado em PE-00 stack)
+**Localização:** `.github/workflows/` (criados pelo GM, customizados baseado em PE-00 stack)  
 
 #### Backend CI Pipeline
 
-**Arquivo:** [.github/workflows/ci-backend.yml](.github/workflows/ci-backend.yml)
+**Arquivo:** [.github/workflows/ci-backend.yml](.github/workflows/ci-backend.yml)  
 
-**Stack:** [From PE-00: e.g., .NET 8.0]
+**Stack:** [From PE-00: e.g., .NET 8.0]  
 
 **Triggers:**
 - Push para `develop`, `main`
@@ -455,15 +455,15 @@ gh issue view [ISSUE_NUMBER] --repo mardantas/myTraderGEO
    - Build Docker image
    - Cache layers para performance
 
-**Status checks:** ✅ Required before merge (discipline-based, GitHub Free)
+**Status checks:** ✅ Required before merge (discipline-based, GitHub Free)  
 
 ---
 
 #### Frontend CI Pipeline
 
-**Arquivo:** [.github/workflows/ci-frontend.yml](.github/workflows/ci-frontend.yml)
+**Arquivo:** [.github/workflows/ci-frontend.yml](.github/workflows/ci-frontend.yml)  
 
-**Stack:** [From PE-00: e.g., React 18 + Vite, Node 20.x, npm]
+**Stack:** [From PE-00: e.g., React 18 + Vite, Node 20.x, npm]  
 
 **Triggers:**
 - Push para `develop`, `main`
@@ -484,13 +484,13 @@ gh issue view [ISSUE_NUMBER] --repo mardantas/myTraderGEO
    - Build Docker image
    - Cache layers para performance
 
-**Status checks:** ✅ Required before merge (discipline-based, GitHub Free)
+**Status checks:** ✅ Required before merge (discipline-based, GitHub Free)  
 
 ---
 
 #### Security Scanning
 
-**Arquivo:** [.github/workflows/security.yml](.github/workflows/security.yml)
+**Arquivo:** [.github/workflows/security.yml](.github/workflows/security.yml)  
 
 **Triggers:**
 - Push para `main`, `develop`
@@ -516,15 +516,15 @@ gh issue view [ISSUE_NUMBER] --repo mardantas/myTraderGEO
    - Weekly full scan
    - HTML report gerado
 
-**Reports:** Disponíveis na aba Security do GitHub
+**Reports:** Disponíveis na aba Security do GitHub  
 
 ---
 
 #### Dependabot Configuration
 
-**Arquivo:** [.github/dependabot.yml](.github/dependabot.yml)
+**Arquivo:** [.github/dependabot.yml](.github/dependabot.yml)  
 
-**Package ecosystems:** [From PE-00 stack]
+**Package ecosystems:** [From PE-00 stack]  
 
 | Ecosystem | Directory | Schedule | Notes |
 |-----------|-----------|----------|-------|
@@ -542,7 +542,7 @@ gh issue view [ISSUE_NUMBER] --repo mardantas/myTraderGEO
 
 #### CD Staging Pipeline (Opcional)
 
-**Arquivo:** [.github/workflows/cd-staging.yml](.github/workflows/cd-staging.yml)
+**Arquivo:** [.github/workflows/cd-staging.yml](.github/workflows/cd-staging.yml)  
 
 **Triggers:**
 - Push para `develop`
@@ -566,13 +566,78 @@ gh issue view [ISSUE_NUMBER] --repo mardantas/myTraderGEO
 3. **notify**
    - Slack/Discord/Email notification (optional)
 
-**Status:** ⚠️ **Requires customization** (deployment target from PE-00)
+**Status:** ⚠️ **Requires customization** (deployment target from PE-00)  
+
+**Prerequisites:**
+- `.env.staging` configured on staging server (see [PE-00](../08-platform-engineering/PE-00-Environments-Setup.md#env-strategy))
+- Staging server IP configured (separate from production)
+- Docker Compose v2+ installed on staging server
+
+**Manual Deploy Command:**
+```bash
+# On staging server (SSH)
+docker compose -f 05-infra/docker/docker-compose.staging.yml \
+  --env-file 05-infra/configs/.env.staging \
+  up -d
+```
+
+---
+
+### 🔗 Deployment Strategy (PE-00 Integration)
+
+**IMPORTANT:** All deployment commands MUST use `--env-file` flag explicitly per environment.  
+
+#### Environment-Specific .env Files
+
+See [PE-00 Environments Setup](../08-platform-engineering/PE-00-Environments-Setup.md) for complete strategy.
+
+| Environment | .env File | Usage |
+|-------------|-----------|-------|
+| Development | `.env.dev` | Local Docker Compose |
+| Staging | `.env.staging` | Staging server deployment |
+| Production | `.env.production` | Production server deployment |
+
+**Command Pattern:**
+```bash
+# Development
+docker compose -f 05-infra/docker/docker-compose.yml \
+  --env-file 05-infra/configs/.env.dev up
+
+# Staging
+docker compose -f 05-infra/docker/docker-compose.staging.yml \
+  --env-file 05-infra/configs/.env.staging up -d
+
+# Production
+docker compose -f 05-infra/docker/docker-compose.production.yml \
+  --env-file 05-infra/configs/.env.production up -d
+```
+
+#### Multi-Server Architecture
+
+**Staging and Production run on SEPARATE servers/IPs:**
+- **Staging Server:** Dedicated IP (e.g., 203.0.113.10)
+- **Production Server:** Dedicated IP (e.g., 203.0.113.20)
+
+**Why separate servers:**
+- ✅ Complete isolation (staging issues don't affect production)
+- ✅ Security (breach containment - critical for financial apps)
+- ✅ Independent resource allocation
+- ✅ Separate audit trails and access control
+
+See [PE-00 Network Architecture](../08-platform-engineering/PE-00-Environments-Setup.md#network-architecture) for details.
+
+#### Key PE-00 Decisions Affecting CI/CD
+
+1. **Docker Compose Commands:** ALWAYS use `--env-file` (no implicit `.env` loading)
+2. **Traefik Integration:** Staging + Production use Traefik v3.0 (separate instances)
+3. **Certificate Resolvers:** Staging uses Let's Encrypt staging CA, Production uses production CA
+4. **Windows Compatibility:** Scripts must run in Git Bash or WSL2 (see PE-00)
 
 ---
 
 ## 🔒 3. Branch Strategy (GitHub Free)
 
-**⚠️ GitHub Free Limitation:** Branch protection rules não disponíveis.
+**⚠️ GitHub Free Limitation:** Branch protection rules não disponíveis.  
 
 ### Estratégia Discipline-Based
 
@@ -599,7 +664,7 @@ hotfix/[critical]              # Production hotfixes
 
 #### Git Hooks Locais (Opcional - Prevenção)
 
-**Localização:** [03-github-manager/pre-push-hook.sh](../../../03-github-manager/pre-push-hook.sh) (se criado)
+**Localização:** [03-github-manager/pre-push-hook.sh](../../../03-github-manager/pre-push-hook.sh) (se criado)  
 
 Previne push acidental para `main`:
 ```bash
@@ -607,13 +672,13 @@ cp 03-github-manager/pre-push-hook.sh .git/hooks/pre-push
 chmod +x .git/hooks/pre-push
 ```
 
-**Nota:** Git hooks são locais (cada dev precisa configurar).
+**Nota:** Git hooks são locais (cada dev precisa configurar).  
 
 ---
 
 ### Semantic Versioning
 
-**Format:** `vMAJOR.MINOR.PATCH`
+**Format:** `vMAJOR.MINOR.PATCH`  
 
 | Tipo | Exemplo | Quando |
 |------|---------|--------|
@@ -705,7 +770,7 @@ gh run view [RUN_ID] --repo mardantas/myTraderGEO
 
 ### Per Epic (Por Iteração - Sob Demanda)
 
-**Quando:** Ao iniciar cada novo épico (após DE-01 completo)
+**Quando:** Ao iniciar cada novo épico (após DE-01 completo)  
 
 - [ ] **Milestone criado** ⚙️ ON-DEMAND (um por vez)
   - [ ] Opção 1: GitHub UI (30s)
@@ -782,6 +847,6 @@ CI/CD workflows customizados com:
 
 ---
 
-**GitHub Setup Version:** 1.0
-**Status:** ✅ **Executado e validado**
-**Última atualização:** 2025-10-18
+**GitHub Setup Version:** 1.0  
+**Status:** ✅ **Executado e validado**  
+**Última atualização:** 2025-10-18  

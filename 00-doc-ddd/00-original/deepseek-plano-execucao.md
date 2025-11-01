@@ -1,7 +1,7 @@
 # Plano de Execução do myTraderGEO
 
 ## 1. Fase 1 - MVP (8 semanas)
-**Objetivo**: Lançamento da versão básica com gestão de estratégias
+**Objetivo**: Lançamento da versão básica com gestão de estratégias  
 
 ### Sprint 1 (2 semanas)
 - [ ] Configuração de ambientes (Docker Swarm + Traefik)
@@ -24,7 +24,7 @@
 - [ ] Deploy em staging
 
 ## 2. Fase 2 - Aprimoramentos (6 semanas)
-**Objetivo**: Adicionar funcionalidades avançadas
+**Objetivo**: Adicionar funcionalidades avançadas  
 
 ### Sprint 5 (2 semanas)
 - [ ] Módulo completo de ajustes/rolagem
@@ -42,7 +42,7 @@
 - [ ] Deploy em produção
 
 ## 3. Fase 3 - Consolidação (4 semanas)
-**Objetivo**: Melhorias pós-lançamento
+**Objetivo**: Melhorias pós-lançamento  
 
 ### Sprint 8 (2 semanas)
 - [ ] Mobile (PWA)

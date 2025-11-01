@@ -147,6 +147,7 @@ services:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     volumes:
       - postgres_prod_data:/var/lib/postgresql/data
+      - ../../04-database/init-scripts:/docker-entrypoint-initdb.d
       - ../../backups:/backups
     logging:
       driver: "json-file"

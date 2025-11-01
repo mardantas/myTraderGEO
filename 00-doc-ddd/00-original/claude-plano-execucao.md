@@ -65,10 +65,10 @@ Q4/2025: Scale & Optimize
 ### 4.1 FASE 1: Foundation (Sprints 1-6) - 12 semanas
 
 #### Sprint 1-2: Infraestrutura e Setup
-**Duração**: 4 semanas
-**Objetivo**: Estabelecer base técnica e ambiente de desenvolvimento
+**Duração**: 4 semanas  
+**Objetivo**: Estabelecer base técnica e ambiente de desenvolvimento  
 
-**Entregáveis**:
+**Entregáveis**:  
 - [ ] Configuração do ambiente de desenvolvimento
 - [ ] Setup do Docker Swarm para staging/produção
 - [ ] Configuração do Traefik como proxy reverso
@@ -79,17 +79,17 @@ Q4/2025: Scale & Optimize
 - [ ] Configuração do Redis para cache
 - [ ] Documentação de setup e deployment
 
-**Critérios de Aceitação**:
+**Critérios de Aceitação**:  
 - Ambiente de desenvolvimento funcional
 - Deploy automático para staging
 - Testes de integração básicos funcionando
 - Documentação técnica completa
 
 #### Sprint 3-4: Autenticação e Gestão de Usuários
-**Duração**: 4 semanas
-**Objetivo**: Implementar sistema de autenticação e perfis de usuário
+**Duração**: 4 semanas  
+**Objetivo**: Implementar sistema de autenticação e perfis de usuário  
 
-**Entregáveis**:
+**Entregáveis**:  
 - [ ] Sistema de registro e login
 - [ ] Autenticação JWT com refresh tokens
 - [ ] Gestão de perfis de usuário
@@ -99,17 +99,17 @@ Q4/2025: Scale & Optimize
 - [ ] Dashboard inicial do usuário
 - [ ] Recuperação de senha por email
 
-**User Stories**:
+**User Stories**:  
 - Como usuário, quero criar uma conta no sistema
 - Como usuário, quero fazer login de forma segura
 - Como usuário, quero visualizar meu perfil e plano
 - Como usuário, quero recuperar minha senha se esquecer
 
 #### Sprint 5-6: Gestão Básica de Estratégias
-**Duração**: 4 semanas
-**Objetivo**: Implementar CRUD básico de estratégias
+**Duração**: 4 semanas  
+**Objetivo**: Implementar CRUD básico de estratégias  
 
-**Entregáveis**:
+**Entregáveis**:  
 - [ ] Modelo de dados para estratégias
 - [ ] API para CRUD de estratégias
 - [ ] Validação de dados de entrada
@@ -119,7 +119,7 @@ Q4/2025: Scale & Optimize
 - [ ] Testes unitários e de integração
 - [ ] Documentação da API
 
-**User Stories**:
+**User Stories**:  
 - Como usuário, quero criar uma nova estratégia de opções
 - Como usuário, quero visualizar minhas estratégias ativas
 - Como usuário, quero editar uma estratégia existente
@@ -128,10 +128,10 @@ Q4/2025: Scale & Optimize
 ### 4.2 FASE 2: Core Features (Sprints 7-12) - 12 semanas
 
 #### Sprint 7-8: Dados de Mercado
-**Duração**: 4 semanas
-**Objetivo**: Integrar provedores de dados e implementar cache
+**Duração**: 4 semanas  
+**Objetivo**: Integrar provedores de dados e implementar cache  
 
-**Entregáveis**:
+**Entregáveis**:  
 - [ ] Integração com provedores de dados (Yahoo Finance, Alpha Vantage)
 - [ ] Sistema de cache para dados de mercado
 - [ ] API para cotações em tempo real
@@ -141,16 +141,16 @@ Q4/2025: Scale & Optimize
 - [ ] Gráficos básicos de preços
 - [ ] Monitoramento de health dos provedores
 
-**User Stories**:
+**User Stories**:  
 - Como usuário, quero ver cotações atualizadas dos meus ativos
 - Como usuário, quero visualizar histórico de preços
 - Como usuário, quero que o sistema seja resiliente a falhas de dados
 
 #### Sprint 9-10: Cálculos Financeiros e P&L
-**Duração**: 4 semanas
-**Objetivo**: Implementar engine de cálculos financeiros
+**Duração**: 4 semanas  
+**Objetivo**: Implementar engine de cálculos financeiros  
 
-**Entregáveis**:
+**Entregáveis**:  
 - [ ] Engine de cálculo de P&L
 - [ ] Cálculo de margem requerida
 - [ ] Métricas de performance
@@ -160,16 +160,16 @@ Q4/2025: Scale & Optimize
 - [ ] Relatórios de P&L
 - [ ] Alertas de risco
 
-**User Stories**:
+**User Stories**:  
 - Como usuário, quero ver o P&L atual das minhas estratégias
 - Como usuário, quero entender o risco das minhas posições
 - Como usuário, quero simular cenários de mercado
 
 #### Sprint 11-12: Ajustes e Sandbox
-**Duração**: 4 semanas
-**Objetivo**: Implementar ajustes de estratégias e ambiente de simulação
+**Duração**: 4 semanas  
+**Objetivo**: Implementar ajustes de estratégias e ambiente de simulação  
 
-**Entregáveis**:
+**Entregáveis**:  
 - [ ] Sistema de ajustes (rolagem, hedge, rebalanceamento)
 - [ ] Ambiente sandbox para simulação
 - [ ] Histórico de ajustes
@@ -179,7 +179,7 @@ Q4/2025: Scale & Optimize
 - [ ] Validação de conflitos
 - [ ] Documentação de ajustes
 
-**User Stories**:
+**User Stories**:  
 - Como usuário, quero ajustar minhas estratégias conforme o mercado
 - Como usuário, quero testar estratégias sem risco real
 - Como usuário, quero comparar performance entre estratégias
@@ -187,10 +187,10 @@ Q4/2025: Scale & Optimize
 ### 4.3 FASE 3: Advanced Features (Sprints 13-18) - 12 semanas
 
 #### Sprint 13-14: Gestão de Portfólio
-**Duração**: 4 semanas
-**Objetivo**: Implementar gestão completa de portfólio
+**Duração**: 4 semanas  
+**Objetivo**: Implementar gestão completa de portfólio  
 
-**Entregáveis**:
+**Entregáveis**:  
 - [ ] Módulo de gestão de portfólio
 - [ ] Controle de ativos livres vs. alocados
 - [ ] Gestão de garantias
@@ -200,16 +200,16 @@ Q4/2025: Scale & Optimize
 - [ ] Relatórios de alocação
 - [ ] Alertas de margem
 
-**User Stories**:
+**User Stories**:  
 - Como usuário, quero ver meu portfólio consolidado
 - Como usuário, quero controlar minha margem disponível
 - Como usuário, quero alocar ativos como garantia
 
 #### Sprint 15-16: Análise de Risco
-**Duração**: 4 semanas
-**Objetivo**: Implementar ferramentas avançadas de análise de risco
+**Duração**: 4 semanas  
+**Objetivo**: Implementar ferramentas avançadas de análise de risco  
 
-**Entregáveis**:
+**Entregáveis**:  
 - [ ] Cálculo de Value at Risk (VaR)
 - [ ] Análise de correlação
 - [ ] Stress testing
@@ -219,16 +219,16 @@ Q4/2025: Scale & Optimize
 - [ ] Relatórios de compliance
 - [ ] Configuração de perfil de risco
 
-**User Stories**:
+**User Stories**:  
 - Como usuário, quero entender meus riscos totais
 - Como usuário, quero ser alertado sobre exposições excessivas
 - Como usuário, quero configurar meus limites de risco
 
 #### Sprint 17-18: Relatórios e Analytics
-**Duração**: 4 semanas
-**Objetivo**: Implementar sistema completo de relatórios
+**Duração**: 4 semanas  
+**Objetivo**: Implementar sistema completo de relatórios  
 
-**Entregáveis**:
+**Entregáveis**:  
 - [ ] Relatórios de performance
 - [ ] Análise de benchmark
 - [ ] Exportação para PDF/Excel
@@ -238,7 +238,7 @@ Q4/2025: Scale & Optimize
 - [ ] Relatórios regulatórios
 - [ ] Scheduling de relatórios
 
-**User Stories**:
+**User Stories**:  
 - Como usuário, quero relatórios detalhados de performance
 - Como usuário, quero comparar com benchmarks
 - Como usuário, quero exportar dados para análise externa
@@ -246,10 +246,10 @@ Q4/2025: Scale & Optimize
 ### 4.4 FASE 4: Scale & Optimize (Sprints 19-24) - 12 semanas
 
 #### Sprint 19-20: Otimização de Performance
-**Duração**: 4 semanas
-**Objetivo**: Otimizar performance e escalabilidade
+**Duração**: 4 semanas  
+**Objetivo**: Otimizar performance e escalabilidade  
 
-**Entregáveis**:
+**Entregáveis**:  
 - [ ] Otimização de queries do banco
 - [ ] Implementação de cache distribuído
 - [ ] Lazy loading e paginação
@@ -259,16 +259,16 @@ Q4/2025: Scale & Optimize
 - [ ] Load testing
 - [ ] Otimização de bundle frontend
 
-**Critérios de Aceitação**:
+**Critérios de Aceitação**:  
 - Tempo de resposta < 200ms para 95% das requisições
 - Suporte para 1.000 usuários simultâneos
 - Redução de 50% no tempo de carregamento
 
 #### Sprint 21-22: Recursos Premium
-**Duração**: 4 semanas
-**Objetivo**: Implementar funcionalidades premium
+**Duração**: 4 semanas  
+**Objetivo**: Implementar funcionalidades premium  
 
-**Entregáveis**:
+**Entregáveis**:  
 - [ ] Dados de mercado em tempo real
 - [ ] Estratégias avançadas
 - [ ] Análise técnica integrada
@@ -278,16 +278,16 @@ Q4/2025: Scale & Optimize
 - [ ] Relatórios avançados
 - [ ] Integração com TradingView
 
-**User Stories**:
+**User Stories**:  
 - Como usuário premium, quero dados em tempo real
 - Como usuário premium, quero análise técnica avançada
 - Como desenvolvedor, quero integrar com a API
 
 #### Sprint 23-24: Integrações e Marketplace
-**Duração**: 4 semanas
-**Objetivo**: Implementar integrações finais e marketplace
+**Duração**: 4 semanas  
+**Objetivo**: Implementar integrações finais e marketplace  
 
-**Entregáveis**:
+**Entregáveis**:  
 - [ ] Integração com brokers (Nelogica/Cedro)
 - [ ] Marketplace de estratégias
 - [ ] Sistema de consultores
@@ -297,7 +297,7 @@ Q4/2025: Scale & Optimize
 - [ ] Compartilhamento social
 - [ ] Mobile app (React Native)
 
-**User Stories**:
+**User Stories**:  
 - Como usuário, quero executar ordens diretamente
 - Como consultor, quero monetizar minhas estratégias
 - Como usuário, quero seguir estratégias de outros traders
@@ -492,36 +492,36 @@ Q4/2025: Scale & Optimize
 ## 12. Plano de Contingência
 
 ### 12.1 Cenário: Atraso no Desenvolvimento
-**Gatilhos**:
+**Gatilhos**:  
 - Sprint velocity < 70% do planejado
 - Bugs críticos não resolvidos
 - Dependências externas atrasadas
 
-**Ações**:
+**Ações**:  
 - Repriorização do backlog
 - Aumento temporário da equipe
 - Redução do escopo de funcionalidades não críticas
 - Extensão do timeline em 2-4 semanas
 
 ### 12.2 Cenário: Problemas de Performance
-**Gatilhos**:
+**Gatilhos**:  
 - Tempo de resposta > 500ms
 - Queda de uptime < 95%
 - Reclamações de usuários
 
-**Ações**:
+**Ações**:  
 - Implementação de cache agressivo
 - Otimização de queries críticas
 - Scale horizontal da infraestrutura
 - Revisão da arquitetura se necessário
 
 ### 12.3 Cenário: Problemas de Adoção
-**Gatilhos**:
+**Gatilhos**:  
 - < 50% das metas de usuários
 - Alta taxa de churn (> 70%)
 - Feedback negativo consistente
 
-**Ações**:
+**Ações**:  
 - Pesquisa detalhada com usuários
 - Pivotagem de funcionalidades
 - Intensificação do marketing
@@ -555,4 +555,4 @@ Q4/2025: Scale & Optimize
 **Documento aprovado por**: [Nome do Aprovador]  
 **Data**: [Data de Aprovação]  
 **Versão**: 1.0  
-**Próxima revisão**: [Data]
+**Próxima revisão**: [Data]  

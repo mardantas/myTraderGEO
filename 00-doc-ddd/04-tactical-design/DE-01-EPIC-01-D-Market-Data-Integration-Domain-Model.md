@@ -1,17 +1,17 @@
 # DE-01-EPIC-01-D-Market-Data-Integration-Domain-Model.md
 
-**Projeto:** myTraderGEO
-**Epico:** EPIC-01-D - Market Data Integration (segmento do EPIC-01)
-**Data:** 2025-10-25
-**Engineer:** DE Agent
+**Projeto:** myTraderGEO  
+**Epico:** EPIC-01-D - Market Data Integration (segmento do EPIC-01)  
+**Data:** 2025-10-25  
+**Engineer:** DE Agent  
 
 ---
 
 ## 🎯 Contexto do Sub-Epico
 
-**Nome do Sub-Epico:** Market Data Integration
+**Nome do Sub-Epico:** Market Data Integration  
 
-**Bounded Context:** Market Data
+**Bounded Context:** Market Data  
 
 **Objetivo:**
 Modelar o gerenciamento de contratos de opcoes da B3 e ativos subjacentes, incluindo sincronizacao de dados (batch), streaming de precos em tempo real (WebSocket/SignalR), calculo de Greeks (Black-Scholes para opcoes europeias), tratamento de ajustes de strike (dividendos/proventos) e validacao de regras B3 (Puts europeias, series semanais W1-W5).
@@ -33,7 +33,7 @@ Modelar o gerenciamento de contratos de opcoes da B3 e ativos subjacentes, inclu
 ### Market Data BC
 
 #### [Aggregate: OptionContract](#1-optioncontract-aggregate-root)
-**Responsabilidade:** Contratos de opcao da B3
+**Responsabilidade:** Contratos de opcao da B3  
 
 **Entities:**
   - StrikeAdjustment
@@ -52,7 +52,7 @@ Modelar o gerenciamento de contratos de opcoes da B3 e ativos subjacentes, inclu
 ---
 
 #### [Aggregate: UnderlyingAsset](#2-underlyingasset-aggregate-root)
-**Responsabilidade:** Ativos subjacentes (PETR4, VALE3, etc.)
+**Responsabilidade:** Ativos subjacentes (PETR4, VALE3, etc.)  
 
 **Entities:**
   - (nenhuma child entity)
@@ -74,7 +74,7 @@ Modelar o gerenciamento de contratos de opcoes da B3 e ativos subjacentes, inclu
 
 ## 1. OptionContract (Aggregate Root)
 
-**Responsabilidade:** Gerenciar dados de contratos de opcoes da B3 (precos, Greeks, ajustes de strike)
+**Responsabilidade:** Gerenciar dados de contratos de opcoes da B3 (precos, Greeks, ajustes de strike)  
 
 **Invariantes (Business Rules):**
 1. Symbol deve ser unico
@@ -609,7 +609,7 @@ public record UserUnsubscribedFromSymbol(
 
 ## 2. UnderlyingAsset (Aggregate Root)
 
-**Responsabilidade:** Gerenciar dados do ativo subjacente (acao-objeto da opcao)
+**Responsabilidade:** Gerenciar dados do ativo subjacente (acao-objeto da opcao)  
 
 **Invariantes (Business Rules):**
 1. Symbol (Ticker) deve ser unico
@@ -966,7 +966,7 @@ var allOptions = await repo.GetAvailableOptionsAsync(ticker);
 
 ### Strategy Planning → Market Data Integration
 
-**Mecanismo:** Queries diretas (read-only) via repositories
+**Mecanismo:** Queries diretas (read-only) via repositories  
 
 **Fluxo de Instanciacao de Template:**
 ```
@@ -1051,7 +1051,7 @@ public record OptionContractDto(
 
 ### Market Data → B3 API Integration (External Service)
 
-**Mecanismo:** Anti-Corruption Layer (ACL) via IB3ApiClient
+**Mecanismo:** Anti-Corruption Layer (ACL) via IB3ApiClient  
 
 **Interface Externa (Infrastructure Layer):**
 
@@ -1249,11 +1249,11 @@ foreach (var b3Option in b3Options)
 
 ### UC-MarketData-01: Sync Options from B3
 
-**Actor:** System (Background Job / Scheduled Task)
-**Trigger:** Scheduled task (daily at 19h30 after market closes) ou trigger manual por admin
-**Bounded Context:** Market Data
+**Actor:** System (Background Job / Scheduled Task)  
+**Trigger:** Scheduled task (daily at 19h30 after market closes) ou trigger manual por admin  
+**Bounded Context:** Market Data  
 
-**Objetivo:** Sincronizar lista de opcoes da B3, identificando novas series (incluindo semanais W1-W5), atualizando precos/Greeks de existentes, e marcando expiradas automaticamente.
+**Objetivo:** Sincronizar lista de opcoes da B3, identificando novas series (incluindo semanais W1-W5), atualizando precos/Greeks de existentes, e marcando expiradas automaticamente.  
 
 **Fluxo:**
 
@@ -1553,11 +1553,11 @@ public class B3ApiClient : IB3ApiClient
 
 ### UC-MarketData-02: Stream Real-Time Market Data
 
-**Actor:** System (Background Service) + Trader (via SignalR client)
-**Trigger:** Trader conecta ao SignalR Hub e subscreve simbolos de interesse
-**Bounded Context:** Market Data
+**Actor:** System (Background Service) + Trader (via SignalR client)  
+**Trigger:** Trader conecta ao SignalR Hub e subscreve simbolos de interesse  
+**Bounded Context:** Market Data  
 
-**Objetivo:** Fornecer precos em tempo real de opcoes e ativos subjacentes para traders com plano Pleno/Consultor, usando WebSocket/SignalR para baixa latencia.
+**Objetivo:** Fornecer precos em tempo real de opcoes e ativos subjacentes para traders com plano Pleno/Consultor, usando WebSocket/SignalR para baixa latencia.  
 
 **Pre-requisitos:**
 - User deve ter `RealtimeData: true` no plano (Pleno ou Consultor)

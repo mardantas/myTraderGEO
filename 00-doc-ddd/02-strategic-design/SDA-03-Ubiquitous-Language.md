@@ -1,8 +1,8 @@
 # SDA-03-Ubiquitous-Language.md
 
-**Projeto:** myTraderGEO
-**Data:** 2025-10-12
-**Versão:** 1.0
+**Projeto:** myTraderGEO  
+**Data:** 2025-10-12  
+**Versão:** 1.0  
 
 ---
 
@@ -323,7 +323,7 @@
 
 **Documentação (PT):**
 ```markdown
-**Estratégia**: Combinação de posições em opções que formam uma operação completa
+**Estratégia**: Combinação de posições em opções que formam uma operação completa  
 ```
 
 **Código (EN):**
@@ -352,7 +352,7 @@ namespace MyTraderGEO.StrategyPlanning.Domain.Aggregates
 
 **Documentação (PT):**
 ```markdown
-**Gregas**: Medidas de sensibilidade da opção (Delta, Gamma, Theta, Vega)
+**Gregas**: Medidas de sensibilidade da opção (Delta, Gamma, Theta, Vega)  
 ```
 
 **Código (EN):**
@@ -374,7 +374,7 @@ namespace MyTraderGEO.StrategyPlanning.Domain.ValueObjects
 
 **Documentação (PT):**
 ```markdown
-**Estratégia Criada**: Evento emitido quando nova estratégia é criada
+**Estratégia Criada**: Evento emitido quando nova estratégia é criada  
 ```
 
 **Código (EN):**
@@ -395,7 +395,7 @@ namespace MyTraderGEO.StrategyPlanning.Domain.Events
 
 **Documentação (PT):**
 ```markdown
-**Repositório de Estratégias**: Persistência e recuperação de estratégias
+**Repositório de Estratégias**: Persistência e recuperação de estratégias  
 ```
 
 **Código (EN):**
@@ -504,9 +504,9 @@ namespace MyTraderGEO.StrategyPlanning.Domain.Interfaces
 - [x] Consultant Services (6 termos)
 - [x] Analytics & AI (10 termos)
 
-**Total:** 146 termos + 4 termos compartilhados = **150 termos**
+**Total:** 146 termos + 4 termos compartilhados = **150 termos**  
 
 ---
 
-**Status:** Completo e pronto para uso
-**Próxima revisão:** Após feedback de UXD e DE
+**Status:** Completo e pronto para uso  
+**Próxima revisão:** Após feedback de UXD e DE  
