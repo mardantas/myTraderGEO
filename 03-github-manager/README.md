@@ -8,8 +8,8 @@
 
 This is a **quick reference guide** for executing GitHub setup tasks. For strategic decisions, justifications, and technical details, consult [GM-00-GitHub-Setup.md](../00-doc-ddd/07-github-management/GM-00-GitHub-Setup.md).
 
-- **This README:** Commands and checklists (HOW to execute)
-- **GM-00:** Justifications and details (WHY and WHAT)
+- **This README:** Commands and checklists (HOW to execute)  
+- **GM-00:** Justifications and details (WHY and WHAT)  
 
 ---
 
@@ -17,13 +17,13 @@ This is a **quick reference guide** for executing GitHub setup tasks. For strate
 
 ### Discovery Phase (One-time)
 
-- [ ] **1. Execute labels script**
+- [ ] **1. Execute labels script**  
   ```bash
   bash 03-github-manager/setup-labels.sh
   ```
   **Details:** [GM-00 Labels Section](../00-doc-ddd/07-github-management/GM-00-GitHub-Setup.md#labels)
 
-- [ ] **2. Create Milestone M0** (GitHub UI - 30 seconds)
+- [ ] **2. Create Milestone M0** (GitHub UI - 30 seconds)  
   ```
   GitHub → Issues → Milestones → New Milestone
   Title: M0: Discovery Foundation
@@ -31,14 +31,14 @@ This is a **quick reference guide** for executing GitHub setup tasks. For strate
   ```
   **Details:** [GM-00 Milestones Section](../00-doc-ddd/07-github-management/GM-00-GitHub-Setup.md#milestones)
 
-- [ ] **3. Verify CI/CD workflows created**
+- [ ] **3. Verify CI/CD workflows created**  
   ```bash
   gh workflow list --repo mardantas/myTraderGEO
   ```
   **Expected:** 3 workflows (ci-backend.yml, ci-frontend.yml, security.yml)
   **Details:** [GM-00 CI/CD Section](../00-doc-ddd/07-github-management/GM-00-GitHub-Setup.md#cicd-workflows)
 
-- [ ] **4. Verify Dependabot enabled**
+- [ ] **4. Verify Dependabot enabled**  
   ```bash
   cat .github/dependabot.yml
   ```
@@ -112,7 +112,7 @@ bash 03-github-manager/scripts/create-epic-issue.sh \
 
 **⚠️ IMPORTANT:**
 - Script creates base template automatically
-- **User MUST edit issue after creation** to add complete DE-01 details
+- **User MUST edit issue after creation** to add complete DE-01 details  
 - GM guides user on what to customize (1min)
 
 **Verify:**

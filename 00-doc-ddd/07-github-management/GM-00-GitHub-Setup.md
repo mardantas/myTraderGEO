@@ -1,11 +1,14 @@
 # GM-00-GitHub-Setup.md
 
-**Projeto:** myTraderGEO  
-**Data:** 2025-10-18  
-**GitHub Manager:** GM Agent (v1.0)  
+**Agent:** GM (GitHub Manager)  
+**Project:** myTraderGEO  
+**Date:** 2025-10-18  
+**Phase:** Discovery  
+**Scope:** GitHub repository setup with templates, workflows, and automation  
+**Version:** 1.0  
 **Repository:** mardantas/myTraderGEO  
 
----
+---  
 
 ## 🎯 Objetivo
 
