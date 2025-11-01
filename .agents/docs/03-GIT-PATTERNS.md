@@ -576,7 +576,7 @@ environment:
 
 ### **Prerequisites for Remote Deploy**
 
-**Server must be prepared (PE-00 setup):**
+**Server must be prepared (PE-00-Environments-Setup.md):**
 - ✅ OS: Debian/Ubuntu
 - ✅ Docker Engine + Compose Plugin
 - ✅ Firewall (UFW): ports 22, 80, 443
@@ -585,7 +585,7 @@ environment:
 - ✅ Directory structure created
 - ✅ `.env` file with secrets
 
-**See:** PE platform engineering documentation (PE-00-Quick-Start.md, PE-01-Server-Setup.md, PE-02-Scaling-Strategy.md) for complete server setup guide
+**See:** PE-00-Environments-Setup.md for complete server setup guide (9 hardening steps, Traefik, deploy scripts)
 
 ---
 

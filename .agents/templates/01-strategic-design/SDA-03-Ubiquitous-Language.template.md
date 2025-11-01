@@ -7,10 +7,14 @@ MARKDOWN FORMATTING:
 
 # SDA-03-Ubiquitous-Language.md
 
-**Projeto:** [PROJECT_NAME]  
-**Data:** [YYYY-MM-DD]  
-
----
+**Agent:** SDA (Strategic Domain Analyst)  
+**Project:** [PROJECT_NAME]  
+**Date:** [YYYY-MM-DD]  
+**Phase:** Discovery  
+**Scope:** Define ubiquitous language for all bounded contexts  
+**Version:** 1.0  
+  
+---  
 
 ## 📖 Glossário de Termos de Negócio
 

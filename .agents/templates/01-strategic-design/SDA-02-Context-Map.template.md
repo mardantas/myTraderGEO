@@ -7,10 +7,14 @@ MARKDOWN FORMATTING:
 
 # SDA-02-Context-Map.md
 
-**Projeto:** [PROJECT_NAME]  
-**Data:** [YYYY-MM-DD]  
-
----
+**Agent:** SDA (Strategic Domain Analyst)  
+**Project:** [PROJECT_NAME]  
+**Date:** [YYYY-MM-DD]  
+**Phase:** Discovery  
+**Scope:** Map bounded contexts and their relationships  
+**Version:** 1.0  
+  
+---  
 
 ## 🗺️ Bounded Contexts Identificados
 

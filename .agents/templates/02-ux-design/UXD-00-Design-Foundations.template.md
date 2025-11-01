@@ -8,11 +8,13 @@ MARKDOWN FORMATTING:
 # UXD-00 - Design Foundations
 
 **Agent:** UXD (User Experience Designer)  
+**Project:** [PROJECT_NAME]  
+**Date:** [YYYY-MM-DD]  
 **Phase:** Discovery (1x)  
 **Scope:** Design foundations for the entire system  
-**Version:** 3.0 (Simplified)  
-
----
+**Version:** 3.0  
+  
+---  
 
 ## 📋 Metadata
 
