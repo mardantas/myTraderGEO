@@ -502,7 +502,7 @@ Obrigado pelo catch! Regression test criado.
 
 ## 🎯 Contexto
 
-**Deliverable Afetado:** PE platform engineering documentation (PE-00-Quick-Start.md, PE-01-Server-Setup.md, PE-02-Scaling-Strategy.md)
+**Deliverable Afetado:** PE-00-Environments-Setup.md (complete infrastructure guide)
 **Bounded Context:** Infra
 
 ## 📝 Descrição
@@ -533,13 +533,13 @@ Fase 3: Validação (quality checklist)
 - [x] Adicionado letsencrypt-staging certificateResolver
 - [x] docker-compose.staging.yml usa staging CA
 - [x] .env.example com instruções multi-ambiente
-- [x] PE-00: Comandos com --env-file .env.dev
-- [x] PE-00: Seção Network Architecture (multi-server)
+- [x] PE-00-Environments-Setup.md: Comandos com --env-file .env.dev
+- [x] PE-00-Environments-Setup.md: Seção Network Architecture (multi-server)
 - [x] README: Comandos com --env-file explícito
 
 ### Arquivos Modificados
 
-- PE platform engineering documentation (PE-00-Quick-Start.md, PE-01-Server-Setup.md, PE-02-Scaling-Strategy.md) (+250 linhas)
+- PE-00-Environments-Setup.md (complete infrastructure guide, +1067 linhas consolidadas)
 - 05-infra/configs/traefik.yml (2 certificateResolvers)
 - 05-infra/configs/.env.example (instruções de uso)
 - 05-infra/README.md (separação estratégico/operacional)

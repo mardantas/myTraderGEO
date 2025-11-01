@@ -139,7 +139,7 @@ Define tech stack, Docker Compose environments (dev/staging/prod with Traefik), 
 **Per Epic (OPTIONAL):** Performance checkpoint (15-30 min) - See [07-PE-SEC-Checkpoint-Guide.md](07-PE-SEC-Checkpoint-Guide.md) for criteria  
 
 ### Key Deliverables
-- **PE platform engineering documentation (PE-00-Quick-Start.md, PE-01-Server-Setup.md, PE-02-Scaling-Strategy.md)** - Tech stack + environment configs + server setup + scaling strategy  
+- **PE-00-Environments-Setup.md** - Complete infrastructure guide: tech stack + environments + server setup + Traefik + scaling strategy  
 - **Docker Compose** files (dev, staging, prod with Traefik)  
 - **Deploy scripts** (deploy.sh) with SSH remote deployment  
 - **PE-EPIC-[N]-Performance-Checkpoint.md** (optional per epic when performance-critical)  
@@ -148,7 +148,7 @@ Define tech stack, Docker Compose environments (dev/staging/prod with Traefik), 
 ```
 # Discovery (MANDATORY)
 "PE, configure ambientes (dev/stage/prod) com Docker Compose e defina tech stack"
-→ Creates PE-00 with Backend + Frontend + Database stack definition
+→ Creates PE-00-Environments-Setup.md with Backend + Frontend + Database stack definition
 → Docker Compose, Traefik, .env strategy, deploy.sh with remote deployment
 
 "PE, documente setup do servidor (Debian 12, Docker, firewall, usuários SSH)"
@@ -163,11 +163,11 @@ Define tech stack, Docker Compose environments (dev/staging/prod with Traefik), 
 → Updates deploy.sh with remote_health_check() function
 
 "PE, processe FEEDBACK-004 sobre evolução da especificação PE"
-→ Aligns PE-00 with updated agent spec (Traefik staging CA, server docs)
+→ Aligns PE-00-Environments-Setup.md with updated agent spec (Traefik staging CA, server docs)
 ```
 
 ### Think Mode Policy
-🔴 **MANDATORY** - Infrastructure setup involves multiple files/configs (Docker Compose, deploy scripts, 3 PE docs)
+🔴 **MANDATORY** - Infrastructure setup involves multiple files/configs (Docker Compose, deploy scripts, PE-00 comprehensive doc)
 
 ### Dependencies
 **Depends on:** SDA (BCs estimate infrastructure) | **Blocks:** GM, QAE, SEC (wait for tech stack)  
