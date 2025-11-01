@@ -7,14 +7,14 @@ FORMATTING REQUIREMENTS:
 
 # UXD-01 - [EpicName] - Wireframes
 
-**Agent:** UXD (User Experience Designer)
-**Project:** [PROJECT_NAME]
-**Date:** [YYYY-MM-DD]
-**Epic:** [EPIC_NUMBER]: [EPIC_NAME]
-**Phase:** Iteration (per epic)
-**Scope:** Epic-specific wireframes and user flows
-**Version:** 3.0
-
+**Agent:** UXD (User Experience Designer)  
+**Project:** [PROJECT_NAME]  
+**Date:** [YYYY-MM-DD]  
+**Epic:** [EPIC_NUMBER]: [EPIC_NAME]  
+**Phase:** Iteration (per epic)  
+**Scope:** Epic-specific wireframes and user flows  
+**Version:** 3.0  
+  
 ---
 
 ## 📋 Metadata

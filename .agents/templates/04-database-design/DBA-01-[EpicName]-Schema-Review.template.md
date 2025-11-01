@@ -7,14 +7,14 @@ MARKDOWN FORMATTING:
 
 # DBA-01-[EpicName]-Schema-Review.md
 
-**Agent:** DBA (Database Administrator)
-**Project:** [PROJECT_NAME]
-**Date:** [YYYY-MM-DD]
-**Epic:** [EPIC_NUMBER]: [EPIC_NAME]
-**Phase:** Iteration
-**Scope:** Database schema review and optimization for epic
-**Version:** 1.0
-
+**Agent:** DBA (Database Administrator)  
+**Project:** [PROJECT_NAME]  
+**Date:** [YYYY-MM-DD]  
+**Epic:** [EPIC_NUMBER]: [EPIC_NAME]  
+**Phase:** Iteration  
+**Scope:** Database schema review and optimization for epic  
+**Version:** 1.0  
+  
 ---
 
 ## 🎯 Contexto

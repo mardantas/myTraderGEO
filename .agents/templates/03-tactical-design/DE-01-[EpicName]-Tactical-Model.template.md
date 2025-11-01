@@ -7,14 +7,14 @@ MARKDOWN FORMATTING:
 
 # DE-01-[EpicName]-Tactical-Model.md
 
-**Agent:** DE (Domain Engineer)
-**Project:** [PROJECT_NAME]
-**Date:** [YYYY-MM-DD]
-**Epic:** [EPIC_NUMBER]: [EPIC_NAME]
-**Phase:** Iteration
-**Scope:** Tactical DDD model for epic-specific bounded contexts
-**Version:** 1.0
-
+**Agent:** DE (Domain Engineer)  
+**Project:** [PROJECT_NAME]  
+**Date:** [YYYY-MM-DD]  
+**Epic:** [EPIC_NUMBER]: [EPIC_NAME]  
+**Phase:** Iteration  
+**Scope:** Tactical DDD model for epic-specific bounded contexts  
+**Version:** 1.0  
+  
 ---
 
 ## 🎯 Contexto do Épico

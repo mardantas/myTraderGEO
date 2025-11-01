@@ -7,14 +7,14 @@ MARKDOWN FORMATTING:
 
 # PE-EPIC-[N]-[EpicName]-Performance-Checkpoint
 
-**Agent:** PE (Platform Engineer)
-**Project:** [PROJECT_NAME]
-**Date:** [YYYY-MM-DD]
-**Epic:** [EPIC_NUMBER]: [EPIC_NAME]
-**Status:** ✅ Approved / ⚠️ Issues Found / 🔴 Critical Issues
-**Duration:** 15-30 min
-
----
+**Agent:** PE (Platform Engineer)  
+**Project:** [PROJECT_NAME]  
+**Date:** [YYYY-MM-DD]  
+**Epic:** [EPIC_NUMBER]: [EPIC_NAME]  
+**Status:** ✅ Approved / ⚠️ Issues Found / 🔴 Critical Issues  
+**Duration:** 15-30 min  
+  
+---  
 
 ## 🎯 Checkpoint Scope
 

@@ -7,12 +7,12 @@ MARKDOWN FORMATTING:
 
 # SDA-01-Event-Storming.md
 
-**Agent:** SDA (Strategic Domain Analyst)
-**Project:** [PROJECT_NAME]
-**Date:** [YYYY-MM-DD]
-**Phase:** Discovery
-**Scope:** Event Storming workshop to identify domain events and bounded contexts
-**Version:** 1.0
+**Agent:** SDA (Strategic Domain Analyst)  
+**Project:** [PROJECT_NAME]  
+**Date:** [YYYY-MM-DD]  
+**Phase:** Discovery  
+**Scope:** Event Storming workshop to identify domain events and bounded contexts  
+**Version:** 1.0  
 
 ---
 

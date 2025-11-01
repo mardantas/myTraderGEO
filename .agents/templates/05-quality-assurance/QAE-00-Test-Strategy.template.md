@@ -7,14 +7,14 @@ MARKDOWN FORMATTING:
 
 # QAE-00-Test-Strategy.md
 
-**Agent:** QAE (Quality Assurance Engineer)
-**Project:** [PROJECT_NAME]
-**Date:** [YYYY-MM-DD]
-**Phase:** Discovery
-**Scope:** Comprehensive testing strategy and quality standards
-**Version:** 1.0
-
----
+**Agent:** QAE (Quality Assurance Engineer)  
+**Project:** [PROJECT_NAME]  
+**Date:** [YYYY-MM-DD]  
+**Phase:** Discovery  
+**Scope:** Comprehensive testing strategy and quality standards  
+**Version:** 1.0  
+  
+---  
 
 ## 🎯 Objetivo
 
