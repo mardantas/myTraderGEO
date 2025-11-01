@@ -1,21 +1,21 @@
-# QAE-00 - Test Strategy
+# QAE-00-Test-Strategy.md
 
 **Agent:** QAE (Quality Assurance Engineer)  
-**Phase:** Discovery (1x)  
+**Project:** myTraderGEO  
+**Date:** 2025-10-15  
+**Phase:** Discovery  
 **Scope:** Testing strategy, coverage targets, quality gates  
 **Version:** 1.0  
-**Date:** 2025-10-15  
-
----
+  
+---  
 
 ## 📋 Metadata
 
-- **Project Name:** myTraderGEO
-- **Created:** 2025-10-15
-- **Updated:** 2025-10-15
-- **QA Engineer:** QAE Agent
-- **Complexity:** Alta - Plataforma financeira com cálculos críticos
-- **Stack:** Definido pelo PE-00 (.NET 8 + Vue 3 + PostgreSQL 15)
+- **Project Name:** myTraderGEO  
+- **Created:** 2025-10-15  
+- **QA Engineer:** QAE Agent  
+- **Complexity:** Alta - Plataforma financeira com cálculos críticos  
+- **Stack:** Definido pelo PE-00 (.NET 8 + Vue 3 + PostgreSQL 15)  
 
 ---
 
