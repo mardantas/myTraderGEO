@@ -1,8 +1,10 @@
 # 05-infra - myTraderGEO Infrastructure
 
-Configuração completa de infraestrutura Docker para os ambientes Development, Staging e Production do myTraderGEO.
-
----
+**Projeto:** myTraderGEO  
+**Stack:** .NET 8 + Vue 3 + PostgreSQL + Docker  
+**Responsible Agent:** PE Agent  
+  
+---  
 
 ## 📋 About This Document
 
