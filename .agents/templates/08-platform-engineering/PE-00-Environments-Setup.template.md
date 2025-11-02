@@ -255,8 +255,79 @@ Esta seção documenta o **setup completo do servidor do zero**, desde a instala
 - **Domínio configurado** (DNS A records apontando para o IP do servidor)
 
 **Servidores:**
-- **Staging:** Hostname `[project]-stage` (ex: IP [STAGING_IP])  
-- **Production:** Hostname `[project]-prod` (ex: IP [PROD_IP])  
+- **Staging:** Hostname `[project]-stage` (ex: IP [STAGING_IP])
+- **Production:** Hostname `[project]-prod` (ex: IP [PROD_IP])
+
+---
+
+### 🚀 Automated Setup Scripts (Recommended)
+
+**NEW:** O PE agent agora gera scripts automatizados para simplificar o setup do servidor. Você pode escolher entre:
+
+1. **Opção A: Setup Automatizado (Recomendado)** - Execute um único script master que orquestra todos os 9 passos
+2. **Opção B: Setup Manual** - Siga as etapas manuais abaixo (útil para troubleshooting ou customizações)
+
+#### Opção A: Setup Automatizado
+
+O script master `05-infra/scripts/server-setup.sh` executa automaticamente todas as 9 etapas de hardening:
+
+```bash
+# 1. Copie o repositório para sua máquina local
+git clone https://github.com/[OWNER]/[PROJECT_NAME].git
+cd [PROJECT_NAME]
+
+# 2. Copie os scripts para o servidor via SCP
+scp -r 05-infra/scripts root@[SERVER_IP]:/tmp/
+
+# 3. Conecte via SSH ao servidor
+ssh root@[SERVER_IP]
+
+# 4. Execute o script master
+cd /tmp/scripts
+chmod +x server-setup.sh
+sudo bash server-setup.sh --environment staging   # ou production
+```
+
+**O que o script faz:**
+- ✅ Valida ambiente (staging/production)
+- ✅ Verifica pré-requisitos (OS, root access)
+- ✅ Executa 9 etapas de hardening em sequência
+- ✅ Log completo em `/var/log/[PROJECT_NAME]-server-setup.log`
+- ✅ Validação de cada etapa antes de prosseguir
+- ✅ Exit code 0 se sucesso, 1 se falha
+
+**Scripts individuais disponíveis:**
+```
+05-infra/scripts/
+├── server-setup.sh           # Master orchestrator
+└── setup/
+    ├── 00-hostname.sh        # Hostname configuration
+    ├── 01-system-update.sh   # System update + tools
+    ├── 02-docker.sh          # Docker Engine installation
+    ├── 03-firewall.sh        # UFW firewall setup
+    ├── 04-security.sh        # fail2ban + chrony + htpasswd
+    ├── 05-user.sh            # Project user/group creation
+    ├── 06-ssh-keys.sh        # SSH keys configuration
+    ├── 07-directories.sh     # Directory structure
+    ├── 08-env.sh             # .env template generation
+    └── 09-verify.sh          # Validation checklist
+```
+
+**Customização:**
+Os scripts são gerados a partir de templates pelo PE agent e já contêm os valores específicos do seu projeto (hostnames, usuário, timezone, etc). Para customização adicional, edite os scripts antes de executar.
+
+**Próximos passos após script automatizado:**
+1. Edite o arquivo `.env.staging` ou `.env.production` gerado no servidor
+2. Atualize todos os valores `CHANGE_ME` com senhas fortes e configurações reais
+3. Adicione sua chave SSH pública ao `authorized_keys` do usuário do projeto
+4. Teste a conexão SSH com o usuário do projeto
+5. Execute o primeiro deploy: `./deploy.sh staging` (ou `production`)
+
+---
+
+### Opção B: Setup Manual (Step-by-Step)
+
+Se preferir executar manualmente ou precisar troubleshooting, siga as etapas abaixo:
 
 ---
 
