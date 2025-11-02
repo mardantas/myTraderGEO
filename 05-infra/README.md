@@ -37,9 +37,9 @@ This is a **quick reference guide** for executing infrastructure commands (Docke
 │   ├── .env.example          # Template de variáveis de ambiente
 │   └── traefik.yml           # Traefik static configuration
 ├── docker/
-│   ├── docker-compose.yml            # Development
+│   ├── docker-compose.dev.yml        # Development
 │   ├── docker-compose.staging.yml    # Staging + Traefik
-│   └── docker-compose.production.yml # Production + Traefik + Resource Limits
+│   └── docker-compose.prod.yml # Production + Traefik + Resource Limits
 ├── dockerfiles/
 │   ├── backend/
 │   │   ├── Dockerfile        # Backend production
@@ -111,13 +111,13 @@ nano 05-infra/configs/.env.dev
 
 ```bash
 # Subir todos os serviços
-docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev up -d
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up -d
 
 # Verificar logs
-docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev logs -f
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev logs -f
 
 # Parar serviços
-docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev down
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev down
 ```
 
 **Acessar:**
@@ -153,7 +153,7 @@ docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs
 - JWT expiration: 60 minutos
 - Sem resource limits
 
-**Docker Compose:** `05-infra/docker/docker-compose.yml`
+**Docker Compose:** `05-infra/docker/docker-compose.dev.yml`
 
 **Dockerfiles:**
 - Backend: `05-infra/dockerfiles/backend/Dockerfile.dev`
@@ -184,7 +184,7 @@ docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs
 - Backup automático configurado
 - Environment: `ASPNETCORE_ENVIRONMENT=Production`
 
-**Docker Compose:** `05-infra/docker/docker-compose.production.yml`
+**Docker Compose:** `05-infra/docker/docker-compose.prod.yml`
 
 **Registry:** `ghcr.io/seu-usuario/mytrader-*:${VERSION}`
 
@@ -403,10 +403,10 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
 **Ver logs:**
 ```bash
 # Development
-docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev logs -f api
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev logs -f api
 
 # Production
-docker compose -f 05-infra/docker/docker-compose.production.yml logs -f api
+docker compose -f 05-infra/docker/docker-compose.prod.yml logs -f api
 ```
 
 ## Segurança
@@ -443,20 +443,20 @@ Referrer-Policy: strict-origin-when-cross-origin
 
 ```bash
 # Verificar logs
-docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev logs api
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev logs api
 
 # Verificar health
-docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev ps
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev ps
 ```
 
 ### Database connection failed
 
 ```bash
 # Verificar se database está healthy
-docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev ps database
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev ps database
 
 # Testar conexão manual
-docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev exec database psql -U postgres -d mytrader_dev
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U postgres -d mytrader_dev
 ```
 
 ### Hot reload não funciona
@@ -474,7 +474,7 @@ docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs
 
 ```bash
 # Parar serviços conflitantes
-docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev down
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev down
 
 # Ou alterar porta no docker-compose.yml
 ports:

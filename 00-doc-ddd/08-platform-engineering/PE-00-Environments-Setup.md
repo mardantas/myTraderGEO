@@ -5,7 +5,6 @@
 **Phase:** Discovery (1x)  
 **Scope:** Basic environments with Docker Compose and deploy scripts  
 **Version:** 1.0  
-**Date:** 2025-10-14  
 
 ---
 
@@ -207,9 +206,9 @@ traefik.mytrader.com          A    203.0.113.20
 ```
 05-infra/
 ├── docker/
-│   ├── docker-compose.yml            # Development
+│   ├── docker-compose.dev.yml        # Development
 │   ├── docker-compose.staging.yml    # Staging + Traefik
-│   └── docker-compose.production.yml # Production + Traefik + Resource Limits
+│   └── docker-compose.prod.yml # Production + Traefik + Resource Limits
 ├── dockerfiles/
 │   ├── backend/
 │   │   ├── Dockerfile                # Production (multi-stage)
@@ -232,9 +231,9 @@ traefik.mytrader.com          A    203.0.113.20
 
 | Arquivo | Descrição | Documentação |
 |---------|-----------|--------------|
-| [`05-infra/docker/docker-compose.yml`](../../05-infra/docker/docker-compose.yml) | Ambiente local (dev) com hot reload | Ver arquivo |
+| [`05-infra/docker/docker-compose.dev.yml`](../../05-infra/docker/docker-compose.dev.yml) | Ambiente local (dev) com hot reload | Ver arquivo |
 | [`05-infra/docker/docker-compose.staging.yml`](../../05-infra/docker/docker-compose.staging.yml) | Staging com Traefik + Let's Encrypt | Ver arquivo |
-| [`05-infra/docker/docker-compose.production.yml`](../../05-infra/docker/docker-compose.production.yml) | Production com resource limits + Traefik | Ver arquivo |
+| [`05-infra/docker/docker-compose.prod.yml`](../../05-infra/docker/docker-compose.prod.yml) | Production com resource limits + Traefik | Ver arquivo |
 | [`05-infra/configs/traefik.yml`](../../05-infra/configs/traefik.yml) | Reverse proxy + SSL automático | Ver arquivo |
 | [`05-infra/configs/.env.example`](../../05-infra/configs/.env.example) | Template de variáveis de ambiente | Ver arquivo |
 | [`05-infra/scripts/deploy.sh`](../../05-infra/scripts/deploy.sh) | Script de deployment bash | Ver arquivo |
@@ -744,7 +743,7 @@ Os arquivos de configuração e deploy ficam em um diretório dedicado no servid
 | Arquivo no Repositório Git | Destino no Servidor | Criado por |
 |----------------------------|---------------------|------------|
 | `05-infra/docker/docker-compose.staging.yml` | `/home/mytrader/mytrader-app/app/docker-compose.yml` | `deploy.sh` (scp) |
-| `05-infra/docker/docker-compose.production.yml` | `/home/mytrader/mytrader-app/app/docker-compose.yml` | `deploy.sh` (scp) |
+| `05-infra/docker/docker-compose.prod.yml` | `/home/mytrader/mytrader-app/app/docker-compose.yml` | `deploy.sh` (scp) |
 | `05-infra/configs/traefik.yml` | `/home/mytrader/mytrader-app/app/configs/traefik.yml` | `deploy.sh` (scp) |
 | `05-infra/configs/.env.example` | `/home/mytrader/mytrader-app/app/.env` | **Manual** (primeira vez) |
 | `05-infra/scripts/backup-database.sh` | `/home/mytrader/mytrader-app/scripts/backup-db.sh` | Manual ou `deploy.sh` |
@@ -885,10 +884,10 @@ docker volume prune                           # Remover volumes não usados (CUI
 cp 05-infra/configs/.env.example 05-infra/configs/.env.dev
 
 # 2. Iniciar serviços
-docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev up -d
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up -d
 
 # 3. Verificar saúde
-docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev ps
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev ps
 ```
 
 **Acessos:**
@@ -1399,9 +1398,9 @@ Phase 3: Scale (Se explodir)
 - [x] 05-infra/README.md criado
 
 ### Physical Files Created
-- [x] `05-infra/docker/docker-compose.yml` (development)
+- [x] `05-infra/docker/docker-compose.dev.yml` (development)
 - [x] `05-infra/docker/docker-compose.staging.yml` (staging + Traefik)
-- [x] `05-infra/docker/docker-compose.production.yml` (production + Traefik)
+- [x] `05-infra/docker/docker-compose.prod.yml` (production + Traefik)
 - [x] `05-infra/dockerfiles/backend/Dockerfile.dev`
 - [x] `05-infra/dockerfiles/backend/Dockerfile`
 - [x] `05-infra/dockerfiles/frontend/Dockerfile.dev`
