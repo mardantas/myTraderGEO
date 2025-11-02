@@ -63,6 +63,57 @@ This is a **quick reference guide** for executing infrastructure commands (Docke
 
 ---
 
+
+## 🛠️ Server Setup
+
+### Initial Server Configuration (Staging/Production)
+
+Before deploying to staging or production, you must configure the VPS server with Docker, firewall, security hardening, and project user.
+
+**Two Options Available:**
+
+**Option A: Automated Setup (Recommended - ~5 minutes)**
+
+```bash
+# 1. Clone repository locally
+git clone https://github.com/{OWNER}/{PROJECT_NAME}.git
+
+# 2. Copy scripts to server
+scp -r 05-infra/scripts root@{SERVER_IP}:/tmp/
+
+# 3. SSH to server and execute master script
+ssh root@{SERVER_IP}
+cd /tmp/scripts
+chmod +x server-setup.sh
+sudo bash server-setup.sh --environment staging  # or production
+```
+
+**Option B: Manual Setup (Step-by-Step - ~30 minutes)**
+
+Follow the detailed manual instructions in [PE-00-Environments-Setup.md](../00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md#opção-b-setup-manual-step-by-step).
+
+**What the automated setup does:**
+- ✅ Configures hostname (staging/production)
+- ✅ Updates system and installs essential tools
+- ✅ Installs Docker Engine + Docker Compose Plugin
+- ✅ Configures UFW firewall (ports 22, 80, 443)
+- ✅ Installs fail2ban, chrony, htpasswd
+- ✅ Creates project user/group with Docker access
+- ✅ Configures SSH keys for deployment
+- ✅ Creates directory structure
+- ✅ Generates .env template
+- ✅ Validates all configuration
+
+**Next steps after server setup:**
+1. Edit `.env.staging` or `.env.prod` with real secrets
+2. Add SSH keys to authorized_keys
+3. Test SSH connection with project user
+4. Run first deploy: `./deploy.sh staging` (or `production`)
+
+**For detailed documentation, see:** [PE-00-Environments-Setup.md](../00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md#-setup-inicial-do-servidor-infraestrutura-base)
+
+---
+
 ## 🚀 Quick Start
 
 ### 1. Configure Environment Variables
