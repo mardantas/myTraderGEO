@@ -120,19 +120,19 @@
                 <principle>README is an INDEX/QUICK-REFERENCE to PE-00, not a duplicate</principle>
             </relationship>
         </deliverable>
-        <deliverable path="docker-compose.dev.yml" base-path="project-root">
+        <deliverable path="05-infra/docker/docker-compose.dev.yml" base-path="">
             <description>Docker Compose for local development</description>
             <type>infrastructure</type>
         </deliverable>
-        <deliverable path="docker-compose.staging.yml" base-path="project-root">
+        <deliverable path="05-infra/docker/docker-compose.staging.yml" base-path="">
             <description>Docker Compose for staging environment</description>
             <type>infrastructure</type>
         </deliverable>
-        <deliverable path="docker-compose.prod.yml" base-path="project-root">
+        <deliverable path="05-infra/docker/docker-compose.prod.yml" base-path="">
             <description>Docker Compose for production environment</description>
             <type>infrastructure</type>
         </deliverable>
-        <deliverable path="deploy.sh" base-path="project-root">
+        <deliverable path="05-infra/scripts/deploy.sh" base-path="">
             <description>Deploy script (bash) for local and remote deployment with environment detection</description>
             <functions>
                 <function>check_ssh_connection() - Validates SSH connectivity before remote deploy</function>
@@ -145,7 +145,7 @@
             <type>script</type>
             <note>Script detects local vs remote automatically. Remote uses SSH/SCP to deploy to [project]-staging or [project]-prod servers.</note>
         </deliverable>
-        <deliverable path=".env.example" base-path="project-root">
+        <deliverable path="05-infra/configs/.env.example" base-path="">
             <description>Environment variables template with multi-environment instructions</description>
             <instructions>
                 <instruction>Copy to .env.dev (committed with safe defaults)</instruction>
