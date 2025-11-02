@@ -21,7 +21,7 @@
 
 ## 🎯 Objetivo
 
-Configurar ambientes básicos (dev, staging, production) com Docker Compose e scripts de deploy simples para a plataforma de trading myTraderGEO.
+Configurar ambientes básicos (dev, staging, prod) com Docker Compose e scripts de deploy simples para a plataforma de trading myTraderGEO.
 
 **Filosofia:** Pragmatic infrastructure - essencial para começar desenvolvimento rapidamente e deploy incremental por épico.  
 
@@ -104,7 +104,7 @@ Configurar ambientes básicos (dev, staging, production) com Docker Compose e sc
 |-------------|---------|----------------|---------------|----------|
 | **Development** | Local development | Docker Compose (localhost) | `docker compose up` | PostgreSQL container |
 | **Staging** | Pre-production testing | VPS / Cloud | `./deploy.sh staging` | PostgreSQL container |
-| **Production** | Live users | VPS / Cloud | `./deploy.sh production` | PostgreSQL container* |
+| **Production** | Live users | VPS / Cloud | `./deploy.sh prod` | PostgreSQL container* |
 
 > \*PostgreSQL roda em container via Docker Compose para MVP. Migrar para managed database (AWS RDS / Azure Database / Cloud SQL) quando escalar para Managed Cloud (>10k usuários, conforme seção "Estratégia de Escalabilidade").
 
@@ -576,7 +576,7 @@ cat > ~/mytrader-app/app/.env << 'EOF'
 # ===== myTraderGEO Environment Configuration =====
 # ATENÇÃO: Este arquivo contém SECRETS - NUNCA versionar no Git!
 
-# Environment: staging ou production
+# Environment: staging ou prod
 DOMAIN=staging.mytrader.com  # Ajustar: staging.mytrader.com OU mytrader.com
 ACME_EMAIL=admin@mytrader.com
 
@@ -694,8 +694,8 @@ Após completar este setup, o servidor está pronto para:
 # Na máquina de desenvolvimento:
 ./05-infra/scripts/deploy.sh staging
 
-# Ou para production:
-./05-infra/scripts/deploy.sh production v1.0.0
+# Ou para prod:
+./05-infra/scripts/deploy.sh prod v1.0.0
 ```
 
 ---
@@ -709,7 +709,7 @@ Os arquivos de configuração e deploy ficam em um diretório dedicado no servid
 ```
 /home/mytrader/mytrader-app/
 ├── app/                       # Deploy artifacts (docker-compose + configs)
-│   ├── docker-compose.yml     # Copiado de 05-infra/docker/docker-compose.{env}.yml
+│   ├── docker-compose.yml     # Copiado de docker-compose.staging.yml ou docker-compose.prod.yml
 │   ├── .env                   # Secrets (criado manualmente, NÃO versionado no Git)
 │   └── configs/
 │       └── traefik.yml        # Copiado de 05-infra/configs/traefik.yml
@@ -782,7 +782,7 @@ mkdir -p ~/mytrader-app/logs
 
 # 4. Criar .env inicial (EDITAR COM SECRETS REAIS!)
 cat > ~/mytrader-app/app/.env << 'EOF'
-# Environment: staging (ou production)
+# Environment: staging (ou prod)
 DOMAIN=staging.mytrader.com  # Ajustar conforme ambiente
 ACME_EMAIL=admin@mytrader.com
 
@@ -902,7 +902,7 @@ docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/con
 ./05-infra/scripts/deploy.sh staging
 
 # Deploy production (com confirmação)
-./05-infra/scripts/deploy.sh production v1.0.0
+./05-infra/scripts/deploy.sh prod v1.0.0
 ```
 
 ---
@@ -1362,7 +1362,7 @@ Phase 3: Scale (Se explodir)
 
 ### Infrastructure
 - [x] Stack tecnológico definido (.NET 8 + Vue 3 + PostgreSQL 15)
-- [x] Docker Compose criado para dev/staging/production
+- [x] Docker Compose criado para dev/staging/prod
 - [x] Dockerfiles criados (backend dev/prod, frontend dev/prod)
 - [x] Database configurado (PostgreSQL 15 container)
 - [x] Nginx configurado (frontend production - interno ao container)
@@ -1444,6 +1444,6 @@ Phase 3: Scale (Se explodir)
 
 **PE-00 Status:** ✅ **COMPLETO**  
 **Stack Definido:** .NET 8 + Vue 3 + TypeScript + PostgreSQL 15  
-**Ambientes:** Docker Compose (dev/staging/production)  
+**Ambientes:** Docker Compose (dev/staging/prod)  
 **Deploy:** Scripts bash (semi-automatizado)  
 **Próximo:** GM-00, SEC-00, QAE-00 podem executar em paralelo  
