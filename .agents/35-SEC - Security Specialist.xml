@@ -75,27 +75,44 @@
     </responsibilities>
 
     <deliverables>
-        <deliverable path="SEC-01-Threat-Model.md" base-path="security">
-            <template base-path="templates">09-security/SEC-01-Threat-Model.template.md</template>
-            <description>Complete threat model (STRIDE for each BC)</description>
+        <deliverable path="SEC-00-Security-Baseline.md" base-path="security" order="1">
+            <template base-path="templates">09-security/SEC-00-Security-Baseline.template.md</template>
+            <description>Essential security baseline: OWASP Top 3 + LGPD minimum + Auth strategy</description>
+            <sections>
+                <section>Threat Identification (per BC)</section>
+                <section>OWASP Top 3 Mitigations (A01 Access Control, A02 Crypto, A03 Injection)</section>
+                <section>LGPD Compliance Minimum (data mapping, subject rights, DPO)</section>
+                <section>Authentication & Authorization (JWT, RBAC, domain-level authz)</section>
+                <section>Secure Development Practices (SAST ready, secrets management)</section>
+                <section>Security Monitoring (structured logging, critical events)</section>
+            </sections>
+            <phase>discovery</phase>
+            <type>documentation-strategic</type>
+            <mandatory>true</mandatory>
+            <note>Discovery security baseline for MVP/small projects. Covers essentials without full STRIDE, pentest, or incident response (add in production scaling).</note>
         </deliverable>
-        <deliverable path="SEC-02-Security-Architecture.md" base-path="security">
-            <template base-path="templates">09-security/SEC-02-Security-Architecture.template.md</template>
-            <description>Security architecture review (zero-trust, defense in depth)</description>
-        </deliverable>
-        <deliverable path="SEC-03-Compliance-Report.md" base-path="security">
-            <template base-path="templates">09-security/SEC-03-Compliance-Report.template.md</template>
-            <description>Compliance audit report (LGPD, SOC2, PCI-DSS)</description>
-        </deliverable>
-        <deliverable path="SEC-04-Pentest-Report.md" base-path="security">
-            <template base-path="templates">09-security/SEC-04-Pentest-Report.template.md</template>
-            <description>Penetration test report (vulnerabilities found, remediation)</description>
-        </deliverable>
-        <deliverable path="SEC-05-Incident-Response-Plan.md" base-path="security">
-            <template base-path="templates">09-security/SEC-05-Incident-Response-Plan.template.md</template>
-            <description>Incident response playbook (detection, response, recovery)</description>
+
+        <deliverable path="SEC-EPIC-[N]-Security-Checkpoint.md" base-path="security" optional="true">
+            <template base-path="templates">09-security/SEC-EPIC-N-Security-Checkpoint.template.md</template>
+            <description>Optional per-epic security checkpoint (15-30 min quick review)</description>
+            <type>documentation-checkpoint</type>
+            <mandatory>false</mandatory>
+            <note>Quick security review after epic implementation. Checks: new endpoints secured, validation present, no secrets in code, logging added.</note>
         </deliverable>
     </deliverables>
+
+    <out-of-scope-for-discovery>
+        <advanced-deliverables>
+            The following are OUT OF SCOPE for Discovery (MVP/small projects):
+            - Full STRIDE threat modeling (SEC-01) - Enterprise security architecture
+            - Zero-trust architecture review (SEC-02) - Advanced production security
+            - SOC2/PCI-DSS compliance audit (SEC-03) - Regulatory compliance
+            - Penetration testing (SEC-04) - Professional security testing
+            - Incident response plan (SEC-05) - Formal incident playbooks
+
+            Add these when scaling to enterprise (>100k users, SOC2 compliance required).
+        </advanced-deliverables>
+    </out-of-scope-for-discovery>
 
     <predecessors>
         <predecessor agent="SDA" phase="discovery">Bounded Contexts and sensitive data identified</predecessor>
