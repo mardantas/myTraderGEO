@@ -4,7 +4,7 @@
 # myTraderGEO - Deployment Script
 # ==================================
 # Usage: ./deploy.sh [environment] [version]
-# Example: ./deploy.sh production v1.0.0
+# Example: ./deploy.sh prod v1.0.0
 #          ./deploy.sh staging latest
 
 set -e  # Exit on any error
@@ -41,13 +41,13 @@ show_usage() {
 Usage: $0 [environment] [version]
 
 Arguments:
-    environment    Target environment (development|staging|production)
+    environment    Target environment (dev|staging|prod)
     version        Docker image version tag (default: latest)
 
 Examples:
-    $0 development
+    $0 dev
     $0 staging latest
-    $0 production v1.0.0
+    $0 prod v1.0.0
 
 EOF
     exit 1
@@ -257,7 +257,7 @@ deploy_remote() {
 
     if [ "$env" = "staging" ]; then
         SERVER_HOST="mytrader-stage"
-    elif [ "$env" = "production" ]; then
+    elif [ "$env" = "prod" ]; then
         SERVER_HOST="mytrader-prod"
     else
         log_error "Ambiente inválido: $env"
@@ -349,15 +349,15 @@ main() {
 
     # Validate environment
     case "$environment" in
-        development)
-            log_warn "Deploying to DEVELOPMENT environment"
+        dev)
+            log_warn "Deploying to DEV environment"
             ;;
         staging)
             log_info "Deploying to STAGING environment"
             ;;
-        production)
-            log_warn "Deploying to PRODUCTION environment"
-            read -p "Are you sure you want to deploy to production? (yes/no): " confirm
+        prod)
+            log_warn "Deploying to PROD environment"
+            read -p "Are you sure you want to deploy to prod? (yes/no): " confirm
             if [ "$confirm" != "yes" ]; then
                 log_info "Deployment cancelled"
                 exit 0
@@ -365,7 +365,7 @@ main() {
             ;;
         *)
             log_error "Invalid environment: $environment"
-            log_info "Valid environments: development, staging, production"
+            log_info "Valid environments: dev, staging, prod"
             show_usage
             ;;
     esac
@@ -374,7 +374,7 @@ main() {
     export VERSION="$version"
 
     # Detect deployment type (local vs remote)
-    if [ "$environment" = "development" ]; then
+    if [ "$environment" = "dev" ]; then
         # Local deployment
         log_info "========================================="
         log_info "myTraderGEO Local Deployment"
@@ -402,7 +402,7 @@ main() {
             show_logs "$environment"
         fi
     else
-        # Remote deployment (staging or production)
+        # Remote deployment (staging or prod)
         deploy_remote "$environment" "$version"
     fi
 }
