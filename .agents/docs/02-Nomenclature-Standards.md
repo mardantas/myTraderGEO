@@ -262,6 +262,40 @@ public class StrategyRepository : IStrategyRepository { }
 
 ## 🔧 Nomenclatura de Configuração
 
+### Environment Naming Convention
+
+**PADRÃO OBRIGATÓRIO:** Todos os ambientes devem seguir a nomenclatura **`dev`**, **`staging`**, **`prod`**
+
+**Aplicação do Padrão:**
+```bash
+# Docker Compose files
+docker-compose.dev.yml          # Development (local)
+docker-compose.staging.yml      # Staging (remote VPS)
+docker-compose.prod.yml         # Production (remote VPS)
+
+# Environment files
+.env.dev                        # Development
+.env.staging                    # Staging
+.env.prod                       # Production
+
+# Deploy script usage
+./deploy.sh dev                 # Local deployment
+./deploy.sh staging             # Remote staging deployment
+./deploy.sh prod                # Remote production deployment
+
+# Server hostnames
+myproject-staging               # Staging server
+myproject-prod                  # Production server
+localhost                       # Development (local)
+```
+
+**⚠️ NÃO USAR:**
+- ❌ `development` (muito longo, usar `dev`)
+- ❌ `production` (muito longo, usar `prod`)
+- ❌ `docker-compose.yml` sem sufixo (ambíguo, usar `docker-compose.dev.yml`)
+
+---
+
 ### .env Files (Environment Variables)
 
 **Formato:** `.env.[environment]`  
@@ -296,7 +330,7 @@ FEATURE_ANALYTICS_ENABLED=true      # prod
 **Uso em Comandos:**
 ```bash
 # SEMPRE usar --env-file explícito
-docker compose -f docker-compose.yml --env-file .env.dev up
+docker compose -f docker-compose.dev.yml --env-file .env.dev up
 docker compose -f docker-compose.staging.yml --env-file .env.staging up -d
 docker compose -f docker-compose.prod.yml --env-file .env.prod up -d
 ```
