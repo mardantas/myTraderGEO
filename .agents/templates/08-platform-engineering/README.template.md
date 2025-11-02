@@ -44,7 +44,7 @@ This is a **quick reference guide** for executing infrastructure commands (Docke
 │   ├── .env.example          # Environment variables template
 │   └── traefik.yml           # Traefik static configuration
 ├── docker/
-│   ├── docker-compose.yml            # Development
+│   ├── docker-compose.dev.yml            # Development
 │   ├── docker-compose.staging.yml    # Staging + Traefik
 │   └── docker-compose.prod.yml # Production + Traefik + Resource Limits
 ├── dockerfiles/
@@ -79,13 +79,13 @@ nano 05-infra/configs/.env.dev
 
 ```bash
 # Start all services
-docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev up -d
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up -d
 
 # View logs
-docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev logs -f
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev logs -f
 
 # Stop services
-docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev down
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev down
 ```
 
 **Access:**  
@@ -117,33 +117,33 @@ docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs
 
 ```bash
 # Start all services
-docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev up -d
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up -d
 
 # Start specific service
-docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev up -d database
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up -d database
 
 # View logs (all services)
-docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev logs -f
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev logs -f
 
 # View logs (specific service)
-docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev logs -f api
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev logs -f api
 
 # Restart service
-docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev restart api
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev restart api
 
 # Stop all services
-docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev down
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev down
 
 # Stop and remove volumes (⚠️ WARNING: deletes data!)
-docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev down -v
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev down -v
 
 # Rebuild image (after Dockerfile changes)
-docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev build api
-docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev up -d api
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev build api
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up -d api
 
 # Execute command in running container
-docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev exec api bash
-docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev exec database psql -U {project}_app -d {project}_dev
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec api bash
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U {project}_app -d {project}_dev
 ```
 
 ### Staging
@@ -192,7 +192,7 @@ docker compose -f 05-infra/docker/docker-compose.prod.yml --env-file 05-infra/co
 - JWT expiration: 60 minutes  
 - No resource limits  
 
-**Docker Compose:** `05-infra/docker/docker-compose.yml`  
+**Docker Compose:** `05-infra/docker/docker-compose.dev.yml`  
 
 **Dockerfiles:**  
 - Backend: `05-infra/dockerfiles/backend/Dockerfile.dev`  
@@ -462,7 +462,7 @@ cat 05-infra/configs/traefik.yml | grep email
 
 **Backend:**  
 ```bash
-# 1. Verify volume mount in docker-compose.yml
+# 1. Verify volume mount in docker-compose.dev.yml
 docker compose config | grep -A 5 "api:"
 
 # 2. Check if watch is enabled (depends on framework)

@@ -200,9 +200,9 @@ traefik.[DOMAIN]          A    [PROD_IP]
 ```
 05-infra/
 ├── docker/
-│   ├── docker-compose.yml            # Development
+│   ├── docker-compose.dev.yml        # Development
 │   ├── docker-compose.staging.yml    # Staging + Traefik
-│   └── docker-compose.production.yml # Production + Traefik + Resource Limits
+│   └── docker-compose.prod.yml       # Production + Traefik + Resource Limits
 ├── dockerfiles/
 │   ├── backend/
 │   │   ├── Dockerfile                # Production (multi-stage)
@@ -227,7 +227,7 @@ traefik.[DOMAIN]          A    [PROD_IP]
 |---------|-----------|--------------|
 | `05-infra/docker/docker-compose.yml` | Ambiente local (dev) com hot reload | Ver arquivo |
 | `05-infra/docker/docker-compose.staging.yml` | Staging com Traefik + Let's Encrypt | Ver arquivo |
-| `05-infra/docker/docker-compose.production.yml` | Production com resource limits + Traefik | Ver arquivo |
+| `05-infra/docker/docker-compose.prod.yml` | Production com resource limits + Traefik | Ver arquivo |
 | `05-infra/configs/traefik.yml` | Reverse proxy + SSL automático | Ver arquivo |
 | `05-infra/configs/.env.example` | Template de variáveis de ambiente | Ver arquivo |
 | `05-infra/scripts/deploy.sh` | Script de deployment bash | Ver arquivo |
@@ -749,7 +749,7 @@ Os arquivos de configuração e deploy ficam em um diretório dedicado no servid
 | Arquivo no Repositório Git | Destino no Servidor | Criado por |
 |----------------------------|---------------------|------------|
 | `05-infra/docker/docker-compose.staging.yml` | `/home/[project]_app/[project]-app/app/docker-compose.yml` | `deploy.sh` (scp) |
-| `05-infra/docker/docker-compose.production.yml` | `/home/[project]_app/[project]-app/app/docker-compose.yml` | `deploy.sh` (scp) |
+| `05-infra/docker/docker-compose.prod.yml` | `/home/[project]_app/[project]-app/app/docker-compose.yml` | `deploy.sh` (scp) |
 | `05-infra/configs/traefik.yml` | `/home/[project]_app/[project]-app/app/configs/traefik.yml` | `deploy.sh` (scp) |
 | `05-infra/configs/.env.example` | `/home/[project]_app/[project]-app/app/.env` | **Manual** (primeira vez) |
 | `05-infra/scripts/backup-database.sh` | `/home/[project]_app/[project]-app/scripts/backup-db.sh` | Manual ou `deploy.sh` |
@@ -1103,7 +1103,7 @@ Docker Desktop armazena named volumes no filesystem WSL2:
 ### Physical Files Created
 - [ ] `05-infra/docker/docker-compose.yml`
 - [ ] `05-infra/docker/docker-compose.staging.yml`
-- [ ] `05-infra/docker/docker-compose.production.yml`
+- [ ] `05-infra/docker/docker-compose.prod.yml`
 - [ ] `05-infra/dockerfiles/backend/Dockerfile.dev`
 - [ ] `05-infra/dockerfiles/backend/Dockerfile`
 - [ ] `05-infra/dockerfiles/frontend/Dockerfile.dev`
