@@ -139,10 +139,11 @@ Define tech stack, Docker Compose environments (dev/staging/prod with Traefik), 
 **Per Epic (OPTIONAL):** Performance checkpoint (15-30 min) - See [07-PE-SEC-Checkpoint-Guide.md](07-PE-SEC-Checkpoint-Guide.md) for criteria  
 
 ### Key Deliverables
-- **PE-00-Environments-Setup.md** - Complete infrastructure guide: tech stack + environments + server setup + Traefik + scaling strategy  
-- **Docker Compose** files (dev, staging, prod with Traefik)  
-- **Deploy scripts** (deploy.sh) with SSH remote deployment  
-- **PE-EPIC-[N]-Performance-Checkpoint.md** (optional per epic when performance-critical)  
+- **PE-00-Environments-Setup.md** - Complete infrastructure guide: tech stack + environments + server setup (automated + manual) + Traefik + scaling strategy
+- **Docker Compose** files (dev, staging, prod with Traefik)
+- **Deploy scripts** (deploy.sh) with SSH remote deployment
+- **Server setup scripts** (server-setup.sh + 9 step scripts) - NEW: Automated server hardening
+- **PE-EPIC-[N]-Performance-Checkpoint.md** (optional per epic when performance-critical)
 
 ### Example Invocations
 ```
@@ -152,7 +153,16 @@ Define tech stack, Docker Compose environments (dev/staging/prod with Traefik), 
 → Docker Compose, Traefik, .env strategy, deploy.sh with remote deployment
 
 "PE, documente setup do servidor (Debian 12, Docker, firewall, usuários SSH)"
-→ Server hardening: UFW, fail2ban, SSH keys, user/group setup (8+ steps)
+→ Server hardening: 9 steps (hostname, system-update, docker, firewall, security, user, ssh-keys, directories, env-file, verification)
+→ Automated setup: server-setup.sh master script (orchestrates all 9 steps)
+→ Manual alternative: Step-by-step guide available in PE-00
+
+"PE, gere scripts automatizados de server setup (9 hardening steps)"
+→ Creates 05-infra/scripts/server-setup.sh (master orchestrator with interactive prompts)
+→ Creates 05-infra/scripts/setup/*.sh (9 individual step scripts - idempotent and reusable)
+→ Documents automated vs manual setup approaches in PE-00
+→ Scripts log execution to /var/log/[project]-server-setup.log
+→ Usage: sudo bash server-setup.sh --environment staging
 
 # Optional per-epic performance checkpoint
 "PE, checkpoint de performance para Epic 3 (Calculate Greeks - real-time)"

@@ -169,6 +169,130 @@
             <type>config</type>
             <note>Traefik v3.0 for staging/prod only (not used in development). Staging uses staging CA to avoid Let's Encrypt rate limits.</note>
         </deliverable>
+
+        <!-- SERVER SETUP SCRIPTS - Generated from Templates -->
+        <deliverable path="05-infra/scripts/server-setup.sh" base-path="" order="7">
+            <template base-path="templates">08-platform-engineering/scripts/server-setup.template.sh</template>
+            <description>Master server setup script (orchestrates 9 hardening steps)</description>
+            <customization>Project name, hostnames, timezone, user/group names</customization>
+            <features>
+                <feature>Interactive execution with environment validation (staging/production)</feature>
+                <feature>Pre-flight checks (root access, OS version, internet connectivity)</feature>
+                <feature>Error handling and rollback on failure</feature>
+                <feature>Comprehensive logging to /var/log/[PROJECT_NAME]-server-setup.log</feature>
+                <feature>Step-by-step execution of 9 hardening scripts</feature>
+            </features>
+            <usage>sudo bash 05-infra/scripts/server-setup.sh --environment staging</usage>
+            <phase>discovery</phase>
+            <type>script</type>
+            <mandatory>true</mandatory>
+            <note>Master orchestrator script. Executes all 9 setup steps in correct order with validation.</note>
+        </deliverable>
+
+        <deliverable path="05-infra/scripts/setup/00-hostname.sh" base-path="" order="8">
+            <template base-path="templates">08-platform-engineering/scripts/setup/00-hostname.template.sh</template>
+            <description>Step 0: Configure server hostname based on environment</description>
+            <customization>Staging and production hostnames</customization>
+            <type>script</type>
+            <mandatory>true</mandatory>
+        </deliverable>
+
+        <deliverable path="05-infra/scripts/setup/01-system-update.sh" base-path="" order="9">
+            <template base-path="templates">08-platform-engineering/scripts/setup/01-system-update.template.sh</template>
+            <description>Step 1: System update and essential tools installation</description>
+            <tools>ca-certificates, curl, gnupg, wget, vim, git, tree, htop, net-tools, unzip</tools>
+            <type>script</type>
+            <mandatory>true</mandatory>
+        </deliverable>
+
+        <deliverable path="05-infra/scripts/setup/02-docker.sh" base-path="" order="10">
+            <template base-path="templates">08-platform-engineering/scripts/setup/02-docker.template.sh</template>
+            <description>Step 2: Docker Engine and Docker Compose Plugin installation</description>
+            <components>Docker CE, Docker CLI, containerd, Docker Buildx, Docker Compose Plugin</components>
+            <type>script</type>
+            <mandatory>true</mandatory>
+            <note>Includes Docker repository setup, GPG key validation, and hello-world test</note>
+        </deliverable>
+
+        <deliverable path="05-infra/scripts/setup/03-firewall.sh" base-path="" order="11">
+            <template base-path="templates">08-platform-engineering/scripts/setup/03-firewall.template.sh</template>
+            <description>Step 3: UFW firewall setup with essential ports</description>
+            <ports>22 (SSH), 80 (HTTP), 443 (HTTPS)</ports>
+            <policies>Default deny incoming, default allow outgoing</policies>
+            <type>script</type>
+            <mandatory>true</mandatory>
+            <note>Critical: SSH port must be allowed before enabling firewall</note>
+        </deliverable>
+
+        <deliverable path="05-infra/scripts/setup/04-security.sh" base-path="" order="12">
+            <template base-path="templates">08-platform-engineering/scripts/setup/04-security.template.sh</template>
+            <description>Step 4: Security hardening (fail2ban, chrony, htpasswd)</description>
+            <customization>Timezone configuration</customization>
+            <tools>
+                <tool>fail2ban - Brute-force protection</tool>
+                <tool>chrony - NTP time synchronization</tool>
+                <tool>htpasswd - Traefik dashboard basic auth</tool>
+            </tools>
+            <type>script</type>
+            <mandatory>true</mandatory>
+        </deliverable>
+
+        <deliverable path="05-infra/scripts/setup/05-user.sh" base-path="" order="13">
+            <template base-path="templates">08-platform-engineering/scripts/setup/05-user.template.sh</template>
+            <description>Step 5: Project user and group creation with Docker access</description>
+            <customization>Project user and group names</customization>
+            <type>script</type>
+            <mandatory>true</mandatory>
+            <note>User is automatically added to docker group for non-root Docker access</note>
+        </deliverable>
+
+        <deliverable path="05-infra/scripts/setup/06-ssh-keys.sh" base-path="" order="14">
+            <template base-path="templates">08-platform-engineering/scripts/setup/06-ssh-keys.template.sh</template>
+            <description>Step 6: SSH keys configuration for automated deployment</description>
+            <permissions>.ssh directory (700), authorized_keys file (600)</permissions>
+            <type>script</type>
+            <mandatory>true</mandatory>
+            <note>Prepares SSH infrastructure for CI/CD deployment</note>
+        </deliverable>
+
+        <deliverable path="05-infra/scripts/setup/07-directories.sh" base-path="" order="15">
+            <template base-path="templates">08-platform-engineering/scripts/setup/07-directories.template.sh</template>
+            <description>Step 7: Project directory structure creation</description>
+            <customization>Project name for directory paths</customization>
+            <directories>configs, backups/postgres, scripts, logs</directories>
+            <type>script</type>
+            <mandatory>true</mandatory>
+        </deliverable>
+
+        <deliverable path="05-infra/scripts/setup/08-env.sh" base-path="" order="16">
+            <template base-path="templates">08-platform-engineering/scripts/setup/08-env.template.sh</template>
+            <description>Step 8: Environment file (.env) template generation</description>
+            <customization>Project name, environment (staging/production), domain configuration</customization>
+            <variables>DOMAIN, POSTGRES credentials, JWT configuration, ACME email, Traefik auth</variables>
+            <permissions>600 (read/write for project user only)</permissions>
+            <type>script</type>
+            <mandatory>true</mandatory>
+            <note>Creates .env.staging or .env.production with CHANGE_ME placeholders for manual customization</note>
+        </deliverable>
+
+        <deliverable path="05-infra/scripts/setup/09-verify.sh" base-path="" order="17">
+            <template base-path="templates">08-platform-engineering/scripts/setup/09-verify.template.sh</template>
+            <description>Step 9: Verification and validation checklist</description>
+            <customization>Project user and project name</customization>
+            <checks>
+                <check>Hostname configuration</check>
+                <check>Docker and Docker Compose installation</check>
+                <check>UFW firewall status and rules</check>
+                <check>Security tools (fail2ban, chrony) status</check>
+                <check>User and group configuration</check>
+                <check>SSH keys and permissions</check>
+                <check>Directory structure</check>
+                <check>Environment file existence and permissions</check>
+            </checks>
+            <type>script</type>
+            <mandatory>true</mandatory>
+            <note>Exit code 0 if all checks pass, exit code 1 if any check fails</note>
+        </deliverable>
     </deliverables>
 
     <predecessors>
