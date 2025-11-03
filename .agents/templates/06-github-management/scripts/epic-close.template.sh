@@ -1,22 +1,19 @@
 #!/bin/bash
 
 # epic-close.sh
-# Closes an epic (milestone + optional release)
+# Closes an epic milestone
 #
 # Usage:
-#   ./epic-close.sh <epic-number>                             # Close milestone only
-#   ./epic-close.sh <epic-number> --release <version>         # Close + create release
+#   ./epic-close.sh <epic-number>
 #
 # Examples:
 #   ./epic-close.sh 1                      # Close milestone M1
-#   ./epic-close.sh 1 --release v1.0.0     # Close M1 + create v1.0.0 release
 #
 # This script:
 #   1. Fetches milestone M{N}
 #   2. Validates all issues are closed
 #   3. Closes milestone
-#   4. (Optional) Creates release (tag + GitHub Release)
-#   5. (Optional) Guides deploy process
+#   4. Provides manual instructions for release creation
 
 set -e
 
@@ -25,7 +22,6 @@ REPO="[GITHUB_OWNER]/[REPO_NAME]"
 
 # Parameters
 EPIC_NUM=$1
-RELEASE_VERSION=""
 
 # Colors
 RED='\033[0;31m'
@@ -132,111 +128,6 @@ echo -e "  ${GREEN}✅ Milestone M${EPIC_NUM} closed${NC}"
 echo ""
 
 # ============================================================================
-# STEP 4: CREATE RELEASE (OPTIONAL)
-# ============================================================================
-if [ -n "$RELEASE_VERSION" ]; then
-  echo -e "${YELLOW}━━━ STEP 4/5: Creating Release ${RELEASE_VERSION} ━━━${NC}"
-  echo ""
-
-  # Switch to main
-  echo "  Switching to main branch..."
-  git checkout main > /dev/null 2>&1
-  git pull origin main > /dev/null 2>&1
-
-  # Merge develop to main
-  echo "  Merging develop to main..."
-  git merge develop --no-ff -m "Release: EPIC-${EPIC_NUM_PADDED}
-
-EPIC-${EPIC_NUM_PADDED} completo e pronto para produção.
-
-Closes milestone M${EPIC_NUM}" > /dev/null 2>&1
-
-  # Create tag
-  echo "  Creating tag ${RELEASE_VERSION}..."
-  git tag -a "$RELEASE_VERSION" -m "Release $RELEASE_VERSION: EPIC-${EPIC_NUM_PADDED}
-
-EPIC-${EPIC_NUM_PADDED}: ${MILESTONE_TITLE#*- }
-
-Issues fechadas: ${CLOSED_ISSUES}
-Milestone: M${EPIC_NUM}
-
-🤖 Generated with GM epic-close.sh"
-
-  # Push main and tag
-  echo "  Pushing main and tag to remote..."
-  git push origin main --tags > /dev/null 2>&1
-
-  echo -e "  ${GREEN}✅ Tag ${RELEASE_VERSION} created and pushed${NC}"
-
-  # Create GitHub Release
-  echo "  Creating GitHub Release..."
-
-  # Get list of closed issues
-  ISSUE_LIST=$(gh issue list --milestone "$MILESTONE_TITLE" --repo $REPO --state closed --json number,title --jq '.[] | "- #\(.number): \(.title)"' | head -n 20)
-
-  RELEASE_NOTES=$(cat <<EOF
-## 📦 EPIC-${EPIC_NUM_PADDED}: ${MILESTONE_TITLE#*- }
-
-Release do EPIC-${EPIC_NUM_PADDED} para produção.
-
-## 🎯 Issues Fechadas
-
-${ISSUE_LIST}
-
-## 📊 Estatísticas
-
-- **Total de Issues:** ${TOTAL}
-- **Issues Fechadas:** ${CLOSED_ISSUES}
-- **Milestone:** M${EPIC_NUM}
-
-## 🔗 Referências
-
-- **Milestone:** M${EPIC_NUM} (${MILESTONE_TITLE})
-- **Git Workflow:** [03-GIT-PATTERNS.md](.agents/docs/03-GIT-PATTERNS.md)
-
-🤖 Generated with GM epic-close.sh
-EOF
-)
-
-  gh release create "$RELEASE_VERSION" \
-    --repo $REPO \
-    --title "$RELEASE_VERSION - EPIC-${EPIC_NUM_PADDED}" \
-    --notes "$RELEASE_NOTES" > /dev/null 2>&1
-
-  echo -e "  ${GREEN}✅ GitHub Release ${RELEASE_VERSION} created${NC}"
-  echo ""
-else
-  echo -e "${YELLOW}━━━ STEP 4/5: Skipping release (use --release flag) ━━━${NC}"
-  echo ""
-fi
-
-# ============================================================================
-# STEP 5: DEPLOYMENT GUIDANCE
-# ============================================================================
-if [ -n "$RELEASE_VERSION" ]; then
-  echo -e "${YELLOW}━━━ STEP 5/5: Deployment Guidance ━━━${NC}"
-  echo ""
-
-  echo -e "  ${BLUE}📋 Recommended deployment steps:${NC}"
-  echo ""
-  echo "  1. Deploy to staging:"
-  echo "     docker compose -f docker-compose.staging.yml up -d"
-  echo ""
-  echo "  2. Run smoke tests (QAE):"
-  echo "     npm run test:smoke"
-  echo ""
-  echo "  3. If tests pass, deploy to production:"
-  echo "     docker compose -f docker-compose.prod.yml up -d"
-  echo ""
-  echo "  4. Monitor production:"
-  echo "     Check logs, metrics, and error rates"
-  echo ""
-else
-  echo -e "${YELLOW}━━━ STEP 5/5: Skipping deployment (no release created) ━━━${NC}"
-  echo ""
-fi
-
-# ============================================================================
 # SUMMARY
 # ============================================================================
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
@@ -245,39 +136,34 @@ echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 echo -e "${YELLOW}📋 Summary:${NC}"
 echo ""
-echo -e "  ${GREEN}✅${NC} Milestone M${EPIC_NUM} closed"
-echo -e "  ${GREEN}✅${NC} All issues completed (${CLOSED_ISSUES}/${TOTAL})"
-
-if [ -n "$RELEASE_VERSION" ]; then
-  echo -e "  ${GREEN}✅${NC} Tag ${RELEASE_VERSION} created"
-  echo -e "  ${GREEN}✅${NC} GitHub Release created"
-  echo -e "  ${GREEN}✅${NC} Merged to main"
-fi
-
+echo -e "  ${GREEN}✅${NC} Milestone: ${MILESTONE_TITLE}"
+echo -e "  ${GREEN}✅${NC} Total Issues: ${TOTAL}"
+echo -e "  ${GREEN}✅${NC} Closed Issues: ${CLOSED_ISSUES}"
+echo -e "  ${GREEN}✅${NC} Status: Milestone closed"
 echo ""
-echo -e "${YELLOW}📋 Next Steps:${NC}"
+echo -e "${YELLOW}📋 Next Steps (MANUAL - Optional):${NC}"
 echo ""
-
-if [ -n "$RELEASE_VERSION" ]; then
-  echo "1. Deploy to staging and run smoke tests"
-  echo "2. If approved, deploy to production"
-  echo "3. Monitor production deployment"
-  echo "4. Start next epic:"
-  echo "   ./epic-modeling-start.sh $((EPIC_NUM + 1))"
-else
-  echo "1. (Optional) Create release:"
-  echo "   ./epic-close.sh $EPIC_NUM --release v<X.Y.Z>"
-  echo "2. Start next epic:"
-  echo "   ./epic-modeling-start.sh $((EPIC_NUM + 1))"
-fi
-
+echo "1. Create release (if ready for production):"
+echo ""
+echo "   a) Merge develop to main:"
+echo "      ${BLUE}git checkout main${NC}"
+echo "      ${BLUE}git pull origin main${NC}"
+echo "      ${BLUE}git merge develop --no-ff -m 'Release: EPIC-${EPIC_NUM_PADDED}'${NC}"
+echo ""
+echo "   b) Create and push tag:"
+echo "      ${BLUE}git tag -a v1.0.0 -m 'Release v1.0.0: EPIC-${EPIC_NUM_PADDED}'${NC}"
+echo "      ${BLUE}git push origin main --tags${NC}"
+echo ""
+echo "   c) Create GitHub Release:"
+echo "      ${BLUE}gh release create v1.0.0 --title 'v1.0.0 - EPIC-${EPIC_NUM_PADDED}' --notes 'Release notes...'${NC}"
+echo ""
+echo "2. Deploy to production (after release):"
+echo "   ${BLUE}docker compose -f docker-compose.prod.yml up -d${NC}"
+echo ""
+echo "3. Start next epic:"
+echo "   ${BLUE}./epic-modeling-start.sh $((EPIC_NUM + 1))${NC}"
 echo ""
 echo -e "${BLUE}📖 Documentation:${NC}"
 echo "   - Git workflow: .agents/docs/03-GIT-PATTERNS.md"
-echo "   - Milestone M${EPIC_NUM}: gh api repos/$REPO/milestones/$MILESTONE_NUMBER"
-
-if [ -n "$RELEASE_VERSION" ]; then
-  echo "   - Release ${RELEASE_VERSION}: gh release view ${RELEASE_VERSION} --repo $REPO --web"
-fi
-
+echo "   - Milestone M${EPIC_NUM}: ${BLUE}https://github.com/$REPO/milestone/$MILESTONE_NUMBER${NC}"
 echo ""

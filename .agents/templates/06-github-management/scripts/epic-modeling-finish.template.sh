@@ -11,11 +11,10 @@
 # This script:
 #   1. Validates current branch (feature/epic-<N>-domain-model)
 #   2. Validates DE-01-EPIC-<N>-*.md exists
-#   3. Makes commit with "Ref #1"
+#   3. Makes commit with "Ref #[EPIC_ISSUE_NUMBER]"
 #   4. Pushes to remote
 #   5. Creates PR for review
-#   6. Merges to develop
-#   7. Deletes branch
+#   6. MANUAL: Review and merge PR via GitHub UI
 
 set -e
 
@@ -53,7 +52,7 @@ echo ""
 # ============================================================================
 # STEP 1: VALIDATE CURRENT BRANCH
 # ============================================================================
-echo -e "${YELLOW}━━━ STEP 1/6: Validating current branch ━━━${NC}"
+echo -e "${YELLOW}━━━ STEP 1/5: Validating current branch ━━━${NC}"
 echo ""
 
 CURRENT_BRANCH=$(git branch --show-current)
@@ -73,7 +72,7 @@ echo ""
 # ============================================================================
 # STEP 2: VALIDATE DE-01 FILE
 # ============================================================================
-echo -e "${YELLOW}━━━ STEP 2/6: Validating DE-01 file ━━━${NC}"
+echo -e "${YELLOW}━━━ STEP 2/5: Validating DE-01 file ━━━${NC}"
 echo ""
 
 DE_FILE=$(find 00-doc-ddd/04-tactical-design/ -name "DE-01-EPIC-${EPIC_NUM_PADDED}-*.md" 2>/dev/null | head -n 1)
@@ -92,7 +91,7 @@ echo ""
 # ============================================================================
 # STEP 3: COMMIT
 # ============================================================================
-echo -e "${YELLOW}━━━ STEP 3/6: Creating commit ━━━${NC}"
+echo -e "${YELLOW}━━━ STEP 3/5: Creating commit ━━━${NC}"
 echo ""
 
 # Check if there are changes
@@ -110,7 +109,7 @@ Domain model completo para EPIC-${EPIC_NUM_PADDED}:
 - Repository interfaces
 - Business rules
 
-Ref #1"
+Ref #[EPIC_ISSUE_NUMBER]"
 
   echo -e "  ${GREEN}✅ Commit created${NC}"
 fi
@@ -144,7 +143,7 @@ else
   gh pr create \
     --repo $REPO \
     --title "DE: Modelo de domínio EPIC-${EPIC_NUM_PADDED}" \
-    --body "Domain model para EPIC-${EPIC_NUM_PADDED}. Ref #1" \
+    --body "Domain model para EPIC-${EPIC_NUM_PADDED}. Ref #[EPIC_ISSUE_NUMBER]" \
     --base develop \
     --head $BRANCH_NAME
 
@@ -155,39 +154,26 @@ fi
 echo ""
 
 # ============================================================================
-# STEP 6: MERGE PR
-# ============================================================================
-echo -e "${YELLOW}━━━ STEP 6/6: Merging PR ━━━${NC}"
-echo ""
-
-echo "  Merging PR #${PR_NUMBER}..."
-gh pr merge $PR_NUMBER --repo $REPO --merge --delete-branch
-
-echo -e "  ${GREEN}✅ PR merged and branch deleted${NC}"
-echo ""
-
-# Switch to develop
-git checkout develop
-git pull origin develop
-
-echo -e "  ${GREEN}✅ Switched to develop${NC}"
-
-# Delete local branch
-git branch -d $BRANCH_NAME
-
-echo -e "  ${GREEN}✅ Local branch deleted${NC}"
-echo ""
-
-# ============================================================================
 # SUMMARY
 # ============================================================================
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}  ✅ EPIC-${EPIC_NUM_PADDED} MODELING FINISHED!${NC}"
+echo -e "${GREEN}  ✅ EPIC-${EPIC_NUM_PADDED} MODELING - PR CREATED!${NC}"
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
-echo -e "${YELLOW}📋 Next Steps:${NC}"
+echo -e "${YELLOW}📋 Next Steps (MANUAL):${NC}"
 echo ""
-echo "1. Create milestone and issues (GM):"
+echo "1. Review and merge PR #${PR_NUMBER}:"
+echo "   ${BLUE}https://github.com/$REPO/pull/${PR_NUMBER}${NC}"
+echo ""
+echo "   Via GitHub UI:"
+echo "   - Review changes"
+echo "   - Click 'Merge pull request' → 'Create a merge commit'"
+echo "   - Delete branch after merge"
+echo ""
+echo "   Or via CLI:"
+echo "   ${BLUE}gh pr merge ${PR_NUMBER} --merge --delete-branch${NC}"
+echo ""
+echo "2. Create milestone and issues (GM):"
 echo "   Command: \"GM, crie milestone e issues para EPIC-${EPIC_NUM_PADDED}\""
 echo ""
 echo "   GM will execute:"
