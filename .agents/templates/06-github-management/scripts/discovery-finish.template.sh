@@ -5,8 +5,6 @@
 #
 # Usage:
 #   ./discovery-finish.sh                  # Validate and prepare PR
-#   ./discovery-finish.sh --merge          # Validate + merge to develop
-#   ./discovery-finish.sh --release        # Validate + merge + create v0.1.0 release
 #
 # This script:
 #   1. Validates current branch (feature/discovery-foundation)
@@ -15,24 +13,12 @@
 #   4. Makes final commit with "Closes #1"
 #   5. Pushes to remote
 #   6. Marks PR as "ready for review"
-#   7. (Optional) Merges to develop
-#   8. (Optional) Creates release v0.1.0
+#   7. MANUAL: Review and merge PR via GitHub UI
 
 set -e
 
 # Configuration
 REPO="[GITHUB_OWNER]/[REPO_NAME]"
-
-# Parse flags
-MERGE=false
-RELEASE=false
-while [[ $# -gt 0 ]]; do
-  case $1 in
-    --merge) MERGE=true; shift ;;
-    --release) RELEASE=true; MERGE=true; shift ;;
-    *) echo "Unknown flag: $1"; exit 1 ;;
-  esac
-done
 
 # Colors
 RED='\033[0;31m'
@@ -45,10 +31,6 @@ NC='\033[0m' # No Color
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${CYAN}  🏁 DISCOVERY FOUNDATION - FINISH${NC}"
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo ""
-echo -e "${BLUE}Options:${NC}"
-echo -e "  Merge to develop: ${YELLOW}$MERGE${NC}"
-echo -e "  Create release: ${YELLOW}$RELEASE${NC}"
 echo ""
 
 # ============================================================================
@@ -214,107 +196,10 @@ fi
 echo ""
 
 # ============================================================================
-# STEP 7: MERGE (OPTIONAL)
-# ============================================================================
-if [[ "$MERGE" = true ]]; then
-  echo -e "${YELLOW}━━━ STEP 7/7: Merging to develop ━━━${NC}"
-  echo ""
-
-  if [ -z "$PR_NUMBER" ]; then
-    echo -e "  ${RED}❌ No PR found, cannot merge${NC}"
-    echo "  Create PR first or merge manually"
-    exit 1
-  fi
-
-  echo "  Merging PR #${PR_NUMBER}..."
-  gh pr merge $PR_NUMBER --repo $REPO --merge --delete-branch
-
-  echo -e "  ${GREEN}✅ PR merged and branch deleted${NC}"
-  echo ""
-
-  # Switch to develop
-  git checkout develop
-  git pull origin develop
-
-  echo -e "  ${GREEN}✅ Switched to develop and pulled latest${NC}"
-  echo ""
-else
-  echo -e "${YELLOW}━━━ STEP 7/7: Skipping merge (use --merge flag)${NC}"
-  echo ""
-fi
-
-# ============================================================================
-# RELEASE (OPTIONAL)
-# ============================================================================
-if [[ "$RELEASE" = true ]]; then
-  echo -e "${YELLOW}━━━ Creating Release v0.1.0 ━━━${NC}"
-  echo ""
-
-  # Switch to main
-  git checkout main
-  git pull origin main
-
-  # Merge develop to main
-  git merge develop --no-ff -m "Release: Discovery Foundation Complete (v0.1.0)
-
-Primeira release do projeto com fundação DDD estabelecida.
-
-Deliverables:
-- Strategic design (BCs, Context Map, Ubiquitous Language)
-- UX foundations
-- Infrastructure baseline
-- Security baseline
-- Test strategy
-
-Próximo passo: Iniciar épicos funcionais."
-
-  # Create tag
-  git tag -a v0.1.0 -m "Release v0.1.0: Discovery Foundation
-
-Primeira release do projeto com fundação DDD estabelecida.
-
-Deliverables:
-- Strategic design (BCs, Context Map, Ubiquitous Language)
-- UX foundations
-- Infrastructure baseline (Docker Compose dev/stage/prod)
-- Security baseline (OWASP Top 3, LGPD mínimo)
-- Test strategy
-
-Próximo passo: Iniciar épicos funcionais."
-
-  # Push main and tag
-  git push origin main --tags
-
-  # Create GitHub Release
-  gh release create v0.1.0 \
-    --repo $REPO \
-    --title "v0.1.0 - Discovery Foundation" \
-    --notes "Primeira release do projeto com fundação DDD estabelecida.
-
-## 📦 Deliverables
-
-- **Strategic Design:** Event Storming, Context Map, Ubiquitous Language
-- **UX Design:** Design Foundations (colors, typography, components)
-- **GitHub Management:** Labels, milestones, CI/CD workflows
-- **Platform Engineering:** Docker Compose (dev/stage/prod)
-- **Security:** Security baseline (OWASP Top 3, LGPD)
-- **Quality Assurance:** Test strategy
-
-## 🎯 Next Steps
-
-Iniciar EPIC-01 (primeiro épico funcional)
-
-🤖 Generated with GM discovery-finish.sh --release"
-
-  echo -e "  ${GREEN}✅ Release v0.1.0 created${NC}"
-  echo ""
-fi
-
-# ============================================================================
 # SUMMARY
 # ============================================================================
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}  ✅ DISCOVERY FOUNDATION FINISHED!${NC}"
+echo -e "${GREEN}  ✅ DISCOVERY FOUNDATION - PR READY!${NC}"
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 echo -e "${YELLOW}📋 Summary:${NC}"
@@ -323,21 +208,29 @@ echo -e "  ${GREEN}✅${NC} All deliverables validated (8/8)"
 echo -e "  ${GREEN}✅${NC} Validation scripts passed"
 echo -e "  ${GREEN}✅${NC} Final commit created"
 echo -e "  ${GREEN}✅${NC} Pushed to remote"
-echo -e "  ${GREEN}✅${NC} PR marked as ready"
-
-if [[ "$MERGE" = true ]]; then
-  echo -e "  ${GREEN}✅${NC} PR merged to develop"
-  echo -e "  ${GREEN}✅${NC} Branch deleted"
-fi
-
-if [[ "$RELEASE" = true ]]; then
-  echo -e "  ${GREEN}✅${NC} Release v0.1.0 created"
-fi
+echo -e "  ${GREEN}✅${NC} PR marked as ready for review"
 
 echo ""
-echo -e "${YELLOW}📋 Next Steps:${NC}"
+echo -e "${YELLOW}📋 Next Steps (MANUAL):${NC}"
 echo ""
-echo "1. Start EPIC-01 modeling:"
+echo "1. Review and merge PR:"
+echo "   ${BLUE}https://github.com/$REPO/pull/${PR_NUMBER:-<number>}${NC}"
+echo ""
+echo "   Via GitHub UI:"
+echo "   - Review changes"
+echo "   - Click 'Merge pull request' → 'Create a merge commit'"
+echo "   - Delete branch after merge"
+echo ""
+echo "   Or via CLI:"
+echo "   ${BLUE}gh pr merge --merge --delete-branch${NC}"
+echo ""
+echo "2. (Optional) Create v0.1.0 release after merge:"
+echo "   - Merge develop → main"
+echo "   - Create tag: ${BLUE}git tag -a v0.1.0 -m 'Release v0.1.0: Discovery Foundation'${NC}"
+echo "   - Push: ${BLUE}git push origin main --tags${NC}"
+echo "   - Create GitHub Release: ${BLUE}gh release create v0.1.0${NC}"
+echo ""
+echo "3. Start EPIC-01 modeling:"
 echo "   ./epic-modeling-start.sh 1"
 echo ""
 echo -e "${BLUE}📖 Documentation:${NC}"
