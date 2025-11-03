@@ -17,7 +17,7 @@
 set -e
 
 # Configuration
-REPO="mardantas/myTraderGEO"
+REPO=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null || echo "[GITHUB_OWNER]/[REPO_NAME]")
 
 # Parameters
 EPIC_NUM=$1

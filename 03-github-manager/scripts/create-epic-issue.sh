@@ -44,7 +44,7 @@ echo -e "${YELLOW}🚀 Creating Epic Issue #EPIC-${EPIC_NUM_PADDED}...${NC}"
 echo ""
 
 # Check if DE-01 exists (optional warning)
-DE_PATTERN="00-doc-ddd/04-domain-engineering/DE-01-EPIC-${EPIC_NUM_PADDED}-*.md"
+DE_PATTERN="00-doc-ddd/04-tactical-design/DE-01-EPIC-${EPIC_NUM_PADDED}-*.md"
 if ! ls $DE_PATTERN 1> /dev/null 2>&1; then
   echo -e "${YELLOW}⚠️  Warning: DE-01 file not found at:${NC}"
   echo "  $DE_PATTERN"
