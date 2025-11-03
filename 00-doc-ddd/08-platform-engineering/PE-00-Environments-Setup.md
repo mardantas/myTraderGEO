@@ -1,6 +1,5 @@
 # PE-00 - Environments Setup
 
-
 **Agent:** PE (Platform Engineer)  
 **Phase:** Discovery (1x)  
 **Scope:** Basic environments with Docker Compose and deploy scripts  
@@ -245,9 +244,9 @@ traefik.mytrader.com          A    203.0.113.20
 
 ## 🖥️ Setup Inicial do Servidor (Infraestrutura Base)
 
-**Aplicável a:** Staging (`mytrader-stage`) e Production (`mytrader-prod`)
-**Provider:** Contabo VPS (ou qualquer VPS com Debian 12)
-**OS Required:** Debian 12 (Bookworm) - clean install
+**Aplicável a:** Staging (`mytrader-stage`) e Production (`mytrader-prod`)  
+**Provider:** Contabo VPS (ou qualquer VPS com Debian 12)  
+**OS Required:** Debian 12 (Bookworm) - clean install  
 
 Esta seção documenta o **setup completo do servidor do zero**, desde a instalação do sistema operacional até o servidor pronto para receber deploy. As instruções são genéricas para qualquer VPS com Debian 12.
 
