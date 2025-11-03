@@ -239,7 +239,7 @@ traefik.[DOMAIN]          A    [PROD_IP]
 
 ## 🖥️ Setup Inicial do Servidor (Infraestrutura Base)
 
-**Aplicável a:** Staging (`[project]-stage`) e Production (`[project]-prod`)
+**Aplicável a:** Staging (`[project]-stage`) e Production (`[project]-prod`)  
 **Provider:** [VPS_PROVIDER]  
 **OS Required:** [OS_DISTRO] - clean install  
 
