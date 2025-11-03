@@ -7,16 +7,6 @@
 **Scope:** Testing strategy, coverage targets, quality gates  
 **Version:** 1.0  
   
----  
-
-## 📋 Metadata
-
-- **Project Name:** myTraderGEO  
-- **Created:** 2025-10-15  
-- **QA Engineer:** QAE Agent  
-- **Complexity:** Alta - Plataforma financeira com cálculos críticos  
-- **Stack:** Definido pelo PE-00 (.NET 8 + Vue 3 + PostgreSQL 15)  
-
 ---
 
 ## 🎯 Objetivo
