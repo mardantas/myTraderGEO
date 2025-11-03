@@ -1,9 +1,12 @@
 # DE-01-EPIC-01-C-Strategy-Creation-Domain-Model.md
 
-**Projeto:** myTraderGEO  
-**Épico:** EPIC-01-C - Strategy Creation (segmento do EPIC-01)  
-**Data:** 2025-10-25  
-**Engineer:** DE Agent  
+**Agent:** DE (Domain Engineer)
+**Project:** myTraderGEO
+**Date:** 2025-10-25
+**Epic:** EPIC-01-C: Strategy Creation (segmento do EPIC-01)
+**Phase:** Iteration
+**Scope:** Tactical DDD model for epic-specific bounded contexts
+**Version:** 1.0  
 
 ---
 
