@@ -276,6 +276,70 @@
             <gm-action>DOCUMENT ONLY in GM-00 (do NOT create, it already exists)</gm-action>
         </deliverable>
 
+        <!-- EPIC LIFECYCLE SCRIPTS: Mandatory automation scripts for epic workflow -->
+        <deliverable path="03-github-manager/scripts/epic-create.sh" base-path="" order="11">
+            <template base-path="templates">06-github-management/scripts/epic-create.template.sh</template>
+            <description>Epic lifecycle: Create complete epic setup (milestone + epic issue + 6 agent issues)</description>
+            <phase>discovery</phase>
+            <type>script</type>
+            <mandatory>true</mandatory>
+            <note>Creates M{N}, epic issue (fully populated), and 6 agent issues (DE, DBA, SE, UXD, FE, QAE)</note>
+        </deliverable>
+
+        <deliverable path="03-github-manager/scripts/epic-start.sh" base-path="" order="12">
+            <template base-path="templates">06-github-management/scripts/epic-start.template.sh</template>
+            <description>Epic lifecycle: Start epic branch (create branch + empty commit + draft PR)</description>
+            <phase>discovery</phase>
+            <type>script</type>
+            <mandatory>true</mandatory>
+            <note>Creates feature/epic-{N}-{name} branch following 03-GIT-PATTERNS.md</note>
+        </deliverable>
+
+        <deliverable path="03-github-manager/scripts/epic-modeling-start.sh" base-path="" order="13">
+            <template base-path="templates">06-github-management/scripts/epic-modeling-start.template.sh</template>
+            <description>Epic lifecycle: Start domain modeling phase (DE creates DE-01)</description>
+            <phase>discovery</phase>
+            <type>script</type>
+            <mandatory>true</mandatory>
+            <note>Creates feature/epic-{N}-domain-model branch for DE-01</note>
+        </deliverable>
+
+        <deliverable path="03-github-manager/scripts/epic-modeling-finish.sh" base-path="" order="14">
+            <template base-path="templates">06-github-management/scripts/epic-modeling-finish.template.sh</template>
+            <description>Epic lifecycle: Finish domain modeling (commit + push + create PR for manual merge)</description>
+            <phase>discovery</phase>
+            <type>script</type>
+            <mandatory>true</mandatory>
+            <note>NO auto-merge - creates PR for manual review</note>
+        </deliverable>
+
+        <deliverable path="03-github-manager/scripts/discovery-finish.sh" base-path="" order="15">
+            <template base-path="templates">06-github-management/scripts/discovery-finish.template.sh</template>
+            <description>Discovery lifecycle: Finalize Discovery Foundation (validate + commit + PR ready for manual merge)</description>
+            <phase>discovery</phase>
+            <type>script</type>
+            <mandatory>true</mandatory>
+            <note>NO auto-merge - validates deliverables and marks PR ready for manual review</note>
+        </deliverable>
+
+        <deliverable path="03-github-manager/scripts/epic-deploy.sh" base-path="" order="16">
+            <template base-path="templates">06-github-management/scripts/epic-deploy.template.sh</template>
+            <description>Epic lifecycle: Validate epic completion and prepare for manual merge to staging</description>
+            <phase>discovery</phase>
+            <type>script</type>
+            <mandatory>true</mandatory>
+            <note>NO auto-merge - validates all agent commits and QAE approval, marks PR ready for manual merge</note>
+        </deliverable>
+
+        <deliverable path="03-github-manager/scripts/epic-close.sh" base-path="" order="17">
+            <template base-path="templates">06-github-management/scripts/epic-close.template.sh</template>
+            <description>Epic lifecycle: Close milestone and provide manual instructions for release creation</description>
+            <phase>discovery</phase>
+            <type>script</type>
+            <mandatory>true</mandatory>
+            <note>Closes milestone M{N}, provides manual instructions for release creation (no auto-merge to main)</note>
+        </deliverable>
+
         <!-- OPTIONAL HELPER SCRIPTS: Templates provided, user executes when needed -->
         <deliverable path="03-github-manager/scripts/create-milestone.sh" base-path="" type="optional-helper">
             <template base-path="templates">06-github-management/scripts/create-milestone.template.sh</template>
@@ -293,27 +357,6 @@
             <note>DOCUMENT in README.md with usage examples</note>
             <phase>discovery</phase>
             <mandatory>false</mandatory>
-        </deliverable>
-
-        <deliverable path="03-github-manager/scripts/create-epic-full.sh" base-path="" type="optional-helper">
-            <template base-path="templates">06-github-management/scripts/create-epic-full.template.sh</template>
-            <description>Helper script: Create complete epic setup (milestone + all issues) - RECOMMENDED</description>
-            <gm-action>TEMPLATE PROVIDED, user customizes [OWNER]/[REPO] and executes manually when starting epic</gm-action>
-            <note>DOCUMENT in README.md as RECOMMENDED automation - saves ~15min per epic</note>
-            <phase>discovery</phase>
-            <mandatory>false</mandatory>
-            <benefit>Automation: Creates milestone + epic issue + 6 agent issues (DE, DBA, SE, UXD, FE, QAE) in one command</benefit>
-        </deliverable>
-
-        <deliverable path="03-github-manager/scripts/start-work-on-issue.sh" base-path="" type="optional-helper">
-            <template base-path="templates">06-github-management/scripts/start-work-on-issue.template.sh</template>
-            <description>Helper script: Automate starting work on issue (branch + commit + PR) - RECOMMENDED</description>
-            <gm-action>TEMPLATE PROVIDED, user customizes [OWNER]/[REPO] and executes manually when starting work on issue</gm-action>
-            <note>DOCUMENT in README.md as RECOMMENDED automation - saves ~3min per issue, ensures 03-GIT-PATTERNS.md compliance</note>
-            <phase>discovery</phase>
-            <mandatory>false</mandatory>
-            <benefit>Automation: Creates branch (kebab-case), initial empty commit (03-GIT-PATTERNS standard), push, draft PR</benefit>
-            <references>03-GIT-PATTERNS.md for commit message format</references>
         </deliverable>
     </deliverables>
 

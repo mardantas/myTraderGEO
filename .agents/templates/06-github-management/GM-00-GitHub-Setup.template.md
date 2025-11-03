@@ -1082,10 +1082,25 @@ gh run view [RUN_ID] --repo [OWNER]/[REPO]
 - **PE Platform Engineering:** [00-doc-ddd/08-platform-engineering/PE-00-Quick-Start.md](00-doc-ddd/08-platform-engineering/PE-00-Quick-Start.md), [PE-01-Server-Setup.md](00-doc-ddd/08-platform-engineering/PE-01-Server-Setup.md) - Stack para CI/CD  
 
 ### Scripts Criados
-- [03-github-manager/scripts/setup-labels.sh](../../../03-github-manager/scripts/setup-labels.sh) ✅ ONE-TIME (Discovery)  
-- [03-github-manager/scripts/create-milestone.sh](../../../03-github-manager/scripts/create-milestone.sh) ⚙️ ON-DEMAND (Per Epic)  
-- [03-github-manager/scripts/create-epic-issue.sh](../../../03-github-manager/scripts/create-epic-issue.sh) ⚙️ ON-DEMAND (Per Epic)  
-- [03-github-manager/README.md](../../../03-github-manager/README.md)  
+
+**Setup (One-time):**
+- [03-github-manager/scripts/setup-labels.sh](../../../03-github-manager/scripts/setup-labels.sh) ✅ ONE-TIME (Discovery)
+
+**Epic Lifecycle (Mandatory):**
+- [03-github-manager/scripts/epic-create.sh](../../../03-github-manager/scripts/epic-create.sh) 🚀 Creates milestone + epic issue + 6 agent issues
+- [03-github-manager/scripts/epic-start.sh](../../../03-github-manager/scripts/epic-start.sh) 🌱 Creates epic branch + empty commit + draft PR
+- [03-github-manager/scripts/epic-modeling-start.sh](../../../03-github-manager/scripts/epic-modeling-start.sh) 📐 Starts DE-01 domain modeling
+- [03-github-manager/scripts/epic-modeling-finish.sh](../../../03-github-manager/scripts/epic-modeling-finish.sh) ✅ Finishes DE-01 (commit + PR, manual merge)
+- [03-github-manager/scripts/epic-deploy.sh](../../../03-github-manager/scripts/epic-deploy.sh) 🚢 Validates epic + prepares PR for manual merge
+- [03-github-manager/scripts/epic-close.sh](../../../03-github-manager/scripts/epic-close.sh) 🏁 Closes milestone + manual release instructions
+- [03-github-manager/scripts/discovery-finish.sh](../../../03-github-manager/scripts/discovery-finish.sh) 🎉 Finalizes Discovery (validate + PR, manual merge)
+
+**Optional Helpers:**
+- [03-github-manager/scripts/create-milestone.sh](../../../03-github-manager/scripts/create-milestone.sh) ⚙️ ON-DEMAND (Per Epic)
+- [03-github-manager/scripts/create-epic-issue.sh](../../../03-github-manager/scripts/create-epic-issue.sh) ⚙️ ON-DEMAND (Per Epic)
+
+**Documentation:**
+- [03-github-manager/README.md](../../../03-github-manager/README.md) 📋 Quick reference with usage examples  
 
 ### Workflows Criados
 - [.github/workflows/ci-backend.yml](.github/workflows/ci-backend.yml)  
