@@ -215,61 +215,38 @@ if [[ $? -ne 0 ]]; then
     exit 1
 fi
 
-# Merge PR
-gh pr merge "$PR_NUMBER" --merge --delete-branch
-
-if [[ $? -eq 0 ]]; then
-    echo -e "  ${GREEN}✅ PR merged to $BASE_BRANCH${NC}"
-    echo -e "  ${GREEN}✅ Branch deleted${NC}"
-    echo -e "  ${GREEN}✅ Issue #${CLOSED_ISSUE} closed automatically${NC}"
-else
-    echo -e "${RED}❌ Failed to merge PR${NC}"
-    exit 1
-fi
-
+echo -e "  ${GREEN}✅ All validations passed${NC}"
+echo -e "  ${BLUE}PR: https://github.com/[GITHUB_OWNER]/[REPO_NAME]/pull/${PR_NUMBER}${NC}"
 echo ""
-
-# ============================================================================
-# STEP 7: DEPLOY TO STAGING (OPTIONAL)
-# ============================================================================
-if [[ "$SKIP_STAGING" == "false" ]]; then
-    echo -e "${YELLOW}━━━ STEP 7/7: Deploying to Staging ━━━${NC}"
-    echo ""
-
-    echo -e "  ${BLUE}Checking out $BASE_BRANCH...${NC}"
-    git checkout "$BASE_BRANCH"
-    git pull origin "$BASE_BRANCH"
-
-    echo -e "  ${YELLOW}📦 Deploy to staging...${NC}"
-    echo -e "  ${GRAY}Command: docker compose -f docker-compose.staging.yml up -d${NC}"
-    echo ""
-
-    # Note: Actual deployment should be handled by CI/CD or manual approval
-    echo -e "  ${CYAN}ℹ️  Staging deployment should be triggered by CI/CD pipeline${NC}"
-    echo -e "  ${CYAN}   Or manually run: docker compose -f docker-compose.staging.yml up -d${NC}"
-    echo ""
-else
-    echo -e "${YELLOW}━━━ STEP 7/7: Skipping Staging Deployment ━━━${NC}"
-    echo ""
-    echo -e "  ${BLUE}Staging deployment skipped (--skip-staging flag)${NC}"
-    echo ""
-fi
 
 # ============================================================================
 # SUMMARY
 # ============================================================================
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}  ✅ EPIC-${EPIC_NUM} DEPLOYED TO STAGING!${NC}"
+echo -e "${GREEN}  ✅ EPIC-${EPIC_NUM_PADDED} - READY FOR REVIEW!${NC}"
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
-echo -e "${BLUE}Branch:${NC} $CURRENT_BRANCH → $BASE_BRANCH (merged)"
-echo -e "${BLUE}Issue:${NC} #${CLOSED_ISSUE} (closed)"
-echo -e "${BLUE}Status:${NC} In staging"
+echo -e "${YELLOW}📋 Next Steps (MANUAL):${NC}"
 echo ""
-echo -e "${YELLOW}📋 Next Steps:${NC}"
-echo -e "   1. ${GRAY}Monitor staging environment${NC}"
-echo -e "   2. ${GRAY}Run smoke tests (QAE)${NC}"
-echo -e "   3. ${GRAY}If approved, create release and deploy to production:${NC}"
-echo -e "      ${BLUE}./epic-close.sh ${EPIC_NUM} --release vX.Y.Z${NC}"
+echo "1. Review and merge PR #${PR_NUMBER}:"
+echo "   ${BLUE}https://github.com/[GITHUB_OWNER]/[REPO_NAME]/pull/${PR_NUMBER}${NC}"
+echo ""
+echo "   Via GitHub UI:"
+echo "   - Review changes"
+echo "   - Ensure all CI checks pass"
+echo "   - Click 'Merge pull request' → 'Create a merge commit'"
+echo "   - Delete branch after merge"
+echo ""
+echo "   Or via CLI:"
+echo "   ${BLUE}gh pr merge ${PR_NUMBER} --merge --delete-branch${NC}"
+echo ""
+echo "2. After merge, staging deployment will be triggered automatically by CI/CD"
+echo "   Or manually deploy:"
+echo "   ${BLUE}docker compose -f docker-compose.staging.yml up -d${NC}"
+echo ""
+echo "3. After staging deployment, run smoke tests (QAE)"
+echo ""
+echo "4. If approved, close epic and create release:"
+echo "   ${BLUE}./epic-close.sh ${EPIC_NUM}${NC}"
 echo ""
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
