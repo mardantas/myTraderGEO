@@ -1,9 +1,12 @@
-# DBA-01-EPIC-01-A-Database-Design-Decisions.md
+# DBA-01-EPIC-01-A-Schema-Review.md
 
-**Projeto:** myTraderGEO  
-**Épico:** EPIC-01-A - User Management  
-**Data:** 2025-10-26  
-**Engineer:** DBA Agent  
+**Agent:** DBA (Database Administrator)
+**Project:** myTraderGEO
+**Date:** 2025-10-26
+**Epic:** EPIC-01-A: User Management
+**Phase:** Iteration
+**Scope:** Database schema review and optimization for epic
+**Version:** 1.0
 **Database:** PostgreSQL 14+  
 
 ---
