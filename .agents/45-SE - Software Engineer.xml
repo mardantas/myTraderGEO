@@ -20,11 +20,16 @@
         - Review [05-infra/README.md](../05-infra/README.md) for starting containers
         - Ensure database is running and DBA migrations have been applied
 
-        **DATABASE WORKFLOW (SQL-First):**
+        **DATABASE WORKFLOW (SQL-First with Hybrid Scaffolding):**
         - DBA creates SQL migrations based on DE domain model
-        - You scaffold C# EF models from DBA migrations using `dotnet ef dbcontext scaffold`
+        - You scaffold C# EF models from DBA migrations using `dotnet ef dbcontext scaffold --force`
+        - **Hybrid Approach (Partial Classes Pattern)**: Separate auto-generated code from custom domain logic
+          - Auto-generated: `src/Infrastructure/Data/Models/*.cs` (overwritten every epic)
+          - Custom domain logic: `src/Domain/Entities/*.Partial.cs` (never touched by scaffold)
+          - FluentAPI configs: `src/Infrastructure/Persistence/Configurations/*.cs` (never touched)
+          - DbContext partial: `src/Infrastructure/Data/ApplicationDbContext.Partial.cs` (never touched)
         - You implement repositories mapping to DBA schema
-        - See [04-database/README.md](../04-database/README.md#para-se-scaffolding-ef-models) for scaffolding commands
+        - See [04-database/README.md](../04-database/README.md#para-se-scaffolding-strategy-across-multiple-epics) for complete scaffolding strategy
 
         **NOMENCLATURE:** Always follow nomenclature standards (see config.paths.standards.nomenclature) for classes, methods, and API endpoints.
 
@@ -63,7 +68,8 @@
         - Plan folder structure (Domain/Application/Infrastructure/API layers)
         - Identify Aggregates, Entities, Value Objects from DE-01
         - Map Use Cases to Application Services
-        - Plan Repository interfaces and EF DbContext mapping strategy (scaffold from DBA migrations)
+        - Plan Repository interfaces and EF DbContext mapping strategy (scaffold from DBA migrations using Hybrid Approach)
+        - Plan file organization: Models/ (auto-generated) vs Entities/ (custom partial classes) vs Configurations/ (FluentAPI)
         - Define API endpoints structure (Controllers, DTOs)
         - Document dependencies between components
         - Estimate test coverage strategy
@@ -97,8 +103,10 @@
         <responsibility>Implement Infrastructure layer (Repositories, EF DbContext mapping, DI configuration)</responsibility>
         <responsibility>Implement API layer (REST/GraphQL Controllers, DTOs, OpenAPI specification)</responsibility>
         <responsibility>Configure Dependency Injection for communication between contexts</responsibility>
-        <responsibility>Scaffold EF Core models from DBA SQL migrations (Database-First approach)</responsibility>
-        <responsibility>Implement EF DbContext with FluentAPI configurations for DBA schema</responsibility>
+        <responsibility>Scaffold EF Core models from DBA SQL migrations using Hybrid Approach (Database-First + partial classes pattern)</responsibility>
+        <responsibility>Create custom partial classes for domain logic in src/Domain/Entities/*.Partial.cs (never touched by scaffold)</responsibility>
+        <responsibility>Implement FluentAPI configurations in separate Configuration classes in src/Infrastructure/Persistence/Configurations/*.cs</responsibility>
+        <responsibility>Create DbContext partial class (ApplicationDbContext.Partial.cs) to register custom configurations</responsibility>
         <responsibility>Create basic unit tests (≥70% coverage domain layer)</responsibility>
         <responsibility>Generate and maintain OpenAPI specification (Swagger/Swashbuckle)</responsibility>
     </responsibilities>
@@ -169,7 +177,10 @@
         <essential-check>Domain Events identified and implemented</essential-check>
         <essential-check>All Use Cases from DE-01 implemented</essential-check>
         <essential-check>Functional REST APIs with correct status codes (200/201/400/404/422)</essential-check>
-        <essential-check>EF Core models scaffolded from DBA SQL migrations (Database-First approach)</essential-check>
+        <essential-check>EF Core models scaffolded from DBA SQL migrations using Hybrid Approach (--force flag)</essential-check>
+        <essential-check>Hybrid Approach file organization followed: Models/ (auto-gen), Entities/ (partial classes), Configurations/ (FluentAPI)</essential-check>
+        <essential-check>Domain logic exists ONLY in *.Partial.cs files (NOT in scaffolded Models/*.cs files)</essential-check>
+        <essential-check>FluentAPI configurations in separate Configuration classes (NOT in OnModelCreating directly)</essential-check>
         <essential-check>Repositories implemented and functional (complete CRUD)</essential-check>
         <essential-check>Basic unit tests ≥70% coverage in domain layer</essential-check>
         <essential-check>OpenAPI/Swagger accessible (endpoint /swagger)</essential-check>
@@ -181,7 +192,8 @@
             <criterion>Domain Events identified and implemented (minimum 2 per critical aggregate)</criterion>
             <criterion>All Use Cases from DE-01 implemented (commands + queries)</criterion>
             <criterion>Functional REST APIs with correct status codes (200/201/400/404/422)</criterion>
-            <criterion>EF Core models scaffolded from DBA SQL migrations and DbContext configured</criterion>
+            <criterion>EF Core models scaffolded from DBA SQL migrations using Hybrid Approach (partial classes pattern followed)</criterion>
+            <criterion>Domain logic isolated in *.Partial.cs files, FluentAPI in Configuration classes, DbContext.Partial.cs created</criterion>
             <criterion>Repositories implemented and functional (complete CRUD)</criterion>
             <criterion>Basic unit tests ≥70% coverage in domain layer</criterion>
         </criteria>
