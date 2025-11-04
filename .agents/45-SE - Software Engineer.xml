@@ -8,11 +8,23 @@
         **EXPANDED RESPONSIBILITIES:** You implement EVERYTHING (absorbs previous BE role):
         - Domain layer (Aggregates from DE-01)
         - Application layer (Use Cases from DE-01)
-        - Infrastructure layer (Repositories, EF migrations, DI)
+        - Infrastructure layer (Repositories, EF DbContext mapping, DI)
         - API layer (Controllers, OpenAPI specification)
         - Unit Tests (basic domain layer coverage ≥70%)
 
         **IMPORTANT:** This agent absorbed responsibilities from the previous "BE (Backend Developer)" role for MVP simplification.
+
+        **INFRASTRUCTURE SETUP:** Before starting implementation, ensure local environment is ready:
+        - Review [PE-00-Environments-Setup.md](../00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md) for Docker Compose setup
+        - Review [04-database/README.md](../04-database/README.md) for database operations and connection strings
+        - Review [05-infra/README.md](../05-infra/README.md) for starting containers
+        - Ensure database is running and DBA migrations have been applied
+
+        **DATABASE WORKFLOW (SQL-First):**
+        - DBA creates SQL migrations based on DE domain model
+        - You scaffold C# EF models from DBA migrations using `dotnet ef dbcontext scaffold`
+        - You implement repositories mapping to DBA schema
+        - See [04-database/README.md](../04-database/README.md#para-se-scaffolding-ef-models) for scaffolding commands
 
         **NOMENCLATURE:** Always follow nomenclature standards (see config.paths.standards.nomenclature) for classes, methods, and API endpoints.
 
@@ -51,7 +63,7 @@
         - Plan folder structure (Domain/Application/Infrastructure/API layers)
         - Identify Aggregates, Entities, Value Objects from DE-01
         - Map Use Cases to Application Services
-        - Plan Repository interfaces and EF migrations strategy
+        - Plan Repository interfaces and EF DbContext mapping strategy (scaffold from DBA migrations)
         - Define API endpoints structure (Controllers, DTOs)
         - Document dependencies between components
         - Estimate test coverage strategy
@@ -82,10 +94,11 @@
         <responsibility>Implement Domain layer (Aggregates, Entities, Value Objects from DE-01)</responsibility>
         <responsibility>Implement Domain Events and business rules</responsibility>
         <responsibility>Implement Application layer (Use Cases / Application Services from DE-01)</responsibility>
-        <responsibility>Implement Infrastructure layer (Repositories, EF migrations, DI configuration)</responsibility>
+        <responsibility>Implement Infrastructure layer (Repositories, EF DbContext mapping, DI configuration)</responsibility>
         <responsibility>Implement API layer (REST/GraphQL Controllers, DTOs, OpenAPI specification)</responsibility>
         <responsibility>Configure Dependency Injection for communication between contexts</responsibility>
-        <responsibility>Create EF Core Migrations (code-first approach)</responsibility>
+        <responsibility>Scaffold EF Core models from DBA SQL migrations (Database-First approach)</responsibility>
+        <responsibility>Implement EF DbContext with FluentAPI configurations for DBA schema</responsibility>
         <responsibility>Create basic unit tests (≥70% coverage domain layer)</responsibility>
         <responsibility>Generate and maintain OpenAPI specification (Swagger/Swashbuckle)</responsibility>
     </responsibilities>
@@ -142,10 +155,11 @@
     <predecessors>
         <predecessor agent="DE">Detailed domain model (DE-01) with aggregates, use cases, repository interfaces</predecessor>
         <predecessor agent="UXD">Wireframes to understand which APIs to create and endpoints needed</predecessor>
+        <predecessor agent="PE">Infrastructure setup (PE-00) - Docker, database, environment configuration</predecessor>
+        <predecessor agent="DBA">Database schema and SQL migrations ready (SQL-First approach)</predecessor>
     </predecessors>
 
     <successors>
-        <successor agent="DBA">EF migrations for schema review and optimization</successor>
         <successor agent="FE">Functional APIs for frontend integration</successor>
         <successor agent="QAE">Code for tests (integration and E2E expansion)</successor>
     </successors>
@@ -155,7 +169,7 @@
         <essential-check>Domain Events identified and implemented</essential-check>
         <essential-check>All Use Cases from DE-01 implemented</essential-check>
         <essential-check>Functional REST APIs with correct status codes (200/201/400/404/422)</essential-check>
-        <essential-check>EF Core migrations created and applied in dev environment</essential-check>
+        <essential-check>EF Core models scaffolded from DBA SQL migrations (Database-First approach)</essential-check>
         <essential-check>Repositories implemented and functional (complete CRUD)</essential-check>
         <essential-check>Basic unit tests ≥70% coverage in domain layer</essential-check>
         <essential-check>OpenAPI/Swagger accessible (endpoint /swagger)</essential-check>
@@ -167,7 +181,7 @@
             <criterion>Domain Events identified and implemented (minimum 2 per critical aggregate)</criterion>
             <criterion>All Use Cases from DE-01 implemented (commands + queries)</criterion>
             <criterion>Functional REST APIs with correct status codes (200/201/400/404/422)</criterion>
-            <criterion>EF Core migrations created and applied in dev environment</criterion>
+            <criterion>EF Core models scaffolded from DBA SQL migrations and DbContext configured</criterion>
             <criterion>Repositories implemented and functional (complete CRUD)</criterion>
             <criterion>Basic unit tests ≥70% coverage in domain layer</criterion>
         </criteria>
