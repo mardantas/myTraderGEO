@@ -308,6 +308,62 @@ Executada para cada épico prioritário, entregando funcionalidade completa pont
 
 ---
 
+## 🗄️ Database Workflow: SQL-First Approach
+
+### Decisão Arquitetural
+
+Este projeto adota **SQL-First** onde DBA cria schema migrations ANTES de SE criar EF models.
+
+**Justificativa:**
+- **Alinhamento com ordem de execução**: DBA executa Day 2-3 (APÓS DE criar domain model Day 1-2)
+- **Database como fonte de verdade**: Schema define estruturas de dados autoritativas
+- **Otimização de performance**: DBA otimiza índices e constraints desde o início
+- **PostgreSQL-specific**: Usa recursos avançados (JSONB, GIN indexes, partial indexes) melhor expressados em SQL
+- **Estratégia multi-ambiente**: Permite migrations de ALTER USER para senhas staging/prod
+
+### Sequência do Workflow
+
+```
+Day 1-2: DE → Cria DE-01-[EpicName]-Domain-Model.md
+              (Aggregates, Entities, Value Objects, Repository interfaces)
+
+Day 2-3: DBA → Lê DE-01
+              → Cria SQL migrations em 04-database/migrations/
+              → Cria DBA-01-[EpicName]-Schema-Review.md
+              → Atualiza 04-database/README.md
+
+Day 3-6: SE → Lê DBA-01 e migrations
+             → Scaffolds EF models: dotnet ef dbcontext scaffold
+             → Implementa repositories mapeando para schema DBA
+             → Cria use cases e API
+```
+
+### Deliverables DBA (Por Epic)
+
+1. **DBA-01-[EpicName]-Schema-Review.md** - Decisões de design (WHY/WHAT)
+2. **04-database/README.md** - Guia operacional (HOW) - Atualizado por epic
+3. **Migrations SQL** - `04-database/migrations/NNN_*.sql`
+
+### Consumo pelo SE
+
+SE usa migrations do DBA para gerar C# models:
+
+```bash
+dotnet ef dbcontext scaffold \
+  "Host=localhost;Database=mytrader_dev;Username=mytrader_app;Password=xxx" \
+  Npgsql.EntityFrameworkCore.PostgreSQL \
+  --output-dir Data/Models \
+  --context-dir Data \
+  --context ApplicationDbContext \
+  --force
+```
+
+**Referências:**
+- [DBA Agent Overview](01-Agents-Overview.md#dba---database-administrator)
+- [Nomenclature Standards](02-Nomenclature-Standards.md)
+
+---
+
 ## 💬 Sistema de Feedback
 
 Quando um agente identifica um problema no entregável de outro agente, cria um FEEDBACK formal.

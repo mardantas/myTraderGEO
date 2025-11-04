@@ -528,6 +528,50 @@ DROP TABLE IF EXISTS {Table3} CASCADE;
 
 ---
 
+## 🔄 Para SE: Scaffolding EF Models das Migrations
+
+### Após DBA Criar Migrations
+
+SE usa SQL migrations do DBA para gerar C# Entity Framework models:
+
+**Comando:**
+```bash
+# No diretório 02-backend
+dotnet ef dbcontext scaffold \
+  "Host=localhost;Port=5432;Database=[PROJECT_NAME]_dev;Username=[PROJECT_NAME]_app;Password={DB_APP_PASSWORD}" \
+  Npgsql.EntityFrameworkCore.PostgreSQL \
+  --output-dir src/Infrastructure/Data/Models \
+  --context-dir src/Infrastructure/Data \
+  --context ApplicationDbContext \
+  --force
+```
+
+**Pré-requisitos:**
+- ✅ DBA migrations executadas (ver "How to Execute Migrations" acima)
+- ✅ Database rodando e acessível (ver "Como Iniciar Database" em [05-infra/README.md](../05-infra/README.md))
+- ✅ Connection string de `.env.dev` ou `appsettings.Development.json`
+
+**Output:**
+- `02-backend/src/Infrastructure/Data/Models/*.cs` - Entity classes
+- `02-backend/src/Infrastructure/Data/ApplicationDbContext.cs` - DbContext
+
+**Quando Scaffoldar:**
+- Após DBA criar novas migrations (por epic)
+- Quando schema do database muda
+- Para atualizar C# models ao estado atual do database
+
+**Workflow SQL-First:**
+```
+DBA cria schema (SQL) → SE scaffolds models (C#) → SE implementa repositories
+```
+
+**Referências:**
+- [Workflow Guide - SQL-First](../../.agents/docs/00-Workflow-Guide.md#database-workflow-sql-first-approach)
+- [SE Agent Overview](../../.agents/docs/01-Agents-Overview.md#se---software-engineer)
+- [DBA-01 Schema Review](../../00-doc-ddd/05-database-design/DBA-01-[EpicName]-Schema-Review.md)
+
+---
+
 ## 🧪 Validation and Testing
 
 ### Verify Users Created
