@@ -528,6 +528,256 @@ DROP TABLE IF EXISTS {Table3} CASCADE;
 
 ---
 
+## 🚀 Quick Start for Software Engineers (SE)
+
+**⚠️ Database-First Approach:** DBA creates SQL migrations FIRST, then SE scaffolds EF Core models from database.
+
+**Important:** This section covers LOCAL DEVELOPMENT. For CI/CD pipelines and GitHub Actions, see [GM-00 - Database Migrations in CI/CD](../07-github-management/GM-00-GitHub-Setup.md#database-migrations-in-cicd-database-first-approach).
+
+### Prerequisites
+
+Before starting, ensure you have:
+
+- ✅ **Docker Desktop** installed and running
+- ✅ **.NET 8 SDK** installed
+- ✅ **EF Core CLI tools:** `dotnet tool install --global dotnet-ef`
+- ✅ **PostgreSQL client** (psql) - included in Docker image
+
+### Step 1: Start PostgreSQL Container
+
+```bash
+# Start database service only
+docker compose -f 05-infra/docker/docker-compose.yml up database -d
+
+# Verify container is running
+docker compose ps database
+
+# Expected output: database running on port 5432
+```
+
+**What happens:**
+- PostgreSQL 15 container starts
+- Init scripts in `04-database/init-scripts/` execute automatically (creates users)
+- Named volume `{project}_postgres_data` persists data
+
+### Step 2: Verify Database Connection
+
+```bash
+# Connect to database as application user
+docker compose exec database psql -U {project}_app -d {project}_dev
+
+# Expected output: PostgreSQL prompt
+# {project}_dev=>
+```
+
+**Test connection:**
+```sql
+-- List tables (should be empty initially)
+\dt
+
+-- Check current user
+SELECT current_user;  -- Should show: {project}_app
+
+-- Exit
+\q
+```
+
+### Step 3: Apply SQL Migrations (created by DBA)
+
+**Important:** DBA creates migrations FIRST in `04-database/migrations/`. SE only executes them.
+
+```bash
+# Execute migration (example for EPIC-01)
+docker compose exec database psql -U {project}_app -d {project}_dev \
+  -f /app/migrations/001_create_user_management_schema.sql
+
+# Verify tables created
+docker compose exec database psql -U {project}_app -d {project}_dev \
+  -c "\dt"
+
+# Expected output: List of tables from migration
+#  Schema |        Name         | Type  |     Owner
+# --------+---------------------+-------+----------------
+#  public | Users               | table | {project}_app
+#  public | SubscriptionPlans   | table | {project}_app
+```
+
+### Step 4: Scaffold EF Core Models from Database
+
+**Critical:** EF models are GENERATED from database, not created via Code-First migrations.
+
+```bash
+# Navigate to backend project
+cd 02-backend
+
+# Scaffold command (generates C# classes from database schema)
+dotnet ef dbcontext scaffold \
+  "Host=localhost;Database={project}_dev;Username={project}_app;Password=dev_password_123" \
+  Npgsql.EntityFrameworkCore.PostgreSQL \
+  --output-dir src/Infrastructure/Data/Models \
+  --context-dir src/Infrastructure/Data \
+  --context ApplicationDbContext \
+  --no-onconfiguring \
+  --force
+
+# What this creates:
+# - src/Infrastructure/Data/Models/User.cs (entity class)
+# - src/Infrastructure/Data/Models/SubscriptionPlan.cs
+# - src/Infrastructure/Data/ApplicationDbContext.cs (DbContext)
+```
+
+**Important Parameters:**
+- `--output-dir`: Where to generate entity classes
+- `--context`: DbContext name
+- `--no-onconfiguring`: Removes connection string from DbContext (use DI instead)
+- `--force`: Overwrites existing files (safe for re-scaffolding)
+
+**For complete scaffolding documentation, see:** [EF Core Scaffolding Commands](#ef-core-scaffolding-commands) section below.
+
+### Step 5: Setup Integration Tests with TestContainers
+
+**Purpose:** Run integration tests against REAL PostgreSQL (not in-memory SQLite).
+
+**For complete setup, see:** [TestContainers Setup](#testcontainers-setup-for-integration-tests) section below.
+
+**Quick example:**
+```bash
+# Add NuGet packages
+cd 02-backend/tests/{ProjectName}.IntegrationTests
+dotnet add package Testcontainers.PostgreSql --version 3.x
+
+# Create test fixture (see TestContainers section for full code)
+# Tests will spin up PostgreSQL container, apply migrations, run tests, dispose container
+```
+
+### Common Workflows
+
+#### Workflow 1: Start Development (First Time)
+
+```bash
+# 1. Start database
+docker compose -f 05-infra/docker/docker-compose.yml up database -d
+
+# 2. Verify init-scripts executed (creates users)
+docker compose logs database | grep "Creating application users"
+
+# 3. Apply DBA migrations
+docker compose exec database psql -U {project}_app -d {project}_dev \
+  -f /app/migrations/001_create_user_management_schema.sql
+
+# 4. Scaffold EF models
+cd 02-backend
+dotnet ef dbcontext scaffold \
+  "Host=localhost;Database={project}_dev;Username={project}_app;Password=dev_password_123" \
+  Npgsql.EntityFrameworkCore.PostgreSQL \
+  --output-dir src/Infrastructure/Data/Models \
+  --context-dir src/Infrastructure/Data \
+  --context ApplicationDbContext \
+  --no-onconfiguring \
+  --force
+
+# 5. Run application
+dotnet run --project src/Api
+```
+
+#### Workflow 2: Update After New Migration (Subsequent Epics)
+
+```bash
+# 1. DBA creates new migration (e.g., 002_create_strategy_management_schema.sql)
+# 2. Apply new migration
+docker compose exec database psql -U {project}_app -d {project}_dev \
+  -f /app/migrations/002_create_strategy_management_schema.sql
+
+# 3. Re-scaffold (updates existing + adds new entities)
+cd 02-backend
+dotnet ef dbcontext scaffold \
+  "Host=localhost;Database={project}_dev;Username={project}_app;Password=dev_password_123" \
+  Npgsql.EntityFrameworkCore.PostgreSQL \
+  --output-dir src/Infrastructure/Data/Models \
+  --context-dir src/Infrastructure/Data \
+  --context ApplicationDbContext \
+  --no-onconfiguring \
+  --force
+
+# 4. Review changes
+git diff src/Infrastructure/Data/Models/
+
+# 5. Create partial classes for new entities (see Scaffolding section)
+```
+
+#### Workflow 3: Reset Database (Clean Start)
+
+```bash
+# ⚠️ WARNING: This deletes all data!
+
+# 1. Stop containers
+docker compose down
+
+# 2. Remove database volume
+docker volume rm {project}_postgres_data
+
+# 3. Start again (init-scripts will re-execute)
+docker compose -f 05-infra/docker/docker-compose.yml up database -d
+
+# 4. Re-apply all migrations in order
+docker compose exec database psql -U {project}_app -d {project}_dev \
+  -f /app/migrations/001_create_user_management_schema.sql
+docker compose exec database psql -U {project}_app -d {project}_dev \
+  -f /app/migrations/002_create_strategy_management_schema.sql
+```
+
+### Troubleshooting
+
+#### Problem: "Connection refused" when scaffolding
+
+**Cause:** Database container not running or wrong host/port
+
+**Solution:**
+```bash
+# Check container status
+docker compose ps database
+
+# If not running, start it
+docker compose -f 05-infra/docker/docker-compose.yml up database -d
+
+# Test connection
+docker compose exec database psql -U {project}_app -d {project}_dev -c "SELECT 1"
+```
+
+#### Problem: "Password authentication failed"
+
+**Cause:** Wrong password in connection string
+
+**Solution:**
+```bash
+# Development password is always: dev_password_123
+# Check .env file or use correct connection string:
+"Host=localhost;Database={project}_dev;Username={project}_app;Password=dev_password_123"
+```
+
+#### Problem: "No tables found" when scaffolding
+
+**Cause:** Migrations not applied yet
+
+**Solution:**
+```bash
+# List tables
+docker compose exec database psql -U {project}_app -d {project}_dev -c "\dt"
+
+# If empty, apply migrations
+docker compose exec database psql -U {project}_app -d {project}_dev \
+  -f /app/migrations/001_create_user_management_schema.sql
+```
+
+### Next Steps
+
+- **Learn about TestContainers:** [TestContainers Setup](#testcontainers-setup-for-integration-tests)
+- **Learn about EF scaffolding:** [EF Core Scaffolding Commands](#ef-core-scaffolding-commands)
+- **Learn about multi-epic workflow:** [Scaffolding Strategy Across Multiple Epics](#-para-se-scaffolding-strategy-across-multiple-epics)
+- **CI/CD setup:** [GM-00 - Database Migrations in CI/CD](../07-github-management/GM-00-GitHub-Setup.md#database-migrations-in-cicd-database-first-approach)
+
+---
+
 ## 🔄 Para SE: Scaffolding Strategy Across Multiple Epics
 
 ### ⚠️ CRITICAL: Understanding the Scaffolding Problem
