@@ -133,7 +133,127 @@ Definir estratégia de testes para myTraderGEO, garantindo qualidade e confiabil
 
 ### 2. Integration Tests - APIs & Cross-BC
 
-**Foco:** Comunicação entre componentes, integrações externas  
+**Foco:** Controller + Use Cases + Repositories com database real
+
+**Framework:** xUnit com WebApplicationFactory
+**Database:** TestContainers (Docker) ou In-Memory SQLite
+
+**⚠️ Recommendation:** Prefer **TestContainers** over in-memory SQLite for integration tests:
+- ✅ Tests against real PostgreSQL (same as production)
+- ✅ Validates SQL migrations (Database-First approach)
+- ✅ Catches PostgreSQL-specific issues (JSONB, arrays, custom types)
+- ❌ In-memory SQLite has different SQL dialect and limited features
+
+**Setup TestContainers with WebApplicationFactory:**
+
+```csharp
+// DatabaseFixture.cs - Manages PostgreSQL container lifecycle
+public class DatabaseFixture : IAsyncLifetime
+{
+    private readonly PostgreSqlContainer _container = new PostgreSqlBuilder()
+        .WithDatabase("mytrader_test")
+        .WithUsername("mytrader_app")
+        .WithPassword("test_password")
+        .WithImage("postgres:15-alpine")
+        .WithCleanUp(true)
+        .Build();
+
+    public string ConnectionString => _container.GetConnectionString();
+
+    public async Task InitializeAsync()
+    {
+        await _container.StartAsync();
+
+        // Apply DBA migrations (Database-First approach)
+        await using var connection = new NpgsqlConnection(ConnectionString);
+        await connection.OpenAsync();
+
+        // Apply all SQL migration files in order
+        var migrationFiles = Directory.GetFiles(
+            "../../../../04-database/migrations",
+            "*.sql",
+            SearchOption.TopDirectoryOnly
+        ).OrderBy(f => f);
+
+        foreach (var file in migrationFiles)
+        {
+            var migrationScript = await File.ReadAllTextAsync(file);
+            await using var cmd = new NpgsqlCommand(migrationScript, connection);
+            await cmd.ExecuteNonQueryAsync();
+        }
+    }
+
+    public async Task DisposeAsync() => await _container.DisposeAsync();
+}
+
+// CustomWebApplicationFactory.cs - Injects TestContainers connection string
+public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IClassFixture<DatabaseFixture>
+{
+    private readonly DatabaseFixture _dbFixture;
+
+    public CustomWebApplicationFactory(DatabaseFixture dbFixture)
+    {
+        _dbFixture = dbFixture;
+    }
+
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
+    {
+        builder.ConfigureTestServices(services =>
+        {
+            // Replace production DbContext with TestContainers connection string
+            var descriptor = services.SingleOrDefault(
+                d => d.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
+
+            if (descriptor != null)
+                services.Remove(descriptor);
+
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseNpgsql(_dbFixture.ConnectionString));
+        });
+    }
+}
+```
+
+**Exemplo de teste usando TestContainers:**
+```csharp
+public class StrategyApiTests : IClassFixture<CustomWebApplicationFactory>
+{
+    private readonly HttpClient _client;
+
+    public StrategyApiTests(CustomWebApplicationFactory factory)
+    {
+        _client = factory.CreateClient();
+    }
+
+    [Fact]
+    public async Task POST_CreateStrategy_ReturnsCreated()
+    {
+        // Arrange
+        var command = new CreateStrategyCommand { ... };
+
+        // Act
+        var response = await _client.PostAsJsonAsync("/api/strategies", command);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        var strategy = await response.Content.ReadFromJsonAsync<StrategyDto>();
+        Assert.NotNull(strategy);
+        Assert.NotEqual(Guid.Empty, strategy.Id);
+    }
+
+    [Fact]
+    public async Task GET_GetStrategy_WhenNotFound_Returns404()
+    {
+        // Act
+        var response = await _client.GetAsync($"/api/strategies/{Guid.NewGuid()}");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+}
+```
+
+**For complete TestContainers setup, see:** [04-database/README.md - TestContainers Setup](../04-database-design/README.template.md#-testcontainers-setup-for-integration-tests)
 
 **Backend Integration:**
 - ✅ API endpoints (HTTP status, payloads, validações)
