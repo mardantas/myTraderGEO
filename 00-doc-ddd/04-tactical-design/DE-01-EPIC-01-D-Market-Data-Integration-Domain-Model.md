@@ -1,23 +1,23 @@
 # DE-01-EPIC-01-D-Market-Data-Integration-Domain-Model.md
 
-**Agent:** DE (Domain Engineer)
-**Project:** myTraderGEO
-**Date:** 2025-10-25
-**Epic:** EPIC-01-D: Market Data Integration (segmento do EPIC-01)
-**Phase:** Iteration
-**Scope:** Tactical DDD model for epic-specific bounded contexts
+**Agent:** DE (Domain Engineer)  
+**Project:** myTraderGEO  
+**Date:** 2025-10-25  
+**Epic:** EPIC-01-D: Market Data Integration (segmento do EPIC-01)  
+**Phase:** Iteration  
+**Scope:** Tactical DDD model for epic-specific bounded contexts  
 **Version:** 1.0  
 
 ---
 
-## 🎯 Contexto do Sub-Epico
+## 🎯 Contexto do Sub-Épico
 
-**Nome do Sub-Epico:** Market Data Integration  
+**Nome do Sub-Épico:** Market Data Integration  
 
 **Bounded Context:** Market Data  
 
 **Objetivo:**
-Modelar o gerenciamento de contratos de opcoes da B3 e ativos subjacentes, incluindo sincronizacao de dados (batch), streaming de precos em tempo real (WebSocket/SignalR), calculo de Greeks (Black-Scholes para opcoes europeias), tratamento de ajustes de strike (dividendos/proventos) e validacao de regras B3 (Puts europeias, series semanais W1-W5).
+Modelar o gerenciamento de contratos de opções da B3 e ativos subjacentes, incluindo sincronização de dados (batch), streaming de preços em tempo real (WebSocket/SignalR), cálculo de Greeks (Black-Scholes para opções europeias), tratamento de ajustes de strike (dividendos/proventos) e validacao de regras B3 (Puts europeias, séries semanais W1-W5).
 
 **Aggregates Modelados:**
 - OptionContract (Aggregate Root)
@@ -25,18 +25,18 @@ Modelar o gerenciamento de contratos de opcoes da B3 e ativos subjacentes, inclu
 - UnderlyingAsset (Aggregate Root)
 
 **Domain Services:**
-- IBlackScholesService (calculo de pricing, IV, Greeks para opcoes europeias)
-- IWeeklySeriesCalculator (calculo de serie semanal W1-W5)
-- IMarketDataStreamService (throttling, cache, validacao de mudancas significativas)
+- IBlackScholesService (cálculo de pricing, IV, Greeks para opções europeias)
+- IWeeklySeriesCalculator (cálculo de série semanal W1-W5)
+- IMarketDataStreamService (throttling, cache, validacao de mudanças significativas)
 
 ---
 
-## 📋 Indice do Modelo de Dominio
+## 📋 Índice do Modelo de Domínio
 
 ### Market Data BC
 
 #### [Aggregate: OptionContract](#1-optioncontract-aggregate-root)
-**Responsabilidade:** Contratos de opcao da B3  
+**Responsabilidade:** Contratos de opção da B3  
 
 **Entities:**
   - StrikeAdjustment
@@ -77,7 +77,7 @@ Modelar o gerenciamento de contratos de opcoes da B3 e ativos subjacentes, inclu
 
 ## 1. OptionContract (Aggregate Root)
 
-**Responsabilidade:** Gerenciar dados de contratos de opcoes da B3 (precos, Greeks, ajustes de strike)  
+**Responsabilidade:** Gerenciar dados de contratos de opções da B3 (preços, Greeks, ajustes de strike)  
 
 **Invariantes (Business Rules):**
 1. Symbol deve ser unico
@@ -88,7 +88,7 @@ Modelar o gerenciamento de contratos de opcoes da B3 e ativos subjacentes, inclu
 6. CurrentStrike pode ser ajustado por dividendos
 7. ContractMultiplier deve ser > 0 (padrao: 100 para acoes, 1 para BOVA11)
 8. BidPrice <= AskPrice (quando ambos presentes)
-9. Expiration deve ser futura (para opcoes Active)
+9. Expiration deve ser futura (para opções Active)
 10. Series deve ser definida (W1-W5, onde W3 = mensal padrao na 3a segunda-feira do mes)
 
 ## Entities
@@ -226,7 +226,7 @@ public class OptionContract : Entity<OptionContractId>
     // ========================================
 
     /// <summary>
-    /// Atualiza precos de mercado (bid/ask/last)
+    /// Atualiza preços de mercado (bid/ask/last)
     /// </summary>
     public void UpdateMarketPrices(
         Money? bidPrice,
@@ -323,7 +323,7 @@ public class OptionContract : Entity<OptionContractId>
     }
 
     /// <summary>
-    /// Marca opcao como expirada
+    /// Marca opção como expirada
     /// </summary>
     public void Expire()
     {
@@ -368,7 +368,7 @@ public class OptionContract : Entity<OptionContractId>
     }
 
     /// <summary>
-    /// Verifica se opcao esta liquida (spread < 5%)
+    /// Verifica se opção esta liquida (spread < 5%)
     /// </summary>
     public bool IsLiquid()
     {
@@ -454,7 +454,7 @@ public enum OptionStatus
 }
 
 /// <summary>
-/// Representa a serie semanal de uma opcao.
+/// Representa a série semanal de uma opção.
 /// Nomenclatura unificada: W1-W5 (onde W3 = mensal padrao = 3a segunda-feira)
 /// </summary>
 public record OptionSeries
@@ -612,7 +612,7 @@ public record UserUnsubscribedFromSymbol(
 
 ## 2. UnderlyingAsset (Aggregate Root)
 
-**Responsabilidade:** Gerenciar dados do ativo subjacente (acao-objeto da opcao)  
+**Responsabilidade:** Gerenciar dados do ativo subjacente (acao-objeto da opção)  
 
 **Invariantes (Business Rules):**
 1. Symbol (Ticker) deve ser unico
@@ -764,13 +764,13 @@ public record UnderlyingAssetActivated(
 
 ```csharp
 /// <summary>
-/// Black-Scholes pricing model para opcoes europeias
-/// NOTA: Para opcoes americanas (algumas calls), usar modelo binomial (EPIC-02)
+/// Black-Scholes pricing model para opções europeias
+/// NOTA: Para opções americanas (algumas calls), usar modelo binomial (EPIC-02)
 /// </summary>
 public interface IBlackScholesService
 {
     /// <summary>
-    /// Calcula preco teorico de opcao europeia
+    /// Calcula preco teorico de opção europeia
     /// </summary>
     Money CalculateTheoreticalPrice(
         Money spot,
@@ -794,7 +794,7 @@ public interface IBlackScholesService
         decimal tolerance = 0.0001m);
 
     /// <summary>
-    /// Calcula Greeks para opcao europeia
+    /// Calcula Greeks para opção europeia
     /// </summary>
     OptionGreeks CalculateGreeks(
         Money spot,
@@ -814,12 +814,12 @@ public interface IBlackScholesService
 }
 
 /// <summary>
-/// Domain Service para calcular a serie semanal (W1-W5) de uma opcao baseado na data de vencimento
+/// Domain Service para calcular a série semanal (W1-W5) de uma opção baseado na data de vencimento
 /// </summary>
 public interface IWeeklySeriesCalculator
 {
     /// <summary>
-    /// Calcula a serie semanal baseado na data de vencimento
+    /// Calcula a série semanal baseado na data de vencimento
     /// W1 = 1a segunda-feira do mes
     /// W2 = 2a segunda-feira do mes
     /// W3 = 3a segunda-feira do mes (MENSAL PADRAO)
@@ -840,7 +840,7 @@ public interface IWeeklySeriesCalculator
 }
 
 /// <summary>
-/// Domain Service para gerenciar throttling e cache de updates de precos em tempo real
+/// Domain Service para gerenciar throttling e cache de updates de preços em tempo real
 /// Evita sobrecarga de updates e garante performance
 /// </summary>
 public interface IMarketDataStreamService
@@ -868,7 +868,7 @@ public interface IMarketDataStreamService
 
     /// <summary>
     /// Verifica se mudanca de preco e significativa (> threshold)
-    /// Evita broadcast de mudancas insignificantes (< 0.1%)
+    /// Evita broadcast de mudanças insignificantes (< 0.1%)
     /// </summary>
     bool IsPriceChangeSignificant(Money oldPrice, Money newPrice, decimal thresholdPercentage = 0.1m);
 }
@@ -884,7 +884,7 @@ public interface IOptionContractRepository
     Task<OptionContract> GetByIdAsync(OptionContractId id, CancellationToken ct);
     Task<OptionContract?> GetBySymbolAsync(string symbol, CancellationToken ct);
 
-    // Lista de opcoes disponiveis (CRITICAL para UI)
+    // Lista de opções disponiveis (CRITICAL para UI)
     Task<IEnumerable<OptionContract>> GetAvailableOptionsAsync(
         Ticker underlyingAsset,
         OptionType? typeFilter = null,           // Call/Put
@@ -903,18 +903,18 @@ public interface IOptionContractRepository
         DateTime expiration,
         CancellationToken ct);
 
-    // Buscar opcoes proximas do vencimento
+    // Buscar opções proximas do vencimento
     Task<IEnumerable<OptionContract>> GetExpiringOptionsAsync(
         int daysUntilExpiration,
         CancellationToken ct);
 
-    // Buscar opcoes liquidas
+    // Buscar opções liquidas
     Task<IEnumerable<OptionContract>> GetLiquidOptionsAsync(
         Ticker underlyingAsset,
         decimal maxSpreadPercentage = 5m,
         CancellationToken ct = default);
 
-    // Buscar opcoes que deveriam estar expiradas (para sync job)
+    // Buscar opções que deveriam estar expiradas (para sync job)
     Task<IEnumerable<OptionContract>> GetExpiredActiveOptionsAsync(
         DateTime referenceDate,
         CancellationToken ct);
@@ -942,12 +942,12 @@ public interface IUnderlyingAssetRepository
 1. `OptionContract.GetBySymbolAsync` → Unique Index em Symbol
 2. `OptionContract.GetAvailableOptionsAsync` → Composite Index em (UnderlyingAsset, Status, Expiration, Series.WeekNumber)
 3. `OptionContract.GetExpiringOptionsAsync` → Index em (Status, Expiration)
-4. `OptionContract.GetLiquidOptionsAsync` → Index em (UnderlyingAsset, Status) + calculo de spread
+4. `OptionContract.GetLiquidOptionsAsync` → Index em (UnderlyingAsset, Status) + cálculo de spread
 5. `UnderlyingAsset.GetBySymbolAsync` → Unique Index em Symbol
 
 **Exemplos de Filtros de Opcoes Semanais:**
 ```csharp
-// Buscar apenas opcoes mensais (W3)
+// Buscar apenas opções mensais (W3)
 var monthlyOptions = await repo.GetAvailableOptionsAsync(
     ticker, monthlyStandardOnly: true);
 
@@ -992,7 +992,7 @@ var allOptions = await repo.GetAvailableOptionsAsync(ticker);
               • Opcao existe?
               • IV disponivel?
               • Liquidez adequada? (spread < 5%)
-           → Usar strike REAL e vencimento REAL da opcao encontrada
+           → Usar strike REAL e vencimento REAL da opção encontrada
 
     → Create Strategy com strikes/vencimentos reais
 ```
@@ -1048,7 +1048,7 @@ public record OptionContractDto(
 - `OptionStrikeAdjusted` → Strategy Planning pode alertar usuarios com estrategias afetadas
 - `OptionExpired` → Strategy Planning pode marcar estrategias como fechadas
 - `OptionsDataSyncCompleted` → Pode notificar administradores sobre sync
-- `NewOptionContractsDiscovered` → Pode notificar traders sobre novas opcoes
+- `NewOptionContractsDiscovered` → Pode notificar traders sobre novas opções
 
 ---
 
@@ -1066,20 +1066,20 @@ public record OptionContractDto(
 public interface IB3ApiClient
 {
     /// <summary>
-    /// Busca todas as opcoes listadas de um ativo subjacente
+    /// Busca todas as opções listadas de um ativo subjacente
     /// </summary>
     Task<IEnumerable<B3OptionData>> GetOptionsForUnderlyingAsync(
         string ticker,
         CancellationToken ct);
 
     /// <summary>
-    /// Busca todas as opcoes listadas (para sync completo)
+    /// Busca todas as opções listadas (para sync completo)
     /// </summary>
     Task<IEnumerable<B3OptionData>> GetAllListedOptionsAsync(
         CancellationToken ct);
 
     /// <summary>
-    /// Busca dados atualizados de uma opcao especifica
+    /// Busca dados atualizados de uma opção especifica
     /// </summary>
     Task<B3OptionData?> GetOptionBySymbolAsync(
         string symbol,
@@ -1131,7 +1131,7 @@ public record B3AssetPrice(
 );
 
 /// <summary>
-/// Cliente WebSocket para feed de precos em tempo real da B3
+/// Cliente WebSocket para feed de preços em tempo real da B3
 /// Implementado na camada de Infrastructure com reconexao automatica
 /// </summary>
 public interface IMarketDataFeedClient
@@ -1203,7 +1203,7 @@ var b3Options = await _b3ApiClient.GetAllListedOptionsAsync(ct);
 
 foreach (var b3Option in b3Options)
 {
-    // Calcular serie semanal usando Domain Service
+    // Calcular série semanal usando Domain Service
     var series = _weeklySeriesCalculator.CalculateSeries(b3Option.ExpirationDate);
 
     // Verificar se ja existe
@@ -1223,7 +1223,7 @@ foreach (var b3Option in b3Options)
             b3Option.ContractSize
         );
 
-        // Atualizar precos
+        // Atualizar preços
         option.UpdateMarketPrices(
             Money.Brl(b3Option.BidPrice ?? 0),
             Money.Brl(b3Option.AskPrice ?? 0),
@@ -1239,7 +1239,7 @@ foreach (var b3Option in b3Options)
     }
     else
     {
-        // Atualizar precos existente
+        // Atualizar preços existente
         existing.UpdateMarketPrices(...);
         updatedCount++;
     }
@@ -1256,7 +1256,7 @@ foreach (var b3Option in b3Options)
 **Trigger:** Scheduled task (daily at 19h30 after market closes) ou trigger manual por admin  
 **Bounded Context:** Market Data  
 
-**Objetivo:** Sincronizar lista de opcoes da B3, identificando novas series (incluindo semanais W1-W5), atualizando precos/Greeks de existentes, e marcando expiradas automaticamente.  
+**Objetivo:** Sincronizar lista de opções da B3, identificando novas series (incluindo semanais W1-W5), atualizando preços/Greeks de existentes, e marcando expiradas automaticamente.  
 
 **Fluxo:**
 
@@ -1283,19 +1283,19 @@ public class SyncOptionsHandler : IRequestHandler<SyncOptionsCommand, Result<Syn
 
         try
         {
-            // 2. Buscar todas as opcoes da B3 API
+            // 2. Buscar todas as opções da B3 API
             var b3Options = await _b3ApiClient.GetAllListedOptionsAsync(ct);
             _logger.LogInformation("Fetched {Count} options from B3 API", b3Options.Count());
 
-            // 3. Processar cada opcao da B3
+            // 3. Processar cada opção da B3
             foreach (var b3Option in b3Options)
             {
                 try
                 {
-                    // Calcular serie semanal (W1-W5) usando Domain Service
+                    // Calcular série semanal (W1-W5) usando Domain Service
                     var series = _weeklySeriesCalculator.CalculateSeries(b3Option.ExpirationDate);
 
-                    // Verificar se opcao ja existe no banco
+                    // Verificar se opção ja existe no banco
                     var existing = await _optionRepository.GetBySymbolAsync(b3Option.Symbol, ct);
 
                     if (existing == null)
@@ -1312,7 +1312,7 @@ public class SyncOptionsHandler : IRequestHandler<SyncOptionsCommand, Result<Syn
                             b3Option.ContractSize
                         );
 
-                        // Atualizar precos de mercado
+                        // Atualizar preços de mercado
                         if (b3Option.BidPrice.HasValue || b3Option.AskPrice.HasValue)
                         {
                             option.UpdateMarketPrices(
@@ -1377,7 +1377,7 @@ public class SyncOptionsHandler : IRequestHandler<SyncOptionsCommand, Result<Syn
                         stats.OptionsUpdated++;
                     }
 
-                    // Dispatch events para novas opcoes criadas
+                    // Dispatch events para novas opções criadas
                     foreach (var domainEvent in (existing ?? option).DomainEvents)
                     {
                         await _eventDispatcher.DispatchAsync(domainEvent, ct);
@@ -1386,11 +1386,11 @@ public class SyncOptionsHandler : IRequestHandler<SyncOptionsCommand, Result<Syn
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Error processing option {Symbol}", b3Option.Symbol);
-                    // Continuar processando outras opcoes
+                    // Continuar processando outras opções
                 }
             }
 
-            // 4. Marcar opcoes expiradas
+            // 4. Marcar opções expiradas
             var expiredOptions = await _optionRepository.GetExpiredActiveOptionsAsync(
                 DateTime.UtcNow, ct);
 
@@ -1450,15 +1450,15 @@ public record SyncStatistics(
 ```
 
 **Aggregates Envolvidos:**
-- OptionContract (create/modify - novas opcoes, atualizar precos/Greeks, expirar)
+- OptionContract (create/modify - novas opções, atualizar preços/Greeks, expirar)
 - UnderlyingAsset (read-only - validar ticker)
 
 **Domain Events Gerados:**
 - `OptionsDataSyncStarted` - inicio do processo
-- `OptionContractCreated` - para cada nova opcao descoberta
-- `OptionMarketPricesUpdated` - para cada opcao atualizada
+- `OptionContractCreated` - para cada nova opção descoberta
+- `OptionMarketPricesUpdated` - para cada opção atualizada
 - `OptionGreeksUpdated` - quando Greeks atualizados
-- `OptionExpired` - para cada opcao expirada automaticamente
+- `OptionExpired` - para cada opção expirada automaticamente
 - `OptionsDataSyncCompleted` - conclusao com estatisticas
 
 **Domain Services Utilizados:**
@@ -1560,7 +1560,7 @@ public class B3ApiClient : IB3ApiClient
 **Trigger:** Trader conecta ao SignalR Hub e subscreve simbolos de interesse  
 **Bounded Context:** Market Data  
 
-**Objetivo:** Fornecer precos em tempo real de opcoes e ativos subjacentes para traders com plano Pleno/Consultor, usando WebSocket/SignalR para baixa latencia.  
+**Objetivo:** Fornecer preços em tempo real de opções e ativos subjacentes para traders com plano Pleno/Consultor, usando WebSocket/SignalR para baixa latencia.  
 
 **Pre-requisitos:**
 - User deve ter `RealtimeData: true` no plano (Pleno ou Consultor)
@@ -1575,7 +1575,7 @@ public class B3ApiClient : IB3ApiClient
 // ============================================
 
 /// <summary>
-/// SignalR Hub para distribuicao de precos em tempo real
+/// SignalR Hub para distribuicao de preços em tempo real
 /// Clientes se conectam via WebSocket e subscrevem simbolos
 /// </summary>
 public class MarketDataHub : Hub
@@ -1585,7 +1585,7 @@ public class MarketDataHub : Hub
     private readonly IDomainEventDispatcher _eventDispatcher;
     private readonly ILogger<MarketDataHub> _logger;
 
-    // Grupos SignalR por simbolo (ex: grupo "PETRH245" contem todos os traders subscrevendo esta opcao)
+    // Grupos SignalR por simbolo (ex: grupo "PETRH245" contem todos os traders subscrevendo esta opção)
     private const string SymbolGroupPrefix = "symbol_";
 
     public override async Task OnConnectedAsync()
@@ -1724,7 +1724,7 @@ public record UnsubscribeResult(bool IsSuccess, string Message)
 
 /// <summary>
 /// Background Service que consome feed WebSocket da B3 e distribui
-/// precos em tempo real via SignalR para traders conectados
+/// preços em tempo real via SignalR para traders conectados
 /// </summary>
 public class MarketDataStreamService : BackgroundService
 {
@@ -1907,7 +1907,7 @@ public class MarketDataStreamService : BackgroundService
     private async Task<List<string>> GetActiveStrategySymbolsAsync(CancellationToken ct)
     {
         // Buscar todas estrategias ativas (PaperTrading + Live)
-        // Extrair simbolos de opcoes + ativos subjacentes
+        // Extrair simbolos de opções + ativos subjacentes
         // Retornar lista unica
 
         // Implementacao simplificada (deve usar repository query)
@@ -1950,8 +1950,8 @@ public class MarketDataStreamService : BackgroundService
 
 **Aggregates Envolvidos:**
 - User (read-only - validar RealtimeData feature flag)
-- OptionContract (modify - atualizar precos em tempo real)
-- UnderlyingAsset (modify - atualizar precos em tempo real)
+- OptionContract (modify - atualizar preços em tempo real)
+- UnderlyingAsset (modify - atualizar preços em tempo real)
 
 **Domain Events Gerados:**
 - `MarketDataStreamStarted` - quando background service conecta ao feed
@@ -1962,7 +1962,7 @@ public class MarketDataStreamService : BackgroundService
 - `OptionMarketPricesUpdated` - quando banco de dados e atualizado
 
 **Domain Services Utilizados:**
-- `IMarketDataStreamService` - throttling, cache, e validacao de mudancas significativas
+- `IMarketDataStreamService` - throttling, cache, e validacao de mudanças significativas
 
 **External Services:**
 - `IMarketDataFeedClient` - WebSocket para feed da B3
@@ -1970,7 +1970,7 @@ public class MarketDataStreamService : BackgroundService
 **Infrastructure:**
 - SignalR Hub (WebSocket para frontend)
 - Background Service (IHostedService)
-- Redis (cache distribuido de precos - opcional mas recomendado)
+- Redis (cache distribuido de preços - opcional mas recomendado)
 
 **Rate Limiting:**
 - Throttling: max 1 update/segundo por simbolo
@@ -1997,7 +1997,7 @@ connection.on("PriceUpdate", (update: PriceUpdateDto) => {
 // Conectar
 await connection.start();
 
-// Subscrever opcao
+// Subscrever opção
 const result = await connection.invoke("SubscribeToSymbol", "PETRH245");
 if (!result.isSuccess) {
     if (result.errorCode === "FORBIDDEN") {
@@ -2048,8 +2048,8 @@ await connection.stop();
 - [x] **Integracao Strategy Planning ↔ Market Data mapeada**
 - [x] **Opcoes semanais suportadas (W1-W5, W3 = mensal padrao)**
 - [x] **B3 API integration documentada (IB3ApiClient + sync job)**
-- [x] **UC-MarketData-01: Sincronizacao diaria de opcoes da B3 (batch)**
-- [x] **UC-MarketData-02: Streaming de precos em tempo real (SignalR/WebSocket)**
+- [x] **UC-MarketData-01: Sincronizacao diaria de opções da B3 (batch)**
+- [x] **UC-MarketData-02: Streaming de preços em tempo real (SignalR/WebSocket)**
 - [x] **Real-time data validado por plano (RealtimeData feature flag)**
 - [x] **Throttling e caching para performance de streaming**
 - [x] **Domain Services completos (IBlackScholesService, IWeeklySeriesCalculator, IMarketDataStreamService)**
@@ -2062,7 +2062,7 @@ await connection.stop();
 - Framework: .NET 8
 - ORM: EF Core 8
 - Event Bus: MediatR (in-process) + RabbitMQ (future)
-- **Black-Scholes: Math.NET Numerics (para calculos avancados)**
+- **Black-Scholes: Math.NET Numerics (para cálculos avancados)**
 - **B3 API: HTTP Client + retry policies (Polly)**
 - **Real-time: SignalR (WebSocket)**
 - **Cache: Redis (opcional mas recomendado para streaming)**
@@ -2149,14 +2149,14 @@ await connection.stop();
 5. **Day 6:** Streaming (SignalR Hub + Background Service) + testing + validacao
 
 **Notas Importantes:**
-- **Black-Scholes:** Usar Math.NET Numerics para distribuicao normal (CDF) e calculos numericos
-- **Opcoes Europeias:** Black-Scholes e exato para europeias; opcoes americanas (algumas calls) precisarao modelo binomial (EPIC-02)
+- **Black-Scholes:** Usar Math.NET Numerics para distribuicao normal (CDF) e cálculos numericos
+- **Opcoes Europeias:** Black-Scholes e exato para europeias; opções americanas (algumas calls) precisarao modelo binomial (EPIC-02)
 - **Series Semanais:** IWeeklySeriesCalculator deve calcular W1-W5 baseado em calendario B3 (3a segunda-feira = W3 = mensal)
 - **Ajustes de Strike:** StrikeAdjustment child entity registra historico de ajustes por dividendos
 - **B3 API:** Implementar retry policies (Polly) para resiliencia
 - **Streaming:** SignalR + Background Service + throttling (1 update/seg) + cache (Redis recomendado)
 - **Validacao de Plano:** Apenas Pleno/Consultor tem acesso a dados em tempo real
-- **Indexes:** Criar indices compostos para queries de busca de opcoes (underlying + status + expiration + series)
+- **Indexes:** Criar indices compostos para queries de busca de opções (underlying + status + expiration + series)
 
 ---
 

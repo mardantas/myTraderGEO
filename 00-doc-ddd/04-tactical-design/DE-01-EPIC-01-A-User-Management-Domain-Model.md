@@ -1,12 +1,12 @@
 # DE-01-EPIC-01-A-User-Management-Domain-Model.md
 
-**Agent:** DE (Domain Engineer)
-**Project:** myTraderGEO
-**Date:** 2025-10-25
-**Epic:** EPIC-01-A: User Management (segmento do EPIC-01)
-**Phase:** Iteration
-**Scope:** Tactical DDD model for epic-specific bounded contexts
-**Version:** 1.0
+**Agent:** DE (Domain Engineer)  
+**Project:** myTraderGEO  
+**Date:** 2025-10-25  
+**Epic:** EPIC-01-A: User Management (segmento do EPIC-01)  
+**Phase:** Iteration  
+**Scope:** Tactical DDD model for epic-specific bounded contexts  
+**Version:** 1.0  
 
 ---
 
