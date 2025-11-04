@@ -528,47 +528,425 @@ DROP TABLE IF EXISTS {Table3} CASCADE;
 
 ---
 
-## 🔄 Para SE: Scaffolding EF Models das Migrations
+## 🔄 Para SE: Scaffolding Strategy Across Multiple Epics
 
-### Após DBA Criar Migrations
+### ⚠️ CRITICAL: Understanding the Scaffolding Problem
 
-SE usa SQL migrations do DBA para gerar C# Entity Framework models:
+**Question:** "E do segundo épico em diante? As estruturas dos anteriores são substituídas?"
 
-**Comando:**
+**Answer:** YES - scaffolded files ARE overwritten, but customizations are SAFE with correct pattern!
+
+### The Problem: EF Scaffold `--force` Behavior
+
+**What `--force` does:**
+- ✅ Creates new entity files for new tables
+- ⚠️ **REGENERATES ALL existing entity files** (not just changed ones)
+- ❌ **DELETES custom code** added to scaffolded files
+
+**Example Scenario:**
+```
+EPIC-01: Scaffold creates User.cs, SubscriptionPlan.cs
+         You add domain logic to User.cs
+
+EPIC-02: Scaffold --force regenerates ALL files
+         Result: Your domain logic in User.cs is LOST!
+```
+
+### ✅ The Solution: Hybrid Approach (Partial Classes Pattern)
+
+**Industry standard for Database-First + DDD projects.**
+
+**Key Principle:**
+> "Separate auto-generated code from custom domain logic using partial classes."
+
+**File Organization:**
+
+| Location | Type | Touched by Scaffold? | Purpose |
+|----------|------|---------------------|---------|
+| `src/Infrastructure/Data/Models/*.cs` | ⚠️ Auto-Generated | **YES - Overwritten every epic** | Base entity classes (DB columns only) |
+| `src/Infrastructure/Data/ApplicationDbContext.cs` | ⚠️ Auto-Generated | **YES - Overwritten** | DbContext base |
+| `src/Domain/Entities/*.Partial.cs` | ✅ Custom | **NO - Never touched** | Domain logic, business methods, domain events |
+| `src/Infrastructure/Persistence/Configurations/*.cs` | ✅ Custom | **NO - Never touched** | FluentAPI (Value Objects, JSONB, complex mappings) |
+| `src/Infrastructure/Data/ApplicationDbContext.Partial.cs` | ✅ Custom | **NO - Never touched** | Custom OnModelCreating (registers configs) |
+
+---
+
+### Workflow: EPIC-01 (Initial Scaffold)
+
+#### Step 1: DBA Executes Migrations (Already Done)
+
 ```bash
-# No diretório 02-backend
+psql -h localhost -U {project}_app -d {project}_dev \
+  -f 04-database/migrations/001_create_{epic_name}_schema.sql
+```
+
+#### Step 2: SE Scaffolds from Database
+
+```bash
+cd 02-backend
+
 dotnet ef dbcontext scaffold \
   "Host=localhost;Port=5432;Database=[PROJECT_NAME]_dev;Username=[PROJECT_NAME]_app;Password={DB_APP_PASSWORD}" \
   Npgsql.EntityFrameworkCore.PostgreSQL \
   --output-dir src/Infrastructure/Data/Models \
   --context-dir src/Infrastructure/Data \
   --context ApplicationDbContext \
-  --force
+  --force \
+  --no-onconfiguring
+
+# Creates (AUTO-GENERATED):
+# - src/Infrastructure/Data/Models/User.cs
+# - src/Infrastructure/Data/Models/SubscriptionPlan.cs
+# - src/Infrastructure/Data/ApplicationDbContext.cs
 ```
 
-**Pré-requisitos:**
-- ✅ DBA migrations executadas (ver "How to Execute Migrations" acima)
-- ✅ Database rodando e acessível (ver "Como Iniciar Database" em [05-infra/README.md](../05-infra/README.md))
-- ✅ Connection string de `.env.dev` ou `appsettings.Development.json`
+#### Step 3: SE Creates Custom Partial Classes
 
-**Output:**
-- `02-backend/src/Infrastructure/Data/Models/*.cs` - Entity classes
-- `02-backend/src/Infrastructure/Data/ApplicationDbContext.cs` - DbContext
+**Domain Logic (SAFE):**
+```csharp
+// ✅ src/Domain/Entities/User.Partial.cs (NEVER touched by scaffold)
+public partial class User
+{
+    // Domain methods from DE-01
+    public void UpdateRiskProfile(RiskProfile newProfile)
+    {
+        if (Role != UserRole.Trader)
+            throw new DomainException("Only traders can have risk profile");
+        RiskProfile = newProfile;
+    }
 
-**Quando Scaffoldar:**
-- Após DBA criar novas migrations (por epic)
-- Quando schema do database muda
-- Para atualizar C# models ao estado atual do database
-
-**Workflow SQL-First:**
+    // Domain events
+    private List<IDomainEvent> _domainEvents = new();
+    public IReadOnlyList<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+}
 ```
-DBA cria schema (SQL) → SE scaffolds models (C#) → SE implementa repositories
+
+**FluentAPI Configuration (SAFE):**
+```csharp
+// ✅ src/Infrastructure/Persistence/Configurations/UserConfiguration.cs
+public class UserConfiguration : IEntityTypeConfiguration<User>
+{
+    public void Configure(EntityTypeBuilder<User> builder)
+    {
+        // Value Objects
+        builder.OwnsOne(u => u.PhoneNumber, phone =>
+        {
+            phone.Property(p => p.CountryCode).HasColumnName("PhoneCountryCode");
+            phone.Property(p => p.Number).HasColumnName("PhoneNumber");
+        });
+
+        // JSONB columns
+        builder.Property(u => u.PlanOverride)
+               .HasColumnType("jsonb");
+
+        // Enum as string
+        builder.Property(u => u.Role)
+               .HasConversion<string>();
+    }
+}
 ```
 
-**Referências:**
-- [Workflow Guide - SQL-First](../../.agents/docs/00-Workflow-Guide.md#database-workflow-sql-first-approach)
-- [SE Agent Overview](../../.agents/docs/01-Agents-Overview.md#se---software-engineer)
-- [DBA-01 Schema Review](../../00-doc-ddd/05-database-design/DBA-01-[EpicName]-Schema-Review.md)
+**DbContext Partial (SAFE):**
+```csharp
+// ✅ src/Infrastructure/Data/ApplicationDbContext.Partial.cs
+public partial class ApplicationDbContext
+{
+    partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
+    {
+        // Register all custom configurations
+        modelBuilder.ApplyConfiguration(new UserConfiguration());
+        modelBuilder.ApplyConfiguration(new SubscriptionPlanConfiguration());
+        modelBuilder.ApplyConfiguration(new SystemConfigConfiguration());
+    }
+}
+```
+
+---
+
+### Workflow: EPIC-02+ (Re-Scaffold with NEW Tables)
+
+#### Step 1: DBA Creates NEW Migrations
+
+```bash
+# DBA creates migrations for NEW tables
+psql -h localhost -U {project}_app -d {project}_dev \
+  -f 04-database/migrations/002_create_strategy_management_schema.sql
+
+# Adds tables: Strategies, TradingRules, Backtests
+```
+
+#### Step 2: SE Re-Scaffolds ENTIRE Database (⚠️ WITH --force)
+
+```bash
+cd 02-backend
+
+# SAME command as EPIC-01 - scaffold ALL tables again
+dotnet ef dbcontext scaffold \
+  "Host=localhost;Port=5432;Database=[PROJECT_NAME]_dev;Username=[PROJECT_NAME]_app;Password={DB_APP_PASSWORD}" \
+  Npgsql.EntityFrameworkCore.PostgreSQL \
+  --output-dir src/Infrastructure/Data/Models \
+  --context-dir src/Infrastructure/Data \
+  --context ApplicationDbContext \
+  --force \
+  --no-onconfiguring
+
+# What happens:
+# ✅ NEW files created:
+#    - src/Infrastructure/Data/Models/Strategy.cs
+#    - src/Infrastructure/Data/Models/TradingRule.cs
+#    - src/Infrastructure/Data/Models/Backtest.cs
+#
+# ⚠️ EPIC-01 files REGENERATED (but this is OK!):
+#    - src/Infrastructure/Data/Models/User.cs (OVERWRITTEN from DB)
+#    - src/Infrastructure/Data/Models/SubscriptionPlan.cs (OVERWRITTEN)
+#
+# ✅ CUSTOM files UNTOUCHED (your code is SAFE):
+#    - src/Domain/Entities/User.Partial.cs (NOT touched)
+#    - src/Infrastructure/Persistence/Configurations/UserConfiguration.cs (NOT touched)
+#    - src/Infrastructure/Data/ApplicationDbContext.Partial.cs (NOT touched)
+```
+
+**KEY INSIGHT:**
+- User.cs gets regenerated (base properties only)
+- But User.Partial.cs with domain logic is NEVER touched!
+- Your customizations are 100% safe!
+
+#### Step 3: SE Creates Partial Classes for NEW Entities
+
+```csharp
+// ✅ src/Domain/Entities/Strategy.Partial.cs (NEW for EPIC-02)
+public partial class Strategy
+{
+    public void Activate()
+    {
+        if (Status != StrategyStatus.Draft)
+            throw new DomainException("Only draft strategies can be activated");
+        Status = StrategyStatus.Active;
+        _domainEvents.Add(new StrategyActivated(Id, DateTime.UtcNow));
+    }
+
+    private List<IDomainEvent> _domainEvents = new();
+}
+
+// ✅ src/Infrastructure/Persistence/Configurations/StrategyConfiguration.cs
+public class StrategyConfiguration : IEntityTypeConfiguration<Strategy>
+{
+    public void Configure(EntityTypeBuilder<Strategy> builder)
+    {
+        builder.HasMany(s => s.TradingRules)
+               .WithOne(r => r.Strategy)
+               .HasForeignKey(r => r.StrategyId);
+    }
+}
+```
+
+#### Step 4: SE Updates DbContext Partial (ADD new configs)
+
+```csharp
+// ✅ src/Infrastructure/Data/ApplicationDbContext.Partial.cs (UPDATE)
+public partial class ApplicationDbContext
+{
+    partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
+    {
+        // EPIC-01 configs (unchanged)
+        modelBuilder.ApplyConfiguration(new UserConfiguration());
+        modelBuilder.ApplyConfiguration(new SubscriptionPlanConfiguration());
+        modelBuilder.ApplyConfiguration(new SystemConfigConfiguration());
+
+        // EPIC-02 configs (NEW)
+        modelBuilder.ApplyConfiguration(new StrategyConfiguration());
+        modelBuilder.ApplyConfiguration(new TradingRuleConfiguration());
+        modelBuilder.ApplyConfiguration(new BacktestConfiguration());
+    }
+}
+```
+
+---
+
+### Final File Structure (After Multiple Epics)
+
+```
+02-backend/src/
+├── Infrastructure/Data/
+│   ├── Models/                       # ⚠️ AUTO-GENERATED (DO NOT EDIT)
+│   │   ├── User.cs                   # EPIC-01 (regenerated in EPIC-02, EPIC-03...)
+│   │   ├── SubscriptionPlan.cs       # EPIC-01 (regenerated)
+│   │   ├── Strategy.cs               # EPIC-02 (NEW)
+│   │   ├── TradingRule.cs            # EPIC-02 (NEW)
+│   │   └── Backtest.cs               # EPIC-03 (NEW)
+│   ├── ApplicationDbContext.cs       # AUTO-GENERATED (regenerated every epic)
+│   └── ApplicationDbContext.Partial.cs  # ✅ CUSTOM (cumulative updates)
+│
+├── Domain/Entities/                  # ✅ CUSTOM (domain logic)
+│   ├── User.Partial.cs               # EPIC-01 (NEVER touched after creation)
+│   ├── SubscriptionPlan.Partial.cs   # EPIC-01
+│   ├── Strategy.Partial.cs           # EPIC-02 (added)
+│   ├── TradingRule.Partial.cs        # EPIC-02 (added)
+│   └── Backtest.Partial.cs           # EPIC-03 (added)
+│
+└── Infrastructure/Persistence/Configurations/  # ✅ CUSTOM (FluentAPI)
+    ├── UserConfiguration.cs          # EPIC-01 (NEVER touched)
+    ├── SubscriptionPlanConfiguration.cs  # EPIC-01
+    ├── StrategyConfiguration.cs      # EPIC-02 (added)
+    ├── TradingRuleConfiguration.cs   # EPIC-02 (added)
+    └── BacktestConfiguration.cs      # EPIC-03 (added)
+```
+
+---
+
+### Why This Works: Technical Explanation
+
+**C# Partial Classes:**
+
+When you have multiple files with `partial class`, the compiler merges them:
+
+```csharp
+// File 1: User.cs (AUTO-GENERATED)
+public partial class User
+{
+    public Guid Id { get; set; }
+    public string Email { get; set; }
+}
+
+// File 2: User.Partial.cs (CUSTOM)
+public partial class User
+{
+    public bool IsActive() => Status == "Active";
+}
+
+// Compiler merges into single class with both properties and methods
+```
+
+**EF Core OnModelCreatingPartial Hook:**
+
+Scaffold generates this pattern:
+```csharp
+// ApplicationDbContext.cs (AUTO-GENERATED)
+protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+    // Auto-generated basic config
+    modelBuilder.Entity<User>(entity => { /* ... */ });
+
+    OnModelCreatingPartial(modelBuilder);  // ⚠️ Calls your method
+}
+
+partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+```
+
+You implement in separate file:
+```csharp
+// ApplicationDbContext.Partial.cs (CUSTOM)
+partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
+{
+    // Your FluentAPI configs (never overwritten!)
+    modelBuilder.ApplyConfiguration(new UserConfiguration());
+}
+```
+
+---
+
+### Common Mistakes to Avoid
+
+❌ **NEVER add domain logic to scaffolded files:**
+```csharp
+// ❌ WRONG: src/Infrastructure/Data/Models/User.cs
+public partial class User
+{
+    public Guid Id { get; set; }
+
+    // ❌ This will be LOST on next scaffold!
+    public bool IsActive() => Status == "Active";
+}
+```
+
+✅ **DO use separate partial class:**
+```csharp
+// ✅ CORRECT: src/Domain/Entities/User.Partial.cs
+public partial class User
+{
+    // ✅ This is SAFE (never touched by scaffold)
+    public bool IsActive() => Status == "Active";
+}
+```
+
+❌ **NEVER add FluentAPI to scaffolded DbContext:**
+```csharp
+// ❌ WRONG: src/Infrastructure/Data/ApplicationDbContext.cs
+protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+    // Auto-generated
+    // ❌ Adding custom config here will be LOST!
+    modelBuilder.Entity<User>().OwnsOne(u => u.PhoneNumber);
+}
+```
+
+✅ **DO use Configuration class:**
+```csharp
+// ✅ CORRECT: src/Infrastructure/Persistence/Configurations/UserConfiguration.cs
+public class UserConfiguration : IEntityTypeConfiguration<User>
+{
+    public void Configure(EntityTypeBuilder<User> builder)
+    {
+        // ✅ This is SAFE
+        builder.OwnsOne(u => u.PhoneNumber);
+    }
+}
+```
+
+---
+
+### Prerequisites for Scaffolding
+
+Before running scaffold command, ensure:
+
+- ✅ Database is running: `docker compose -f 05-infra/docker/docker-compose.yml up database -d`
+- ✅ DBA migrations executed (see "How to Execute Migrations" above)
+- ✅ Connection string correct (from `.env.dev`)
+- ✅ EF Core tools installed: `dotnet tool install --global dotnet-ef`
+- ✅ Npgsql provider installed: `dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL`
+
+---
+
+### Troubleshooting
+
+**Problem:** "I lost my domain logic after re-scaffolding!"
+
+**Cause:** Domain logic was in `src/Infrastructure/Data/Models/User.cs` (auto-generated file)
+
+**Solution:**
+1. Restore from Git: `git restore src/Domain/Entities/User.Partial.cs`
+2. Move domain logic to correct location (User.Partial.cs)
+3. Re-scaffold
+
+---
+
+**Problem:** "New tables don't have FK relationships to old tables"
+
+**Cause:** Scaffold generates basic config only
+
+**Solution:**
+Add FK configuration in Configuration class:
+```csharp
+public class StrategyConfiguration : IEntityTypeConfiguration<Strategy>
+{
+    public void Configure(EntityTypeBuilder<User> builder)
+    {
+        builder.HasOne<User>()
+               .WithMany()
+               .HasForeignKey(s => s.UserId);
+    }
+}
+```
+
+---
+
+### References
+
+- **Workflow Guide - SQL-First**: [00-Workflow-Guide.md](../../.agents/docs/00-Workflow-Guide.md#database-workflow-sql-first-approach)
+- **SE Agent Overview**: [01-Agents-Overview.md](../../.agents/docs/01-Agents-Overview.md#se---software-engineer)
+- **DBA Schema Review**: [DBA-01-[EpicName]-Schema-Review.md](../../00-doc-ddd/05-database-design/DBA-01-[EpicName]-Schema-Review.md)
+- **EF Core Reverse Engineering**: [Microsoft Docs](https://learn.microsoft.com/en-us/ef/core/managing-schemas/scaffolding/)
+- **C# Partial Classes**: [Microsoft Docs](https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/partial-classes-and-methods)
 
 ---
 
