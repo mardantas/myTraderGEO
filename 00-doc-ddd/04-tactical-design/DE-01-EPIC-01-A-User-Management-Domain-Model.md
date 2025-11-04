@@ -1,3 +1,10 @@
+<!--
+MARKDOWN FORMATTING:
+- Use 2 spaces at end of line for compact line breaks (metadata)
+- Use blank lines between sections for readability (content)
+- Validate in Markdown preview before committing
+-->
+
 # DE-01-EPIC-01-A-User-Management-Domain-Model.md
 
 **Agent:** DE (Domain Engineer)  
@@ -1862,6 +1869,59 @@ public record LoginResult(
 
 ---
 
+## 🗄️ Database First Workflow
+
+**⚠️ IMPORTANTE: Abordagem SQL-First neste Projeto**
+
+Este projeto usa **Database First** onde o fluxo de trabalho é:
+
+### Ordem de Execução
+
+```
+DE (Domain Model) → DBA (SQL Migrations) → SE (EF Models Scaffolded)
+```
+
+**1. DE cria Domain Model (este documento)**
+   - Define Aggregates, Entities, Value Objects
+   - Especifica invariantes e regras de negócio
+   - **NÃO define schema SQL** - apenas modelo conceitual de domínio
+
+**2. DBA cria SQL Migrations**
+   - Lê este documento DE-01 para entender o domínio
+   - Cria scripts SQL idempotentes em `04-database/migrations/`
+   - Define tabelas, índices, constraints, tipos
+   - Documenta em `DBA-01-[EpicName]-Schema-Review.md`
+   - **Referência:** [Workflow Guide - Database First](../../.agents/docs/00-Workflow-Guide.md#database-workflow-sql-first-approach)
+
+**3. SE scaffolds EF Core models do database**
+   - Executa migrations SQL do DBA
+   - Usa `dotnet ef dbcontext scaffold` para gerar classes C#
+   - Ajusta models para manter encapsulamento do domínio
+   - Implementa Repository interfaces usando EF Core
+   - **NÃO cria schema via Code-First migrations**
+
+### Benefícios Database First
+
+- ✅ **DBA controla performance** - índices, particionamento, otimizações SQL
+- ✅ **Schema validado** - DBA revisa antes de implementação
+- ✅ **Auditoria** - Mudanças de schema em SQL versionado (git)
+- ✅ **Flexibilidade** - Schema pode divergir do modelo OO quando necessário
+- ✅ **Testing realista** - Integration tests usam schema SQL real (não in-memory)
+
+### Próximos Passos (After DE-01)
+
+1. **DBA** cria migrations SQL baseado neste modelo
+2. **DBA** documenta schema em `DBA-01-EPIC-01-A-Schema-Review.md`
+3. **SE** scaffolds models e implementa repositories
+4. **QAE** executa testes de integração com PostgreSQL real
+
+**Referências Database First:**
+- **DBA README:** [04-database/README.md](../../04-database/README.md) - Migration scripts, idempotency patterns
+- **QAE-00:** [QAE-00-Test-Strategy.md](../06-quality-assurance/QAE-00-Test-Strategy.md) - Integration tests with PostgreSQL
+- **GM-00:** [GM-00-GitHub-Setup.md](../07-github-management/GM-00-GitHub-Setup.md) - CI/CD database migrations
+
+---
+
 ## 📝 Notas de Implementação para SE
 
 **Tecnologias:**
@@ -1946,3 +2006,6 @@ public record LoginResult(
 - **Ubiquitous Language:** `00-doc-ddd/02-strategic-design/SDA-03-Ubiquitous-Language.md`
 - **DDD Patterns Reference:** `.agents/docs/05-DDD-Patterns-Reference.md`
 - **EPIC-01 Complete Model:** `00-doc-ddd/04-tactical-design/DE-01-EPIC-01-CreateStrategy-Domain-Model.md`
+- **DBA Workflow (Database First):** [Workflow Guide - Database First](../../.agents/docs/00-Workflow-Guide.md#database-workflow-sql-first-approach)
+- **DBA README:** [04-database/README.md](../../04-database/README.md) - Migration scripts structure, idempotency patterns
+- **DBA Schema Review:** `00-doc-ddd/05-database-design/DBA-01-EPIC-01-A-Schema-Review.md` (to be created by DBA)
