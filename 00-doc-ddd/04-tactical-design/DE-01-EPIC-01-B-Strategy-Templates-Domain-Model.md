@@ -1,8 +1,8 @@
 <!--
 MARKDOWN FORMATTING:
-- Use 2 spaces at end of line for compact line breaks (metadata)
-- Use blank lines between sections for readability (content)
-- Validate in Markdown preview before committing
+- Use 2 spaces at end of line for compact line breaks (metadata)  
+- Use blank lines between sections for readability (content)  
+- Validate in Markdown preview before committing  
 -->
 
 # DE-01-EPIC-01-B-Strategy-Templates-Domain-Model.md
@@ -27,8 +27,8 @@ MARKDOWN FORMATTING:
 Modelar o catálogo de templates de estratégias (globais do sistema + pessoais do trader) com strikes relativos, topologias, caracterizações (MarketView, Objective, RiskProfile) e orientações de defesa/ajuste. Templates definem estrutura/topologia com referências relativas (ATM, ATM±X%, vencimentos relativos).
 
 **Aggregates Modelados:**
-- StrategyTemplate (Aggregate Root)
-  - TemplateLeg (Child Entity)
+- StrategyTemplate (Aggregate Root)  
+  - TemplateLeg (Child Entity)  
 
 ---
 
@@ -40,15 +40,15 @@ Modelar o catálogo de templates de estratégias (globais do sistema + pessoais 
 **Responsabilidade:** Templates com strikes relativos + caracterização e orientações  
 
 **Entities:**
-  - TemplateLeg
+  - TemplateLeg  
 
 **Value Objects:**
-  - StrategyTemplateId, TemplateLegId, RelativeStrike, StrikeReference, OptionType, LegType
-  - MarketView, StrategyObjective, StrategyRiskProfile, PriceRangeIdeal, DefenseGuidelines
+  - StrategyTemplateId, TemplateLegId, RelativeStrike, StrikeReference, OptionType, LegType  
+  - MarketView, StrategyObjective, StrategyRiskProfile, PriceRangeIdeal, DefenseGuidelines  
 
 **Domain Events:**
-  - TemplateCreated, TemplateNameUpdated, TemplateDescriptionUpdated
-  - TemplateLegAdded, TemplateLegUpdated, TemplateLegRemoved
+  - TemplateCreated, TemplateNameUpdated, TemplateDescriptionUpdated  
+  - TemplateLegAdded, TemplateLegUpdated, TemplateLegRemoved  
 
 ---
 
@@ -474,6 +474,65 @@ public record TemplateLegRemoved(
 
 ---
 
+### Repository Interface
+
+```csharp
+public interface IStrategyTemplateRepository
+{
+    /// <summary>
+    /// Busca template por ID
+    /// </summary>
+    Task<StrategyTemplate?> GetByIdAsync(StrategyTemplateId id, CancellationToken ct);
+
+    /// <summary>
+    /// Busca template por nome (global ou do usuário)
+    /// </summary>
+    Task<StrategyTemplate?> GetByNameAsync(string name, UserId? ownerId, CancellationToken ct);
+
+    /// <summary>
+    /// Busca todos os templates globais
+    /// </summary>
+    Task<IEnumerable<StrategyTemplate>> GetGlobalTemplatesAsync(CancellationToken ct);
+
+    /// <summary>
+    /// Busca templates pessoais de um usuário
+    /// </summary>
+    Task<IEnumerable<StrategyTemplate>> GetPersonalTemplatesAsync(UserId ownerId, CancellationToken ct);
+
+    /// <summary>
+    /// Busca templates por Market View
+    /// </summary>
+    Task<IEnumerable<StrategyTemplate>> GetByMarketViewAsync(MarketView marketView, UserId? ownerId, CancellationToken ct);
+
+    /// <summary>
+    /// Busca templates por Objective
+    /// </summary>
+    Task<IEnumerable<StrategyTemplate>> GetByObjectiveAsync(StrategyObjective objective, UserId? ownerId, CancellationToken ct);
+
+    /// <summary>
+    /// Busca templates por Risk Profile
+    /// </summary>
+    Task<IEnumerable<StrategyTemplate>> GetByRiskProfileAsync(StrategyRiskProfile riskProfile, UserId? ownerId, CancellationToken ct);
+
+    /// <summary>
+    /// Adiciona novo template
+    /// </summary>
+    Task AddAsync(StrategyTemplate template, CancellationToken ct);
+
+    /// <summary>
+    /// Atualiza template existente
+    /// </summary>
+    Task UpdateAsync(StrategyTemplate template, CancellationToken ct);
+
+    /// <summary>
+    /// Remove template (soft delete ou hard delete conforme regras de negócio)
+    /// </summary>
+    Task DeleteAsync(StrategyTemplateId id, CancellationToken ct);
+}
+```
+
+---
+
 ## 🔄 Integração Entre Bounded Contexts
 
 ### User Management → Strategy Planning Integration
@@ -492,7 +551,7 @@ public record TemplateLegRemoved(
 ```
 
 **Eventos Publicados por User Management:**
-- `UserPlanUpgraded` → Strategy Planning pode reagir (notificar usuário)
+- `UserPlanUpgraded` → Strategy Planning pode reagir (notificar usuário)  
 
 ---
 
@@ -574,10 +633,10 @@ public record OptionContractDto(
 ```
 
 **Eventos Publicados por Market Data:**
-- `OptionStrikeAdjusted` → Strategy Planning pode alertar usuários com estratégias afetadas
-- `OptionExpired` → Strategy Planning pode marcar estratégias como fechadas
-- `OptionsDataSyncCompleted` → Pode notificar administradores sobre sync
-- `NewOptionContractsDiscovered` → Pode notificar traders sobre novas opções
+- `OptionStrikeAdjusted` → Strategy Planning pode alertar usuários com estratégias afetadas  
+- `OptionExpired` → Strategy Planning pode marcar estratégias como fechadas  
+- `OptionsDataSyncCompleted` → Pode notificar administradores sobre sync  
+- `NewOptionContractsDiscovered` → Pode notificar traders sobre novas opções  
 
 ---
 
@@ -782,8 +841,8 @@ foreach (var b3Option in b3Options)
 **Mecanismo:** Domain Events  
 
 **Eventos Publicados por Strategy Planning:**
-- `StrategyCreated` → Risk Management calcula risk score
-- `StrategyValidated` → Risk Management valida limites do perfil de risco
+- `StrategyCreated` → Risk Management calcula risk score  
+- `StrategyValidated` → Risk Management valida limites do perfil de risco  
 
 **Fluxo:**
 ```
@@ -909,11 +968,11 @@ public record TemplateLegDto(
 ```
 
 **Aggregates Envolvidos:**
-- User (read-only - validar permissões)
-- StrategyTemplate (modify - criar template)
+- User (read-only - validar permissões)  
+- StrategyTemplate (modify - criar template)  
 
 **Domain Events Gerados:**
-- `TemplateCreated`
+- `TemplateCreated`  
 
 ---
 
@@ -926,34 +985,34 @@ public record TemplateLegDto(
 **Nota:** Strategy aggregate será modelado em EPIC-01-C  
 
 **Estimativa de Implementação:**
-- **StrategyTemplate: ~1 dia (DBA: 0.5 dia, SE: 0.5 dia)**
-  - Aggregate + Repository: 0.5 dia
-  - Use Case (UC-Strategy-01): 0.5 dia
-  - Testing: incluído
+- **StrategyTemplate: ~1 dia (DBA: 0.5 dia, SE: 0.5 dia)**  
+  - Aggregate + Repository: 0.5 dia  
+  - Use Case (UC-Strategy-01): 0.5 dia  
+  - Testing: incluído  
 
 **Dependências:**
-- User Management BC (para validação de permissões)
-- Integração com Market Data BC (para instanciação de templates - será implementada em EPIC-01-C)
+- User Management BC (para validação de permissões)  
+- Integração com Market Data BC (para instanciação de templates - será implementada em EPIC-01-C)  
 
 ---
 
 ## ✅ Validação
 
-- [x] StrategyTemplate aggregate definido com invariantes claros
-- [x] Boundaries do aggregate respeitados (StrategyTemplate separado de Strategy)
-- [x] Domain Events identificados para integrações (TemplateCreated, TemplateLegAdded, TemplateLegRemoved)
-- [x] Repository interface definida (IStrategyTemplateRepository)
-- [x] Use Case mapeado (UC-Strategy-01: Create Template)
-- [x] Validações de negócio no domínio (não na aplicação)
-- [x] Nomenclatura consistente (PT → EN conforme padrões)
-- [x] Templates enriquecidos com MarketView, Objective, RiskProfile
-- [x] DefenseGuidelines para orientações de ajuste quando mercado inverte
-- [x] PriceRangeIdeal para indicar faixa ideal de preço do ativo
-- [x] Suporte a templates de hedge (HedgeTemplateId em DefenseGuidelines)
-- [x] Strikes relativos (ATM, ATM±X%) modelados com RelativeStrike
-- [x] Vencimentos relativos modelados com RelativeExpiration
-- [x] Suporte a templates globais (sistema) e pessoais (trader)
-- [x] Validação de permissões (apenas Administrator pode criar templates globais)
+- [x] StrategyTemplate aggregate definido com invariantes claros  
+- [x] Boundaries do aggregate respeitados (StrategyTemplate separado de Strategy)  
+- [x] Domain Events identificados para integrações (TemplateCreated, TemplateLegAdded, TemplateLegRemoved)  
+- [x] Repository interface definida (IStrategyTemplateRepository)  
+- [x] Use Case mapeado (UC-Strategy-01: Create Template)  
+- [x] Validações de negócio no domínio (não na aplicação)  
+- [x] Nomenclatura consistente (PT → EN conforme padrões)  
+- [x] Templates enriquecidos com MarketView, Objective, RiskProfile  
+- [x] DefenseGuidelines para orientações de ajuste quando mercado inverte  
+- [x] PriceRangeIdeal para indicar faixa ideal de preço do ativo  
+- [x] Suporte a templates de hedge (HedgeTemplateId em DefenseGuidelines)  
+- [x] Strikes relativos (ATM, ATM±X%) modelados com RelativeStrike  
+- [x] Vencimentos relativos modelados com RelativeExpiration  
+- [x] Suporte a templates globais (sistema) e pessoais (trader)  
+- [x] Validação de permissões (apenas Administrator pode criar templates globais)  
 
 ---
 
@@ -970,31 +1029,31 @@ DE (Domain Model) → DBA (SQL Migrations) → SE (EF Models Scaffolded)
 ```
 
 **1. DE cria Domain Model (este documento)**
-   - Define Aggregates, Entities, Value Objects
-   - Especifica invariantes e regras de negócio
-   - **NÃO define schema SQL** - apenas modelo conceitual de domínio
+   - Define Aggregates, Entities, Value Objects  
+   - Especifica invariantes e regras de negócio  
+   - **NÃO define schema SQL** - apenas modelo conceitual de domínio  
 
 **2. DBA cria SQL Migrations**
-   - Lê este documento DE-01 para entender o domínio
-   - Cria scripts SQL idempotentes em `04-database/migrations/`
-   - Define tabelas, índices, constraints, tipos
-   - Documenta em `DBA-01-[EpicName]-Schema-Review.md`
-   - **Referência:** [Workflow Guide - Database First](../../.agents/docs/00-Workflow-Guide.md#database-workflow-sql-first-approach)
+   - Lê este documento DE-01 para entender o domínio  
+   - Cria scripts SQL idempotentes em `04-database/migrations/`  
+   - Define tabelas, índices, constraints, tipos  
+   - Documenta em `DBA-01-[EpicName]-Schema-Review.md`  
+   - **Referência:** [Workflow Guide - Database First](../../.agents/docs/00-Workflow-Guide.md#database-workflow-sql-first-approach)  
 
 **3. SE scaffolds EF Core models do database**
-   - Executa migrations SQL do DBA
-   - Usa `dotnet ef dbcontext scaffold` para gerar classes C#
-   - Ajusta models para manter encapsulamento do domínio
-   - Implementa Repository interfaces usando EF Core
-   - **NÃO cria schema via Code-First migrations**
+   - Executa migrations SQL do DBA  
+   - Usa `dotnet ef dbcontext scaffold` para gerar classes C#  
+   - Ajusta models para manter encapsulamento do domínio  
+   - Implementa Repository interfaces usando EF Core  
+   - **NÃO cria schema via Code-First migrations**  
 
 ### Benefícios Database First
 
-- ✅ **DBA controla performance** - índices, particionamento, otimizações SQL
-- ✅ **Schema validado** - DBA revisa antes de implementação
-- ✅ **Auditoria** - Mudanças de schema em SQL versionado (git)
-- ✅ **Flexibilidade** - Schema pode divergir do modelo OO quando necessário
-- ✅ **Testing realista** - Integration tests usam schema SQL real (não in-memory)
+- ✅ **DBA controla performance** - índices, particionamento, otimizações SQL  
+- ✅ **Schema validado** - DBA revisa antes de implementação  
+- ✅ **Auditoria** - Mudanças de schema em SQL versionado (git)  
+- ✅ **Flexibilidade** - Schema pode divergir do modelo OO quando necessário  
+- ✅ **Testing realista** - Integration tests usam schema SQL real (não in-memory)  
 
 ### Próximos Passos (After DE-01)
 
@@ -1004,18 +1063,18 @@ DE (Domain Model) → DBA (SQL Migrations) → SE (EF Models Scaffolded)
 4. **QAE** executa testes de integração com PostgreSQL real
 
 **Referências Database First:**
-- **DBA README:** [04-database/README.md](../../04-database/README.md) - Migration scripts, idempotency patterns
-- **QAE-00:** [QAE-00-Test-Strategy.md](../06-quality-assurance/QAE-00-Test-Strategy.md) - Integration tests with PostgreSQL
-- **GM-00:** [GM-00-GitHub-Setup.md](../07-github-management/GM-00-GitHub-Setup.md) - CI/CD database migrations
+- **DBA README:** [04-database/README.md](../../04-database/README.md) - Migration scripts, idempotency patterns  
+- **QAE-00:** [QAE-00-Test-Strategy.md](../06-quality-assurance/QAE-00-Test-Strategy.md) - Integration tests with PostgreSQL  
+- **GM-00:** [GM-00-GitHub-Setup.md](../07-github-management/GM-00-GitHub-Setup.md) - CI/CD database migrations  
 
 ---
 
 ## 📝 Notas de Implementação para SE
 
 **Tecnologias:**
-- Framework: .NET 8
-- ORM: EF Core 8
-- Event Bus: MediatR (in-process) + RabbitMQ (future)
+- Framework: .NET 8  
+- ORM: EF Core 8  
+- Event Bus: MediatR (in-process) + RabbitMQ (future)  
 
 **Estrutura de Pastas:**
 ```
@@ -1060,44 +1119,44 @@ DE (Domain Model) → DBA (SQL Migrations) → SE (EF Models Scaffolded)
 
 **Prioridades de Implementação:**
 1. **Day 1 (Morning):** StrategyTemplate aggregate + Value Objects
-   - StrategyTemplate entity
-   - TemplateLeg entity
-   - Value Objects (StrategyTemplateId, MarketView, StrategyObjective, etc)
-   - RelativeStrike e RelativeExpiration
-   - PriceRangeIdeal e DefenseGuidelines
+   - StrategyTemplate entity  
+   - TemplateLeg entity  
+   - Value Objects (StrategyTemplateId, MarketView, StrategyObjective, etc)  
+   - RelativeStrike e RelativeExpiration  
+   - PriceRangeIdeal e DefenseGuidelines  
 
 2. **Day 1 (Afternoon):** Repository + Use Case + Tests
-   - IStrategyTemplateRepository interface
-   - StrategyTemplateRepository implementation
-   - EF Core configuration
-   - Database migration
-   - CreateTemplateHandler (UC-Strategy-01)
-   - Unit tests + Integration tests
+   - IStrategyTemplateRepository interface  
+   - StrategyTemplateRepository implementation  
+   - EF Core configuration  
+   - Database migration  
+   - CreateTemplateHandler (UC-Strategy-01)  
+   - Unit tests + Integration tests  
 
 **Pontos de Atenção:**
-- Templates globais só podem ser criados por Administrator
-- Templates pessoais pertencem a um UserId específico
-- RelativeStrike permite offsets percentuais (ATM+5%, ATM-10%)
-- DefenseGuidelines pode referenciar outro template de hedge
-- PriceRangeIdeal valida faixa ideal de preço do ativo
+- Templates globais só podem ser criados por Administrator  
+- Templates pessoais pertencem a um UserId específico  
+- RelativeStrike permite offsets percentuais (ATM+5%, ATM-10%)  
+- DefenseGuidelines pode referenciar outro template de hedge  
+- PriceRangeIdeal valida faixa ideal de preço do ativo  
 
 **Integração com User Management:**
-- Query User.Role para validar permissões (global vs personal templates)
-- UserId deve existir e ser válido
+- Query User.Role para validar permissões (global vs personal templates)  
+- UserId deve existir e ser válido  
 
 **Eventos de Domínio:**
-- TemplateCreated: publicado ao criar template (usado para notificações)
-- TemplateLegAdded: publicado ao adicionar leg
-- TemplateLegRemoved: publicado ao remover leg
+- TemplateCreated: publicado ao criar template (usado para notificações)  
+- TemplateLegAdded: publicado ao adicionar leg  
+- TemplateLegRemoved: publicado ao remover leg  
 
 ---
 
 ## 🔗 Referências
 
-- **EPIC-01 Completo:** `DE-01-EPIC-01-CreateStrategy-Domain-Model.md`
-- **SDA Context Map:** `00-doc-ddd/02-strategic-design/SDA-02-Context-Map.md`
-- **Ubiquitous Language:** `00-doc-ddd/02-strategic-design/SDA-03-Ubiquitous-Language.md`
-- **DDD Patterns Reference:** `.agents/docs/05-DDD-Patterns-Reference.md`
-- **DBA Workflow (Database First):** [Workflow Guide - Database First](../../.agents/docs/00-Workflow-Guide.md#database-workflow-sql-first-approach)
-- **DBA README:** [04-database/README.md](../../04-database/README.md) - Migration scripts structure, idempotency patterns
-- **DBA Schema Review:** `00-doc-ddd/05-database-design/DBA-01-EPIC-01-B-Schema-Review.md` (to be created by DBA)
+- **EPIC-01 Completo:** `DE-01-EPIC-01-CreateStrategy-Domain-Model.md`  
+- **SDA Context Map:** `00-doc-ddd/02-strategic-design/SDA-02-Context-Map.md`  
+- **Ubiquitous Language:** `00-doc-ddd/02-strategic-design/SDA-03-Ubiquitous-Language.md`  
+- **DDD Patterns Reference:** `.agents/docs/05-DDD-Patterns-Reference.md`  
+- **DBA Workflow (Database First):** [Workflow Guide - Database First](../../.agents/docs/00-Workflow-Guide.md#database-workflow-sql-first-approach)  
+- **DBA README:** [04-database/README.md](../../04-database/README.md) - Migration scripts structure, idempotency patterns  
+- **DBA Schema Review:** `00-doc-ddd/05-database-design/DBA-01-EPIC-01-B-Schema-Review.md` (to be created by DBA)  

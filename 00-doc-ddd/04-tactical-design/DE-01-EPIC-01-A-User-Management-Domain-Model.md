@@ -1,8 +1,8 @@
 <!--
 MARKDOWN FORMATTING:
-- Use 2 spaces at end of line for compact line breaks (metadata)
-- Use blank lines between sections for readability (content)
-- Validate in Markdown preview before committing
+- Use 2 spaces at end of line for compact line breaks (metadata)  
+- Use blank lines between sections for readability (content)  
+- Validate in Markdown preview before committing  
 -->
 
 # DE-01-EPIC-01-A-User-Management-Domain-Model.md
@@ -27,9 +27,9 @@ MARKDOWN FORMATTING:
 Modelar o gerenciamento de usuários, autenticação, perfis de risco, planos de assinatura e configurações globais do sistema. Inclui administração de planos, limites, overrides (VIP, trials, beta testers) e taxas customizadas por usuário.
 
 **Aggregates Modelados:**
-- User (Aggregate Root)
-- SubscriptionPlan (Aggregate Root)
-- SystemConfig (Aggregate Root)
+- User (Aggregate Root)  
+- SubscriptionPlan (Aggregate Root)  
+- SystemConfig (Aggregate Root)  
 
 ---
 
@@ -41,18 +41,18 @@ Modelar o gerenciamento de usuários, autenticação, perfis de risco, planos de
 **Responsabilidade:** Gerenciamento de usuários, autenticação, perfil e planos  
 
 **Entities:**
-  - (nenhuma child entity)
+  - (nenhuma child entity)  
 
 **Value Objects:**
-  - UserId, Email, PasswordHash, PhoneNumber, UserRole, RiskProfile, UserStatus
-  - UserPlanOverride, TradingFees, BillingPeriod
+  - UserId, Email, PasswordHash, PhoneNumber, UserRole, RiskProfile, UserStatus  
+  - UserPlanOverride, TradingFees, BillingPeriod  
 
 **Domain Events:**
-  - UserRegistered, RiskProfileUpdated, UserPlanUpgraded
-  - UserLoggedIn, UserSuspended, UserActivated, UserDeleted, DisplayNameUpdated
-  - PlanOverrideGranted, PlanOverrideRevoked
-  - CustomFeesConfigured, CustomFeesRemoved
-  - PhoneNumberAdded, PhoneNumberVerified, PhoneNumberChanged
+  - UserRegistered, RiskProfileUpdated, UserPlanUpgraded  
+  - UserLoggedIn, UserSuspended, UserActivated, UserDeleted, DisplayNameUpdated  
+  - PlanOverrideGranted, PlanOverrideRevoked  
+  - CustomFeesConfigured, CustomFeesRemoved  
+  - PhoneNumberAdded, PhoneNumberVerified, PhoneNumberChanged  
 
 ---
 
@@ -60,14 +60,14 @@ Modelar o gerenciamento de usuários, autenticação, perfis de risco, planos de
 **Responsabilidade:** Planos de assinatura (Básico, Pleno, Consultor)  
 
 **Entities:**
-  - (nenhuma child entity)
+  - (nenhuma child entity)  
 
 **Value Objects:**
-  - SubscriptionPlanId, Money, PlanFeatures
+  - SubscriptionPlanId, Money, PlanFeatures  
 
 **Domain Events:**
-  - PlanConfigured, PlanPricingUpdated, PlanLimitsUpdated
-  - PlanFeaturesUpdated, PlanDeactivated, PlanActivated
+  - PlanConfigured, PlanPricingUpdated, PlanLimitsUpdated  
+  - PlanFeaturesUpdated, PlanDeactivated, PlanActivated  
 
 ---
 
@@ -75,13 +75,13 @@ Modelar o gerenciamento de usuários, autenticação, perfis de risco, planos de
 **Responsabilidade:** Configurações globais (taxas, limites)  
 
 **Entities:**
-  - (nenhuma child entity)
+  - (nenhuma child entity)  
 
 **Value Objects:**
-  - SystemConfigId
+  - SystemConfigId  
 
 **Domain Events:**
-  - SystemConfigInitialized, SystemParametersUpdated
+  - SystemConfigInitialized, SystemParametersUpdated  
 
 ---
 
@@ -1385,7 +1385,7 @@ public interface ISystemConfigRepository
 ```
 
 **Eventos Publicados por User Management:**
-- `UserPlanUpgraded` → Strategy Planning pode reagir (notificar usuário)
+- `UserPlanUpgraded` → Strategy Planning pode reagir (notificar usuário)  
 
 ---
 
@@ -1403,9 +1403,9 @@ public interface ISystemConfigRepository
 ```
 
 **Feature Flags:**
-- `PlanFeatures.RealtimeData` → Controla acesso a streaming de preços
-- `PlanFeatures.AdvancedAlerts` → Controla alertas avançados
-- `PlanFeatures.ConsultingTools` → Controla ferramentas de consultoria
+- `PlanFeatures.RealtimeData` → Controla acesso a streaming de preços  
+- `PlanFeatures.AdvancedAlerts` → Controla alertas avançados  
+- `PlanFeatures.ConsultingTools` → Controla ferramentas de consultoria  
 
 ---
 
@@ -1414,8 +1414,8 @@ public interface ISystemConfigRepository
 **Mecanismo:** Domain Events  
 
 **Eventos Publicados por User Management:**
-- `RiskProfileUpdated` → Risk Management pode recalcular risk scores de estratégias existentes
-- `UserSuspended` → Risk Management pode pausar monitoramento de risco
+- `RiskProfileUpdated` → Risk Management pode recalcular risk scores de estratégias existentes  
+- `UserSuspended` → Risk Management pode pausar monitoramento de risco  
 
 ---
 
@@ -1480,11 +1480,11 @@ public record ConfigurePlanCommand(
 ```
 
 **Aggregates Envolvidos:**
-- User (read-only - verificar admin)
-- SubscriptionPlan (modify - criar plano)
+- User (read-only - verificar admin)  
+- SubscriptionPlan (modify - criar plano)  
 
 **Domain Events Gerados:**
-- `PlanConfigured`
+- `PlanConfigured`  
 
 ---
 
@@ -1546,11 +1546,11 @@ public record UpdateSystemParametersCommand(
 ```
 
 **Aggregates Envolvidos:**
-- User (read-only - verificar admin)
-- SystemConfig (modify - atualizar parâmetros)
+- User (read-only - verificar admin)  
+- SystemConfig (modify - atualizar parâmetros)  
 
 **Domain Events Gerados:**
-- `SystemParametersUpdated`
+- `SystemParametersUpdated`  
 
 ---
 
@@ -1614,17 +1614,17 @@ public record GrantPlanOverrideCommand(
 ```
 
 **Aggregates Envolvidos:**
-- User (read-only - verificar admin)
-- User (modify - aplicar override no trader)
+- User (read-only - verificar admin)  
+- User (modify - aplicar override no trader)  
 
 **Domain Events Gerados:**
-- `PlanOverrideGranted`
+- `PlanOverrideGranted`  
 
 **Exemplos de Uso:**
-- Beta Tester: 30 dias com limite de 50 estratégias
-- Influencer: Permanente com todas as features
-- Trial Premium: 15 dias com features do plano Consultor
-- Staff: Permanente com limite ilimitado
+- Beta Tester: 30 dias com limite de 50 estratégias  
+- Influencer: Permanente com todas as features  
+- Trial Premium: 15 dias com features do plano Consultor  
+- Staff: Permanente com limite ilimitado  
 
 ---
 
@@ -1678,11 +1678,11 @@ public record RevokePlanOverrideCommand(
 ```
 
 **Aggregates Envolvidos:**
-- User (read-only - verificar admin)
-- User (modify - remover override do trader)
+- User (read-only - verificar admin)  
+- User (modify - remover override do trader)  
 
 **Domain Events Gerados:**
-- `PlanOverrideRevoked`
+- `PlanOverrideRevoked`  
 
 ---
 
@@ -1750,11 +1750,11 @@ public record RegisterTraderCommand(
 ```
 
 **Aggregates Envolvidos:**
-- User (modify - criar trader)
-- SubscriptionPlan (read-only - validar plano existe)
+- User (modify - criar trader)  
+- SubscriptionPlan (read-only - validar plano existe)  
 
 **Domain Events Gerados:**
-- `UserRegistered`
+- `UserRegistered`  
 
 ---
 
@@ -1828,10 +1828,10 @@ public record LoginResult(
 ```
 
 **Aggregates Envolvidos:**
-- User (modify - record login)
+- User (modify - record login)  
 
 **Domain Events Gerados:**
-- `UserLoggedIn`
+- `UserLoggedIn`  
 
 ---
 
@@ -1842,30 +1842,30 @@ public record LoginResult(
 | User Management | 3 (User, SubscriptionPlan, SystemConfig) | 3 | **12 (+PhoneNumber, +UserPlanOverride)** | 3 | Média |
 
 **Estimativa de Implementação:**
-- **User Management: 3.5 dias (DBA: 1 dia, SE: 2.5 dias)**
-  - Day 1: User + SubscriptionPlan aggregates
-  - Day 2: SystemConfig + Admin use cases (UC-01, UC-02)
-  - Day 3: **PlanOverride (UC-03, UC-04) + Testing**
+- **User Management: 3.5 dias (DBA: 1 dia, SE: 2.5 dias)**  
+  - Day 1: User + SubscriptionPlan aggregates  
+  - Day 2: SystemConfig + Admin use cases (UC-01, UC-02)  
+  - Day 3: **PlanOverride (UC-03, UC-04) + Testing**  
 
 ---
 
 ## ✅ Validação
 
-- [x] Aggregates definidos com invariantes claros
-- [x] Boundaries dos aggregates respeitados (User, Plan, Config separados)
-- [x] Domain Events identificados para integrações (17 eventos: 14 originais + 3 phone)
-- [x] Repository interfaces definidas (3 repositórios)
-- [x] Use Cases mapeados (6 use cases: 4 Admin + 2 User)
-- [x] Validações de negócio no domínio (não na aplicação)
-- [x] Nomenclatura consistente (PT → EN conforme padrões)
-- [x] Admin management incluído (SubscriptionPlan, SystemConfig)
-- [x] Strategy limits validation (baseado em SubscriptionPlan + override)
-- [x] Plan overrides suportados (VIP, trials, beta testers, staff)
-- [x] Custom fees por usuário (para diferentes corretoras, contas VIP)
-- [x] BillingPeriod suportado (Monthly, Annual)
-- [x] PhoneNumber suportado (WhatsApp, 2FA, recovery)
-- [x] Phone verification workflow (AddPhoneNumber → Verify → opcional Change)
-- [x] Telefone verificado obrigatório para Plano Consultor
+- [x] Aggregates definidos com invariantes claros  
+- [x] Boundaries dos aggregates respeitados (User, Plan, Config separados)  
+- [x] Domain Events identificados para integrações (17 eventos: 14 originais + 3 phone)  
+- [x] Repository interfaces definidas (3 repositórios)  
+- [x] Use Cases mapeados (6 use cases: 4 Admin + 2 User)  
+- [x] Validações de negócio no domínio (não na aplicação)  
+- [x] Nomenclatura consistente (PT → EN conforme padrões)  
+- [x] Admin management incluído (SubscriptionPlan, SystemConfig)  
+- [x] Strategy limits validation (baseado em SubscriptionPlan + override)  
+- [x] Plan overrides suportados (VIP, trials, beta testers, staff)  
+- [x] Custom fees por usuário (para diferentes corretoras, contas VIP)  
+- [x] BillingPeriod suportado (Monthly, Annual)  
+- [x] PhoneNumber suportado (WhatsApp, 2FA, recovery)  
+- [x] Phone verification workflow (AddPhoneNumber → Verify → opcional Change)  
+- [x] Telefone verificado obrigatório para Plano Consultor  
 
 ---
 
@@ -1882,31 +1882,31 @@ DE (Domain Model) → DBA (SQL Migrations) → SE (EF Models Scaffolded)
 ```
 
 **1. DE cria Domain Model (este documento)**
-   - Define Aggregates, Entities, Value Objects
-   - Especifica invariantes e regras de negócio
-   - **NÃO define schema SQL** - apenas modelo conceitual de domínio
+   - Define Aggregates, Entities, Value Objects  
+   - Especifica invariantes e regras de negócio  
+   - **NÃO define schema SQL** - apenas modelo conceitual de domínio  
 
 **2. DBA cria SQL Migrations**
-   - Lê este documento DE-01 para entender o domínio
-   - Cria scripts SQL idempotentes em `04-database/migrations/`
-   - Define tabelas, índices, constraints, tipos
-   - Documenta em `DBA-01-[EpicName]-Schema-Review.md`
-   - **Referência:** [Workflow Guide - Database First](../../.agents/docs/00-Workflow-Guide.md#database-workflow-sql-first-approach)
+   - Lê este documento DE-01 para entender o domínio  
+   - Cria scripts SQL idempotentes em `04-database/migrations/`  
+   - Define tabelas, índices, constraints, tipos  
+   - Documenta em `DBA-01-[EpicName]-Schema-Review.md`  
+   - **Referência:** [Workflow Guide - Database First](../../.agents/docs/00-Workflow-Guide.md#database-workflow-sql-first-approach)  
 
 **3. SE scaffolds EF Core models do database**
-   - Executa migrations SQL do DBA
-   - Usa `dotnet ef dbcontext scaffold` para gerar classes C#
-   - Ajusta models para manter encapsulamento do domínio
-   - Implementa Repository interfaces usando EF Core
-   - **NÃO cria schema via Code-First migrations**
+   - Executa migrations SQL do DBA  
+   - Usa `dotnet ef dbcontext scaffold` para gerar classes C#  
+   - Ajusta models para manter encapsulamento do domínio  
+   - Implementa Repository interfaces usando EF Core  
+   - **NÃO cria schema via Code-First migrations**  
 
 ### Benefícios Database First
 
-- ✅ **DBA controla performance** - índices, particionamento, otimizações SQL
-- ✅ **Schema validado** - DBA revisa antes de implementação
-- ✅ **Auditoria** - Mudanças de schema em SQL versionado (git)
-- ✅ **Flexibilidade** - Schema pode divergir do modelo OO quando necessário
-- ✅ **Testing realista** - Integration tests usam schema SQL real (não in-memory)
+- ✅ **DBA controla performance** - índices, particionamento, otimizações SQL  
+- ✅ **Schema validado** - DBA revisa antes de implementação  
+- ✅ **Auditoria** - Mudanças de schema em SQL versionado (git)  
+- ✅ **Flexibilidade** - Schema pode divergir do modelo OO quando necessário  
+- ✅ **Testing realista** - Integration tests usam schema SQL real (não in-memory)  
 
 ### Próximos Passos (After DE-01)
 
@@ -1916,22 +1916,22 @@ DE (Domain Model) → DBA (SQL Migrations) → SE (EF Models Scaffolded)
 4. **QAE** executa testes de integração com PostgreSQL real
 
 **Referências Database First:**
-- **DBA README:** [04-database/README.md](../../04-database/README.md) - Migration scripts, idempotency patterns
-- **QAE-00:** [QAE-00-Test-Strategy.md](../06-quality-assurance/QAE-00-Test-Strategy.md) - Integration tests with PostgreSQL
-- **GM-00:** [GM-00-GitHub-Setup.md](../07-github-management/GM-00-GitHub-Setup.md) - CI/CD database migrations
+- **DBA README:** [04-database/README.md](../../04-database/README.md) - Migration scripts, idempotency patterns  
+- **QAE-00:** [QAE-00-Test-Strategy.md](../06-quality-assurance/QAE-00-Test-Strategy.md) - Integration tests with PostgreSQL  
+- **GM-00:** [GM-00-GitHub-Setup.md](../07-github-management/GM-00-GitHub-Setup.md) - CI/CD database migrations  
 
 ---
 
 ## 📝 Notas de Implementação para SE
 
 **Tecnologias:**
-- Framework: .NET 8
-- ORM: EF Core 8
-- Event Bus: MediatR (in-process) + RabbitMQ (future)
-- Authentication: JWT + BCrypt
-- SMS/WhatsApp: Twilio API ou WhatsApp Business API
-- Phone Validation: libPhoneNumber (Google) para validação robusta
-- Verification Code: Redis (cache com TTL de 5 minutos)
+- Framework: .NET 8  
+- ORM: EF Core 8  
+- Event Bus: MediatR (in-process) + RabbitMQ (future)  
+- Authentication: JWT + BCrypt  
+- SMS/WhatsApp: Twilio API ou WhatsApp Business API  
+- Phone Validation: libPhoneNumber (Google) para validação robusta  
+- Verification Code: Redis (cache com TTL de 5 minutos)  
 
 **Estrutura de Pastas:**
 ```
@@ -1993,19 +1993,19 @@ DE (Domain Model) → DBA (SQL Migrations) → SE (EF Models Scaffolded)
 
 **Prioridades de Implementação:**
 1. **Days 1-3.5:** User Management
-   - Day 1: User + SubscriptionPlan aggregates
-   - Day 2: SystemConfig + Admin use cases (UC-01, UC-02)
-   - Day 3: UserPlanOverride + UC-Admin-03/04 (Grant/Revoke)
-   - Day 3.5: Testing + refinamento
+   - Day 1: User + SubscriptionPlan aggregates  
+   - Day 2: SystemConfig + Admin use cases (UC-01, UC-02)  
+   - Day 3: UserPlanOverride + UC-Admin-03/04 (Grant/Revoke)  
+   - Day 3.5: Testing + refinamento  
 
 ---
 
 ## 🔗 Referências
 
-- **SDA Context Map:** `00-doc-ddd/02-strategic-design/SDA-02-Context-Map.md`
-- **Ubiquitous Language:** `00-doc-ddd/02-strategic-design/SDA-03-Ubiquitous-Language.md`
-- **DDD Patterns Reference:** `.agents/docs/05-DDD-Patterns-Reference.md`
-- **EPIC-01 Complete Model:** `00-doc-ddd/04-tactical-design/DE-01-EPIC-01-CreateStrategy-Domain-Model.md`
-- **DBA Workflow (Database First):** [Workflow Guide - Database First](../../.agents/docs/00-Workflow-Guide.md#database-workflow-sql-first-approach)
-- **DBA README:** [04-database/README.md](../../04-database/README.md) - Migration scripts structure, idempotency patterns
-- **DBA Schema Review:** `00-doc-ddd/05-database-design/DBA-01-EPIC-01-A-Schema-Review.md` (to be created by DBA)
+- **SDA Context Map:** `00-doc-ddd/02-strategic-design/SDA-02-Context-Map.md`  
+- **Ubiquitous Language:** `00-doc-ddd/02-strategic-design/SDA-03-Ubiquitous-Language.md`  
+- **DDD Patterns Reference:** `.agents/docs/05-DDD-Patterns-Reference.md`  
+- **EPIC-01 Complete Model:** `00-doc-ddd/04-tactical-design/DE-01-EPIC-01-CreateStrategy-Domain-Model.md`  
+- **DBA Workflow (Database First):** [Workflow Guide - Database First](../../.agents/docs/00-Workflow-Guide.md#database-workflow-sql-first-approach)  
+- **DBA README:** [04-database/README.md](../../04-database/README.md) - Migration scripts structure, idempotency patterns  
+- **DBA Schema Review:** `00-doc-ddd/05-database-design/DBA-01-EPIC-01-A-Schema-Review.md` (to be created by DBA)  
