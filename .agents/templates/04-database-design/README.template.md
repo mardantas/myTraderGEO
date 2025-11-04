@@ -1158,6 +1158,171 @@ Console.WriteLine($"Looking for: {fullPath}");  // Debug
 
 ---
 
+## 🛠️ EF Core Scaffolding Commands Reference
+
+### Overview
+
+**Database-First Approach:** DBA creates SQL migrations → SE scaffolds EF Core models from PostgreSQL database.
+
+**Key Command:** `dotnet ef dbcontext scaffold`
+
+### Prerequisites
+
+**Install EF Core CLI tools:**
+```bash
+dotnet tool install --global dotnet-ef
+# or update if already installed:
+dotnet tool update --global dotnet-ef
+```
+
+**Required NuGet packages** (add to your project):
+```xml
+<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.*" />
+<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.*" />
+```
+
+### Basic Scaffold Command
+
+**Template:**
+```bash
+dotnet ef dbcontext scaffold \
+  "Host=localhost;Port=5432;Database={project}_dev;Username={project}_app;Password={project}_dev_password" \
+  Npgsql.EntityFrameworkCore.PostgreSQL \
+  --output-dir Infrastructure/Data/Models \
+  --context-dir Infrastructure/Data \
+  --context ApplicationDbContext \
+  --no-onconfiguring \
+  --force
+```
+
+**Replace placeholders:**
+- `{project}_dev` → Database name (e.g., `mytrader_dev`)
+- `{project}_app` → Database user (e.g., `mytrader_app`)
+- `{project}_dev_password` → User password
+
+### Command Options Explained
+
+| Option | Description | Recommendation |
+|--------|-------------|----------------|
+| `--output-dir` | Where entity classes are generated | `Infrastructure/Data/Models` |
+| `--context-dir` | Where DbContext is generated | `Infrastructure/Data` |
+| `--context` | DbContext class name | `ApplicationDbContext` |
+| `--no-onconfiguring` | Don't generate `OnConfiguring` method | ✅ **Always use** (connection strings go in DI) |
+| `--force` | Overwrite existing files | ⚠️ **Use after Epic 1** (see partial classes pattern below) |
+| `--schema` | Scaffold specific schema only | Optional: `--schema user_management` |
+| `--table` | Scaffold specific table(s) only | Optional: `--table users --table subscription_plans` |
+| `--data-annotations` | Use attributes instead of Fluent API | ❌ **Avoid** (prefer Fluent API for complex mappings) |
+
+### Workflow Examples
+
+#### 1️⃣ First Time (Epic 1)
+
+**Scenario:** DBA created first SQL migration with `users` and `subscription_plans` tables.
+
+**Command:**
+```bash
+cd src/{ProjectName}.WebAPI
+
+dotnet ef dbcontext scaffold \
+  "Host=localhost;Port=5432;Database={project}_dev;Username={project}_app;Password={project}_dev_password" \
+  Npgsql.EntityFrameworkCore.PostgreSQL \
+  --output-dir Infrastructure/Data/Models \
+  --context-dir Infrastructure/Data \
+  --context ApplicationDbContext \
+  --no-onconfiguring
+```
+
+**Generated files:**
+```
+src/{ProjectName}.WebAPI/
+├── Infrastructure/Data/
+│   └── ApplicationDbContext.cs       # DbContext with DbSet<User>, DbSet<SubscriptionPlan>
+└── Infrastructure/Data/Models/
+    ├── User.cs                        # Entity for users table
+    └── SubscriptionPlan.cs            # Entity for subscription_plans table
+```
+
+#### 2️⃣ Subsequent Epics (Epic 2+)
+
+**Scenario:** DBA added new migration with `strategies` table. You already added domain logic to `User.cs`.
+
+**⚠️ CRITICAL:** Use `--force` flag to regenerate ALL entities (including new ones).
+
+**Command:**
+```bash
+cd src/{ProjectName}.WebAPI
+
+dotnet ef dbcontext scaffold \
+  "Host=localhost;Port=5432;Database={project}_dev;Username={project}_app;Password={project}_dev_password" \
+  Npgsql.EntityFrameworkCore.PostgreSQL \
+  --output-dir Infrastructure/Data/Models \
+  --context-dir Infrastructure/Data \
+  --context ApplicationDbContext \
+  --no-onconfiguring \
+  --force
+```
+
+**What happens:**
+- ✅ Creates `Strategy.cs` for new table
+- ⚠️ **OVERWRITES** `User.cs` and `SubscriptionPlan.cs` (your custom code is LOST!)
+
+**Solution:** Use **partial classes pattern** (see next section) to separate auto-generated code from custom domain logic.
+
+#### 3️⃣ Scaffold Specific Schema Only
+
+**Use case:** Multi-bounded-context projects (e.g., only scaffold `strategy_management` schema).
+
+**Command:**
+```bash
+dotnet ef dbcontext scaffold \
+  "Host=localhost;Port=5432;Database={project}_dev;Username={project}_app;Password={project}_dev_password" \
+  Npgsql.EntityFrameworkCore.PostgreSQL \
+  --output-dir Infrastructure/Data/Models \
+  --context-dir Infrastructure/Data \
+  --context ApplicationDbContext \
+  --no-onconfiguring \
+  --schema strategy_management \
+  --force
+```
+
+### Best Practices
+
+1. **Connection Strings:** Never hardcode in commands
+   - Use environment variables: `$Env:DB_CONNECTION_STRING` (PowerShell) or `$DB_CONNECTION_STRING` (Bash)
+   - Or read from `appsettings.Development.json`
+
+2. **After Scaffolding:** Always review generated code
+   - Check entity property types (PostgreSQL types → C# types)
+   - Verify foreign key relationships
+   - Review navigation properties (one-to-many, many-to-many)
+
+3. **Custom Code Protection:** See "Scaffolding Strategy Across Multiple Epics" section below
+
+4. **Version Control:** Commit scaffolded files separately
+   ```bash
+   git add Infrastructure/Data/Models/*.cs Infrastructure/Data/ApplicationDbContext.cs
+   git commit -m "chore(db): Scaffold EF Core models from Epic X migration"
+   ```
+
+### Troubleshooting
+
+**Error: "No DbContext was found"**
+- Check `--context-dir` path is correct
+- Ensure project file has `<Project Sdk="Microsoft.NET.Sdk.Web">`
+
+**Error: "Unable to connect to PostgreSQL"**
+- Verify Docker container is running: `docker ps | grep postgres`
+- Test connection: `psql -h localhost -U {project}_app -d {project}_dev`
+
+**Error: "Could not load assembly 'Npgsql.EntityFrameworkCore.PostgreSQL'"**
+- Install NuGet package: `dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL`
+
+**Generated entities have `public virtual` properties**
+- This is normal for EF Core (enables lazy loading and change tracking)
+- Keep `virtual` keyword unless you need to disable proxies
+
+---
+
 ## 🔄 Para SE: Scaffolding Strategy Across Multiple Epics
 
 ### ⚠️ CRITICAL: Understanding the Scaffolding Problem
