@@ -1,3 +1,10 @@
+<!--
+MARKDOWN FORMATTING:
+- Use 2 spaces at end of line for compact line breaks (metadata)
+- Use blank lines between sections for readability (content)
+- Validate in Markdown preview before committing
+-->
+
 # SEC-00 - Security Baseline
 
 **Agent:** SEC (Security Specialist)  
@@ -1205,8 +1212,11 @@ To maintain simplicity for MVP and early epics, v1.0 **DOES NOT include:**
 - **CVM Instruction 505:** https://conteudo.cvm.gov.br/legislacao/instrucoes/inst505.html (Audit trail requirements)
 - **Agent XML:** `.agents/35-SEC - Security Specialist.xml`
 - **PE Stack:** `00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md`
+- **DBA Workflow (Database First):** [Workflow Guide - Database First](../../.agents/docs/00-Workflow-Guide.md#database-workflow-sql-first-approach)
+- **DBA README (Security):** [`04-database/README.md`](../../04-database/README.md) - Database user segregation, password management
 - **SDA Context Map:** `00-doc-ddd/02-strategic-design/SDA-02-Context-Map.md`
 - **Workflow Guide:** `.agents/docs/00-Workflow-Guide.md`
+- **FEEDBACK-003:** [`FEEDBACK-003-DBA-PE-PostgreSQL-User-Security.md`](../00-feedback/FEEDBACK-003-DBA-PE-PostgreSQL-User-Security.md) - Database security improvements
 
 ---
 

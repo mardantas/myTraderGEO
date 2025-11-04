@@ -1,3 +1,10 @@
+<!--
+MARKDOWN FORMATTING:
+- Use 2 spaces at end of line for compact line breaks (metadata)
+- Use blank lines between sections for readability (content)
+- Validate in Markdown preview before committing
+-->
+
 # GM-00-GitHub-Setup.md
 
 **Agent:** GM (GitHub Manager)  
@@ -458,7 +465,87 @@ gh issue view [ISSUE_NUMBER] --repo mardantas/myTraderGEO
    - Build Docker image
    - Cache layers para performance
 
-**Status checks:** ✅ Required before merge (discipline-based, GitHub Free)  
+**Status checks:** ✅ Required before merge (discipline-based, GitHub Free)
+
+---
+
+#### Database Migrations in CI/CD (Database First Approach)
+
+**⚠️ IMPORTANTE: Abordagem Database First**
+
+Este projeto usa **SQL-First** onde DBA cria schema migrations SQL ANTES do SE criar EF models.
+
+**Referência:** Ver [Workflow Guide - Database First](../../.agents/docs/00-Workflow-Guide.md#database-workflow-sql-first-approach)
+
+**Impacto no CI/CD:**
+
+**Integration Tests (CI Backend Pipeline):**
+
+```yaml
+# .github/workflows/ci-backend.yml (excerpt)
+jobs:
+  build-and-test:
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: mytrader_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      # ... (build steps)
+
+      - name: Run SQL Migrations (DBA scripts)
+        run: |
+          # Apply DBA migrations BEFORE tests
+          psql -h localhost -U postgres -d mytrader_test \
+            -f 04-database/migrations/001-create-users-table.sql \
+            -f 04-database/migrations/002-create-strategies-table.sql
+        env:
+          PGPASSWORD: test_password
+
+      - name: Run Integration Tests
+        run: |
+          # Tests use REAL PostgreSQL schema (not in-memory)
+          dotnet test --filter "Category=Integration"
+        env:
+          ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=mytrader_test;Username=postgres;Password=test_password"
+```
+
+**Deployment (CD Staging/Production):**
+
+```yaml
+# .github/workflows/cd-staging.yml (excerpt)
+jobs:
+  deploy-staging:
+    steps:
+      # ... (deployment steps)
+
+      - name: Run Database Migrations (SSH to staging server)
+        run: |
+          ssh staging_user@staging-server "cd /app && \
+            psql -h database -U mytrader_app -d mytrader_dev \
+              -f 04-database/migrations/001-create-users-table.sql \
+              -f 04-database/migrations/002-create-strategies-table.sql"
+```
+
+**Key Principles (Database First CI/CD):**
+
+- ✅ **SQL migrations execute BEFORE tests** - Integration tests run against real schema
+- ✅ **Idempotent migrations** - Safe to re-execute (`CREATE TABLE IF NOT EXISTS`, `ALTER TABLE IF EXISTS`)
+- ✅ **PostgreSQL in CI** - Use Docker service (NOT SQLite in-memory) for realistic tests
+- ✅ **Deployment order**: Migrations first → Application deployment second
+- ✅ **EF models scaffolded from database** - SE generates models AFTER DBA creates schema
+- ⚠️ **Rollback strategy**: Keep separate rollback SQL scripts (e.g., `001-rollback-users.sql`)
+
+**References:**
+- **DBA README:** [04-database/README.md](../../04-database/README.md) - Migration scripts structure
+- **QAE-00:** [QAE-00-Test-Strategy.md](../06-quality-assurance/QAE-00-Test-Strategy.md) - Integration tests with PostgreSQL
 
 ---
 
@@ -798,6 +885,9 @@ gh run view [RUN_ID] --repo mardantas/myTraderGEO
 - **SDA-01 Event Storming:** [00-doc-ddd/02-strategic-design/SDA-01-Event-Storming.md](00-doc-ddd/02-strategic-design/SDA-01-Event-Storming.md) - Epics para labels/milestones
 - **SDA-02 Context Map:** [00-doc-ddd/02-strategic-design/SDA-02-Context-Map.md](00-doc-ddd/02-strategic-design/SDA-02-Context-Map.md) - BCs para labels
 - **PE-00 Environments Setup:** [00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md](00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md) - Stack para CI/CD
+- **DBA Workflow (Database First):** [Workflow Guide - Database First](../../.agents/docs/00-Workflow-Guide.md#database-workflow-sql-first-approach) - SQL-first migrations approach
+- **DBA README:** [04-database/README.md](../../04-database/README.md) - Migration scripts structure, idempotency patterns
+- **QAE-00 Test Strategy:** [QAE-00-Test-Strategy.md](../06-quality-assurance/QAE-00-Test-Strategy.md) - Integration tests with PostgreSQL
 
 ### Scripts Criados
 

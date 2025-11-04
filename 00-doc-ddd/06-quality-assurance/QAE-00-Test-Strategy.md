@@ -1,3 +1,10 @@
+<!--
+MARKDOWN FORMATTING:
+- Use 2 spaces at end of line for compact line breaks (metadata)
+- Use blank lines between sections for readability (content)
+- Validate in Markdown preview before committing
+-->
+
 # QAE-00-Test-Strategy.md
 
 **Agent:** QAE (Quality Assurance Engineer)  
@@ -272,9 +279,27 @@ export const createMockStrategy = (overrides?: Partial<Strategy>): Strategy => (
 
 ### Database Seeding (Integration Tests)
 
-- ✅ In-memory database (SQLite) para testes rápidos
-- ✅ Docker PostgreSQL container para testes realistas (CI/CD)
-- ✅ Seed scripts com cenários conhecidos (DbContext.SeedTestData())
+**⚠️ IMPORTANTE: Abordagem Database First**
+
+Este projeto usa **SQL-First** onde DBA cria schema migrations SQL ANTES do SE criar EF models.
+
+**Referência:** Ver [Workflow Guide - Database First](../../.agents/docs/00-Workflow-Guide.md#database-workflow-sql-first-approach)
+
+**Impacto nos Testes de Integração:**
+
+- ✅ **PostgreSQL real** (via Docker TestContainers) para testes realistas
+  - Schema criado via migrations SQL do DBA
+  - EF models scaffolded do database (não Code-First)
+  - Garante que testes refletem schema real de produção
+
+- ⚠️ **In-memory SQLite** apenas para testes unitários rápidos (quando apropriado)
+  - Atenção: Diferenças de comportamento PostgreSQL vs SQLite
+  - Evitar para testes que dependem de features específicas PostgreSQL (JSONB, índices GIN, etc)
+
+- ✅ **Seed scripts SQL** (do DBA) para dados de teste
+  - Usar scripts do diretório `04-database/seeds/`
+  - Idempotentes (safe to re-execute)
+  - Dados realistas alinhados com domínio
 
 ### Mocking Strategy
 
@@ -416,7 +441,9 @@ public void Calculate_ShouldReturnCorrectMargin()
 **Após QAE-00:**
 1. **GM-00** configura CI/CD com test automation
 2. **SEC-00** adiciona security testing (SAST/DAST)
-3. **DE/FE** implementam testes durante development (TDD recomendado)
+3. **DBA** cria migrations SQL (database first approach)
+4. **SE** scaffolds EF models do database para testes de integração
+5. **DE/FE** implementam testes durante development (TDD recomendado)
 
 **Epic 2+ (Expansão):**
 - Mutation testing (Stryker.NET, Stryker4s)
@@ -429,6 +456,8 @@ public void Calculate_ShouldReturnCorrectMargin()
 ## 📚 Referências
 
 - **PE-00:** Stack tecnológico e ferramentas → [`PE-00-Environments-Setup.md`](../08-platform-engineering/PE-00-Environments-Setup.md)
+- **DBA Workflow:** Database First approach → [Workflow Guide - Database First](../../.agents/docs/00-Workflow-Guide.md#database-workflow-sql-first-approach)
+- **DBA README:** Migrations e seeding → [`04-database/README.md`](../../04-database/README.md)
 - **SDA-02:** Context Map (BCs prioritários) → [`SDA-02-Context-Map.md`](../02-strategic-ddd/SDA-02-Context-Map.md)
 - **SDA-03:** Ubiquitous Language → [`SDA-03-Ubiquitous-Language.md`](../02-strategic-ddd/SDA-03-Ubiquitous-Language.md)
 
