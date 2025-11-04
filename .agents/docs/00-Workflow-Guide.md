@@ -344,22 +344,51 @@ Day 3-6: SE → Lê DBA-01 e migrations
 2. **04-database/README.md** - Guia operacional (HOW) - Atualizado por epic
 3. **Migrations SQL** - `04-database/migrations/NNN_*.sql`
 
-### Consumo pelo SE
+### Consumo pelo SE: Hybrid Scaffolding Strategy
 
-SE usa migrations do DBA para gerar C# models:
+**Problema:** `dotnet ef dbcontext scaffold --force` regenera TODOS os arquivos (não só novos), causando perda de customizações.
 
+**Solução:** **Hybrid Approach (Partial Classes Pattern)** - separa código auto-gerado de lógica de domínio customizada.
+
+#### File Organization
+
+| Localização | Tipo | Tocado por Scaffold? | Propósito |
+|-------------|------|---------------------|-----------|
+| `src/Infrastructure/Data/Models/*.cs` | Auto-Generated | **SIM - Sobrescrito todo epic** | Entidades base (só colunas DB) |
+| `src/Domain/Entities/*.Partial.cs` | Custom | **NÃO - Nunca tocado** | Lógica de domínio, eventos |
+| `src/Infrastructure/Persistence/Configurations/*.cs` | Custom | **NÃO - Nunca tocado** | FluentAPI (Value Objects, JSONB) |
+| `src/Infrastructure/Data/ApplicationDbContext.Partial.cs` | Custom | **NÃO - Nunca tocado** | Registro de configurações |
+
+#### Workflow Across Epics
+
+**EPIC-01 (Scaffold Inicial):**
 ```bash
-dotnet ef dbcontext scaffold \
-  "Host=localhost;Database=mytrader_dev;Username=mytrader_app;Password=xxx" \
-  Npgsql.EntityFrameworkCore.PostgreSQL \
-  --output-dir Data/Models \
-  --context-dir Data \
-  --context ApplicationDbContext \
-  --force
+# Scaffold gera Models/User.cs, Models/SubscriptionPlan.cs
+dotnet ef dbcontext scaffold ... --force
+
+# SE cria partial classes customizadas
+# Domain/Entities/User.Partial.cs - Lógica de negócio
+# Infrastructure/Persistence/Configurations/UserConfiguration.cs - FluentAPI
 ```
+
+**EPIC-02+ (Re-Scaffold):**
+```bash
+# MESMO comando - scaffold TODAS as tabelas novamente
+dotnet ef dbcontext scaffold ... --force
+
+# O que acontece:
+# ✅ Arquivos NOVOS: Models/Strategy.cs
+# ⚠️ Arquivos EPIC-01 REGENERADOS: Models/User.cs (SOBRESCRITO)
+# ✅ Arquivos CUSTOM INTOCADOS: Domain/Entities/User.Partial.cs (NÃO tocado)
+```
+
+**Resultado:** Customizações SEGURAS porque ficam em arquivos separados nunca tocados pelo scaffold.
+
+**Guia Completo:** Ver [04-database/README.md - Scaffolding Strategy](../04-database/README.md#para-se-scaffolding-strategy-across-multiple-epics)
 
 **Referências:**
 - [DBA Agent Overview](01-Agents-Overview.md#dba---database-administrator)
+- [SE Agent XML](../.agents/45-SE%20-%20Software%20Engineer.xml) - DATABASE WORKFLOW section
 - [Nomenclature Standards](02-Nomenclature-Standards.md)
 
 ---
