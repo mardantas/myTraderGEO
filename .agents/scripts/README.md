@@ -1,30 +1,62 @@
-# Scripts de Validação
+# Validation Scripts
 
-Scripts PowerShell para validação de qualidade do DDD Workflow.
+Quality validation scripts for the DDD Workflow.
 
-## 📋 Scripts
+## 📋 Available Scripts
 
-- **validate-nomenclature.ps1** - Valida nomenclatura de documentos e código
-- **validate-structure.ps1** - Valida estrutura de pastas e arquivos
+This folder contains validation scripts for maintaining code quality and documentation standards:
 
-## 📖 Documentação Completa
+- **validate-nomenclature.sh** - Validates document and code nomenclature
+- **validate-structure.sh** - Validates folder structure and required files
+- **epic-deploy.sh** - Epic deployment automation script
+- **epic-start.sh** - Epic initialization script
+- **fix-markdown-trailing-spaces.sh** - Fixes markdown trailing spaces
 
-Ver documentação detalhada em: [00-Workflow-Guide.md](../docs/00-Workflow-Guide.md#-validação-de-qualidade)
+## 📖 Complete Documentation
 
-## 🚀 Uso Rápido
+For detailed documentation about validation rules and standards, see:
+[00-Workflow-Guide.md](../docs/00-Workflow-Guide.md#-validação-de-qualidade)
 
-```powershell
-# Validar estrutura
-.\validate-structure.ps1
+## 🚀 Quick Usage
 
-# Validar nomenclatura
-.\validate-nomenclature.ps1
+### Validate Structure
+```bash
+./validate-structure.sh
 
-# Validar nomenclatura + código
-.\validate-nomenclature.ps1 -CheckCode
+# Verbose mode (shows all validated files)
+./validate-structure.sh --verbose
 ```
 
-## 🔗 Referências
+### Validate Nomenclature
+```bash
+./validate-nomenclature.sh
+
+# With backend/frontend code validation
+./validate-nomenclature.sh --check-code
+
+# Verbose mode
+./validate-nomenclature.sh --verbose
+
+# Combined (code + verbose)
+./validate-nomenclature.sh --check-code --verbose
+```
+
+## 💻 Windows Users
+
+To run these shell scripts on Windows, use one of the following:
+
+- **Git Bash** (recommended, installed with Git for Windows)
+- **WSL2** (Windows Subsystem for Linux)
+- **PowerShell 7+** with bash compatibility
+
+Example using Git Bash:
+```bash
+# From Git Bash terminal
+cd /c/Users/Marco/Projetos/myTraderGEO
+./.agents/scripts/validate-nomenclature.sh
+```
+
+## 🔗 References
 
 - **Workflow Guide:** [../docs/00-Workflow-Guide.md](../docs/00-Workflow-Guide.md)
-- **Padrões de Nomenclatura:** [../docs/02-Nomenclature-Standards.md](../docs/02-Nomenclature-Standards.md)
+- **Nomenclature Standards:** [../docs/02-Nomenclature-Standards.md](../docs/02-Nomenclature-Standards.md)
