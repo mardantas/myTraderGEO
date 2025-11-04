@@ -1,6 +1,28 @@
 # DDD Workflow Guide
 
-**Objetivo:** Guia prático do processo de desenvolvimento Domain-Driven Design (DDD) para projetos pequenos e médios.  
+**Objetivo:** Guia prático do processo de desenvolvimento Domain-Driven Design (DDD) para projetos pequenos e médios.
+
+---
+
+## 📖 Índice
+
+- [Visão Geral](#-visão-geral)
+- [Agentes (10)](#-agentes-10)
+- [Workflow Visualization](#-workflow-visualization)
+- [Estrutura do Processo](#-estrutura-do-processo)
+  - [Fase 1: Discovery](#fase-1-discovery-1x-por-projeto)
+  - [Fase 2: Iteração por Épico](#fase-2-iteração-por-épico-n-iterações)
+- [Épicos: Por Funcionalidade vs Por BC](#-épicos-por-funcionalidade-vs-por-bc)
+- [Database Workflow: SQL-First Approach](#-database-workflow-sql-first-approach)
+- [Sistema de Feedback](#-sistema-de-feedback)
+- [Think Mode vs Plan Mode](#-think-mode-vs-plan-mode)
+- [Modos de Execução dos Agentes](#-modos-de-execução-dos-agentes)
+- [Estrutura de Pastas](#-estrutura-de-pastas)
+- [Workflow Típico](#-workflow-típico)
+- [Métricas de Sucesso](#-métricas-de-sucesso)
+- [Configuração de Caminhos](#-configuração-de-caminhos)
+- [Validação de Qualidade](#-validação-de-qualidade)
+- [Referências](#-referências)
 
 ---
 
@@ -162,9 +184,9 @@ SDA (Dia 1-2)
 ```
 
 **Por que esta ordem?**
-- ✅ **PE primeiro:** Define .NET/Node, React/Vue, PostgreSQL/MongoDB → decisões que impactam QAE, SEC, GM  
-- ✅ **UXD paralelo com PE:** Design independe de stack técnico  
-- ✅ **QAE, SEC, GM depois de PE:** Escolhem ferramentas compatíveis (xUnit vs Jest, OWASP ZAP vs Snyk, GitHub Actions config específico)  
+- ✅ **PE primeiro:** Define backend/frontend/database stack → decisões que impactam QAE, SEC, GM
+- ✅ **UXD paralelo com PE:** Design independe de stack técnico
+- ✅ **QAE, SEC, GM depois de PE:** Escolhem ferramentas compatíveis com o stack definido  
 
 ---
 
@@ -328,9 +350,9 @@ Day 1-2: DE → Cria DE-01-[EpicName]-Domain-Model.md
               (Aggregates, Entities, Value Objects, Repository interfaces)
 
 Day 2-3: DBA → Lê DE-01
-              → Cria SQL migrations em 04-database/migrations/
+              → Cria SQL migrations em 04-database/migrations/ (diretório criado pelo DBA)
               → Cria DBA-01-[EpicName]-Schema-Review.md
-              → Atualiza 04-database/README.md
+              → Atualiza 04-database/README.md (arquivo criado pelo DBA no primeiro épico)
 
 Day 3-6: SE → Lê DBA-01 e migrations
              → Scaffolds EF models: dotnet ef dbcontext scaffold
@@ -341,8 +363,8 @@ Day 3-6: SE → Lê DBA-01 e migrations
 ### Deliverables DBA (Por Epic)
 
 1. **DBA-01-[EpicName]-Schema-Review.md** - Decisões de design (WHY/WHAT)
-2. **04-database/README.md** - Guia operacional (HOW) - Atualizado por epic
-3. **Migrations SQL** - `04-database/migrations/NNN_*.sql`
+2. **04-database/README.md** - Guia operacional (HOW) - Criado no primeiro épico, atualizado nos seguintes
+3. **Migrations SQL** - `04-database/migrations/NNN_*.sql` (estrutura criada pelo DBA)
 
 ### Consumo pelo SE: Hybrid Scaffolding Strategy
 
@@ -384,10 +406,10 @@ dotnet ef dbcontext scaffold ... --force
 
 **Resultado:** Customizações SEGURAS porque ficam em arquivos separados nunca tocados pelo scaffold.
 
-**Guia Completo:** Ver [04-database/README.md - Scaffolding Strategy](../04-database/README.md#para-se-scaffolding-strategy-across-multiple-epics)
+**Guia Completo:** Ver `04-database/README.md` seção "Scaffolding Strategy" (criado pelo DBA Agent no primeiro épico)
 
 **Referências:**
-- [DBA Agent Overview](01-Agents-Overview.md#dba---database-administrator)
+- [DBA Agent Overview](01-Agents-Overview.md#50---dba-database-administrator)
 - [SE Agent XML](../.agents/45-SE%20-%20Software%20Engineer.xml) - DATABASE WORKFLOW section
 - [Nomenclature Standards](02-Nomenclature-Standards.md)
 
@@ -660,7 +682,7 @@ Agentes suportam execução em dois modos:
 ├── 01-frontend/                           # Código frontend (FE)
 ├── 02-backend/                            # Código backend (SE)
 ├── 03-github-manager/                     # Scripts GM (opcional)
-├── 04-database/                           # Migrations e scripts
+├── 04-database/                           # Migrations e scripts (criado pelo DBA no primeiro épico)
 │
 └── workflow-config.json                   # Configuração do workflow
 ```
@@ -765,15 +787,17 @@ Mudar estrutura de pastas = atualizar **apenas** `workflow-config.json` (zero mu
 
 ## 🔍 Validação de Qualidade
 
-O workflow inclui scripts PowerShell para validar nomenclatura e estrutura do projeto automaticamente.
+O workflow inclui scripts shell para validar nomenclatura e estrutura do projeto automaticamente.
+
+> **Windows Users:** Use Git Bash, WSL2, or PowerShell 7+ to run these shell scripts.
 
 ### 📋 Scripts Disponíveis
 
-#### 1. validate-nomenclature.ps1
+#### 1. validate-nomenclature.sh
 
-**Objetivo:** Valida nomenclatura de documentos, feedbacks e código conforme padrões DDD.  
+**Objetivo:** Valida nomenclatura de documentos, feedbacks e código conforme padrões DDD.
 
-**Localização:** `.agents/scripts/validate-nomenclature.ps1`  
+**Localização:** `.agents/scripts/validate-nomenclature.sh`  
 
 **O que valida:**
 - ✅ Nomenclatura de documentos em `00-doc-ddd/` (SDA-XX, DE-XX, UXD-XX, etc)  
@@ -786,31 +810,33 @@ O workflow inclui scripts PowerShell para validar nomenclatura e estrutura do pr
 
 **Uso:**
 
-```powershell
+```bash
 # Validação básica (apenas documentos)
-.\.agents\scripts\validate-nomenclature.ps1
+./.agents/scripts/validate-nomenclature.sh
 
 # Com validação de código backend/frontend
-.\.agents\scripts\validate-nomenclature.ps1 -CheckCode
+./.agents/scripts/validate-nomenclature.sh --check-code
 
 # Modo verbose (mostra todos os arquivos validados)
-.\.agents\scripts\validate-nomenclature.ps1 -Verbose
+./.agents/scripts/validate-nomenclature.sh --verbose
 
 # Combinado (código + verbose)
-.\.agents\scripts\validate-nomenclature.ps1 -CheckCode -Verbose
+./.agents/scripts/validate-nomenclature.sh --check-code --verbose
 ```
 
-**Validações de Código (se `-CheckCode`):**
+**Validações de Código (se `--check-code`):**
 
-Backend (C#):
-- ✅ Classes de domínio usam inglês (não português)  
-- ✅ Aggregates têm suporte a Domain Events  
-- ✅ Value Objects são immutable (sem setters)  
+Backend:
+- ✅ Classes de domínio usam inglês (não português)
+- ✅ Aggregates têm suporte a Domain Events
+- ✅ Value Objects são immutable (sem setters)
 
-Frontend (React):
-- ✅ Componentes seguem PascalCase  
-- ✅ Componentes têm `export default`  
-- ✅ Hooks seguem padrão `use*`  
+Frontend:
+- ✅ Componentes seguem PascalCase
+- ✅ Componentes têm `export default`
+- ✅ Hooks seguem padrão `use*`
+
+> **Nota:** Validações acima são exemplos ilustrativos. O stack tecnológico real (backend, frontend, database) será definido pelo PE Agent durante a Discovery (Dia 2-3).  
 
 **Exemplo de Output:**
 ```
@@ -838,11 +864,11 @@ Please fix errors before proceeding.
 
 ---
 
-#### 2. validate-structure.ps1
+#### 2. validate-structure.sh
 
-**Objetivo:** Valida estrutura de pastas, arquivos e agentes do workflow.  
+**Objetivo:** Valida estrutura de pastas, arquivos e agentes do workflow.
 
-**Localização:** `.agents/scripts/validate-structure.ps1`  
+**Localização:** `.agents/scripts/validate-structure.sh`  
 
 **O que valida:**
 - ✅ Pastas obrigatórias existem (`00-doc-ddd/*`, `.agents/templates/*`)  
@@ -855,12 +881,12 @@ Please fix errors before proceeding.
 
 **Uso:**
 
-```powershell
+```bash
 # Validação básica
-.\.agents\scripts\validate-structure.ps1
+./.agents/scripts/validate-structure.sh
 
 # Modo verbose (mostra todos os arquivos validados)
-.\.agents\scripts\validate-structure.ps1 -Verbose
+./.agents/scripts/validate-structure.sh --verbose
 ```
 
 **Pastas Obrigatórias Validadas:**
@@ -959,12 +985,12 @@ Ambos os scripts retornam exit codes para integração com CI/CD:
 | `1` | ❌ Erros encontrados | **Corrigir antes de continuar** |
 
 **Exemplo de uso em CI:**
-```powershell
-.\.agents\scripts\validate-structure.ps1
-if ($LASTEXITCODE -ne 0) {
-    Write-Error "Validation failed!"
+```bash
+./.agents/scripts/validate-structure.sh
+if [ $? -ne 0 ]; then
+    echo "Validation failed!"
     exit 1
-}
+fi
 ```
 
 ---
@@ -973,30 +999,30 @@ if ($LASTEXITCODE -ne 0) {
 
 Para executar validação automaticamente antes de cada commit:
 
-**1. Criar `.git/hooks/pre-commit` (Windows):**
-```powershell
-#!/usr/bin/env pwsh
+**1. Criar `.git/hooks/pre-commit`:**
+```bash
+#!/usr/bin/env bash
 
-Write-Host "`n🔍 Running validation checks...`n" -ForegroundColor Cyan
+echo -e "\n🔍 Running validation checks...\n"
 
 # Validar estrutura
-.\.agents\scripts\validate-structure.ps1
-$structureResult = $LASTEXITCODE
+./.agents/scripts/validate-structure.sh
+structureResult=$?
 
 # Validar nomenclatura
-.\.agents\scripts\validate-nomenclature.ps1
-$nomenclatureResult = $LASTEXITCODE
+./.agents/scripts/validate-nomenclature.sh
+nomenclatureResult=$?
 
-if ($structureResult -ne 0 -or $nomenclatureResult -ne 0) {
-    Write-Host "`n❌ Validation failed! Fix errors before committing.`n" -ForegroundColor Red
+if [ $structureResult -ne 0 ] || [ $nomenclatureResult -ne 0 ]; then
+    echo -e "\n❌ Validation failed! Fix errors before committing.\n"
     exit 1
-}
+fi
 
-Write-Host "`n✅ All validations passed!`n" -ForegroundColor Green
+echo -e "\n✅ All validations passed!\n"
 exit 0
 ```
 
-**2. Dar permissão de execução (Git Bash):**
+**2. Dar permissão de execução:**
 ```bash
 chmod +x .git/hooks/pre-commit
 ```
@@ -1005,32 +1031,36 @@ chmod +x .git/hooks/pre-commit
 
 ### 💡 Troubleshooting
 
-**Problema: "Execution of scripts is disabled on this system"**
+**Problema: "Permission denied" ao executar scripts**
 
-**Solução (Windows PowerShell):**
-```powershell
-# Permitir execução de scripts locais (uma vez)
-Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+**Solução:**
+```bash
+# Dar permissão de execução
+chmod +x ./.agents/scripts/validate-nomenclature.sh
+chmod +x ./.agents/scripts/validate-structure.sh
 
-# Ou executar diretamente
-powershell -ExecutionPolicy Bypass -File .\.agents\scripts\validate-nomenclature.ps1
+# Executar
+./.agents/scripts/validate-nomenclature.sh
 ```
 
 **Problema: "Cannot find path .agents/scripts"**
 
 **Solução:**
-```powershell
+```bash
 # Executar da raiz do projeto
-cd c:\Users\Marco\Projetos\myTraderGEO
-.\.agents\scripts\validate-nomenclature.ps1
+cd /c/Users/Marco/Projetos/myTraderGEO  # Git Bash no Windows
+# ou
+cd ~/Projetos/myTraderGEO  # Linux/macOS
+
+./.agents/scripts/validate-nomenclature.sh
 ```
 
-**Problema: Script falha em Linux/Mac**
+**Problema: Script não funciona no Windows**
 
 **Solução:**
-- Scripts PowerShell requerem PowerShell Core (multiplataforma)  
-- Instalar: https://github.com/PowerShell/PowerShell  
-- Ou executar no Windows  
+- Use **Git Bash** (vem com Git for Windows)
+- Ou instale **WSL2** (Windows Subsystem for Linux)
+- Ou use **PowerShell 7+** com bash compatibility  
 
 ---
 
