@@ -528,6 +528,801 @@ DROP TABLE IF EXISTS {Table3} CASCADE;
 
 ---
 
+## 🚀 Quick Start for Software Engineers (SE)
+
+**⚠️ Database-First Approach:** DBA creates SQL migrations FIRST, then SE scaffolds EF Core models from database.
+
+**Important:** This section covers LOCAL DEVELOPMENT. For CI/CD pipelines and GitHub Actions, see [GM-00 - Database Migrations in CI/CD](../07-github-management/GM-00-GitHub-Setup.md#database-migrations-in-cicd-database-first-approach).
+
+### Prerequisites
+
+Before starting, ensure you have:
+
+- ✅ **Docker Desktop** installed and running
+- ✅ **.NET 8 SDK** installed
+- ✅ **EF Core CLI tools:** `dotnet tool install --global dotnet-ef`
+- ✅ **PostgreSQL client** (psql) - included in Docker image
+
+### Step 1: Start PostgreSQL Container
+
+```bash
+# Start database service only
+docker compose -f 05-infra/docker/docker-compose.yml up database -d
+
+# Verify container is running
+docker compose ps database
+
+# Expected output: database running on port 5432
+```
+
+**What happens:**
+- PostgreSQL 15 container starts
+- Init scripts in `04-database/init-scripts/` execute automatically (creates users)
+- Named volume `{project}_postgres_data` persists data
+
+### Step 2: Verify Database Connection
+
+```bash
+# Connect to database as application user
+docker compose exec database psql -U {project}_app -d {project}_dev
+
+# Expected output: PostgreSQL prompt
+# {project}_dev=>
+```
+
+**Test connection:**
+```sql
+-- List tables (should be empty initially)
+\dt
+
+-- Check current user
+SELECT current_user;  -- Should show: {project}_app
+
+-- Exit
+\q
+```
+
+### Step 3: Apply SQL Migrations (created by DBA)
+
+**Important:** DBA creates migrations FIRST in `04-database/migrations/`. SE only executes them.
+
+```bash
+# Execute migration (example for EPIC-01)
+docker compose exec database psql -U {project}_app -d {project}_dev \
+  -f /app/migrations/001_create_user_management_schema.sql
+
+# Verify tables created
+docker compose exec database psql -U {project}_app -d {project}_dev \
+  -c "\dt"
+
+# Expected output: List of tables from migration
+#  Schema |        Name         | Type  |     Owner
+# --------+---------------------+-------+----------------
+#  public | Users               | table | {project}_app
+#  public | SubscriptionPlans   | table | {project}_app
+```
+
+### Step 4: Scaffold EF Core Models from Database
+
+**Critical:** EF models are GENERATED from database, not created via Code-First migrations.
+
+```bash
+# Navigate to backend project
+cd 02-backend
+
+# Scaffold command (generates C# classes from database schema)
+dotnet ef dbcontext scaffold \
+  "Host=localhost;Database={project}_dev;Username={project}_app;Password=dev_password_123" \
+  Npgsql.EntityFrameworkCore.PostgreSQL \
+  --output-dir src/Infrastructure/Data/Models \
+  --context-dir src/Infrastructure/Data \
+  --context ApplicationDbContext \
+  --no-onconfiguring \
+  --force
+
+# What this creates:
+# - src/Infrastructure/Data/Models/User.cs (entity class)
+# - src/Infrastructure/Data/Models/SubscriptionPlan.cs
+# - src/Infrastructure/Data/ApplicationDbContext.cs (DbContext)
+```
+
+**Important Parameters:**
+- `--output-dir`: Where to generate entity classes
+- `--context`: DbContext name
+- `--no-onconfiguring`: Removes connection string from DbContext (use DI instead)
+- `--force`: Overwrites existing files (safe for re-scaffolding)
+
+**For complete scaffolding documentation, see:** [EF Core Scaffolding Commands](#ef-core-scaffolding-commands) section below.
+
+### Step 5: Setup Integration Tests with TestContainers
+
+**Purpose:** Run integration tests against REAL PostgreSQL (not in-memory SQLite).
+
+**For complete setup, see:** [TestContainers Setup](#testcontainers-setup-for-integration-tests) section below.
+
+**Quick example:**
+```bash
+# Add NuGet packages
+cd 02-backend/tests/{ProjectName}.IntegrationTests
+dotnet add package Testcontainers.PostgreSql --version 3.x
+
+# Create test fixture (see TestContainers section for full code)
+# Tests will spin up PostgreSQL container, apply migrations, run tests, dispose container
+```
+
+### Common Workflows
+
+#### Workflow 1: Start Development (First Time)
+
+```bash
+# 1. Start database
+docker compose -f 05-infra/docker/docker-compose.yml up database -d
+
+# 2. Verify init-scripts executed (creates users)
+docker compose logs database | grep "Creating application users"
+
+# 3. Apply DBA migrations
+docker compose exec database psql -U {project}_app -d {project}_dev \
+  -f /app/migrations/001_create_user_management_schema.sql
+
+# 4. Scaffold EF models
+cd 02-backend
+dotnet ef dbcontext scaffold \
+  "Host=localhost;Database={project}_dev;Username={project}_app;Password=dev_password_123" \
+  Npgsql.EntityFrameworkCore.PostgreSQL \
+  --output-dir src/Infrastructure/Data/Models \
+  --context-dir src/Infrastructure/Data \
+  --context ApplicationDbContext \
+  --no-onconfiguring \
+  --force
+
+# 5. Run application
+dotnet run --project src/Api
+```
+
+#### Workflow 2: Update After New Migration (Subsequent Epics)
+
+```bash
+# 1. DBA creates new migration (e.g., 002_create_strategy_management_schema.sql)
+# 2. Apply new migration
+docker compose exec database psql -U {project}_app -d {project}_dev \
+  -f /app/migrations/002_create_strategy_management_schema.sql
+
+# 3. Re-scaffold (updates existing + adds new entities)
+cd 02-backend
+dotnet ef dbcontext scaffold \
+  "Host=localhost;Database={project}_dev;Username={project}_app;Password=dev_password_123" \
+  Npgsql.EntityFrameworkCore.PostgreSQL \
+  --output-dir src/Infrastructure/Data/Models \
+  --context-dir src/Infrastructure/Data \
+  --context ApplicationDbContext \
+  --no-onconfiguring \
+  --force
+
+# 4. Review changes
+git diff src/Infrastructure/Data/Models/
+
+# 5. Create partial classes for new entities (see Scaffolding section)
+```
+
+#### Workflow 3: Reset Database (Clean Start)
+
+```bash
+# ⚠️ WARNING: This deletes all data!
+
+# 1. Stop containers
+docker compose down
+
+# 2. Remove database volume
+docker volume rm {project}_postgres_data
+
+# 3. Start again (init-scripts will re-execute)
+docker compose -f 05-infra/docker/docker-compose.yml up database -d
+
+# 4. Re-apply all migrations in order
+docker compose exec database psql -U {project}_app -d {project}_dev \
+  -f /app/migrations/001_create_user_management_schema.sql
+docker compose exec database psql -U {project}_app -d {project}_dev \
+  -f /app/migrations/002_create_strategy_management_schema.sql
+```
+
+### Troubleshooting
+
+#### Problem: "Connection refused" when scaffolding
+
+**Cause:** Database container not running or wrong host/port
+
+**Solution:**
+```bash
+# Check container status
+docker compose ps database
+
+# If not running, start it
+docker compose -f 05-infra/docker/docker-compose.yml up database -d
+
+# Test connection
+docker compose exec database psql -U {project}_app -d {project}_dev -c "SELECT 1"
+```
+
+#### Problem: "Password authentication failed"
+
+**Cause:** Wrong password in connection string
+
+**Solution:**
+```bash
+# Development password is always: dev_password_123
+# Check .env file or use correct connection string:
+"Host=localhost;Database={project}_dev;Username={project}_app;Password=dev_password_123"
+```
+
+#### Problem: "No tables found" when scaffolding
+
+**Cause:** Migrations not applied yet
+
+**Solution:**
+```bash
+# List tables
+docker compose exec database psql -U {project}_app -d {project}_dev -c "\dt"
+
+# If empty, apply migrations
+docker compose exec database psql -U {project}_app -d {project}_dev \
+  -f /app/migrations/001_create_user_management_schema.sql
+```
+
+### Next Steps
+
+- **Learn about TestContainers:** [TestContainers Setup](#testcontainers-setup-for-integration-tests)
+- **Learn about EF scaffolding:** [EF Core Scaffolding Commands](#ef-core-scaffolding-commands)
+- **Learn about multi-epic workflow:** [Scaffolding Strategy Across Multiple Epics](#-para-se-scaffolding-strategy-across-multiple-epics)
+- **CI/CD setup:** [GM-00 - Database Migrations in CI/CD](../07-github-management/GM-00-GitHub-Setup.md#database-migrations-in-cicd-database-first-approach)
+
+---
+
+## 🧪 TestContainers Setup for Integration Tests
+
+**Purpose:** Run integration tests against REAL PostgreSQL (not in-memory SQLite).
+
+**Philosophy:** Database-First approach means tests must validate against actual SQL schema created by DBA, not Code-First migrations.
+
+### Why TestContainers?
+
+**Problem with In-Memory Databases:**
+- ❌ SQLite in-memory has different SQL dialect than PostgreSQL
+- ❌ Missing PostgreSQL-specific features (JSONB, arrays, CTEs)
+- ❌ Different constraint behavior
+- ❌ False positives: tests pass with SQLite but fail in production
+
+**Solution: TestContainers**
+- ✅ Real PostgreSQL container (same as production)
+- ✅ Isolated tests (each test class gets fresh database)
+- ✅ Applies DBA migrations (SQL-First approach)
+- ✅ Automatic cleanup (container destroyed after tests)
+
+### NuGet Packages Required
+
+```bash
+# Navigate to integration tests project
+cd 02-backend/tests/{ProjectName}.IntegrationTests
+
+# Install TestContainers for PostgreSQL
+dotnet add package Testcontainers.PostgreSql --version 3.x
+
+# Install testing framework (if not already installed)
+dotnet add package xunit
+dotnet add package xunit.runner.visualstudio
+
+# Install Npgsql for direct SQL execution
+dotnet add package Npgsql
+```
+
+### Base Test Fixture (xUnit)
+
+Create a shared fixture that all integration tests will use:
+
+```csharp
+// tests/{ProjectName}.IntegrationTests/DatabaseFixture.cs
+using Npgsql;
+using Testcontainers.PostgreSql;
+using Xunit;
+
+namespace {ProjectName}.IntegrationTests;
+
+public class DatabaseFixture : IAsyncLifetime
+{
+    private readonly PostgreSqlContainer _container = new PostgreSqlBuilder()
+        .WithDatabase("{project}_test")
+        .WithUsername("{project}_app")
+        .WithPassword("test_password")
+        .WithImage("postgres:15-alpine")  // Same version as production
+        .WithCleanUp(true)  // Auto-cleanup after tests
+        .Build();
+
+    public string ConnectionString => _container.GetConnectionString();
+
+    public async Task InitializeAsync()
+    {
+        // 1. Start PostgreSQL container
+        await _container.StartAsync();
+
+        // 2. Apply DBA migrations (SQL-First approach)
+        await using var connection = new NpgsqlConnection(ConnectionString);
+        await connection.OpenAsync();
+
+        // Read and execute DBA migration scripts
+        var migrationFiles = new[]
+        {
+            "../../../../04-database/migrations/001_create_user_management_schema.sql",
+            "../../../../04-database/migrations/002_create_strategy_management_schema.sql"
+            // Add more migrations as needed
+        };
+
+        foreach (var file in migrationFiles)
+        {
+            if (!File.Exists(file)) continue;  // Skip if migration doesn't exist yet
+
+            var migrationScript = await File.ReadAllTextAsync(file);
+
+            await using var cmd = new NpgsqlCommand(migrationScript, connection);
+            await cmd.ExecuteNonQueryAsync();
+        }
+
+        // 3. Apply seed data (if needed for tests)
+        var seedFiles = new[]
+        {
+            "../../../../04-database/seeds/001_seed_user_management_defaults.sql"
+        };
+
+        foreach (var file in seedFiles)
+        {
+            if (!File.Exists(file)) continue;
+
+            var seedScript = await File.ReadAllTextAsync(file);
+            await using var cmd = new NpgsqlCommand(seedScript, connection);
+            await cmd.ExecuteNonQueryAsync();
+        }
+    }
+
+    public async Task DisposeAsync()
+    {
+        // Cleanup: Stop and remove container
+        await _container.DisposeAsync();
+    }
+}
+```
+
+### Example Integration Test
+
+```csharp
+// tests/{ProjectName}.IntegrationTests/UserRepositoryIntegrationTests.cs
+using Microsoft.EntityFrameworkCore;
+using Xunit;
+using {ProjectName}.Domain.Entities;
+using {ProjectName}.Infrastructure.Data;
+using {ProjectName}.Infrastructure.Repositories;
+
+namespace {ProjectName}.IntegrationTests;
+
+public class UserRepositoryIntegrationTests : IClassFixture<DatabaseFixture>
+{
+    private readonly DatabaseFixture _fixture;
+
+    public UserRepositoryIntegrationTests(DatabaseFixture fixture)
+    {
+        _fixture = fixture;
+    }
+
+    [Fact]
+    public async Task CreateUser_ShouldPersistToDatabase()
+    {
+        // Arrange
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseNpgsql(_fixture.ConnectionString)
+            .Options;
+
+        await using var context = new ApplicationDbContext(options);
+        var repository = new UserRepository(context);
+
+        var user = new User
+        {
+            Id = Guid.NewGuid(),
+            Email = "test@example.com",
+            Name = "Test User",
+            Role = UserRole.Trader,
+            Status = UserStatus.Active
+        };
+
+        // Act
+        await repository.AddAsync(user);
+        await context.SaveChangesAsync();
+
+        // Assert
+        var retrieved = await repository.GetByIdAsync(user.Id);
+        Assert.NotNull(retrieved);
+        Assert.Equal("test@example.com", retrieved.Email);
+    }
+
+    [Fact]
+    public async Task GetByEmail_ShouldReturnUser()
+    {
+        // Arrange
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseNpgsql(_fixture.ConnectionString)
+            .Options;
+
+        await using var context = new ApplicationDbContext(options);
+        var repository = new UserRepository(context);
+
+        var user = new User
+        {
+            Id = Guid.NewGuid(),
+            Email = "john@example.com",
+            Name = "John Doe"
+        };
+        await repository.AddAsync(user);
+        await context.SaveChangesAsync();
+
+        // Act
+        var result = await repository.GetByEmailAsync("john@example.com");
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(user.Id, result.Id);
+    }
+
+    [Fact]
+    public async Task UpdateUser_ShouldPersistChanges()
+    {
+        // Arrange
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseNpgsql(_fixture.ConnectionString)
+            .Options;
+
+        await using var context = new ApplicationDbContext(options);
+        var repository = new UserRepository(context);
+
+        var user = new User
+        {
+            Id = Guid.NewGuid(),
+            Email = "update@example.com",
+            Name = "Original Name"
+        };
+        await repository.AddAsync(user);
+        await context.SaveChangesAsync();
+
+        // Act
+        user.Name = "Updated Name";
+        await repository.UpdateAsync(user);
+        await context.SaveChangesAsync();
+
+        // Assert (query fresh from DB)
+        var updated = await repository.GetByIdAsync(user.Id);
+        Assert.Equal("Updated Name", updated.Name);
+    }
+}
+```
+
+### Running Tests
+
+```bash
+# Run all integration tests
+dotnet test --filter "Category=Integration"
+
+# Run specific test class
+dotnet test --filter "FullyQualifiedName~UserRepositoryIntegrationTests"
+
+# Run with verbose output
+dotnet test --logger "console;verbosity=detailed"
+```
+
+**What happens:**
+1. xUnit detects `IClassFixture<DatabaseFixture>`
+2. Fixture starts PostgreSQL container ONCE for all tests in class
+3. Applies DBA migrations (SQL-First)
+4. Each test method runs with fresh DbContext
+5. After all tests, container is destroyed
+
+### Key Principles
+
+- ✅ **SQL migrations BEFORE tests** - Apply DBA scripts in fixture initialization
+- ✅ **Real PostgreSQL** - Not in-memory SQLite (same as production)
+- ✅ **Idempotent migrations** - Safe to re-execute (`CREATE TABLE IF NOT EXISTS`)
+- ✅ **Isolated tests** - Each test class gets fresh database instance
+- ✅ **Database-First** - Tests validate against actual SQL schema, not Code-First migrations
+
+### Best Practices
+
+#### 1. Use Collection Fixtures for Expensive Setup
+
+If fixture initialization is slow (many migrations), share container across multiple test classes:
+
+```csharp
+// DatabaseCollection.cs
+[CollectionDefinition("Database")]
+public class DatabaseCollection : ICollectionFixture<DatabaseFixture>
+{
+    // This class has no code - it's just a marker
+}
+
+// Use in test classes
+[Collection("Database")]
+public class UserRepositoryTests : IClassFixture<DatabaseFixture>
+{
+    // Tests...
+}
+
+[Collection("Database")]
+public class StrategyRepositoryTests : IClassFixture<DatabaseFixture>
+{
+    // Tests share same container/database
+}
+```
+
+#### 2. Reset Database State Between Tests (if needed)
+
+```csharp
+public class UserRepositoryTests : IClassFixture<DatabaseFixture>
+{
+    private readonly DatabaseFixture _fixture;
+
+    public UserRepositoryTests(DatabaseFixture fixture)
+    {
+        _fixture = fixture;
+        CleanDatabase().Wait();  // Reset before each test
+    }
+
+    private async Task CleanDatabase()
+    {
+        await using var connection = new NpgsqlConnection(_fixture.ConnectionString);
+        await connection.OpenAsync();
+
+        // Truncate tables (keeps schema)
+        var cmd = new NpgsqlCommand(@"
+            TRUNCATE TABLE Users, Strategies, TradingRules RESTART IDENTITY CASCADE;
+        ", connection);
+        await cmd.ExecuteNonQueryAsync();
+    }
+}
+```
+
+#### 3. Use Test Categories
+
+```csharp
+[Trait("Category", "Integration")]
+public class UserRepositoryTests
+{
+    // Tests...
+}
+
+// Run only integration tests
+// dotnet test --filter "Category=Integration"
+```
+
+### Troubleshooting
+
+#### Problem: "Docker daemon not running"
+
+**Symptom:** `Cannot connect to Docker daemon`
+
+**Solution:**
+```bash
+# Start Docker Desktop
+# Or on Linux:
+sudo systemctl start docker
+```
+
+#### Problem: "Tests timeout or hang"
+
+**Symptom:** Tests never complete
+
+**Cause:** Container takes time to start
+
+**Solution:**
+```csharp
+private readonly PostgreSqlContainer _container = new PostgreSqlBuilder()
+    .WithDatabase("{project}_test")
+    .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(5432))  // Wait for port
+    .Build();
+```
+
+#### Problem: "Migration file not found"
+
+**Symptom:** `FileNotFoundException` when reading migration SQL
+
+**Solution:**
+```csharp
+// Use correct relative path from test project
+var file = "../../../../04-database/migrations/001_create_user_management_schema.sql";
+var fullPath = Path.GetFullPath(file);
+Console.WriteLine($"Looking for: {fullPath}");  // Debug
+```
+
+### Performance Tips
+
+**Fixture Initialization (~2-5 seconds):**
+- Container start: ~1-2s
+- Apply migrations: ~1-2s
+- Total: ~3-4s per test class
+
+**Optimization:**
+- ✅ Use `[Collection]` to share container across test classes
+- ✅ Keep migrations idempotent (safe to re-run)
+- ❌ Don't create/destroy container per test method (use fixture)
+
+### CI/CD Integration
+
+**For GitHub Actions setup, see:** [GM-00 - Database Migrations in CI/CD](../07-github-management/GM-00-GitHub-Setup.md#database-migrations-in-cicd-database-first-approach)
+
+**Local vs CI:**
+- **Local:** TestContainers starts PostgreSQL automatically
+- **CI:** GitHub Actions uses `services: postgres:` (see GM-00)
+
+---
+
+## 🛠️ EF Core Scaffolding Commands Reference
+
+### Overview
+
+**Database-First Approach:** DBA creates SQL migrations → SE scaffolds EF Core models from PostgreSQL database.
+
+**Key Command:** `dotnet ef dbcontext scaffold`
+
+### Prerequisites
+
+**Install EF Core CLI tools:**
+```bash
+dotnet tool install --global dotnet-ef
+# or update if already installed:
+dotnet tool update --global dotnet-ef
+```
+
+**Required NuGet packages** (add to your project):
+```xml
+<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.*" />
+<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.*" />
+```
+
+### Basic Scaffold Command
+
+**Template:**
+```bash
+dotnet ef dbcontext scaffold \
+  "Host=localhost;Port=5432;Database={project}_dev;Username={project}_app;Password={project}_dev_password" \
+  Npgsql.EntityFrameworkCore.PostgreSQL \
+  --output-dir Infrastructure/Data/Models \
+  --context-dir Infrastructure/Data \
+  --context ApplicationDbContext \
+  --no-onconfiguring \
+  --force
+```
+
+**Replace placeholders:**
+- `{project}_dev` → Database name (e.g., `mytrader_dev`)
+- `{project}_app` → Database user (e.g., `mytrader_app`)
+- `{project}_dev_password` → User password
+
+### Command Options Explained
+
+| Option | Description | Recommendation |
+|--------|-------------|----------------|
+| `--output-dir` | Where entity classes are generated | `Infrastructure/Data/Models` |
+| `--context-dir` | Where DbContext is generated | `Infrastructure/Data` |
+| `--context` | DbContext class name | `ApplicationDbContext` |
+| `--no-onconfiguring` | Don't generate `OnConfiguring` method | ✅ **Always use** (connection strings go in DI) |
+| `--force` | Overwrite existing files | ⚠️ **Use after Epic 1** (see partial classes pattern below) |
+| `--schema` | Scaffold specific schema only | Optional: `--schema user_management` |
+| `--table` | Scaffold specific table(s) only | Optional: `--table users --table subscription_plans` |
+| `--data-annotations` | Use attributes instead of Fluent API | ❌ **Avoid** (prefer Fluent API for complex mappings) |
+
+### Workflow Examples
+
+#### 1️⃣ First Time (Epic 1)
+
+**Scenario:** DBA created first SQL migration with `users` and `subscription_plans` tables.
+
+**Command:**
+```bash
+cd src/{ProjectName}.WebAPI
+
+dotnet ef dbcontext scaffold \
+  "Host=localhost;Port=5432;Database={project}_dev;Username={project}_app;Password={project}_dev_password" \
+  Npgsql.EntityFrameworkCore.PostgreSQL \
+  --output-dir Infrastructure/Data/Models \
+  --context-dir Infrastructure/Data \
+  --context ApplicationDbContext \
+  --no-onconfiguring
+```
+
+**Generated files:**
+```
+src/{ProjectName}.WebAPI/
+├── Infrastructure/Data/
+│   └── ApplicationDbContext.cs       # DbContext with DbSet<User>, DbSet<SubscriptionPlan>
+└── Infrastructure/Data/Models/
+    ├── User.cs                        # Entity for users table
+    └── SubscriptionPlan.cs            # Entity for subscription_plans table
+```
+
+#### 2️⃣ Subsequent Epics (Epic 2+)
+
+**Scenario:** DBA added new migration with `strategies` table. You already added domain logic to `User.cs`.
+
+**⚠️ CRITICAL:** Use `--force` flag to regenerate ALL entities (including new ones).
+
+**Command:**
+```bash
+cd src/{ProjectName}.WebAPI
+
+dotnet ef dbcontext scaffold \
+  "Host=localhost;Port=5432;Database={project}_dev;Username={project}_app;Password={project}_dev_password" \
+  Npgsql.EntityFrameworkCore.PostgreSQL \
+  --output-dir Infrastructure/Data/Models \
+  --context-dir Infrastructure/Data \
+  --context ApplicationDbContext \
+  --no-onconfiguring \
+  --force
+```
+
+**What happens:**
+- ✅ Creates `Strategy.cs` for new table
+- ⚠️ **OVERWRITES** `User.cs` and `SubscriptionPlan.cs` (your custom code is LOST!)
+
+**Solution:** Use **partial classes pattern** (see next section) to separate auto-generated code from custom domain logic.
+
+#### 3️⃣ Scaffold Specific Schema Only
+
+**Use case:** Multi-bounded-context projects (e.g., only scaffold `strategy_management` schema).
+
+**Command:**
+```bash
+dotnet ef dbcontext scaffold \
+  "Host=localhost;Port=5432;Database={project}_dev;Username={project}_app;Password={project}_dev_password" \
+  Npgsql.EntityFrameworkCore.PostgreSQL \
+  --output-dir Infrastructure/Data/Models \
+  --context-dir Infrastructure/Data \
+  --context ApplicationDbContext \
+  --no-onconfiguring \
+  --schema strategy_management \
+  --force
+```
+
+### Best Practices
+
+1. **Connection Strings:** Never hardcode in commands
+   - Use environment variables: `$Env:DB_CONNECTION_STRING` (PowerShell) or `$DB_CONNECTION_STRING` (Bash)
+   - Or read from `appsettings.Development.json`
+
+2. **After Scaffolding:** Always review generated code
+   - Check entity property types (PostgreSQL types → C# types)
+   - Verify foreign key relationships
+   - Review navigation properties (one-to-many, many-to-many)
+
+3. **Custom Code Protection:** See "Scaffolding Strategy Across Multiple Epics" section below
+
+4. **Version Control:** Commit scaffolded files separately
+   ```bash
+   git add Infrastructure/Data/Models/*.cs Infrastructure/Data/ApplicationDbContext.cs
+   git commit -m "chore(db): Scaffold EF Core models from Epic X migration"
+   ```
+
+### Troubleshooting
+
+**Error: "No DbContext was found"**
+- Check `--context-dir` path is correct
+- Ensure project file has `<Project Sdk="Microsoft.NET.Sdk.Web">`
+
+**Error: "Unable to connect to PostgreSQL"**
+- Verify Docker container is running: `docker ps | grep postgres`
+- Test connection: `psql -h localhost -U {project}_app -d {project}_dev`
+
+**Error: "Could not load assembly 'Npgsql.EntityFrameworkCore.PostgreSQL'"**
+- Install NuGet package: `dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL`
+
+**Generated entities have `public virtual` properties**
+- This is normal for EF Core (enables lazy loading and change tracking)
+- Keep `virtual` keyword unless you need to disable proxies
+
+---
+
 ## 🔄 Para SE: Scaffolding Strategy Across Multiple Epics
 
 ### ⚠️ CRITICAL: Understanding the Scaffolding Problem
