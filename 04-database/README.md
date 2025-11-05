@@ -13,7 +13,8 @@
 ├── init-scripts/       # Scripts executados na PRIMEIRA inicialização do container
 │   └── 01-create-app-user.sql
 ├── migrations/         # Schema migrations (tabelas, índices, constraints)
-│   └── 001_create_user_management_schema.sql
+│   ├── 001_*.sql       # Schema creation (tabelas, índices, constraints)
+│   └── 002_*.sql       # Atualizações específicas de ambiente (senhas, config)
 ├── seeds/              # Dados iniciais (planos, config, demo users)
 │   └── 001_seed_user_management_defaults.sql
 └── README.md           # Este arquivo
@@ -1208,6 +1209,7 @@ dotnet ef dbcontext scaffold \
 | Migration | Status | Data | Descrição |
 |-----------|--------|------|-----------|
 | [001_create_user_management_schema.sql](migrations/001_create_user_management_schema.sql) | ✅ Criado | 2025-10-26 | Schema completo: SubscriptionPlans, SystemConfigs, Users |
+| [002_update_production_passwords.sql](migrations/002_update_production_passwords.sql) | ✅ Criado | 2025-10-26 | Atualização de senhas para staging/production |
 | [001_seed_user_management_defaults.sql](seeds/001_seed_user_management_defaults.sql) | ✅ Criado | 2025-10-26 | Planos, config, admin, demos |
 
 ---
