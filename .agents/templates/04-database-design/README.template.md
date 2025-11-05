@@ -32,7 +32,8 @@ This is a **quick reference guide** for executing database migrations and managi
 ├── init-scripts/       # Scripts executed on FIRST container initialization
 │   └── 01-create-app-user.sql
 ├── migrations/         # Schema migrations (tables, indexes, constraints)
-│   └── 001_create_{epic_name}_schema.sql
+│   ├── 001_*.sql       # Schema creation (tables, indexes, constraints)
+│   └── 002_*.sql       # Environment-specific updates (passwords, config)
 ├── seeds/              # Initial data (plans, config, demo users)
 │   └── 001_seed_{epic_name}_defaults.sql
 └── README.md           # This file
@@ -1822,6 +1823,7 @@ SELECT * FROM {TableWithSeeds} ORDER BY CreatedAt;
 | Migration | Status | Date | Description |
 |-----------|--------|------|-------------|
 | [001_create_{epic_name}_schema.sql](migrations/001_create_{epic_name}_schema.sql) | ⏳ To Create | YYYY-MM-DD | Complete schema: {Table1}, {Table2}, {Table3} |
+| [002_update_production_passwords.sql](migrations/002_update_production_passwords.sql) | ⏳ To Create | YYYY-MM-DD | Update passwords for staging/production environments |
 | [001_seed_{epic_name}_defaults.sql](seeds/001_seed_{epic_name}_defaults.sql) | ⏳ To Create | YYYY-MM-DD | Initial data: {seed description} |
 
 ---
