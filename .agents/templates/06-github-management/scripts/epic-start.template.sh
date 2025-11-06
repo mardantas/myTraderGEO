@@ -212,10 +212,66 @@ Issue: #${EPIC_ISSUE}
 - [ ] FE: Frontend Implementation
 - [ ] QAE: Quality Gate (integration + E2E tests)
 
-### Workflow
-Todos os agentes trabalham **nesta mesma branch**.
+### 📋 Workflow - LEIA COM ATENÇÃO
 
-Sequência: DBA → SE (|| UXD) → FE → QAE → Merge
+**⚠️ IMPORTANTE: Este PR segue o padrão \"1 PR por Epic\"**
+
+#### ✅ Regras Fundamentais
+
+1. **Draft PR Automático**
+   - Este PR foi criado AUTOMATICAMENTE pelo script \`epic-start.sh\`
+   - Status: DRAFT (não pode ser merged acidentalmente)
+   - Será convertido para \"Ready\" somente após QAE aprovar
+
+2. **1 PR Por Epic**
+   - TODOS os agentes trabalham nesta MESMA branch
+   - NÃO criar branches ou PRs adicionais para este epic
+   - Sequência: DE → DBA → GM → SE → UXD → FE → QAE
+
+3. **Padrão de Commits**
+   - Todos commits DEVEM seguir: \`[AGENTE]: descrição\`
+   - Todos commits DEVEM incluir: \`Ref #${EPIC_ISSUE}\` no corpo
+   - APENAS QAE usa \`Closes #${EPIC_ISSUE}\` no último commit
+
+#### 🔄 Como Cada Agente Deve Proceder
+
+\`\`\`bash
+# 1. Checkout da branch do epic
+git checkout feature/epic-${EPIC_NUM}-...
+
+# 2. Fazer alterações
+
+# 3. Commit seguindo padrão
+git commit -m \"[AGENTE]: Descrição curta
+
+- Detalhe 1
+- Detalhe 2
+
+Ref #${EPIC_ISSUE}\"
+
+# 4. Push (atualiza este PR automaticamente)
+git push
+
+# 5. Verificar progresso no PR (atualizará automaticamente)
+\`\`\`
+
+#### ✅ Conversão para Ready (após QAE)
+
+\`\`\`bash
+# QAE faz último commit com Closes #
+git commit -m \"QAE: Quality gate passed
+
+Closes #${EPIC_ISSUE}\"
+
+# Converter PR para ready
+gh pr ready
+
+# Merge via UI do GitHub (Create a merge commit)
+\`\`\`
+
+**Referências:**
+- Workflow completo: \`.agents/docs/03-GIT-PATTERNS.md\`
+- Padrões de commit: \`.agents/docs/03-GIT-PATTERNS.md#commit-patterns\`
 
 ### Progresso
 - [x] Branch criada
