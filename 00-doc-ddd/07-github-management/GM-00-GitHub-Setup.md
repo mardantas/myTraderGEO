@@ -690,7 +690,7 @@ See [PE-00 Environments Setup](../08-platform-engineering/PE-00-Environments-Set
 **Command Pattern:**
 ```bash
 # Development
-docker compose -f 05-infra/docker/docker-compose.yml \
+docker compose -f 05-infra/docker/docker-compose.dev.yml \
   --env-file 05-infra/configs/.env.dev up
 
 # Staging

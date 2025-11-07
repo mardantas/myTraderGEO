@@ -16,7 +16,7 @@
 **Urgência:** 🔴 Alta (Segurança)
 
 **Deliverable(s) Afetado(s):**
-- `05-infra/docker/docker-compose.yml`
+- `05-infra/docker/docker-compose.dev.yml`
 - `05-infra/docker/docker-compose.staging.yml`
 - `05-infra/docker/docker-compose.production.yml`
 - `05-infra/configs/.env.example`
@@ -30,12 +30,12 @@ A aplicação está usando o usuário **`postgres`** (superuser) na connection s
 
 ### Evidências:
 
-**`05-infra/docker/docker-compose.yml` (linha 19):**
+**`05-infra/docker/docker-compose.dev.yml` (linha 19):**
 ```yaml
 ConnectionStrings__DefaultConnection=Host=database;Port=5432;Database=mytrader_dev;Username=postgres;Password=dev_password_123
 ```
 
-**`05-infra/docker/docker-compose.yml` (linhas 66-68):**
+**`05-infra/docker/docker-compose.dev.yml` (linhas 66-68):**
 ```yaml
 environment:
   - POSTGRES_USER=postgres
@@ -136,7 +136,7 @@ ConnectionStrings__DefaultConnection=Host=database;Port=5432;Database=mytrader_d
 ```
 
 **Arquivos a atualizar:**
-- `05-infra/docker/docker-compose.yml` (development)
+- `05-infra/docker/docker-compose.dev.yml` (development)
 - `05-infra/docker/docker-compose.staging.yml` (staging)
 - `05-infra/docker/docker-compose.production.yml` (production)
 - `05-infra/configs/.env.example`
@@ -262,7 +262,7 @@ DELETE FROM users; -- ERROR
 
 ```bash
 # Subir ambiente dev
-docker compose -f 05-infra/docker/docker-compose.yml up
+docker compose -f 05-infra/docker/docker-compose.dev.yml up
 
 # Verificar que aplicação conecta com mytrader_app
 docker compose logs api | grep "Connection"
@@ -362,7 +362,7 @@ Adicionada seção no README com tabela explicativa:
 
 **Deliverables Atualizados:**
 - [x] `04-database/init-scripts/01-create-app-user.sql` - Script com 2 usuários + permissões + documentação
-- [x] `05-infra/docker/docker-compose.yml` - Connection string usando mytrader_app
+- [x] `05-infra/docker/docker-compose.dev.yml` - Connection string usando mytrader_app
 - [x] `05-infra/docker/docker-compose.staging.yml` - Init script mount adicionado
 - [x] `05-infra/docker/docker-compose.production.yml` - Init script mount adicionado
 - [x] `05-infra/configs/.env.example` - 3 sets de credenciais segregados

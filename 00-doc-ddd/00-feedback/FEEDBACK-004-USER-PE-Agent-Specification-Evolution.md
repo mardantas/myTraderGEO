@@ -29,7 +29,7 @@ MARKDOWN FORMATTING:
 - 05-infra/README.md
 - 05-infra/configs/.env.example
 - 05-infra/configs/traefik.yml
-- 05-infra/docker/docker-compose.yml
+- 05-infra/docker/docker-compose.dev.yml
 - 05-infra/docker/docker-compose.staging.yml
 - 05-infra/docker/docker-compose.production.yml
 - 05-infra/scripts/deploy.sh
@@ -91,7 +91,7 @@ Agora, com a maturidade da metodologia e templates, é necessário verificar se:
 - [x] 05-infra/README.md (documentação operacional)
 - [x] 05-infra/configs/.env.example
 - [x] 05-infra/configs/traefik.yml
-- [x] 05-infra/docker/docker-compose.yml (development)
+- [x] 05-infra/docker/docker-compose.dev.yml (development)
 - [x] 05-infra/docker/docker-compose.staging.yml
 - [x] 05-infra/docker/docker-compose.production.yml
 - [x] 05-infra/dockerfiles/* (backend/frontend Dockerfiles)

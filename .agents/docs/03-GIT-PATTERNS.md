@@ -510,7 +510,7 @@ Prod (remote)    → Server VPS (SSH/SCP + docker compose remoto)
 
 **Comando:**
 ```bash
-docker compose -f docker-compose.yml --env-file .env.dev up
+docker compose -f docker-compose.dev.yml --env-file .env.dev up
 ```
 
 ### **Remote Deployment (Staging/Prod)**
