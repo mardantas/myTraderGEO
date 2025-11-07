@@ -225,7 +225,7 @@ traefik.[DOMAIN]          A    [PROD_IP]
 
 | Arquivo | Descrição | Documentação |
 |---------|-----------|--------------|
-| `05-infra/docker/docker-compose.yml` | Ambiente local (dev) com hot reload | Ver arquivo |
+| `05-infra/docker/docker-compose.dev.yml` | Ambiente local (dev) com hot reload | Ver arquivo |
 | `05-infra/docker/docker-compose.staging.yml` | Staging com Traefik + Let's Encrypt | Ver arquivo |
 | `05-infra/docker/docker-compose.prod.yml` | Production com resource limits + Traefik | Ver arquivo |
 | `05-infra/configs/traefik.yml` | Reverse proxy + SSL automático | Ver arquivo |

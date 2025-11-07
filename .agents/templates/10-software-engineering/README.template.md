@@ -119,7 +119,7 @@ nano src/Api/appsettings.Development.json
 {MIGRATION_COMMAND}  # e.g., dotnet ef database update
 
 # Or via Docker (if database in container)
-docker compose -f ../05-infra/docker/docker-compose.yml exec api {MIGRATION_COMMAND}
+docker compose -f ../05-infra/docker/docker-compose.dev.yml exec api {MIGRATION_COMMAND}
 ```
 
 ### 5. Run API (Development)
@@ -129,7 +129,7 @@ docker compose -f ../05-infra/docker/docker-compose.yml exec api {MIGRATION_COMM
 {RUN_COMMAND}  # e.g., dotnet run --project src/Api
 
 # Or via Docker
-docker compose -f ../05-infra/docker/docker-compose.yml up api -d
+docker compose -f ../05-infra/docker/docker-compose.dev.yml up api -d
 ```
 
 **Access:**  
@@ -443,7 +443,7 @@ This section connects operational README with strategic documentation.
 **Solution:**  
 ```bash
 # 1. Check if database container is running
-docker compose -f ../05-infra/docker/docker-compose.yml ps database
+docker compose -f ../05-infra/docker/docker-compose.dev.yml ps database
 
 # 2. Verify connection string in appsettings.Development.json
 cat src/Api/appsettings.Development.json | grep ConnectionString
