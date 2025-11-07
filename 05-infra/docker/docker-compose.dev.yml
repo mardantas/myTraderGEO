@@ -1,13 +1,14 @@
-version: '3.8'
 
 # ==================================
 # myTraderGEO - Development Environment
 # ==================================
 # Usage: docker compose -f 05-infra/docker/docker-compose.yml up
 
+name: mytrader-dev
 services:
   # Backend API (.NET 8)
   api:
+    container_name: mytrader-dev-api
     build:
       context: ../../02-backend
       dockerfile: ../../05-infra/dockerfiles/backend/Dockerfile.dev
@@ -41,6 +42,7 @@ services:
 
   # Frontend (Vue 3 + Vite)
   frontend:
+    container_name: mytrader-dev-frontend
     build:
       context: ../../01-frontend
       dockerfile: ../../05-infra/dockerfiles/frontend/Dockerfile.dev
@@ -59,6 +61,7 @@ services:
 
   # Database (PostgreSQL 15)
   database:
+    container_name: mytrader-dev-database
     image: postgres:15-alpine
     ports:
       - "5432:5432"
@@ -80,6 +83,7 @@ services:
 
   # PgAdmin (Database Management - Optional)
   pgadmin:
+    container_name: mytrader-dev-pgadmin
     image: dpage/pgadmin4:latest
     ports:
       - "8080:80"

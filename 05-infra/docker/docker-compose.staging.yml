@@ -1,4 +1,3 @@
-version: '3.8'
 
 # ==================================
 # myTraderGEO - Staging Environment
@@ -6,11 +5,12 @@ version: '3.8'
 # Usage: 05-infra/scripts/deploy.sh staging
 # Architecture: Cloudflare -> Traefik (Let's Encrypt) -> API/Frontend
 
+name: mytrader-staging
 services:
   # Traefik Reverse Proxy
   traefik:
     image: traefik:v3.0
-    container_name: traefik-staging
+    container_name: mytrader-staging-traefik
     restart: unless-stopped
     ports:
       - "80:80"
@@ -40,6 +40,7 @@ services:
         max-file: "3"
 
   api:
+    container_name: mytrader-staging-api
     image: ${DOCKER_REGISTRY:-ghcr.io/seu-usuario}/mytrader-api:staging
     expose:
       - "8080"
@@ -79,6 +80,7 @@ services:
         condition: service_started
 
   frontend:
+    container_name: mytrader-staging-frontend
     image: ${DOCKER_REGISTRY:-ghcr.io/seu-usuario}/mytrader-frontend:staging
     expose:
       - "80"
@@ -104,6 +106,7 @@ services:
       - traefik
 
   database:
+    container_name: mytrader-staging-database
     image: postgres:15-alpine
     environment:
       - POSTGRES_DB=${DB_NAME_STAGING:-mytrader_staging}
