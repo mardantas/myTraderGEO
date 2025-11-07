@@ -785,10 +785,10 @@ docker volume prune                           # Remover volumes não usados (CUI
 cp 05-infra/configs/.env.example 05-infra/configs/.env.dev
 
 # 2. Iniciar serviços
-docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev up -d
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up -d
 
 # 3. Verificar saúde
-docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev ps
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev ps
 ```
 
 **Acessos:**
@@ -1101,7 +1101,7 @@ Docker Desktop armazena named volumes no filesystem WSL2:
 - [ ] 05-infra/README.md criado
 
 ### Physical Files Created
-- [ ] `05-infra/docker/docker-compose.yml`
+- [ ] `05-infra/docker/docker-compose.dev.yml`
 - [ ] `05-infra/docker/docker-compose.staging.yml`
 - [ ] `05-infra/docker/docker-compose.prod.yml`
 - [ ] `05-infra/dockerfiles/backend/Dockerfile.dev`
