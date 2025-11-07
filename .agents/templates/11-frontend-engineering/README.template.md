@@ -126,7 +126,7 @@ VITE_ENV=development
 npm run dev
 
 # Or via Docker
-docker compose -f ../05-infra/docker/docker-compose.yml up web -d
+docker compose -f ../05-infra/docker/docker-compose.dev.yml up web -d
 ```
 
 **Access:**  
