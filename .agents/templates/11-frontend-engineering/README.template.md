@@ -126,7 +126,7 @@ VITE_ENV=development
 npm run dev
 
 # Or via Docker
-docker compose -f ../05-infra/docker/docker-compose.dev.yml up web -d
+docker compose -f ../05-infra/docker/docker-compose.dev.yml --env-file ../05-infra/configs/.env.dev up web -d
 ```
 
 **Access:**  
@@ -237,7 +237,7 @@ docker run -p 80:80 {project}-web:latest
 cp -r dist/* /var/www/html/
 
 # Or use Docker Compose
-docker compose -f ../05-infra/docker/docker-compose.prod.yml up -d web
+docker compose -f ../05-infra/docker/docker-compose.prod.yml --env-file ../05-infra/configs/.env.prod up -d web
 ```
 
 ---
