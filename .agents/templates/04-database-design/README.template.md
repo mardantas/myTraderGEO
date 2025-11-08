@@ -492,7 +492,7 @@ psql -h localhost -U {project}_app -d {project}_dev -f 04-database/seeds/001_see
 
 ```bash
 # Start database
-docker compose -f 05-infra/docker/docker-compose.dev.yml up database -d
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up database -d
 
 # Verify init-scripts executed
 docker compose logs database | grep "Creating application users"
@@ -548,7 +548,7 @@ Before starting, ensure you have:
 
 ```bash
 # Start database service only
-docker compose -f 05-infra/docker/docker-compose.dev.yml up database -d
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up database -d
 
 # Verify container is running
 docker compose ps database
@@ -657,7 +657,7 @@ dotnet add package Testcontainers.PostgreSql --version 3.x
 
 ```bash
 # 1. Start database
-docker compose -f 05-infra/docker/docker-compose.dev.yml up database -d
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up database -d
 
 # 2. Verify init-scripts executed (creates users)
 docker compose logs database | grep "Creating application users"
@@ -718,7 +718,7 @@ docker compose down
 docker volume rm {project}_postgres_data
 
 # 3. Start again (init-scripts will re-execute)
-docker compose -f 05-infra/docker/docker-compose.dev.yml up database -d
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up database -d
 
 # 4. Re-apply all migrations in order
 docker compose exec database psql -U {project}_app -d {project}_dev \
@@ -739,7 +739,7 @@ docker compose exec database psql -U {project}_app -d {project}_dev \
 docker compose ps database
 
 # If not running, start it
-docker compose -f 05-infra/docker/docker-compose.dev.yml up database -d
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up database -d
 
 # Test connection
 docker compose exec database psql -U {project}_app -d {project}_dev -c "SELECT 1"
@@ -1695,7 +1695,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
 Before running scaffold command, ensure:
 
-- ✅ Database is running: `docker compose -f 05-infra/docker/docker-compose.dev.yml up database -d`
+- ✅ Database is running: `docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up database -d`
 - ✅ DBA migrations executed (see "How to Execute Migrations" above)
 - ✅ Connection string correct (from `.env.dev`)
 - ✅ EF Core tools installed: `dotnet tool install --global dotnet-ef`
@@ -1886,7 +1886,7 @@ docker compose down
 docker volume rm {project}-postgres-data
 
 # 3. Start again (init script will execute)
-docker compose up database -d
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up database -d
 
 # 4. Verify logs
 docker compose logs database | grep "Creating application users"
