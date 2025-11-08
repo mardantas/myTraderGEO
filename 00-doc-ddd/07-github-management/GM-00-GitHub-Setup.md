@@ -685,7 +685,7 @@ See [PE-00 Environments Setup](../08-platform-engineering/PE-00-Environments-Set
 |-------------|-----------|-------|
 | Development | `.env.dev` | Local Docker Compose |
 | Staging | `.env.staging` | Staging server deployment |
-| Production | `.env.production` | Production server deployment |
+| Production | `.env.prod` | Production server deployment |
 
 **Command Pattern:**
 ```bash
@@ -698,8 +698,8 @@ docker compose -f 05-infra/docker/docker-compose.staging.yml \
   --env-file 05-infra/configs/.env.staging up -d
 
 # Production
-docker compose -f 05-infra/docker/docker-compose.production.yml \
-  --env-file 05-infra/configs/.env.production up -d
+docker compose -f 05-infra/docker/docker-compose.prod.yml \
+  --env-file 05-infra/configs/.env.prod up -d
 ```
 
 #### Multi-Server Architecture
