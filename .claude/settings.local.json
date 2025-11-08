@@ -52,7 +52,9 @@
       "Bash(.agents/templates/09-security/SEC-02-Security-Architecture.template.md )",
       "Bash(.agents/templates/09-security/SEC-03-Compliance-Report.template.md )",
       "Bash(.agents/templates/09-security/SEC-04-Pentest-Report.template.md )",
-      "Bash(.agents/templates/09-security/SEC-05-Incident-Response-Plan.template.md)"
+      "Bash(.agents/templates/09-security/SEC-05-Incident-Response-Plan.template.md)",
+      "Bash(git fetch:*)",
+      "Bash(git stash:*)"
     ],
     "deny": [],
     "ask": []
