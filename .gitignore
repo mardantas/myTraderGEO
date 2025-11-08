@@ -2,11 +2,18 @@
 # myTraderGEO - .gitignore
 # ==================================
 
-# Environment variables (NEVER COMMIT!)
+# Environment variables - Strategy:
+# ✅ .env.dev: COMMITTED (safe dev defaults)
+# ❌ .env.staging: NOT committed (real secrets)
+# ❌ .env.prod: NOT committed (real secrets)
 .env
 .env.local
 .env.*.local
-05-infra/configs/.env
+05-infra/configs/.env.staging
+05-infra/configs/.env.prod
+
+# Exception: allow .env.dev to be committed
+!05-infra/configs/.env.dev
 
 # IDEs
 .vscode/
