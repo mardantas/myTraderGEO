@@ -501,10 +501,10 @@ docker compose logs database | grep "Creating application users"
 docker compose exec database psql -U {project}_app -d {project}_dev
 
 # Execute migrations (if needed)
-docker compose exec database psql -U {project}_app -d {project}_dev -f /app/migrations/001_create_{epic_name}_schema.sql
+docker compose exec database psql -U {project}_app -d {project}_dev -f /db-scripts/migrations/001_create_{epic_name}_schema.sql
 
 # Execute seeds
-docker compose exec database psql -U {project}_app -d {project}_dev -f /app/seeds/001_seed_{epic_name}_defaults.sql
+docker compose exec database psql -U {project}_app -d {project}_dev -f /db-scripts/seeds/001_seed_{epic_name}_defaults.sql
 ```
 
 #### Staging/Production
@@ -590,7 +590,7 @@ SELECT current_user;  -- Should show: {project}_app
 ```bash
 # Execute migration (example for EPIC-01)
 docker compose exec database psql -U {project}_app -d {project}_dev \
-  -f /app/migrations/001_create_user_management_schema.sql
+  -f /db-scripts/migrations/001_create_user_management_schema.sql
 
 # Verify tables created
 docker compose exec database psql -U {project}_app -d {project}_dev \
@@ -664,7 +664,7 @@ docker compose logs database | grep "Creating application users"
 
 # 3. Apply DBA migrations
 docker compose exec database psql -U {project}_app -d {project}_dev \
-  -f /app/migrations/001_create_user_management_schema.sql
+  -f /db-scripts/migrations/001_create_user_management_schema.sql
 
 # 4. Scaffold EF models
 cd 02-backend
@@ -687,7 +687,7 @@ dotnet run --project src/Api
 # 1. DBA creates new migration (e.g., 002_create_strategy_management_schema.sql)
 # 2. Apply new migration
 docker compose exec database psql -U {project}_app -d {project}_dev \
-  -f /app/migrations/002_create_strategy_management_schema.sql
+  -f /db-scripts/migrations/002_create_strategy_management_schema.sql
 
 # 3. Re-scaffold (updates existing + adds new entities)
 cd 02-backend
@@ -722,9 +722,9 @@ docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/con
 
 # 4. Re-apply all migrations in order
 docker compose exec database psql -U {project}_app -d {project}_dev \
-  -f /app/migrations/001_create_user_management_schema.sql
+  -f /db-scripts/migrations/001_create_user_management_schema.sql
 docker compose exec database psql -U {project}_app -d {project}_dev \
-  -f /app/migrations/002_create_strategy_management_schema.sql
+  -f /db-scripts/migrations/002_create_strategy_management_schema.sql
 ```
 
 ### Troubleshooting
@@ -767,7 +767,7 @@ docker compose exec database psql -U {project}_app -d {project}_dev -c "\dt"
 
 # If empty, apply migrations
 docker compose exec database psql -U {project}_app -d {project}_dev \
-  -f /app/migrations/001_create_user_management_schema.sql
+  -f /db-scripts/migrations/001_create_user_management_schema.sql
 ```
 
 ### Next Steps
