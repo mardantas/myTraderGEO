@@ -587,9 +587,9 @@ This section documents the **deployment strategy** that integrates with PE docs:
 ### Multi-Environment Architecture
 
 **Nomenclature from PE-00:**
-- **Development:** Local docker-compose (`.env.dev` committed)  
-- **Staging:** Remote server `[project]-staging` (`.env.staging` NOT committed)  
-- **Production:** Remote server `[project]-prod` (`.env.production` NOT committed)  
+- **Development:** Local docker-compose (`.env.dev` committed)
+- **Staging:** Remote server `[project]-staging` (`.env.staging` NOT committed)
+- **Production:** Remote server `[project]-prod` (`.env.prod` NOT committed)  
 
 ### .env Files Strategy
 
@@ -599,7 +599,7 @@ This section documents the **deployment strategy** that integrates with PE docs:
 |-------------|------|-----------|----------|---------------|
 | **Development** | `.env.dev` | ✅ Committed | Repository root | Safe (dev passwords OK) |
 | **Staging** | `.env.staging` | ❌ NOT committed | Server (`/home/[project]_app/[project]/.env.staging`) | Real secrets (16+ chars) |
-| **Production** | `.env.production` | ❌ NOT committed | Server (`/home/[project]_app/[project]/.env.production`) | Strong secrets (20+ chars) |
+| **Production** | `.env.prod` | ❌ NOT committed | Server (`/home/[project]_app/[project]/.env.prod`) | Strong secrets (20+ chars) |
 
 **Required Variables (from PE-00):**
 
@@ -636,7 +636,7 @@ YOUR_IP_ADDRESS=203.0.113.0         # Change to YOUR public IP
 5. ✅ Dedicated user `[project]_app` with SSH key access
 6. ✅ Docker Engine installed
 7. ✅ NTP time synchronization (chrony)
-8. ✅ `.env.staging` or `.env.production` created on server
+8. ✅ `.env.staging` or `.env.prod` created on server
 
 **Remote Deployment Flow (from PE-00):**
 
