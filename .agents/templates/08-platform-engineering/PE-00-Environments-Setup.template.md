@@ -225,7 +225,7 @@ traefik.[DOMAIN]          A    [PROD_IP]
 
 | Arquivo | Descrição | Documentação |
 |---------|-----------|--------------|
-| `05-infra/docker/docker-compose.yml` | Ambiente local (dev) com hot reload | Ver arquivo |
+| `05-infra/docker/docker-compose.dev.yml` | Ambiente local (dev) com hot reload | Ver arquivo |
 | `05-infra/docker/docker-compose.staging.yml` | Staging com Traefik + Let's Encrypt | Ver arquivo |
 | `05-infra/docker/docker-compose.prod.yml` | Production com resource limits + Traefik | Ver arquivo |
 | `05-infra/configs/traefik.yml` | Reverse proxy + SSL automático | Ver arquivo |
@@ -785,10 +785,10 @@ docker volume prune                           # Remover volumes não usados (CUI
 cp 05-infra/configs/.env.example 05-infra/configs/.env.dev
 
 # 2. Iniciar serviços
-docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev up -d
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up -d
 
 # 3. Verificar saúde
-docker compose -f 05-infra/docker/docker-compose.yml --env-file 05-infra/configs/.env.dev ps
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev ps
 ```
 
 **Acessos:**
@@ -1101,7 +1101,7 @@ Docker Desktop armazena named volumes no filesystem WSL2:
 - [ ] 05-infra/README.md criado
 
 ### Physical Files Created
-- [ ] `05-infra/docker/docker-compose.yml`
+- [ ] `05-infra/docker/docker-compose.dev.yml`
 - [ ] `05-infra/docker/docker-compose.staging.yml`
 - [ ] `05-infra/docker/docker-compose.prod.yml`
 - [ ] `05-infra/dockerfiles/backend/Dockerfile.dev`
