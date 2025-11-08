@@ -252,13 +252,13 @@ psql -U postgres -d mytrader_prod -f 002_update_production_passwords.sql \
   -v app_password="$DB_APP_PASSWORD" \
   -v readonly_password="$DB_READONLY_PASSWORD"
 
-# 3. Atualizar .env.production
+# 3. Atualizar .env.prod
 # 4. Reiniciar aplicação
-docker compose -f docker-compose.production.yml \
-  --env-file .env.production restart
+docker compose -f 05-infra/docker/docker-compose.prod.yml \
+  --env-file 05-infra/configs/.env.prod restart
 
 # 5. Testar conectividade
-docker compose logs api | grep "Database connection established"
+docker compose -f 05-infra/docker/docker-compose.prod.yml --env-file 05-infra/configs/.env.prod logs api | grep "Database connection established"
 
 # 6. Atualizar gerenciador de senhas
 # 7. Documentar rotação (data, quem executou)
@@ -293,16 +293,16 @@ psql -h localhost -U mytrader_app -d mytrader_dev -f 04-database/seeds/001_seed_
 docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up database -d
 
 # Verificar se init-scripts executou
-docker compose logs database | grep "Creating application users"
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev logs database | grep "Creating application users"
 
 # Conectar como mytrader_app
-docker compose exec database psql -U mytrader_app -d mytrader_dev
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev
 
 # Executar migrations (se necessário)
-docker compose exec database psql -U mytrader_app -d mytrader_dev -f /app/migrations/001_create_user_management_schema.sql
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev -f /app/migrations/001_create_user_management_schema.sql
 
 # Executar seeds
-docker compose exec database psql -U mytrader_app -d mytrader_dev -f /app/seeds/001_seed_user_management_defaults.sql
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev -f /app/seeds/001_seed_user_management_defaults.sql
 ```
 
 #### Staging/Production
@@ -333,7 +333,7 @@ DROP TABLE IF EXISTS SubscriptionPlans CASCADE;
 
 ```bash
 # Conectar como postgres (admin)
-docker compose exec database psql -U postgres -d mytrader_dev
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U postgres -d mytrader_dev
 
 # Listar usuários
 \du
@@ -429,7 +429,7 @@ Before starting, ensure you have:
 docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up database -d
 
 # Verify container is running
-docker compose ps database
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev ps database
 
 # Expected output: database running on port 5432
 ```
@@ -443,7 +443,7 @@ docker compose ps database
 
 ```bash
 # Connect to database as application user
-docker compose exec database psql -U mytrader_app -d mytrader_dev
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev
 
 # Expected output: PostgreSQL prompt
 # mytrader_dev=>
@@ -467,11 +467,11 @@ SELECT current_user;  -- Should show: mytrader_app
 
 ```bash
 # Execute migration (example for EPIC-01)
-docker compose exec database psql -U mytrader_app -d mytrader_dev \
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev \
   -f /app/migrations/001_create_user_management_schema.sql
 
 # Verify tables created
-docker compose exec database psql -U mytrader_app -d mytrader_dev \
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev \
   -c "\dt"
 
 # Expected output: List of tables from migration
@@ -538,10 +538,10 @@ dotnet add package Testcontainers.PostgreSql --version 3.x
 docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up database -d
 
 # 2. Verify init-scripts executed (creates users)
-docker compose logs database | grep "Creating application users"
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev logs database | grep "Creating application users"
 
 # 3. Apply DBA migrations
-docker compose exec database psql -U mytrader_app -d mytrader_dev \
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev \
   -f /app/migrations/001_create_user_management_schema.sql
 
 # 4. Scaffold EF models
@@ -564,7 +564,7 @@ dotnet run --project src/Api
 ```bash
 # 1. DBA creates new migration (e.g., 002_create_strategy_management_schema.sql)
 # 2. Apply new migration
-docker compose exec database psql -U mytrader_app -d mytrader_dev \
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev \
   -f /app/migrations/002_create_strategy_management_schema.sql
 
 # 3. Re-scaffold (updates existing + adds new entities)
@@ -590,7 +590,7 @@ git diff src/Infrastructure/Data/Models/
 # ⚠️ WARNING: This deletes all data!
 
 # 1. Stop containers
-docker compose down
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev down
 
 # 2. Remove database volume
 docker volume rm mytrader_postgres_data
@@ -599,9 +599,9 @@ docker volume rm mytrader_postgres_data
 docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up database -d
 
 # 4. Re-apply all migrations in order
-docker compose exec database psql -U mytrader_app -d mytrader_dev \
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev \
   -f /app/migrations/001_create_user_management_schema.sql
-docker compose exec database psql -U mytrader_app -d mytrader_dev \
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev \
   -f /app/migrations/002_create_strategy_management_schema.sql
 ```
 
@@ -614,13 +614,13 @@ docker compose exec database psql -U mytrader_app -d mytrader_dev \
 **Solution:**
 ```bash
 # Check container status
-docker compose ps database
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev ps database
 
 # If not running, start it
 docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up database -d
 
 # Test connection
-docker compose exec database psql -U mytrader_app -d mytrader_dev -c "SELECT 1"
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev -c "SELECT 1"
 ```
 
 #### Problem: "Password authentication failed"
@@ -641,10 +641,10 @@ docker compose exec database psql -U mytrader_app -d mytrader_dev -c "SELECT 1"
 **Solution:**
 ```bash
 # List tables
-docker compose exec database psql -U mytrader_app -d mytrader_dev -c "\dt"
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev -c "\dt"
 
 # If empty, apply migrations
-docker compose exec database psql -U mytrader_app -d mytrader_dev \
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev \
   -f /app/migrations/001_create_user_management_schema.sql
 ```
 
@@ -1271,7 +1271,7 @@ Esta seção conecta o README operacional com a documentação estratégica do p
 **Solução:**
 ```bash
 # 1. Parar container
-docker compose down
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev down
 
 # 2. Remover volume do database (⚠️ CUIDADO: apaga dados!)
 docker volume rm mytrader-postgres-data
@@ -1280,7 +1280,7 @@ docker volume rm mytrader-postgres-data
 docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up database -d
 
 # 4. Verificar logs
-docker compose logs database | grep "Creating application users"
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev logs database | grep "Creating application users"
 ```
 
 ### Problema: Permission denied ao executar migration
@@ -1298,7 +1298,7 @@ docker compose logs database | grep "Creating application users"
 \c mytrader_dev mytrader_app
 
 # Se ainda falhar, re-executar init-scripts
-docker compose exec database psql -U postgres -d mytrader_dev -f /docker-entrypoint-initdb.d/01-create-app-user.sql
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U postgres -d mytrader_dev -f /docker-entrypoint-initdb.d/01-create-app-user.sql
 ```
 
 ### Problema: Aplicação .NET não conecta ao banco
@@ -1316,7 +1316,7 @@ cat 05-infra/configs/.env | grep ConnectionStrings__DefaultConnection
 # ConnectionStrings__DefaultConnection=Host=database;Port=5432;Database=mytrader_dev;Username=mytrader_app;Password=app_dev_password_123
 
 # 3. Se errado, corrigir .env e reiniciar aplicação
-docker compose restart api
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev restart api
 ```
 
 ---
