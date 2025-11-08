@@ -151,6 +151,7 @@ services:
     volumes:
       - postgres_prod_data:/var/lib/postgresql/data
       - ../../04-database/init-scripts:/docker-entrypoint-initdb.d
+      - ../../04-database:/db-scripts
       - ../../backups:/backups
     logging:
       driver: "json-file"

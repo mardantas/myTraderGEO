@@ -299,10 +299,10 @@ docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/con
 docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev
 
 # Executar migrations (se necessário)
-docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev -f /app/migrations/001_create_user_management_schema.sql
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev -f /db-scripts/migrations/001_create_user_management_schema.sql
 
 # Executar seeds
-docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev -f /app/seeds/001_seed_user_management_defaults.sql
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev -f /db-scripts/seeds/001_seed_user_management_defaults.sql
 ```
 
 #### Staging/Production
@@ -468,7 +468,7 @@ SELECT current_user;  -- Should show: mytrader_app
 ```bash
 # Execute migration (example for EPIC-01)
 docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev \
-  -f /app/migrations/001_create_user_management_schema.sql
+  -f /db-scripts/migrations/001_create_user_management_schema.sql
 
 # Verify tables created
 docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev \
@@ -542,7 +542,7 @@ docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/con
 
 # 3. Apply DBA migrations
 docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev \
-  -f /app/migrations/001_create_user_management_schema.sql
+  -f /db-scripts/migrations/001_create_user_management_schema.sql
 
 # 4. Scaffold EF models
 cd 02-backend
@@ -565,7 +565,7 @@ dotnet run --project src/Api
 # 1. DBA creates new migration (e.g., 002_create_strategy_management_schema.sql)
 # 2. Apply new migration
 docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev \
-  -f /app/migrations/002_create_strategy_management_schema.sql
+  -f /db-scripts/migrations/002_create_strategy_management_schema.sql
 
 # 3. Re-scaffold (updates existing + adds new entities)
 cd 02-backend
@@ -600,9 +600,9 @@ docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/con
 
 # 4. Re-apply all migrations in order
 docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev \
-  -f /app/migrations/001_create_user_management_schema.sql
+  -f /db-scripts/migrations/001_create_user_management_schema.sql
 docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev \
-  -f /app/migrations/002_create_strategy_management_schema.sql
+  -f /db-scripts/migrations/002_create_strategy_management_schema.sql
 ```
 
 ### Troubleshooting
@@ -645,7 +645,7 @@ docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/con
 
 # If empty, apply migrations
 docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev \
-  -f /app/migrations/001_create_user_management_schema.sql
+  -f /db-scripts/migrations/001_create_user_management_schema.sql
 ```
 
 ### Next Steps
