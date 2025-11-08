@@ -467,20 +467,20 @@ This section connects operational README with strategic documentation.
 **Solution:**  
 ```bash
 # 1. Check if database container is running
-docker compose ps
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev ps
 
 # 2. Check database logs
-docker compose logs database
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev logs database
 
 # 3. Verify connection string in .env.dev
 cat 05-infra/configs/.env.dev | grep DB_
 
 # 4. Test connection manually
-docker compose exec database psql -U {project}_app -d {project}_dev -c "SELECT 1;"
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U {project}_app -d {project}_dev -c "SELECT 1;"
 
 # 5. If init-scripts failed, recreate volume
-docker compose down -v
-docker compose up -d
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev down -v
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up -d
 ```
 
 ### Problem: Traefik SSL certificate not issued
@@ -490,7 +490,7 @@ docker compose up -d
 **Solution:**  
 ```bash
 # 1. Check Traefik logs
-docker compose logs traefik
+docker compose -f 05-infra/docker/docker-compose.staging.yml --env-file 05-infra/configs/.env.staging logs traefik
 
 # 2. Verify DNS points to server
 nslookup {domain}
@@ -514,27 +514,27 @@ cat 05-infra/configs/traefik.yml | grep email
 **Backend:**  
 ```bash
 # 1. Verify volume mount in docker-compose.dev.yml
-docker compose config | grep -A 5 "api:"
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev config | grep -A 5 "api:"
 
 # 2. Check if watch is enabled (depends on framework)
-docker compose logs api | grep -i "watch\|reload"
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev logs api | grep -i "watch\|reload"
 
 # 3. Restart container
-docker compose restart api
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev restart api
 ```
 
 **Frontend:**  
 ```bash
 # 1. Verify volume mount
-docker compose config | grep -A 5 "web:"
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev config | grep -A 5 "web:"
 
 # 2. Check Vite/framework dev server
-docker compose logs web
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev logs web
 
 # 3. Clear browser cache (Ctrl+Shift+R)
 
 # 4. Restart container
-docker compose restart web
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev restart web
 ```
 
 ---
@@ -578,7 +578,7 @@ Docker Desktop stores named volumes in WSL2 filesystem:
 
 - **Hot reload works** via bind mounts (WSL2 file watching)  
 - **No backups needed** in development (recreate with migrations + seeds)  
-- **Reset database:** `docker compose down -v && docker compose up -d`  
+- **Reset database:** `docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev down -v && docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up -d`  
 
 For detailed Windows configuration and troubleshooting, see [PE-00-Environments-Setup.md](../00-doc-ddd/08-platform-engineering/PE-00-Environments-Setup.md#-desenvolvimento-no-windows).
 
