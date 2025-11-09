@@ -50,7 +50,20 @@ END
 $$;
 
 -- =====================================================
--- SECURITY: Revogar acesso a databases do sistema
+-- SECURITY: Revogar CONNECT do role public (GLOBAL)
+-- =====================================================
+-- PostgreSQL concede CONNECT ao role 'public' por padrão.
+-- Todos os usuários herdam de 'public' automaticamente.
+-- Devemos revogar de 'public' PRIMEIRO para bloquear herança.
+
+REVOKE CONNECT ON DATABASE template0 FROM public;
+REVOKE CONNECT ON DATABASE template1 FROM public;
+REVOKE CONNECT ON DATABASE postgres FROM public;
+
+\echo '✓ Revoked CONNECT from public role (blocks inheritance)'
+
+-- =====================================================
+-- SECURITY: Revogar acesso a databases do sistema (user-specific)
 -- =====================================================
 -- Por padrão, PostgreSQL permite conexão a qualquer database.
 -- Devemos revogar explicitamente para aplicar Least Privilege.
