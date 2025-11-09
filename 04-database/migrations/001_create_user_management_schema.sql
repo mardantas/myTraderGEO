@@ -18,9 +18,7 @@ CREATE TABLE SubscriptionPlans (
     -- Core Properties
     Name VARCHAR(50) NOT NULL,
     PriceMonthlyAmount DECIMAL(10,2) NOT NULL,
-    PriceMonthlyC
-
- VARCHAR(3) NOT NULL DEFAULT 'BRL',
+    PriceMonthlyCurrency VARCHAR(3) NOT NULL DEFAULT 'BRL',
     PriceAnnualAmount DECIMAL(10,2) NOT NULL,
     PriceAnnualCurrency VARCHAR(3) NOT NULL DEFAULT 'BRL',
     AnnualDiscountPercent DECIMAL(5,4) NOT NULL, -- 0.2000 = 20%
