@@ -559,7 +559,7 @@ docker compose ps database
 **What happens:**
 - PostgreSQL 15 container starts
 - Init scripts in `04-database/init-scripts/` execute automatically (creates users)
-- Named volume `{project}_postgres_data` persists data
+- Named volume `postgres-data` persists data
 
 ### Step 2: Verify Database Connection
 
@@ -715,7 +715,7 @@ git diff src/Infrastructure/Data/Models/
 docker compose down
 
 # 2. Remove database volume
-docker volume rm {project}_postgres_data
+docker volume rm postgres-data
 
 # 3. Start again (init-scripts will re-execute)
 docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up database -d
@@ -1883,7 +1883,7 @@ This section connects operational README with strategic documentation.
 docker compose down
 
 # 2. Remove database volume (⚠️ WARNING: deletes data!)
-docker volume rm {project}-postgres-data
+docker volume rm postgres-data
 
 # 3. Start again (init script will execute)
 docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up database -d
