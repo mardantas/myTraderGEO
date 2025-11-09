@@ -49,7 +49,19 @@ BEGIN
 END
 $$;
 
--- Grant permissões no database
+-- =====================================================
+-- SECURITY: Revogar acesso a databases do sistema
+-- =====================================================
+-- Por padrão, PostgreSQL permite conexão a qualquer database.
+-- Devemos revogar explicitamente para aplicar Least Privilege.
+
+REVOKE CONNECT ON DATABASE template0 FROM mytrader_app;
+REVOKE CONNECT ON DATABASE template1 FROM mytrader_app;
+REVOKE CONNECT ON DATABASE postgres FROM mytrader_app;
+
+\echo '✓ Revoked access to system databases (template0, template1, postgres)'
+
+-- Grant permissões APENAS no database da aplicação
 GRANT CONNECT ON DATABASE mytrader_dev TO mytrader_app;
 GRANT USAGE ON SCHEMA public TO mytrader_app;
 
@@ -98,7 +110,12 @@ BEGIN
 END
 $$;
 
--- Grant permissões apenas de leitura
+-- Revogar acesso a databases do sistema (same as mytrader_app)
+REVOKE CONNECT ON DATABASE template0 FROM mytrader_readonly;
+REVOKE CONNECT ON DATABASE template1 FROM mytrader_readonly;
+REVOKE CONNECT ON DATABASE postgres FROM mytrader_readonly;
+
+-- Grant permissões apenas de leitura APENAS no database da aplicação
 GRANT CONNECT ON DATABASE mytrader_dev TO mytrader_readonly;
 GRANT USAGE ON SCHEMA public TO mytrader_readonly;
 
