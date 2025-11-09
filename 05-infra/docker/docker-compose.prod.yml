@@ -34,7 +34,7 @@ services:
       - "traefik.http.routers.dashboard.middlewares=dashboard-auth"
       - "traefik.http.middlewares.dashboard-auth.basicauth.users=${TRAEFIK_DASHBOARD_AUTH}"
     networks:
-      - mytrader-network
+      - backend
     logging:
       driver: "json-file"
       options:
@@ -95,7 +95,7 @@ services:
       - "traefik.http.middlewares.api-ratelimit.ratelimit.average=100"
       - "traefik.http.middlewares.api-ratelimit.ratelimit.burst=50"
     networks:
-      - mytrader-network
+      - backend
     depends_on:
       database:
         condition: service_healthy
@@ -136,7 +136,7 @@ services:
       - "traefik.http.middlewares.frontend-redirect.redirectregex.replacement=https://$${1}"
       - "traefik.http.middlewares.frontend-redirect.redirectregex.permanent=true"
     networks:
-      - mytrader-network
+      - backend
     depends_on:
       - api
       - traefik
@@ -149,7 +149,7 @@ services:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     volumes:
-      - postgres_prod_data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
       - ../../04-database/init-scripts:/docker-entrypoint-initdb.d
       - ../../04-database:/db-scripts
       - ../../backups:/backups
@@ -173,13 +173,13 @@ services:
           cpus: '1'
           memory: 1G
     networks:
-      - mytrader-network
+      - backend
 
 volumes:
-  postgres_prod_data:
+  postgres-data:
   traefik_letsencrypt:
   traefik_logs:
 
 networks:
-  mytrader-network:
+  backend:
     driver: bridge
