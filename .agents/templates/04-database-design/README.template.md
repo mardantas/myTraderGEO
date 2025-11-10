@@ -30,12 +30,15 @@ This is a **quick reference guide** for executing database migrations and managi
 ```
 04-database/
 ├── init-scripts/       # Scripts executed on FIRST container initialization
-│   └── 01-create-app-user.sql
+│   ├── 00-init-users.sh               # Creates users with env-based passwords
+│   └── 01-create-app-user.sql.backup  # Legacy (for reference only)
 ├── migrations/         # Schema migrations (tables, indexes, constraints)
 │   ├── 001_*.sql       # Schema creation (tables, indexes, constraints)
-│   └── 002_*.sql       # Environment-specific updates (passwords, config)
+│   └── 002_*.sql       # Password rotation and environment updates
 ├── seeds/              # Initial data (plans, config, demo users)
 │   └── 001_seed_{epic_name}_defaults.sql
+├── scripts/            # Utility and convenience scripts
+│   └── update-all-passwords.sh  # Convenience script for password rotation
 └── README.md           # This file
 ```
 
@@ -96,11 +99,15 @@ ConnectionStrings__ReadOnlyConnection=Host=database;Port=5432;Database={project}
 
 Users are created automatically by the script:
 
-**File:** [init-scripts/01-create-app-user.sql](init-scripts/01-create-app-user.sql)  
+**File:** [init-scripts/00-init-users.sh](init-scripts/00-init-users.sh)
 
-**Execution:** Automatic on first PostgreSQL container initialization via `/docker-entrypoint-initdb.d/`  
+**Execution:** Automatic on first PostgreSQL container initialization via `/docker-entrypoint-initdb.d/`
 
-**Idempotency:** ✅ Yes (uses `IF NOT EXISTS` - safe to re-execute)  
+**Idempotency:** ✅ Yes (uses `IF NOT EXISTS` - safe to re-execute)
+
+**Passwords:** Read from Docker environment variables (`$DB_APP_PASSWORD`, `$DB_READONLY_PASSWORD`)
+
+> **Note:** This unified script contains both CREATE USER and GRANT statements in a single file for easier maintenance. The passwords come from `.env` files passed via docker-compose environment variables.  
 
 ---
 
@@ -108,75 +115,97 @@ Users are created automatically by the script:
 
 ### Security Principle
 
-**⚠️ NEVER hardcode production passwords in Git!**
+**⚠️ NEVER hardcode passwords in code or commit production passwords to Git!**
 
-Database passwords must follow a **multi-environment strategy** where development uses safe defaults (committed to Git), but staging/production use strong passwords (created on server, NEVER committed).
+All environments use `.env` files for password management. Development uses simple passwords (committed), while staging/production use strong passwords (created on server, NEVER committed).
 
 ### Password Requirements by Environment
 
 | Environment | Password Complexity | Rotation Frequency | Git Status | Example |
 |-------------|---------------------|-------------------|-----------|---------|
-| **Development** | Simple (dev_password_123) | ❌ No rotation | ✅ Committed (.env.dev) | `DB_APP_PASSWORD=dev_password_123` |
+| **Development** | Simple (local_app_123) | ❌ No rotation | ✅ Committed (.env.dev) | `DB_APP_PASSWORD=local_app_123` |
 | **Staging** | Strong (16+ chars, mixed case, numbers, symbols) | Semi-annual | ❌ NOT committed (.env.staging) | `DB_APP_PASSWORD=St@g!ng_SecureP@ss2025!#` |
-| **Production** | Very Strong (20+ chars, mixed case, numbers, symbols) | Quarterly | ❌ NOT committed (.env.production) | `DB_APP_PASSWORD=Pr0d_V3ry$trong#P@ssw0rd2025!` |
+| **Production** | Very Strong (20+ chars, mixed case, numbers, symbols) | Quarterly | ❌ NOT committed (.env.prod) | `DB_APP_PASSWORD=Pr0d_V3ry$trong#P@ssw0rd2025!` |
 
-### Implementation Pattern: ALTER USER Migration
+### Implementation Pattern: Environment-Based Passwords
 
-**Problem:** If we commit passwords to Git (even in migrations), they become visible in repository history.  
+**Principle:** ALL environments use the same architecture - passwords come from `.env` files via Docker environment variables.
 
-**Solution:** Use a **two-step approach**:  
+**Flow:**
+1. `.env` file defines passwords → Docker Compose loads them → Database init script reads from environment
 
-1. **Init script (committed to Git):** Creates users with development passwords
-2. **ALTER USER migration (committed WITHOUT real passwords):** Updates passwords for staging/production via environment variables
+#### All Environments: Init Script
 
-#### Step 1: Init Script (Development Passwords)
+**File:** [init-scripts/00-init-users.sh](init-scripts/00-init-users.sh)
 
-**File:** [init-scripts/01-create-app-user.sql](init-scripts/01-create-app-user.sql)  
+```bash
+#!/bin/bash
+# Passwords come from Docker environment variables
+# These are set via docker-compose from .env files
 
-```sql
--- This file is COMMITTED to Git with DEV passwords
--- (safe because dev passwords are public)
+psql <<-EOSQL
+    CREATE USER {project}_app WITH PASSWORD '$DB_APP_PASSWORD';
+    CREATE USER {project}_readonly WITH PASSWORD '$DB_READONLY_PASSWORD';
 
-CREATE USER {project}_app WITH PASSWORD 'dev_password_123';
-CREATE USER {project}_readonly WITH PASSWORD 'dev_readonly_123';
-
--- Grant permissions...
+    -- Grant permissions...
+EOSQL
 ```
 
-**Execution:** Automatic on first PostgreSQL container initialization  
+**How it works:**
+- **Development:** `docker-compose.dev.yml` reads `.env.dev` (committed with simple passwords)
+- **Staging:** `docker-compose.staging.yml` reads `.env.staging` (created on server, strong passwords)
+- **Production:** `docker-compose.prod.yml` reads `.env.prod` (created on server, very strong passwords)
+
+**Execution:** Automatic on FIRST PostgreSQL container initialization only
 
 ---
 
-#### Step 2: ALTER USER Migration (Staging/Production Passwords)
+### Password Rotation (For Running Databases)
 
-**File:** [migrations/002_update_prod_passwords.sql](migrations/002_update_prod_passwords.sql)  
+For databases that are already initialized and running, use the migration script or convenience script to update passwords.
 
-```sql
--- This file is COMMITTED to Git WITHOUT real passwords
--- Passwords are passed via psql -v parameter
+#### Option A: Using Convenience Script (Recommended)
 
--- ⚠️ WARNING: This migration should ONLY be executed on staging/production
--- Development continues using dev_password_123 from init script
+**File:** [scripts/update-all-passwords.sh](scripts/update-all-passwords.sh)
 
--- Usage:
--- export DB_APP_PASSWORD="St@g!ng_SecureP@ss2025!#"
--- export DB_READONLY_PASSWORD="St@g!ng_ReadOnly2025!#"
--- psql -v app_password="$DB_APP_PASSWORD" -v readonly_password="$DB_READONLY_PASSWORD" -f 002_update_prod_passwords.sql
+```bash
+# From .env file
+./scripts/update-all-passwords.sh /path/to/.env.staging
 
--- Update application user password
-ALTER USER {project}_app WITH PASSWORD :'app_password';
+# Interactive prompt
+./scripts/update-all-passwords.sh
 
--- Update readonly user password
-ALTER USER {project}_readonly WITH PASSWORD :'readonly_password';
-
--- Log password change (do NOT log password itself!)
-DO $$
-BEGIN
-    RAISE NOTICE 'Database passwords updated successfully at %', NOW();
-END $$;
+# From environment
+DB_APP_PASSWORD="new_pass" DB_READONLY_PASSWORD="new_pass2" ./scripts/update-all-passwords.sh
 ```
 
-**Execution (Staging/Production ONLY):**
+This script updates all users (including optionally postgres superuser) in one command.
+
+---
+
+#### Option B: Using Migration SQL Directly
+
+**File:** [migrations/002_update_prod_passwords.sql](migrations/002_update_prod_passwords.sql)
+
+```bash
+# Export passwords from .env or set manually
+export DB_APP_PASSWORD="St@g!ng_SecureP@ss2025!#"
+export DB_READONLY_PASSWORD="St@g!ng_ReadOnly2025!#"
+
+# Execute migration
+psql -h $DB_HOST -U postgres -d {project}_dev \
+  -v app_password="$DB_APP_PASSWORD" \
+  -v readonly_password="$DB_READONLY_PASSWORD" \
+  -f migrations/002_update_prod_passwords.sql
+```
+
+**After password update:**
+1. Update `.env` file on server with new passwords
+2. Restart API container: `docker compose restart api`
+3. Verify: `docker compose logs api`
+4. Document: `echo "$(date) - Password rotated" >> password-rotation.log`
+
+**Execution (Staging/Production):**
 
 ```bash
 # Set environment variables (from .env.staging or .env.production)
