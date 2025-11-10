@@ -134,8 +134,8 @@ LOCAL_BRANCHES=$(git branch | tr -d ' *')
 # A) Encontrar branches LOCAIS que NÃO existem mais no servidor
 OLD_LOCAL_BRANCHES=()
 while IFS= read -r local_branch; do
-    # Ignorar branches principais
-    if [[ "$local_branch" != "main" && "$local_branch" != "develop" && "$local_branch" != "workflow" ]]; then
+    # Ignorar branches principais e do dependabot
+    if [[ "$local_branch" != "main" && "$local_branch" != "develop" && "$local_branch" != "workflow" && "$local_branch" != *"dependabot"* ]]; then
         if ! echo "$REMOTE_BRANCHES" | grep -q "^${local_branch}$"; then
             OLD_LOCAL_BRANCHES+=("$local_branch")
         fi
@@ -145,8 +145,8 @@ done <<< "$LOCAL_BRANCHES"
 # B) Encontrar branches REMOTAS que NÃO existem localmente
 NEW_REMOTE_BRANCHES=()
 while IFS= read -r remote_branch; do
-    # Ignorar branches principais
-    if [[ "$remote_branch" != "main" && "$remote_branch" != "develop" && "$remote_branch" != "workflow" ]]; then
+    # Ignorar branches principais e do dependabot
+    if [[ "$remote_branch" != "main" && "$remote_branch" != "develop" && "$remote_branch" != "workflow" && "$remote_branch" != *"dependabot"* ]]; then
         if ! echo "$LOCAL_BRANCHES" | grep -q "^${remote_branch}$"; then
             NEW_REMOTE_BRANCHES+=("$remote_branch")
         fi
@@ -192,6 +192,11 @@ fi
 if [[ ${#OLD_LOCAL_BRANCHES[@]} -eq 0 && ${#NEW_REMOTE_BRANCHES[@]} -eq 0 ]]; then
     echo -e "${CHECK} Todas as branches estão sincronizadas"
 fi
+
+echo ""
+echo -e "${LIST} Situação das branches locais:"
+echo ""
+git branch -vv
 
 echo ""
 echo -e "${STAR} Atualização concluída! Branch atual: ${GREEN}${CURRENT_BRANCH}${NC}"
