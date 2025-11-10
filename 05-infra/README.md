@@ -151,11 +151,18 @@ Follow the detailed manual instructions in [PE-00-Environments-Setup.md](../00-d
 
 ```bash
 # Copiar template
-cp 05-infra/configs/.env.example 05-infra/configs/.env.dev
+cp 05-infra/configs/.env.dev.example 05-infra/configs/.env.dev
 
-# Editar .env com suas credenciais
+# Editar .env com suas credenciais (incluindo senhas do banco)
 nano 05-infra/configs/.env.dev
 ```
+
+**📌 Importante:** O arquivo `.env.dev` agora é **obrigatório** para todos os ambientes. As senhas do banco de dados são lidas deste arquivo:
+- `DB_PASSWORD`: Senha do postgres (superuser)
+- `DB_APP_PASSWORD`: Senha do usuário da aplicação (mytrader_app)
+- `DB_READONLY_PASSWORD`: Senha do usuário read-only (mytrader_readonly)
+
+Para mais detalhes sobre gestão de senhas, consulte: [04-database/README.md](../04-database/README.md#-multi-environment-password-strategy)
 
 ### 2. Development - Iniciar Ambiente Local
 

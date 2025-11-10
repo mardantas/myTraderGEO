@@ -17,7 +17,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
-      - ConnectionStrings__DefaultConnection=Host=database;Port=5432;Database=mytrader_dev;Username=mytrader_app;Password=app_dev_password_123
+      - ConnectionStrings__DefaultConnection=Host=database;Port=5432;Database=mytrader_dev;Username=${DB_APP_USER};Password=${DB_APP_PASSWORD}
       - JwtSettings__Secret=dev-secret-key-change-in-production-minimum-32-chars
       - JwtSettings__Issuer=myTraderGEO
       - JwtSettings__Audience=myTraderGEO
@@ -67,9 +67,11 @@ services:
       - "5432:5432"
     environment:
       - POSTGRES_DB=mytrader_dev
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=dev_password_123
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=pt_BR.UTF-8 --lc-ctype=pt_BR.UTF-8
+      - DB_APP_PASSWORD=${DB_APP_PASSWORD}
+      - DB_READONLY_PASSWORD=${DB_READONLY_PASSWORD}
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ../../04-database/init-scripts:/docker-entrypoint-initdb.d

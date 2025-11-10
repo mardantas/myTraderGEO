@@ -5,6 +5,7 @@
 -- Project: myTraderGEO
 -- Author: DBA Agent
 -- Date: 2025-01-28
+-- Updated: 2025-01-10 - Added postgres superuser option
 -- =====================================================
 --
 -- IMPORTANTE: Este script deve ser executado MANUALMENTE em staging e production
@@ -17,14 +18,27 @@
 --
 -- COMO EXECUTAR:
 --
--- Opção 1: Via variáveis de ambiente (RECOMENDADO - mais seguro)
--- -----------------------------------------------------------------
+-- Opção 1: Via variáveis de ambiente - Application Users Only (RECOMENDADO - mais seguro)
+-- ----------------------------------------------------------------------------------------
 -- export DB_APP_PASSWORD="sua_senha_forte_aqui"
 -- export DB_READONLY_PASSWORD="sua_senha_readonly_aqui"
 --
 -- psql -U postgres -d mytrader_staging -f 002_update_production_passwords.sql \
 --   -v app_password="$DB_APP_PASSWORD" \
 --   -v readonly_password="$DB_READONLY_PASSWORD"
+--
+-- Opção 1b: Incluindo Postgres Superuser (OPCIONAL)
+-- --------------------------------------------------
+-- export DB_PASSWORD="sua_senha_postgres_super_forte"
+-- export DB_APP_PASSWORD="sua_senha_forte_aqui"
+-- export DB_READONLY_PASSWORD="sua_senha_readonly_aqui"
+--
+-- psql -U postgres -d mytrader_staging -f 002_update_production_passwords.sql \
+--   -v postgres_password="$DB_PASSWORD" \
+--   -v app_password="$DB_APP_PASSWORD" \
+--   -v readonly_password="$DB_READONLY_PASSWORD"
+--
+-- NOTE: Uncomment the postgres password update section below if needed
 --
 -- Opção 2: Via prompt interativo (senhas não aparecem no histórico)
 -- -----------------------------------------------------------------
@@ -67,6 +81,22 @@ END $$;
 
 \echo 'Variables validated ✓'
 \echo ''
+
+-- =====================================================
+-- OPTIONAL: UPDATE PASSWORD: postgres (Superuser)
+-- =====================================================
+-- Uncomment the lines below if you want to update the postgres superuser password
+-- Make sure you passed -v postgres_password="..." when executing this script
+--
+-- \echo 'Updating password for user: postgres (SUPERUSER)'
+-- ALTER USER postgres WITH PASSWORD :'postgres_password';
+-- \echo '✓ Password updated for postgres (SUPERUSER)'
+-- \echo ''
+-- \echo '⚠️  WARNING: After updating postgres password, you must:'
+-- \echo '  1. Update POSTGRES_PASSWORD in .env file (on server)'
+-- \echo '  2. Restart database container: docker compose restart database'
+-- \echo '  3. Update any backup scripts that use postgres user'
+-- \echo ''
 
 -- =====================================================
 -- UPDATE PASSWORD: mytrader_app

@@ -11,12 +11,15 @@
 ```
 04-database/
 ├── init-scripts/       # Scripts executados na PRIMEIRA inicialização do container
-│   └── 01-create-app-user.sql
+│   ├── 00-init-users.sh        # Cria usuários com senhas do ambiente
+│   └── README-MIGRATION.txt    # Documentação sobre a migração
 ├── migrations/         # Schema migrations (tabelas, índices, constraints)
 │   ├── 001_*.sql       # Schema creation (tabelas, índices, constraints)
-│   └── 002_*.sql       # Atualizações específicas de ambiente (senhas, config)
+│   └── 002_*.sql       # Rotação de senhas e atualizações de ambiente
 ├── seeds/              # Dados iniciais (planos, config, demo users)
 │   └── 001_seed_user_management_defaults.sql
+├── scripts/            # Scripts utilitários e de conveniência
+│   └── update-all-passwords.sh  # Script de conveniência para rotação de senhas
 └── README.md           # Este arquivo
 ```
 
@@ -77,66 +80,98 @@ ConnectionStrings__ReadOnlyConnection=Host=database;Port=5432;Database=mytrader_
 
 Os usuários são criados automaticamente pelo script:
 
-**Arquivo:** [init-scripts/01-create-app-user.sql](init-scripts/01-create-app-user.sql)
+**Arquivo:** [init-scripts/00-init-users.sh](init-scripts/00-init-users.sh)
 
 **Execução:** Automática na primeira inicialização do container PostgreSQL via `/docker-entrypoint-initdb.d/`
 
 **Idempotência:** ✅ Sim (usa `IF NOT EXISTS` - seguro re-executar)
 
+**Senhas:** Lidas das variáveis de ambiente Docker (`$DB_APP_PASSWORD`, `$DB_READONLY_PASSWORD`)
+
+> **Nota:** Este script unificado contém tanto CREATE USER quanto GRANT statements em um único arquivo para facilitar manutenção. As senhas vêm dos arquivos `.env` passados via docker-compose como variáveis de ambiente.
+
 ---
 
 ## 🌐 Multi-Environment Password Strategy
 
-### Senhas por Ambiente
+### Princípio de Segurança
 
-⚠️ **CRÍTICO:** Init script (`01-create-app-user.sql`) usa senhas default apropriadas APENAS para **development**.
+**⚠️ NUNCA fazer hardcode de senhas no código ou commitar senhas de produção no Git!**
 
-Para **staging** e **production**, você DEVE alterar as senhas usando a migration `002_update_production_passwords.sql`.
+Todos os ambientes usam arquivos `.env` para gestão de senhas. Development usa senhas simples (commitadas), enquanto staging/production usam senhas fortes (criadas no servidor, NUNCA commitadas).
 
-| Ambiente | Senha Padrão (Init Script) | Ação Requerida |
-|----------|---------------------------|----------------|
-| **Development** | `app_dev_password_123` | ✅ OK - Senha simples aceitável para dev local |
-| **Staging** | `app_dev_password_123` | ⚠️ **ALTERAR** - Usar senha forte via migration 002 |
-| **Production** | `app_dev_password_123` | 🔴 **ALTERAR OBRIGATÓRIO** - Usar senha forte via migration 002 |
+### Requisitos de Senha por Ambiente
 
-### Como Alterar Senhas (Staging/Production)
+| Ambiente | Complexidade da Senha | Frequência de Rotação | Status no Git | Exemplo |
+|----------|----------------------|----------------------|---------------|---------|
+| **Development** | Simples (local_app_123) | ❌ Sem rotação | ✅ Commitada (.env.dev) | `DB_APP_PASSWORD=local_app_123` |
+| **Staging** | Forte (16+ chars, case misto, números, símbolos) | Semestral | ❌ NÃO commitada (.env.staging) | `DB_APP_PASSWORD=St@g!ng_SecureP@ss2025!#` |
+| **Production** | Muito Forte (20+ chars, case misto, números, símbolos) | Trimestral | ❌ NÃO commitada (.env.prod) | `DB_APP_PASSWORD=Pr0d_V3ry$trong#P@ssw0rd2025!` |
+
+### Padrão de Implementação: Senhas Baseadas em Ambiente
+
+**Princípio:** TODOS os ambientes usam a mesma arquitetura - senhas vêm de arquivos `.env` via variáveis de ambiente Docker.
+
+**Fluxo:**
+1. Arquivo `.env` define senhas → Docker Compose carrega → Script de init do banco lê do ambiente
+
+#### Todos os Ambientes: Script de Inicialização
+
+**Arquivo:** [init-scripts/00-init-users.sh](init-scripts/00-init-users.sh)
+
+**Como funciona:**
+- **Development:** `docker-compose.dev.yml` lê `.env.dev` (commitado com senhas simples)
+- **Staging:** `docker-compose.staging.yml` lê `.env.staging` (criado no servidor, senhas fortes)
+- **Production:** `docker-compose.prod.yml` lê `.env.prod` (criado no servidor, senhas muito fortes)
+
+**Execução:** Automática APENAS na PRIMEIRA inicialização do container PostgreSQL
+
+---
+
+### Rotação de Senhas (Para Bancos em Execução)
+
+Para bancos de dados já inicializados e em execução, use o script de migração ou script de conveniência para atualizar senhas.
+
+#### Opção A: Usando Script de Conveniência (Recomendado)
+
+**Arquivo:** [scripts/update-all-passwords.sh](scripts/update-all-passwords.sh)
+
+```bash
+# De arquivo .env
+./scripts/update-all-passwords.sh /path/to/.env.staging
+
+# Prompt interativo
+./scripts/update-all-passwords.sh
+
+# De variáveis de ambiente
+DB_APP_PASSWORD="new_pass" DB_READONLY_PASSWORD="new_pass2" ./scripts/update-all-passwords.sh
+```
+
+Este script atualiza todos os usuários (incluindo opcionalmente postgres superuser) em um comando.
+
+---
+
+#### Opção B: Usando SQL de Migração Diretamente
 
 **Arquivo:** [migrations/002_update_production_passwords.sql](migrations/002_update_production_passwords.sql)
 
-**Execução Recomendada (via environment variables):**
-
 ```bash
-# 1. Definir senhas como variáveis de ambiente (não ficam no histórico bash)
-export DB_APP_PASSWORD="SuaSenhaForte123!@#"
-export DB_READONLY_PASSWORD="SuaSenhaReadonly456!@#"
+# Exportar senhas do .env ou definir manualmente
+export DB_APP_PASSWORD="St@g!ng_SecureP@ss2025!#"
+export DB_READONLY_PASSWORD="St@g!ng_ReadOnly2025!#"
 
-# 2. Executar migration passando variáveis
-psql -U postgres -d mytrader_staging \
-  -f 04-database/migrations/002_update_production_passwords.sql \
+# Executar migration
+psql -h $DB_HOST -U postgres -d mytrader_dev \
   -v app_password="$DB_APP_PASSWORD" \
-  -v readonly_password="$DB_READONLY_PASSWORD"
-
-# 3. Atualizar .env.staging com novas senhas
-# ConnectionStrings__DefaultConnection=...;Password=$DB_APP_PASSWORD
-
-# 4. Reiniciar aplicação
-docker compose -f 05-infra/docker/docker-compose.staging.yml \
-  --env-file 05-infra/configs/.env.staging restart
+  -v readonly_password="$DB_READONLY_PASSWORD" \
+  -f migrations/002_update_production_passwords.sql
 ```
 
-**Execução Interativa (mais segura - senhas não aparecem):**
-
-```bash
-# 1. Conectar ao database
-psql -U postgres -d mytrader_staging
-
-# 2. Definir variáveis via prompt (senhas NÃO aparecem no terminal)
-\set app_password `read -s -p "App Password: " pwd; echo $pwd`
-\set readonly_password `read -s -p "Readonly Password: " pwd; echo $pwd`
-
-# 3. Executar migration
-\i 04-database/migrations/002_update_production_passwords.sql
-```
+**Após atualização de senha:**
+1. Atualizar arquivo `.env` no servidor com novas senhas
+2. Reiniciar API container: `docker compose restart api`
+3. Verificar: `docker compose logs api`
+4. Documentar: `echo "$(date) - Password rotated" >> password-rotation.log`
 
 ### Requisitos de Senha (Staging/Production)
 

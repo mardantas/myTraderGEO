@@ -579,10 +579,20 @@ cat > ~/mytrader-app/app/.env << 'EOF'
 DOMAIN=staging.mytrader.com  # Ajustar: staging.mytrader.com OU mytrader.com
 ACME_EMAIL=admin@mytrader.com
 
-# PostgreSQL (MUDAR SENHAS!)
-POSTGRES_DB=mytrader
-POSTGRES_USER=mytrader_app
-POSTGRES_PASSWORD=CHANGE_ME_STRONG_PASSWORD_HERE_32CHARS_MIN
+# PostgreSQL (MUDAR SENHAS! - Ver 04-database/README.md para detalhes)
+# Superuser (DBA only - não usar na aplicação!)
+DB_USER=postgres
+DB_PASSWORD=CHANGE_ME_POSTGRES_STRONG_PASSWORD_20CHARS_MIN
+
+# Application users (criados automaticamente por init scripts)
+DB_APP_USER=mytrader_app
+DB_APP_PASSWORD=CHANGE_ME_APP_STRONG_PASSWORD_16CHARS_MIN
+
+DB_READONLY_USER=mytrader_readonly
+DB_READONLY_PASSWORD=CHANGE_ME_READONLY_STRONG_PASSWORD_16CHARS_MIN
+
+# Database name
+POSTGRES_DB=mytrader_staging  # ou mytrader_prod
 
 # Traefik Dashboard (gerar com: htpasswd -nb admin password)
 TRAEFIK_DASHBOARD_AUTH=admin:$apr1$xyz123...CHANGE_ME
@@ -599,8 +609,14 @@ ls -la ~/mytrader-app/app/.env
 nano ~/mytrader-app/app/.env
 # Alterar:
 # - DOMAIN (conforme ambiente)
-# - POSTGRES_PASSWORD (senha forte)
+# - DB_PASSWORD, DB_APP_PASSWORD, DB_READONLY_PASSWORD (senhas fortes - ver requirements abaixo)
 # - TRAEFIK_DASHBOARD_AUTH (gerar com htpasswd - ver abaixo)
+#
+# Password Requirements:
+# - postgres (DB_PASSWORD): Mínimo 20 caracteres
+# - app users (DB_APP_PASSWORD, DB_READONLY_PASSWORD): Mínimo 16 caracteres
+# - Todos devem ter: maiúsculas, minúsculas, números, símbolos
+# - Ver 04-database/README.md para detalhes completos sobre gestão de senhas
 
 # Sair do user mytrader
 exit
