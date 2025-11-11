@@ -6,6 +6,10 @@
 
 ---
 
+> **💻 Comandos otimizados para PowerShell (Windows)**
+
+---
+
 ## 📁 Estrutura de Diretórios
 
 ```
@@ -358,49 +362,59 @@ docker compose -f 05-infra/docker/docker-compose.prod.yml --env-file 05-infra/co
 
 ## 🚀 Como Executar Migrations
 
-### Ordem de Execução
+### ⚠️ Ordem Correta de Execução
 
-**⚠️ IMPORTANTE:** Executar na ordem correta para evitar erros de dependência.
+**IMPORTANTE**: Execute nesta ordem para evitar problemas de permissão:
 
-```bash
-# 1. Init Scripts (automático na primeira vez)
-#    Executado automaticamente pelo Docker via /docker-entrypoint-initdb.d/
-#    Se já executou: pular (não precisa re-executar)
+```powershell
+# 1. Subir database (init-scripts cria usuários e permissões)
+docker compose -f 05-infra/docker/docker-compose.dev.yml `
+  --env-file 05-infra/configs/.env.dev up database -d
 
-# 2. Schema Migrations (manualmente ou CI/CD)
-psql -h localhost -U mytrader_app -d mytrader_dev -f 04-database/migrations/001_create_user_management_schema.sql
+# 2. Verificar que usuários foram criados
+docker compose -f 05-infra/docker/docker-compose.dev.yml `
+  --env-file 05-infra/configs/.env.dev `
+  logs database | Select-String "Creating application users"
 
-# 3. Seed Data (manualmente)
-psql -h localhost -U mytrader_app -d mytrader_dev -f 04-database/seeds/001_seed_user_management_defaults.sql
+# 3. Executar migrations como POSTGRES (não como mytrader_app!)
+docker compose -f 05-infra/docker/docker-compose.dev.yml `
+  --env-file 05-infra/configs/.env.dev `
+  exec database psql -U postgres -d mytrader_dev `
+  -f /db-scripts/migrations/001_create_user_management_schema.sql
+
+# 4. Executar seeds (agora com permissões corretas)
+docker compose -f 05-infra/docker/docker-compose.dev.yml `
+  --env-file 05-infra/configs/.env.dev `
+  exec database psql -U mytrader_app -d mytrader_dev `
+  -f /db-scripts/seeds/001_seed_user_management_defaults.sql
 ```
 
-### Ambientes
+### 🔑 Por Que Usar `postgres` para Migrations?
 
-#### Development (Docker Compose)
+- **`postgres`** (superuser): Cria tabelas que automaticamente recebem as permissões configuradas no `ALTER DEFAULT PRIVILEGES`
+- **`mytrader_app`**: Pode criar tabelas, MAS `mytrader_readonly` não receberia permissões automaticamente
 
-```bash
-# Subir database
-docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up database -d
+### 🔧 Corrigir Permissões se Migration Foi Executada com Usuário Errado
 
-# Verificar se init-scripts executou
-docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev logs database | grep "Creating application users"
+Se você rodou migration como `mytrader_app` e agora `mytrader_readonly` não tem permissão:
 
-# Conectar como mytrader_app
-docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev
-
-# Executar migrations (se necessário)
-docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev -f /db-scripts/migrations/001_create_user_management_schema.sql
-
-# Executar seeds
-docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev -f /db-scripts/seeds/001_seed_user_management_defaults.sql
+```powershell
+# Corrigir permissões manualmente
+docker compose -f 05-infra/docker/docker-compose.dev.yml `
+  --env-file 05-infra/configs/.env.dev `
+  exec database psql -U postgres -d mytrader_dev -c `
+  "GRANT SELECT ON ALL TABLES IN SCHEMA public TO mytrader_readonly;"
 ```
 
-#### Staging/Production
+### Staging/Production
 
-```bash
-# Usar credenciais do ambiente (via .env)
-psql -h $DB_HOST -U $DB_APP_USER -d $DB_NAME -f 04-database/migrations/001_create_user_management_schema.sql
-psql -h $DB_HOST -U $DB_APP_USER -d $DB_NAME -f 04-database/seeds/001_seed_user_management_defaults.sql
+```powershell
+# No servidor (após SSH)
+docker compose exec database psql -U postgres -d mytrader_staging `
+  -f /db-scripts/migrations/001_create_user_management_schema.sql
+
+docker compose exec database psql -U mytrader_app -d mytrader_staging `
+  -f /db-scripts/seeds/001_seed_user_management_defaults.sql
 ```
 
 ### Rollback Strategy
@@ -555,38 +569,45 @@ SELECT current_user;  -- Should show: mytrader_app
 
 **Important:** DBA creates migrations FIRST in `04-database/migrations/`. SE only executes them.
 
-```bash
+**⚠️ CRITICAL: Run migrations as `postgres` user, not `mytrader_app`!** This ensures proper permissions for all database users.
+
+```powershell
 # Execute migration (example for EPIC-01)
-docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev \
+docker compose -f 05-infra/docker/docker-compose.dev.yml `
+  --env-file 05-infra/configs/.env.dev `
+  exec database psql -U postgres -d mytrader_dev `
   -f /db-scripts/migrations/001_create_user_management_schema.sql
 
 # Verify tables created
-docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev \
+docker compose -f 05-infra/docker/docker-compose.dev.yml `
+  --env-file 05-infra/configs/.env.dev `
+  exec database psql -U postgres -d mytrader_dev `
   -c "\dt"
 
 # Expected output: List of tables from migration
 #  Schema |        Name         | Type  |     Owner
-# --------+---------------------+-------+----------------
-#  public | Users               | table | mytrader_app
-#  public | SubscriptionPlans   | table | mytrader_app
+# --------+---------------------+-------+--------------
+#  public | Users               | table | postgres
+#  public | SubscriptionPlans   | table | postgres
 ```
 
 ### Step 4: Scaffold EF Core Models from Database
 
 **Critical:** EF models are GENERATED from database, not created via Code-First migrations.
 
-```bash
+```powershell
 # Navigate to backend project
 cd 02-backend
 
 # Scaffold command (generates C# classes from database schema)
-dotnet ef dbcontext scaffold \
-  "Host=localhost;Database=mytrader_dev;Username=mytrader_app;Password=app_dev_password_123" \
-  Npgsql.EntityFrameworkCore.PostgreSQL \
-  --output-dir src/Infrastructure/Data/Models \
-  --context-dir src/Infrastructure/Data \
-  --context ApplicationDbContext \
-  --no-onconfiguring \
+# Note: Use the password from your .env.dev file (DB_APP_PASSWORD)
+dotnet ef dbcontext scaffold `
+  "Host=localhost;Database=mytrader_dev;Username=mytrader_app;Password=<your_DB_APP_PASSWORD_here>" `
+  Npgsql.EntityFrameworkCore.PostgreSQL `
+  --output-dir src/Infrastructure/Data/Models `
+  --context-dir src/Infrastructure/Data `
+  --context ApplicationDbContext `
+  --no-onconfiguring `
   --force
 
 # What this creates:
@@ -623,26 +644,30 @@ dotnet add package Testcontainers.PostgreSql --version 3.x
 
 #### Workflow 1: Start Development (First Time)
 
-```bash
+```powershell
 # 1. Start database
-docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up database -d
+docker compose -f 05-infra/docker/docker-compose.dev.yml `
+  --env-file 05-infra/configs/.env.dev up database -d
 
 # 2. Verify init-scripts executed (creates users)
-docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev logs database | grep "Creating application users"
+docker compose -f 05-infra/docker/docker-compose.dev.yml `
+  --env-file 05-infra/configs/.env.dev logs database | grep "Creating application users"
 
-# 3. Apply DBA migrations
-docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev \
+# 3. Apply DBA migrations (use postgres user!)
+docker compose -f 05-infra/docker/docker-compose.dev.yml `
+  --env-file 05-infra/configs/.env.dev `
+  exec database psql -U postgres -d mytrader_dev `
   -f /db-scripts/migrations/001_create_user_management_schema.sql
 
-# 4. Scaffold EF models
+# 4. Scaffold EF models (use password from .env.dev)
 cd 02-backend
-dotnet ef dbcontext scaffold \
-  "Host=localhost;Database=mytrader_dev;Username=mytrader_app;Password=app_dev_password_123" \
-  Npgsql.EntityFrameworkCore.PostgreSQL \
-  --output-dir src/Infrastructure/Data/Models \
-  --context-dir src/Infrastructure/Data \
-  --context ApplicationDbContext \
-  --no-onconfiguring \
+dotnet ef dbcontext scaffold `
+  "Host=localhost;Database=mytrader_dev;Username=mytrader_app;Password=<your_DB_APP_PASSWORD_here>" `
+  Npgsql.EntityFrameworkCore.PostgreSQL `
+  --output-dir src/Infrastructure/Data/Models `
+  --context-dir src/Infrastructure/Data `
+  --context ApplicationDbContext `
+  --no-onconfiguring `
   --force
 
 # 5. Run application
@@ -651,21 +676,23 @@ dotnet run --project src/Api
 
 #### Workflow 2: Update After New Migration (Subsequent Epics)
 
-```bash
+```powershell
 # 1. DBA creates new migration (e.g., 002_create_strategy_management_schema.sql)
-# 2. Apply new migration
-docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev \
+# 2. Apply new migration (use postgres user!)
+docker compose -f 05-infra/docker/docker-compose.dev.yml `
+  --env-file 05-infra/configs/.env.dev `
+  exec database psql -U postgres -d mytrader_dev `
   -f /db-scripts/migrations/002_create_strategy_management_schema.sql
 
 # 3. Re-scaffold (updates existing + adds new entities)
 cd 02-backend
-dotnet ef dbcontext scaffold \
-  "Host=localhost;Database=mytrader_dev;Username=mytrader_app;Password=app_dev_password_123" \
-  Npgsql.EntityFrameworkCore.PostgreSQL \
-  --output-dir src/Infrastructure/Data/Models \
-  --context-dir src/Infrastructure/Data \
-  --context ApplicationDbContext \
-  --no-onconfiguring \
+dotnet ef dbcontext scaffold `
+  "Host=localhost;Database=mytrader_dev;Username=mytrader_app;Password=<your_DB_APP_PASSWORD_here>" `
+  Npgsql.EntityFrameworkCore.PostgreSQL `
+  --output-dir src/Infrastructure/Data/Models `
+  --context-dir src/Infrastructure/Data `
+  --context ApplicationDbContext `
+  --no-onconfiguring `
   --force
 
 # 4. Review changes
@@ -676,22 +703,29 @@ git diff src/Infrastructure/Data/Models/
 
 #### Workflow 3: Reset Database (Clean Start)
 
-```bash
+```powershell
 # ⚠️ WARNING: This deletes all data!
 
 # 1. Stop containers
-docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev down
+docker compose -f 05-infra/docker/docker-compose.dev.yml `
+  --env-file 05-infra/configs/.env.dev down
 
 # 2. Remove database volume
 docker volume rm mytrader_postgres_data
 
 # 3. Start again (init-scripts will re-execute)
-docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up database -d
+docker compose -f 05-infra/docker/docker-compose.dev.yml `
+  --env-file 05-infra/configs/.env.dev up database -d
 
-# 4. Re-apply all migrations in order
-docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev \
+# 4. Re-apply all migrations in order (use postgres user!)
+docker compose -f 05-infra/docker/docker-compose.dev.yml `
+  --env-file 05-infra/configs/.env.dev `
+  exec database psql -U postgres -d mytrader_dev `
   -f /db-scripts/migrations/001_create_user_management_schema.sql
-docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev \
+
+docker compose -f 05-infra/docker/docker-compose.dev.yml `
+  --env-file 05-infra/configs/.env.dev `
+  exec database psql -U postgres -d mytrader_dev `
   -f /db-scripts/migrations/002_create_strategy_management_schema.sql
 ```
 
@@ -718,10 +752,10 @@ docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/con
 **Cause:** Wrong password in connection string
 
 **Solution:**
-```bash
-# Development password is always: app_dev_password_123
-# Check .env file or use correct connection string:
-"Host=localhost;Database=mytrader_dev;Username=mytrader_app;Password=app_dev_password_123"
+```powershell
+# Check your .env.dev file for the correct password (DB_APP_PASSWORD)
+# Use the password from 05-infra/configs/.env.dev in your connection string:
+"Host=localhost;Database=mytrader_dev;Username=mytrader_app;Password=<your_DB_APP_PASSWORD_here>"
 ```
 
 #### Problem: "No tables found" when scaffolding
@@ -729,12 +763,16 @@ docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/con
 **Cause:** Migrations not applied yet
 
 **Solution:**
-```bash
+```powershell
 # List tables
-docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev -c "\dt"
+docker compose -f 05-infra/docker/docker-compose.dev.yml `
+  --env-file 05-infra/configs/.env.dev `
+  exec database psql -U postgres -d mytrader_dev -c "\dt"
 
-# If empty, apply migrations
-docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev \
+# If empty, apply migrations (use postgres user!)
+docker compose -f 05-infra/docker/docker-compose.dev.yml `
+  --env-file 05-infra/configs/.env.dev `
+  exec database psql -U postgres -d mytrader_dev `
   -f /db-scripts/migrations/001_create_user_management_schema.sql
 ```
 
@@ -1153,21 +1191,21 @@ dotnet tool update --global dotnet-ef
 ### Basic Scaffold Command
 
 **Template:**
-```bash
-dotnet ef dbcontext scaffold \
-  "Host=localhost;Port=5432;Database=mytrader_dev;Username=mytrader_app;Password=app_dev_password_123" \
-  Npgsql.EntityFrameworkCore.PostgreSQL \
-  --output-dir Infrastructure/Data/Models \
-  --context-dir Infrastructure/Data \
-  --context ApplicationDbContext \
-  --no-onconfiguring \
+```powershell
+dotnet ef dbcontext scaffold `
+  "Host=localhost;Port=5432;Database=mytrader_dev;Username=mytrader_app;Password=<your_DB_APP_PASSWORD_here>" `
+  Npgsql.EntityFrameworkCore.PostgreSQL `
+  --output-dir Infrastructure/Data/Models `
+  --context-dir Infrastructure/Data `
+  --context ApplicationDbContext `
+  --no-onconfiguring `
   --force
 ```
 
 **Replace placeholders:**
 - `mytrader_dev` → Database name (e.g., `mytrader_dev`)
 - `mytrader_app` → Database user (e.g., `mytrader_app`)
-- `app_dev_password_123` → User password
+- `<your_DB_APP_PASSWORD_here>` → Use password from `05-infra/configs/.env.dev` (DB_APP_PASSWORD)
 
 ### Command Options Explained
 
@@ -1189,15 +1227,15 @@ dotnet ef dbcontext scaffold \
 **Scenario:** DBA created first SQL migration with `users` and `subscription_plans` tables.
 
 **Command:**
-```bash
+```powershell
 cd src/MyTrader.WebAPI
 
-dotnet ef dbcontext scaffold \
-  "Host=localhost;Port=5432;Database=mytrader_dev;Username=mytrader_app;Password=app_dev_password_123" \
-  Npgsql.EntityFrameworkCore.PostgreSQL \
-  --output-dir Infrastructure/Data/Models \
-  --context-dir Infrastructure/Data \
-  --context ApplicationDbContext \
+dotnet ef dbcontext scaffold `
+  "Host=localhost;Port=5432;Database=mytrader_dev;Username=mytrader_app;Password=<your_DB_APP_PASSWORD_here>" `
+  Npgsql.EntityFrameworkCore.PostgreSQL `
+  --output-dir Infrastructure/Data/Models `
+  --context-dir Infrastructure/Data `
+  --context ApplicationDbContext `
   --no-onconfiguring
 ```
 
@@ -1218,16 +1256,16 @@ src/MyTrader.WebAPI/
 **⚠️ CRITICAL:** Use `--force` flag to regenerate ALL entities (including new ones).
 
 **Command:**
-```bash
+```powershell
 cd src/MyTrader.WebAPI
 
-dotnet ef dbcontext scaffold \
-  "Host=localhost;Port=5432;Database=mytrader_dev;Username=mytrader_app;Password=app_dev_password_123" \
-  Npgsql.EntityFrameworkCore.PostgreSQL \
-  --output-dir Infrastructure/Data/Models \
-  --context-dir Infrastructure/Data \
-  --context ApplicationDbContext \
-  --no-onconfiguring \
+dotnet ef dbcontext scaffold `
+  "Host=localhost;Port=5432;Database=mytrader_dev;Username=mytrader_app;Password=<your_DB_APP_PASSWORD_here>" `
+  Npgsql.EntityFrameworkCore.PostgreSQL `
+  --output-dir Infrastructure/Data/Models `
+  --context-dir Infrastructure/Data `
+  --context ApplicationDbContext `
+  --no-onconfiguring `
   --force
 ```
 
@@ -1242,15 +1280,15 @@ dotnet ef dbcontext scaffold \
 **Use case:** Multi-bounded-context projects (e.g., only scaffold `strategy_management` schema).
 
 **Command:**
-```bash
-dotnet ef dbcontext scaffold \
-  "Host=localhost;Port=5432;Database=mytrader_dev;Username=mytrader_app;Password=app_dev_password_123" \
-  Npgsql.EntityFrameworkCore.PostgreSQL \
-  --output-dir Infrastructure/Data/Models \
-  --context-dir Infrastructure/Data \
-  --context ApplicationDbContext \
-  --no-onconfiguring \
-  --schema strategy_management \
+```powershell
+dotnet ef dbcontext scaffold `
+  "Host=localhost;Port=5432;Database=mytrader_dev;Username=mytrader_app;Password=<your_DB_APP_PASSWORD_here>" `
+  Npgsql.EntityFrameworkCore.PostgreSQL `
+  --output-dir Infrastructure/Data/Models `
+  --context-dir Infrastructure/Data `
+  --context ApplicationDbContext `
+  --no-onconfiguring `
+  --schema strategy_management `
   --force
 ```
 
@@ -1396,18 +1434,19 @@ docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/con
 
 **Sintoma:** `Npgsql.NpgsqlException: password authentication failed for user "mytrader_app"`
 
-**Causa:** Senha incorreta no `.env` ou connection string
+**Causa:** Senha incorreta no `.env.dev` ou connection string
 
 **Solução:**
-```bash
-# 1. Verificar connection string no .env
-cat 05-infra/configs/.env | grep ConnectionStrings__DefaultConnection
+```powershell
+# 1. Verificar senha no .env.dev
+Get-Content 05-infra/configs/.env.dev | Select-String "DB_APP_PASSWORD"
 
-# 2. Deve ser:
-# ConnectionStrings__DefaultConnection=Host=database;Port=5432;Database=mytrader_dev;Username=mytrader_app;Password=app_dev_password_123
+# 2. A connection string no docker-compose.dev.yml deve usar ${DB_APP_PASSWORD}:
+# ConnectionStrings__DefaultConnection=Host=database;Port=5432;Database=mytrader_dev;Username=${DB_APP_USER};Password=${DB_APP_PASSWORD}
 
-# 3. Se errado, corrigir .env e reiniciar aplicação
-docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev restart api
+# 3. Se errado, corrigir .env.dev e reiniciar aplicação
+docker compose -f 05-infra/docker/docker-compose.dev.yml `
+  --env-file 05-infra/configs/.env.dev restart api
 ```
 
 ---
