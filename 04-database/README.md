@@ -16,6 +16,8 @@
 │   ├── 000_*.sql       # Utilitários de manutenção (rotação de senhas, etc)
 │   ├── 001_*.sql       # Schema creation (tabelas, índices, constraints)
 │   └── 002_*.sql       # Schema updates (épicos subsequentes)
+├── scripts/            # Scripts utilitários
+│   └── rotate-passwords.sh  # Wrapper de rotação de senhas (lê arquivo .env)
 ├── seeds/              # Dados iniciais (planos, config, demo users)
 │   └── 001_seed_user_management_defaults.sql
 └── README.md           # Este arquivo
@@ -27,6 +29,7 @@
 |-----------|----------------|-----------|--------------|
 | **init-scripts/** | **Apenas na primeira inicialização** do container (volume vazio) | Criar usuários PostgreSQL, configurações de segurança | ✅ Sim (usa `IF NOT EXISTS`) |
 | **migrations/** | Manualmente pelo DBA ou CI/CD (cada vez que schema mudar) | Criar/alterar tabelas, índices, constraints | ⚠️ Depende (usar transações) |
+| **scripts/** | Sob demanda (tarefas de manutenção) | Wrappers utilitários para operações comuns (rotação de senhas) | ✅ Sim |
 | **seeds/** | Manualmente pelo DBA após migrations | Popular dados iniciais (planos, config, demos) | ✅ Sim (usa `ON CONFLICT DO NOTHING`) |
 
 ---
@@ -128,9 +131,39 @@ Todos os ambientes usam arquivos `.env` para gestão de senhas. Development usa 
 
 ### Rotação de Senhas (Para Bancos em Execução)
 
-Para bancos de dados já inicializados e em execução, use o utilitário SQL de manutenção para atualizar senhas.
+Para bancos de dados já inicializados e em execução, você pode rotar senhas usando dois métodos:
+
+#### Opção A: Shell Wrapper (Recomendado - Lê .env)
+
+**Arquivo:** [scripts/rotate-passwords.sh](scripts/rotate-passwords.sh)
+
+**Benefícios:**
+- ✅ **Segurança:** Senhas não expostas no histórico bash ou lista de processos
+- ✅ **Conveniência:** Lê credenciais diretamente do arquivo .env
+- ✅ **Validação:** Verifica variáveis necessárias e confirma antes de executar
+
+```bash
+# Local (development)
+./scripts/rotate-passwords.sh .env.dev
+
+# Remoto (staging/production - após SSH)
+./scripts/rotate-passwords.sh .env.staging
+```
+
+**Funcionalidades do script:**
+- Parse seguro do arquivo .env (ignora comentários, linhas vazias)
+- Valida variáveis obrigatórias (DB_APP_PASSWORD, DB_READONLY_PASSWORD)
+- Prompt de confirmação antes da execução
+- Saída colorida para melhor legibilidade
+- Log de execução em `/tmp/rotate-passwords.log`
+
+---
+
+#### Opção B: Script SQL Direto (Manual)
 
 **Arquivo:** [migrations/000_update_passwords.sql](migrations/000_update_passwords.sql)
+
+**Use quando:** Shell wrapper não disponível ou você prefere controle manual.
 
 ```bash
 # Exportar senhas do .env ou definir manualmente
@@ -144,11 +177,56 @@ psql -h $DB_HOST -U postgres -d mytrader_dev \
   -f migrations/000_update_passwords.sql
 ```
 
-**Após atualização de senha:**
-1. Atualizar arquivo `.env` no servidor com novas senhas
+**Após atualização de senha (ambas opções):**
+1. Atualizar arquivo `.env` no servidor com novas senhas (se rotacionadas)
 2. Reiniciar API container: `docker compose restart api`
-3. Verificar: `docker compose logs api`
+3. Verificar: `docker compose logs api | grep "Database connection"`
 4. Documentar: `echo "$(date) - Password rotated" >> password-rotation.log`
+
+---
+
+### Acesso Remoto ao Banco (Staging/Production)
+
+**Princípio de Segurança:** A porta 5432 do PostgreSQL NÃO é exposta na internet em ambientes de staging/production. O acesso só é possível via SSH + Docker.
+
+#### Método Recomendado de Acesso:
+
+```bash
+# 1. SSH no servidor
+ssh mytrader@mytrader-stage  # ou mytrader-prod
+
+# 2. Navegar para diretório da aplicação
+cd ~/mytrader-app/app
+
+# 3. Acessar banco via docker compose exec
+docker compose exec database psql -U postgres -d mytrader_staging
+
+# 4. Ou rotar senhas usando o wrapper
+./04-database/scripts/rotate-passwords.sh .env.staging
+```
+
+#### Por Que a Porta 5432 Não É Exposta:
+
+| Ambiente | Status Porta 5432 | Motivo |
+|----------|------------------|--------|
+| **Development** | ✅ Exposta (5432:5432) | Conveniência para ferramentas locais (pgAdmin, plugins IDE) |
+| **Staging** | ❌ Não exposta | Segurança - reduz superfície de ataque, apenas containers internos podem acessar |
+| **Production** | ❌ Não exposta | Segurança - CRÍTICO para produção, previne tentativas externas de SQL injection |
+
+**Arquitetura de Rede:**
+- Banco está apenas na rede interna do Docker
+- Container da API conecta via rede interna (`database:5432`)
+- Acesso externo APENAS via SSH + docker exec (requer acesso ao servidor)
+
+**Para acesso emergencial ou troubleshooting:**
+```bash
+# Túnel SSH (se exposição temporária da porta for necessária para ferramentas como pgAdmin)
+ssh -L 5432:localhost:5432 mytrader@mytrader-stage
+# Então conecte localmente em localhost:5432 com pgAdmin/DBeaver
+# IMPORTANTE: Feche o túnel imediatamente após o uso
+```
+
+---
 
 ### Requisitos de Senha (Staging/Production)
 
