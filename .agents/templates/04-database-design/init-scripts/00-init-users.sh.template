@@ -138,6 +138,14 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "{PROJECT}_dev" <<-
     ALTER DEFAULT PRIVILEGES IN SCHEMA public
         GRANT USAGE, SELECT ON SEQUENCES TO {PROJECT}_app;
 
+    -- Permissões futuras para tabelas criadas POR {PROJECT}_app
+    -- Garante que {PROJECT}_app mantém acesso total às próprias tabelas
+    ALTER DEFAULT PRIVILEGES FOR ROLE {PROJECT}_app IN SCHEMA public
+        GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO {PROJECT}_app;
+
+    ALTER DEFAULT PRIVILEGES FOR ROLE {PROJECT}_app IN SCHEMA public
+        GRANT USAGE, SELECT ON SEQUENCES TO {PROJECT}_app;
+
     -- Permitir criação de tabelas (necessário para migrations)
     GRANT CREATE ON SCHEMA public TO {PROJECT}_app;
 
@@ -152,9 +160,18 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "{PROJECT}_dev" <<-
     -- Apenas SELECT em todas as tabelas
     GRANT SELECT ON ALL TABLES IN SCHEMA public TO {PROJECT}_readonly;
 
-    -- Permissões futuras
+    -- Permissões futuras para tabelas criadas por postgres
     ALTER DEFAULT PRIVILEGES IN SCHEMA public
         GRANT SELECT ON TABLES TO {PROJECT}_readonly;
+
+    -- ⭐ CHAVE: Permissões futuras para tabelas criadas POR {PROJECT}_app
+    -- Garante que quando {PROJECT}_app executa migrations, {PROJECT}_readonly
+    -- recebe automaticamente permissões de SELECT
+    ALTER DEFAULT PRIVILEGES FOR ROLE {PROJECT}_app IN SCHEMA public
+        GRANT SELECT ON TABLES TO {PROJECT}_readonly;
+
+    ALTER DEFAULT PRIVILEGES FOR ROLE {PROJECT}_app IN SCHEMA public
+        GRANT USAGE, SELECT ON SEQUENCES TO {PROJECT}_readonly;
 
 EOSQL
 

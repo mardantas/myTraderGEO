@@ -541,30 +541,46 @@ docker compose -f 05-infra/docker/docker-compose.dev.yml `
   --env-file 05-infra/configs/.env.dev `
   logs database | Select-String "Creating application users"
 
-# 3. Execute migrations as POSTGRES (not as {project}_app!)
+# 3. Execute migrations as {project}_app
 docker compose -f 05-infra/docker/docker-compose.dev.yml `
   --env-file 05-infra/configs/.env.dev `
-  exec database psql -U postgres -d {project}_dev `
+  exec database psql -U {project}_app -d {project}_dev `
   -f /db-scripts/migrations/001_create_{epic_name}_schema.sql
 
-# 4. Execute seeds (now with correct permissions)
+# 4. Execute seeds
 docker compose -f 05-infra/docker/docker-compose.dev.yml `
   --env-file 05-infra/configs/.env.dev `
   exec database psql -U {project}_app -d {project}_dev `
   -f /db-scripts/seeds/001_seed_{epic_name}_defaults.sql
 ```
 
-### 🔑 Why Use `postgres` for Migrations?
+### ⭐ Como Funciona: ALTER DEFAULT PRIVILEGES FOR ROLE
 
-- **`postgres`** (superuser): Creates tables that automatically receive permissions configured in `ALTER DEFAULT PRIVILEGES`
-- **`{project}_app`**: Can create tables, BUT `{project}_readonly` won't receive permissions automatically
+**Pergunta:** Como `{project}_readonly` recebe permissões automáticas em tabelas criadas por `{project}_app`?
 
-### 🔧 Fix Permissions if Migration Was Run with Wrong User
+**Resposta:** O init script configura `ALTER DEFAULT PRIVILEGES FOR ROLE {project}_app`:
 
-If you ran migration as `{project}_app` and now `{project}_readonly` has no permission:
+```sql
+-- No init script (00-init-users.sh):
+ALTER DEFAULT PRIVILEGES FOR ROLE {project}_app IN SCHEMA public
+    GRANT SELECT ON TABLES TO {project}_readonly;
+```
+
+**O que isso faz:**
+- Quando `{project}_app` **cria uma tabela**, PostgreSQL **automaticamente** concede SELECT para `{project}_readonly`
+- Funciona para migrations executadas como `{project}_app`
+- Não precisa mais usar `postgres` para migrations!
+
+**Diferença entre com e sem FOR ROLE:**
+- ❌ `ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT...` → Só funciona para tabelas criadas por quem executou o comando (postgres)
+- ✅ `ALTER DEFAULT PRIVILEGES FOR ROLE {project}_app IN SCHEMA public GRANT SELECT...` → Funciona para tabelas criadas por `{project}_app`
+
+### 🔧 Fix Permissions (Apenas se Necessário)
+
+Se você tem tabelas antigas criadas ANTES do init script com `FOR ROLE`, conceda manualmente:
 
 ```powershell
-# Fix permissions manually
+# Fix permissions manually for existing tables
 docker compose -f 05-infra/docker/docker-compose.dev.yml `
   --env-file 05-infra/configs/.env.dev `
   exec database psql -U postgres -d {project}_dev -c `
@@ -575,7 +591,7 @@ docker compose -f 05-infra/docker/docker-compose.dev.yml `
 
 ```powershell
 # On server (after SSH)
-docker compose exec database psql -U postgres -d {project}_staging `
+docker compose exec database psql -U {project}_app -d {project}_staging `
   -f /db-scripts/migrations/001_create_{epic_name}_schema.sql
 
 docker compose exec database psql -U $DB_APP_USER -d {project}_staging `
@@ -655,8 +671,8 @@ SELECT current_user;  -- Should show: {project}_app
 **Important:** DBA creates migrations FIRST in `04-database/migrations/`. SE only executes them.
 
 ```powershell
-# Execute migration (example for EPIC-01) - Use POSTGRES for proper permissions
-docker compose exec database psql -U postgres -d {project}_dev `
+# Execute migration (example for EPIC-01)
+docker compose exec database psql -U {project}_app -d {project}_dev `
   -f /db-scripts/migrations/001_create_user_management_schema.sql
 
 # Verify tables created
@@ -666,8 +682,8 @@ docker compose exec database psql -U {project}_app -d {project}_dev `
 # Expected output: List of tables from migration
 #  Schema |        Name         | Type  |     Owner
 # --------+---------------------+-------+----------------
-#  public | Users               | table | postgres
-#  public | SubscriptionPlans   | table | postgres
+#  public | Users               | table | {project}_app
+#  public | SubscriptionPlans   | table | {project}_app
 ```
 
 ### Step 4: Scaffold EF Core Models from Database
@@ -729,8 +745,8 @@ docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/con
 # 2. Verify init-scripts executed (creates users)
 docker compose logs database | Select-String "Creating application users"
 
-# 3. Apply DBA migrations - Use POSTGRES for proper permissions
-docker compose exec database psql -U postgres -d {project}_dev `
+# 3. Apply DBA migrations
+docker compose exec database psql -U {project}_app -d {project}_dev `
   -f /db-scripts/migrations/001_create_user_management_schema.sql
 
 # 4. Scaffold EF models
@@ -752,8 +768,8 @@ dotnet run --project src/Api
 
 ```powershell
 # 1. DBA creates new migration (e.g., 002_create_strategy_management_schema.sql)
-# 2. Apply new migration - Use POSTGRES for proper permissions
-docker compose exec database psql -U postgres -d {project}_dev `
+# 2. Apply new migration
+docker compose exec database psql -U {project}_app -d {project}_dev `
   -f /db-scripts/migrations/002_create_strategy_management_schema.sql
 
 # 3. Re-scaffold (updates existing + adds new entities)
