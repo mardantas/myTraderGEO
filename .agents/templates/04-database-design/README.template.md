@@ -33,12 +33,11 @@ This is a **quick reference guide** for executing database migrations and managi
 │   ├── 00-init-users.sh               # Creates users with env-based passwords
 │   └── 01-create-app-user.sql.backup  # Legacy (for reference only)
 ├── migrations/         # Schema migrations (tables, indexes, constraints)
+│   ├── 000_*.sql       # Maintenance utilities (password rotation, etc)
 │   ├── 001_*.sql       # Schema creation (tables, indexes, constraints)
-│   └── 002_*.sql       # Password rotation and environment updates
+│   └── 002_*.sql       # Schema updates (subsequent epics)
 ├── seeds/              # Initial data (plans, config, demo users)
 │   └── 001_seed_{epic_name}_defaults.sql
-├── scripts/            # Utility and convenience scripts
-│   └── update-all-passwords.sh  # Convenience script for password rotation
 └── README.md           # This file
 ```
 
@@ -162,41 +161,20 @@ EOSQL
 
 ### Password Rotation (For Running Databases)
 
-For databases that are already initialized and running, use the migration script or convenience script to update passwords.
+For databases that are already initialized and running, use the maintenance SQL script to update passwords.
 
-#### Option A: Using Convenience Script (Recommended)
-
-**File:** [scripts/update-all-passwords.sh](scripts/update-all-passwords.sh)
-
-```bash
-# From .env file
-./scripts/update-all-passwords.sh /path/to/.env.staging
-
-# Interactive prompt
-./scripts/update-all-passwords.sh
-
-# From environment
-DB_APP_PASSWORD="new_pass" DB_READONLY_PASSWORD="new_pass2" ./scripts/update-all-passwords.sh
-```
-
-This script updates all users (including optionally postgres superuser) in one command.
-
----
-
-#### Option B: Using Migration SQL Directly
-
-**File:** [migrations/002_update_prod_passwords.sql](migrations/002_update_prod_passwords.sql)
+**File:** [migrations/000_update_passwords.sql](migrations/000_update_passwords.sql)
 
 ```bash
 # Export passwords from .env or set manually
 export DB_APP_PASSWORD="St@g!ng_SecureP@ss2025!#"
 export DB_READONLY_PASSWORD="St@g!ng_ReadOnly2025!#"
 
-# Execute migration
+# Execute maintenance script
 psql -h $DB_HOST -U postgres -d {project}_dev \
   -v app_password="$DB_APP_PASSWORD" \
   -v readonly_password="$DB_READONLY_PASSWORD" \
-  -f migrations/002_update_prod_passwords.sql
+  -f migrations/000_update_passwords.sql
 ```
 
 **After password update:**
@@ -1852,8 +1830,9 @@ SELECT * FROM {TableWithSeeds} ORDER BY CreatedAt;
 | Migration | Status | Date | Description |
 |-----------|--------|------|-------------|
 | [001_create_{epic_name}_schema.sql](migrations/001_create_{epic_name}_schema.sql) | ⏳ To Create | YYYY-MM-DD | Complete schema: {Table1}, {Table2}, {Table3} |
-| [002_update_production_passwords.sql](migrations/002_update_production_passwords.sql) | ⏳ To Create | YYYY-MM-DD | Update passwords for staging/production environments |
 | [001_seed_{epic_name}_defaults.sql](seeds/001_seed_{epic_name}_defaults.sql) | ⏳ To Create | YYYY-MM-DD | Initial data: {seed description} |
+
+**Note:** [000_update_passwords.sql](migrations/000_update_passwords.sql) is a maintenance utility (not a sequential migration) for password rotation. Use prefix `000_` for non-sequential utilities.
 
 ---
 

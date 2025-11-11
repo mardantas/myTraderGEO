@@ -64,7 +64,7 @@
         - Identify gaps or missing database considerations
 
         PHASE 4 - PLAN MODE (Implementation and Finalization):
-        - Create migration file: 04-database/migrations/002_update_prod_passwords.sql
+        - Create maintenance utility: 04-database/migrations/000_update_passwords.sql
         - Apply corrections and improvements from review
         - Update documentation for clarity
         - Provide feedback to DE for schema adjustments (if needed)
@@ -115,13 +115,13 @@
             </relationship>
         </deliverable>
 
-        <deliverable path="04-database/migrations/002_update_prod_passwords.sql" base-path="" order="3">
-            <template base-path="templates">04-database-design/migrations/002_update_prod_passwords.sql.template</template>
-            <description>ALTER USER migration for staging/prod environments (NEVER commit real passwords)</description>
-            <note>Executed manually with environment variables: psql -v app_password="$DB_APP_PASSWORD" -f 002_update_prod_passwords.sql</note>
-            <type>migration</type>
+        <deliverable path="04-database/migrations/000_update_passwords.sql" base-path="" order="3">
+            <template base-path="templates">04-database-design/migrations/000_update_passwords.sql.template</template>
+            <description>Maintenance utility for password rotation in staging/prod environments (NEVER commit real passwords)</description>
+            <note>Executed manually with environment variables: psql -v app_password="$DB_APP_PASSWORD" -f 000_update_passwords.sql</note>
+            <type>maintenance-utility</type>
             <mandatory>true</mandatory>
-            <security-note>This file is committed to Git but contains NO real passwords. Passwords passed via psql -v parameter from environment variables.</security-note>
+            <security-note>This file is committed to Git but contains NO real passwords. Passwords passed via psql -v parameter from environment variables. Use prefix 000_ for non-sequential utilities.</security-note>
         </deliverable>
     </deliverables>
 
@@ -141,7 +141,7 @@
         <essential-check>Acceptable estimated performance</essential-check>
         <essential-check>Multi-environment password strategy documented (dev simple, staging/prod strong)</essential-check>
         <essential-check>Database passwords NOT hardcoded in Git (CREATE USER in init with dev password only)</essential-check>
-        <essential-check>ALTER USER migration created (002_update_prod_passwords.sql) for staging/prod</essential-check>
+        <essential-check>Password rotation utility created (000_update_passwords.sql) for staging/prod</essential-check>
         <essential-check>Password rotation procedure documented (quarterly production, semi-annual staging)</essential-check>
         <essential-check>Least privilege access documented (application user with minimal permissions)</essential-check>
         <essential-check>Compliance noted (LGPD Art. 46, SOC2, ISO 27001)</essential-check>
@@ -163,7 +163,7 @@
             <criterion>Backup strategy documented (RTO/RPO defined)</criterion>
             <criterion>Multi-environment password strategy documented in README.md</criterion>
             <criterion>Database passwords NEVER hardcoded in Git (init script with dev password only)</criterion>
-            <criterion>ALTER USER migration created for staging/prod (002_update_prod_passwords.sql)</criterion>
+            <criterion>Password rotation utility created for staging/prod (000_update_passwords.sql)</criterion>
             <criterion>Password rotation documented (quarterly production, semi-annual staging)</criterion>
             <criterion>Compliance requirements noted (LGPD Art. 46, SOC2, ISO 27001)</criterion>
         </criteria>
