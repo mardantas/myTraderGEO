@@ -1853,12 +1853,17 @@ docker compose exec database psql -U postgres -d mytrader_dev
 \c mytrader_dev mytrader_app
 
 -- ✅ CRUD should work
-INSERT INTO {Table} (Id, Name) VALUES (gen_random_uuid(), 'Test');
-SELECT * FROM {Table} WHERE Name = 'Test';
-DELETE FROM {Table} WHERE Name = 'Test';
+INSERT INTO Users (Id, Email, PasswordHash, FullName, DisplayName, Role, Status)
+VALUES (gen_random_uuid(), 'test@test.com', 'hash123', 'Test User', 'TestU', 'Administrator', 'Active');
+
+SELECT * FROM Users WHERE Email = 'test@test.com';
+
+UPDATE Users SET DisplayName = 'Updated' WHERE Email = 'test@test.com';
+
+DELETE FROM Users WHERE Email = 'test@test.com';
 
 -- ✅ CREATE TABLE should work (migrations)
-CREATE TABLE test_table (id INT);
+CREATE TABLE test_table (id INT, name TEXT);
 DROP TABLE test_table;
 
 -- ❌ Administrative operations should FAIL
@@ -1874,12 +1879,26 @@ CREATE ROLE hacker;                 -- ERROR: permission denied
 \c mytrader_dev mytrader_readonly
 
 -- ✅ SELECT should work
-SELECT * FROM {Table};
+SELECT * FROM Users;
+SELECT COUNT(*) FROM Users;
+
+-- ✅ Also works on other tables
+SELECT * FROM SubscriptionPlans ORDER BY PriceMonthlyAmount;
 
 -- ❌ Modifications should FAIL
-INSERT INTO {Table} (Id, Name) VALUES (gen_random_uuid(), 'Test');  -- ERROR
-UPDATE {Table} SET Name = 'hacker';                                 -- ERROR
-DELETE FROM {Table};                                                -- ERROR
+INSERT INTO Users (Id, Email, PasswordHash, FullName, DisplayName, Role, Status)
+VALUES (gen_random_uuid(), 'hacker@test.com', 'hash', 'Hacker', 'H', 'Trader', 'Active');
+-- ERROR: permission denied for table users
+
+UPDATE Users SET Email = 'hacker@test.com';
+-- ERROR: permission denied for table users
+
+DELETE FROM Users;
+-- ERROR: permission denied for table users
+
+-- ❌ DDL operations should FAIL
+CREATE TABLE hacker_table (id INT);
+-- ERROR: permission denied for schema public
 ```
 
 ### Verify Schema Migrations
@@ -1889,12 +1908,17 @@ DELETE FROM {Table};                                                -- ERROR
 \dt
 
 -- Expected output:
-# {Table1}
-# {Table2}
-# {Table3}
+# subscriptionplans
+# systemconfigs
+# users
 
 -- Verify seed data
-SELECT * FROM {TableWithSeeds} ORDER BY CreatedAt;
+SELECT Name, PriceMonthlyAmount FROM SubscriptionPlans ORDER BY PriceMonthlyAmount;
+
+-- Expected output:
+# Básico   | 0.00
+# Pleno    | 99.90
+# Consultor| 299.00
 ```
 
 ---
