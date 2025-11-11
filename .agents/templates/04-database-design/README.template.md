@@ -21,7 +21,11 @@ This is a **quick reference guide** for executing database migrations and managi
 - **This README:** Commands and checklists (HOW to execute)  
 - **DBA-01:** Design decisions, justifications, and trade-offs (WHY and WHAT)  
 
-**Principle:** README is an INDEX/QUICK-REFERENCE to DBA-01, not a duplicate.  
+**Principle:** README is an INDEX/QUICK-REFERENCE to DBA-01, not a duplicate.
+
+---
+
+> **💻 Comandos otimizados para PowerShell (Windows)**
 
 ---
 
@@ -523,49 +527,59 @@ Use this checklist during Discovery and per-epic security reviews:
 
 ## 🚀 How to Execute Migrations
 
-### Execution Order
+### ⚠️ Correct Execution Order
 
-**⚠️ IMPORTANT:** Execute in correct order to avoid dependency errors.  
+**IMPORTANT**: Execute in this order to avoid permission issues:
 
-```bash
-# 1. Init Scripts (automatic on first time)
-#    Executed automatically by Docker via /docker-entrypoint-initdb.d/
-#    If already executed: skip (no need to re-execute)
+```powershell
+# 1. Start database (init-scripts create users and permissions)
+docker compose -f 05-infra/docker/docker-compose.dev.yml `
+  --env-file 05-infra/configs/.env.dev up database -d
 
-# 2. Schema Migrations (manually or CI/CD)
-psql -h localhost -U {project}_app -d {project}_dev -f 04-database/migrations/001_create_{epic_name}_schema.sql
+# 2. Verify users were created
+docker compose -f 05-infra/docker/docker-compose.dev.yml `
+  --env-file 05-infra/configs/.env.dev `
+  logs database | Select-String "Creating application users"
 
-# 3. Seed Data (manually)
-psql -h localhost -U {project}_app -d {project}_dev -f 04-database/seeds/001_seed_{epic_name}_defaults.sql
+# 3. Execute migrations as POSTGRES (not as {project}_app!)
+docker compose -f 05-infra/docker/docker-compose.dev.yml `
+  --env-file 05-infra/configs/.env.dev `
+  exec database psql -U postgres -d {project}_dev `
+  -f /db-scripts/migrations/001_create_{epic_name}_schema.sql
+
+# 4. Execute seeds (now with correct permissions)
+docker compose -f 05-infra/docker/docker-compose.dev.yml `
+  --env-file 05-infra/configs/.env.dev `
+  exec database psql -U {project}_app -d {project}_dev `
+  -f /db-scripts/seeds/001_seed_{epic_name}_defaults.sql
 ```
 
-### Environments
+### 🔑 Why Use `postgres` for Migrations?
 
-#### Development (Docker Compose)
+- **`postgres`** (superuser): Creates tables that automatically receive permissions configured in `ALTER DEFAULT PRIVILEGES`
+- **`{project}_app`**: Can create tables, BUT `{project}_readonly` won't receive permissions automatically
 
-```bash
-# Start database
-docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up database -d
+### 🔧 Fix Permissions if Migration Was Run with Wrong User
 
-# Verify init-scripts executed
-docker compose logs database | grep "Creating application users"
+If you ran migration as `{project}_app` and now `{project}_readonly` has no permission:
 
-# Connect as {project}_app
-docker compose exec database psql -U {project}_app -d {project}_dev
-
-# Execute migrations (if needed)
-docker compose exec database psql -U {project}_app -d {project}_dev -f /db-scripts/migrations/001_create_{epic_name}_schema.sql
-
-# Execute seeds
-docker compose exec database psql -U {project}_app -d {project}_dev -f /db-scripts/seeds/001_seed_{epic_name}_defaults.sql
+```powershell
+# Fix permissions manually
+docker compose -f 05-infra/docker/docker-compose.dev.yml `
+  --env-file 05-infra/configs/.env.dev `
+  exec database psql -U postgres -d {project}_dev -c `
+  "GRANT SELECT ON ALL TABLES IN SCHEMA public TO {project}_readonly;"
 ```
 
-#### Staging/Production
+### Staging/Production
 
-```bash
-# Use environment credentials (via .env)
-psql -h $DB_HOST -U $DB_APP_USER -d $DB_NAME -f 04-database/migrations/001_create_{epic_name}_schema.sql
-psql -h $DB_HOST -U $DB_APP_USER -d $DB_NAME -f 04-database/seeds/001_seed_{epic_name}_defaults.sql
+```powershell
+# On server (after SSH)
+docker compose exec database psql -U postgres -d {project}_staging `
+  -f /db-scripts/migrations/001_create_{epic_name}_schema.sql
+
+docker compose exec database psql -U $DB_APP_USER -d {project}_staging `
+  -f /db-scripts/seeds/001_seed_{epic_name}_defaults.sql
 ```
 
 ### Rollback Strategy
@@ -640,38 +654,38 @@ SELECT current_user;  -- Should show: {project}_app
 
 **Important:** DBA creates migrations FIRST in `04-database/migrations/`. SE only executes them.
 
-```bash
-# Execute migration (example for EPIC-01)
-docker compose exec database psql -U {project}_app -d {project}_dev \
+```powershell
+# Execute migration (example for EPIC-01) - Use POSTGRES for proper permissions
+docker compose exec database psql -U postgres -d {project}_dev `
   -f /db-scripts/migrations/001_create_user_management_schema.sql
 
 # Verify tables created
-docker compose exec database psql -U {project}_app -d {project}_dev \
+docker compose exec database psql -U {project}_app -d {project}_dev `
   -c "\dt"
 
 # Expected output: List of tables from migration
 #  Schema |        Name         | Type  |     Owner
 # --------+---------------------+-------+----------------
-#  public | Users               | table | {project}_app
-#  public | SubscriptionPlans   | table | {project}_app
+#  public | Users               | table | postgres
+#  public | SubscriptionPlans   | table | postgres
 ```
 
 ### Step 4: Scaffold EF Core Models from Database
 
 **Critical:** EF models are GENERATED from database, not created via Code-First migrations.
 
-```bash
+```powershell
 # Navigate to backend project
 cd 02-backend
 
 # Scaffold command (generates C# classes from database schema)
-dotnet ef dbcontext scaffold \
-  "Host=localhost;Database={project}_dev;Username={project}_app;Password=dev_password_123" \
-  Npgsql.EntityFrameworkCore.PostgreSQL \
-  --output-dir src/Infrastructure/Data/Models \
-  --context-dir src/Infrastructure/Data \
-  --context ApplicationDbContext \
-  --no-onconfiguring \
+dotnet ef dbcontext scaffold `
+  "Host=localhost;Database={project}_dev;Username={project}_app;Password=dev_password_123" `
+  Npgsql.EntityFrameworkCore.PostgreSQL `
+  --output-dir src/Infrastructure/Data/Models `
+  --context-dir src/Infrastructure/Data `
+  --context ApplicationDbContext `
+  --no-onconfiguring `
   --force
 
 # What this creates:
@@ -708,26 +722,26 @@ dotnet add package Testcontainers.PostgreSql --version 3.x
 
 #### Workflow 1: Start Development (First Time)
 
-```bash
+```powershell
 # 1. Start database
 docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up database -d
 
 # 2. Verify init-scripts executed (creates users)
-docker compose logs database | grep "Creating application users"
+docker compose logs database | Select-String "Creating application users"
 
-# 3. Apply DBA migrations
-docker compose exec database psql -U {project}_app -d {project}_dev \
+# 3. Apply DBA migrations - Use POSTGRES for proper permissions
+docker compose exec database psql -U postgres -d {project}_dev `
   -f /db-scripts/migrations/001_create_user_management_schema.sql
 
 # 4. Scaffold EF models
 cd 02-backend
-dotnet ef dbcontext scaffold \
-  "Host=localhost;Database={project}_dev;Username={project}_app;Password=dev_password_123" \
-  Npgsql.EntityFrameworkCore.PostgreSQL \
-  --output-dir src/Infrastructure/Data/Models \
-  --context-dir src/Infrastructure/Data \
-  --context ApplicationDbContext \
-  --no-onconfiguring \
+dotnet ef dbcontext scaffold `
+  "Host=localhost;Database={project}_dev;Username={project}_app;Password=dev_password_123" `
+  Npgsql.EntityFrameworkCore.PostgreSQL `
+  --output-dir src/Infrastructure/Data/Models `
+  --context-dir src/Infrastructure/Data `
+  --context ApplicationDbContext `
+  --no-onconfiguring `
   --force
 
 # 5. Run application
@@ -736,21 +750,21 @@ dotnet run --project src/Api
 
 #### Workflow 2: Update After New Migration (Subsequent Epics)
 
-```bash
+```powershell
 # 1. DBA creates new migration (e.g., 002_create_strategy_management_schema.sql)
-# 2. Apply new migration
-docker compose exec database psql -U {project}_app -d {project}_dev \
+# 2. Apply new migration - Use POSTGRES for proper permissions
+docker compose exec database psql -U postgres -d {project}_dev `
   -f /db-scripts/migrations/002_create_strategy_management_schema.sql
 
 # 3. Re-scaffold (updates existing + adds new entities)
 cd 02-backend
-dotnet ef dbcontext scaffold \
-  "Host=localhost;Database={project}_dev;Username={project}_app;Password=dev_password_123" \
-  Npgsql.EntityFrameworkCore.PostgreSQL \
-  --output-dir src/Infrastructure/Data/Models \
-  --context-dir src/Infrastructure/Data \
-  --context ApplicationDbContext \
-  --no-onconfiguring \
+dotnet ef dbcontext scaffold `
+  "Host=localhost;Database={project}_dev;Username={project}_app;Password=dev_password_123" `
+  Npgsql.EntityFrameworkCore.PostgreSQL `
+  --output-dir src/Infrastructure/Data/Models `
+  --context-dir src/Infrastructure/Data `
+  --context ApplicationDbContext `
+  --no-onconfiguring `
   --force
 
 # 4. Review changes
