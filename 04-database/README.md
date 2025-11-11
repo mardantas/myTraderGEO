@@ -11,15 +11,13 @@
 ```
 04-database/
 ├── init-scripts/       # Scripts executados na PRIMEIRA inicialização do container
-│   ├── 00-init-users.sh        # Cria usuários com senhas do ambiente
-│   └── README-MIGRATION.txt    # Documentação sobre a migração
+│   └── 00-init-users.sh        # Cria usuários com senhas do ambiente
 ├── migrations/         # Schema migrations (tabelas, índices, constraints)
+│   ├── 000_*.sql       # Utilitários de manutenção (rotação de senhas, etc)
 │   ├── 001_*.sql       # Schema creation (tabelas, índices, constraints)
-│   └── 002_*.sql       # Rotação de senhas e atualizações de ambiente
+│   └── 002_*.sql       # Schema updates (épicos subsequentes)
 ├── seeds/              # Dados iniciais (planos, config, demo users)
 │   └── 001_seed_user_management_defaults.sql
-├── scripts/            # Scripts utilitários e de conveniência
-│   └── update-all-passwords.sh  # Script de conveniência para rotação de senhas
 └── README.md           # Este arquivo
 ```
 
@@ -130,41 +128,20 @@ Todos os ambientes usam arquivos `.env` para gestão de senhas. Development usa 
 
 ### Rotação de Senhas (Para Bancos em Execução)
 
-Para bancos de dados já inicializados e em execução, use o script de migração ou script de conveniência para atualizar senhas.
+Para bancos de dados já inicializados e em execução, use o utilitário SQL de manutenção para atualizar senhas.
 
-#### Opção A: Usando Script de Conveniência (Recomendado)
-
-**Arquivo:** [scripts/update-all-passwords.sh](scripts/update-all-passwords.sh)
-
-```bash
-# De arquivo .env
-./scripts/update-all-passwords.sh /path/to/.env.staging
-
-# Prompt interativo
-./scripts/update-all-passwords.sh
-
-# De variáveis de ambiente
-DB_APP_PASSWORD="new_pass" DB_READONLY_PASSWORD="new_pass2" ./scripts/update-all-passwords.sh
-```
-
-Este script atualiza todos os usuários (incluindo opcionalmente postgres superuser) em um comando.
-
----
-
-#### Opção B: Usando SQL de Migração Diretamente
-
-**Arquivo:** [migrations/002_update_production_passwords.sql](migrations/002_update_production_passwords.sql)
+**Arquivo:** [migrations/000_update_passwords.sql](migrations/000_update_passwords.sql)
 
 ```bash
 # Exportar senhas do .env ou definir manualmente
 export DB_APP_PASSWORD="St@g!ng_SecureP@ss2025!#"
 export DB_READONLY_PASSWORD="St@g!ng_ReadOnly2025!#"
 
-# Executar migration
+# Executar utilitário de manutenção
 psql -h $DB_HOST -U postgres -d mytrader_dev \
   -v app_password="$DB_APP_PASSWORD" \
   -v readonly_password="$DB_READONLY_PASSWORD" \
-  -f migrations/002_update_production_passwords.sql
+  -f migrations/000_update_passwords.sql
 ```
 
 **Após atualização de senha:**
@@ -281,9 +258,9 @@ DB_READONLY_PASSWORD=<SENHA_FORTE_READONLY_PRODUCTION>
 
 ```bash
 # 1. Gerar nova senha forte (16+ caracteres)
-# 2. Executar migration 002 com nova senha
+# 2. Executar utilitário de manutenção 000 com nova senha
 export DB_APP_PASSWORD="<NOVA_SENHA>"
-psql -U postgres -d mytrader_prod -f 002_update_production_passwords.sql \
+psql -U postgres -d mytrader_prod -f 000_update_passwords.sql \
   -v app_password="$DB_APP_PASSWORD" \
   -v readonly_password="$DB_READONLY_PASSWORD"
 
@@ -1244,8 +1221,9 @@ dotnet ef dbcontext scaffold \
 | Migration | Status | Data | Descrição |
 |-----------|--------|------|-----------|
 | [001_create_user_management_schema.sql](migrations/001_create_user_management_schema.sql) | ✅ Criado | 2025-10-26 | Schema completo: SubscriptionPlans, SystemConfigs, Users |
-| [002_update_production_passwords.sql](migrations/002_update_production_passwords.sql) | ✅ Criado | 2025-10-26 | Atualização de senhas para staging/production |
 | [001_seed_user_management_defaults.sql](seeds/001_seed_user_management_defaults.sql) | ✅ Criado | 2025-10-26 | Planos, config, admin, demos |
+
+**Nota:** [000_update_passwords.sql](migrations/000_update_passwords.sql) é um utilitário de manutenção (não uma migration sequencial) para rotação de senhas. Use prefixo `000_` para utilitários não-sequenciais.
 
 ---
 
