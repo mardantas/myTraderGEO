@@ -1848,17 +1848,25 @@ docker compose exec database psql -U postgres -d {project}_dev
 
 ### Test {project}_app Permissions
 
+**⚠️ IMPORTANT:** Replace `{Table}` with your actual table names (e.g., Users, Products, Orders).
+
 ```sql
 -- Connect as {project}_app
 \c {project}_dev {project}_app
 
 -- ✅ CRUD should work
-INSERT INTO {Table} (Id, Name) VALUES (gen_random_uuid(), 'Test');
-SELECT * FROM {Table} WHERE Name = 'Test';
-DELETE FROM {Table} WHERE Name = 'Test';
+-- Replace {Table} and columns with your actual schema
+INSERT INTO {Table} (Id, Column1, Column2, Column3)
+VALUES (gen_random_uuid(), 'value1', 'value2', 'value3');
+
+SELECT * FROM {Table} WHERE Id = '<some_id>';
+
+UPDATE {Table} SET Column1 = 'new_value' WHERE Id = '<some_id>';
+
+DELETE FROM {Table} WHERE Id = '<some_id>';
 
 -- ✅ CREATE TABLE should work (migrations)
-CREATE TABLE test_table (id INT);
+CREATE TABLE test_table (id INT, name TEXT);
 DROP TABLE test_table;
 
 -- ❌ Administrative operations should FAIL
@@ -1875,11 +1883,22 @@ CREATE ROLE hacker;                 -- ERROR: permission denied
 
 -- ✅ SELECT should work
 SELECT * FROM {Table};
+SELECT COUNT(*) FROM {Table};
 
 -- ❌ Modifications should FAIL
-INSERT INTO {Table} (Id, Name) VALUES (gen_random_uuid(), 'Test');  -- ERROR
-UPDATE {Table} SET Name = 'hacker';                                 -- ERROR
-DELETE FROM {Table};                                                -- ERROR
+INSERT INTO {Table} (Id, Column1, Column2)
+VALUES (gen_random_uuid(), 'value1', 'value2');
+-- ERROR: permission denied for table {Table}
+
+UPDATE {Table} SET Column1 = 'hacked';
+-- ERROR: permission denied for table {Table}
+
+DELETE FROM {Table};
+-- ERROR: permission denied for table {Table}
+
+-- ❌ DDL operations should FAIL
+CREATE TABLE hacker_table (id INT);
+-- ERROR: permission denied for schema public
 ```
 
 ### Verify Schema Migrations
