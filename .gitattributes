@@ -1,0 +1,35 @@
+# Git Attributes for myTraderGEO
+# Ensures consistent line endings across operating systems
+
+# Shell scripts MUST use LF (Unix) line endings
+# Critical for Docker containers running Linux
+*.sh text eol=lf
+
+# SQL scripts should use LF for consistency
+*.sql text eol=lf
+
+# Other text files (default to auto)
+*.md text
+*.yml text
+*.yaml text
+*.json text
+*.xml text
+*.cs text
+*.csproj text
+
+# Environment files
+.env* text
+
+# Explicitly declare text files
+*.txt text
+
+# Denote all files that are truly binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.dll binary
+*.exe binary
