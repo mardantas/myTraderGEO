@@ -64,11 +64,11 @@
         - Identify gaps or missing database considerations
 
         PHASE 4 - PLAN MODE (Implementation and Finalization):
-        - Create maintenance utility: 04-database/migrations/000_update_passwords.sql
+        - Create maintenance utilities: 04-database/migrations/000_update_passwords.sql and 04-database/scripts/rotate-passwords.sh
         - Apply corrections and improvements from review
-        - Update documentation for clarity
+        - Update documentation for clarity (including remote database access via SSH + docker exec)
         - Provide feedback to DE for schema adjustments (if needed)
-        - Ensure migration commands are clear in README
+        - Ensure migration commands and password rotation procedures are clear in README
         - Complete DBA-checklist.yml validation
         - Final validation before handoff to DE, QAE
     </general-instructions>
@@ -123,6 +123,15 @@
             <mandatory>true</mandatory>
             <security-note>This file is committed to Git but contains NO real passwords. Passwords passed via psql -v parameter from environment variables. Use prefix 000_ for non-sequential utilities.</security-note>
         </deliverable>
+
+        <deliverable path="04-database/scripts/rotate-passwords.sh" base-path="" order="4">
+            <template base-path="templates">04-database-design/scripts/rotate-passwords.sh.template</template>
+            <description>Shell wrapper for password rotation that reads .env file securely</description>
+            <note>Usage: ./scripts/rotate-passwords.sh .env.staging - Recommended method for password rotation (Option A in README)</note>
+            <type>maintenance-utility</type>
+            <mandatory>true</mandatory>
+            <security-note>Wrapper parses .env file and passes passwords via psql -v (not exposed in bash history or process list). Includes validation and confirmation prompts.</security-note>
+        </deliverable>
     </deliverables>
 
     <predecessors>
@@ -142,7 +151,9 @@
         <essential-check>Multi-environment password strategy documented (dev simple, staging/prod strong)</essential-check>
         <essential-check>Database passwords NOT hardcoded in Git (CREATE USER in init with dev password only)</essential-check>
         <essential-check>Password rotation utility created (000_update_passwords.sql) for staging/prod</essential-check>
+        <essential-check>Password rotation shell wrapper created (scripts/rotate-passwords.sh) with .env file support</essential-check>
         <essential-check>Password rotation procedure documented (quarterly production, semi-annual staging)</essential-check>
+        <essential-check>Remote database access documented (SSH + docker exec for staging/prod)</essential-check>
         <essential-check>Least privilege access documented (application user with minimal permissions)</essential-check>
         <essential-check>Compliance noted (LGPD Art. 46, SOC2, ISO 27001)</essential-check>
     </quality-checklist>
@@ -164,7 +175,9 @@
             <criterion>Multi-environment password strategy documented in README.md</criterion>
             <criterion>Database passwords NEVER hardcoded in Git (init script with dev password only)</criterion>
             <criterion>Password rotation utility created for staging/prod (000_update_passwords.sql)</criterion>
+            <criterion>Password rotation shell wrapper created (scripts/rotate-passwords.sh) with .env file support</criterion>
             <criterion>Password rotation documented (quarterly production, semi-annual staging)</criterion>
+            <criterion>Remote database access documented (SSH + docker exec for staging/prod)</criterion>
             <criterion>Compliance requirements noted (LGPD Art. 46, SOC2, ISO 27001)</criterion>
         </criteria>
 
