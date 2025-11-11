@@ -36,6 +36,8 @@ This is a **quick reference guide** for executing database migrations and managi
 │   ├── 000_*.sql       # Maintenance utilities (password rotation, etc)
 │   ├── 001_*.sql       # Schema creation (tables, indexes, constraints)
 │   └── 002_*.sql       # Schema updates (subsequent epics)
+├── scripts/            # Utility scripts
+│   └── rotate-passwords.sh  # Password rotation wrapper (reads .env file)
 ├── seeds/              # Initial data (plans, config, demo users)
 │   └── 001_seed_{epic_name}_defaults.sql
 └── README.md           # This file
@@ -47,6 +49,7 @@ This is a **quick reference guide** for executing database migrations and managi
 |-----------|---------------|---------|-------------|
 | **init-scripts/** | **Only on first initialization** (empty volume) | Create database users, security configurations | ✅ Yes (uses `IF NOT EXISTS`) |
 | **migrations/** | Manually by DBA or CI/CD (each schema change) | Create/alter tables, indexes, constraints | ⚠️ Depends (use transactions) |
+| **scripts/** | On-demand (maintenance tasks) | Utility wrappers for common operations (password rotation) | ✅ Yes |
 | **seeds/** | Manually by DBA after migrations | Populate initial data (plans, config, demos) | ✅ Yes (uses `ON CONFLICT DO NOTHING`) |
 
 ---
@@ -161,9 +164,39 @@ EOSQL
 
 ### Password Rotation (For Running Databases)
 
-For databases that are already initialized and running, use the maintenance SQL script to update passwords.
+For databases that are already initialized and running, you can rotate passwords using two methods:
+
+#### Option A: Shell Wrapper (Recommended - Reads .env)
+
+**File:** [scripts/rotate-passwords.sh](scripts/rotate-passwords.sh)
+
+**Benefits:**
+- ✅ **Security:** Passwords not exposed in bash history or process list
+- ✅ **Convenience:** Reads credentials directly from .env file
+- ✅ **Validation:** Checks for required variables and confirms before execution
+
+```bash
+# Local (development)
+./scripts/rotate-passwords.sh .env.dev
+
+# Remote (staging/production - after SSH)
+./scripts/rotate-passwords.sh .env.staging
+```
+
+**Script features:**
+- Parses .env file safely (ignores comments, empty lines)
+- Validates required variables (DB_APP_PASSWORD, DB_READONLY_PASSWORD)
+- Confirmation prompt before execution
+- Colored output for better readability
+- Logs execution to `/tmp/rotate-passwords.log`
+
+---
+
+#### Option B: SQL Script Directly (Manual)
 
 **File:** [migrations/000_update_passwords.sql](migrations/000_update_passwords.sql)
+
+**Use when:** Shell wrapper not available or you prefer manual control.
 
 ```bash
 # Export passwords from .env or set manually
@@ -177,41 +210,54 @@ psql -h $DB_HOST -U postgres -d {project}_dev \
   -f migrations/000_update_passwords.sql
 ```
 
-**After password update:**
-1. Update `.env` file on server with new passwords
+**After password update (both options):**
+1. Update `.env` file on server with new passwords (if rotated)
 2. Restart API container: `docker compose restart api`
-3. Verify: `docker compose logs api`
+3. Verify: `docker compose logs api | grep "Database connection"`
 4. Document: `echo "$(date) - Password rotated" >> password-rotation.log`
-
-**Execution (Staging/Production):**
-
-```bash
-# Set environment variables (from .env.staging or .env.production)
-export DB_APP_PASSWORD="[STRONG_PASSWORD_FROM_ENV]"
-export DB_READONLY_PASSWORD="[STRONG_PASSWORD_FROM_ENV]"
-
-# Execute migration with variables
-psql -h $DB_HOST -U postgres -d {project}_dev \
-  -v app_password="$DB_APP_PASSWORD" \
-  -v readonly_password="$DB_READONLY_PASSWORD" \
-  -f 04-database/migrations/002_update_prod_passwords.sql
-```
-
-**⚠️ IMPORTANT:**
-- ✅ **DO commit** `002_update_prod_passwords.sql` to Git (file contains NO passwords)  
-- ❌ **DO NOT commit** real passwords (passed via `psql -v` from environment)  
-- ✅ **DO document** execution instructions in this README  
-- ❌ **DO NOT execute** on development (use dev_password_123 from init script)  
 
 ---
 
-### Password Storage Locations
+### Remote Database Access (Staging/Production)
 
-| Environment | Password Storage Location | Access Method | Git Status |
-|-------------|---------------------------|---------------|-----------|
-| **Development** | `init-scripts/01-create-app-user.sql` | Committed to Git | ✅ Public (safe) |
-| **Staging** | Server: `/home/{project}_app/{project}/.env.staging` | SSH to server | ❌ NOT in Git |
-| **Production** | Server: `/home/{project}_app/{project}/.env.production` | SSH to server | ❌ NOT in Git |
+**Security Principle:** PostgreSQL port 5432 is NOT exposed to the internet in staging/production environments. Access is only possible via SSH + Docker.
+
+#### Recommended Access Method:
+
+```bash
+# 1. SSH into the server
+ssh {project}@{project}-stage  # or {project}-prod
+
+# 2. Navigate to application directory
+cd ~/{project}-app/app
+
+# 3. Access database via docker compose exec
+docker compose exec database psql -U postgres -d {project}_staging
+
+# 4. Or rotate passwords using the wrapper
+./04-database/scripts/rotate-passwords.sh .env.staging
+```
+
+#### Why Port 5432 is Not Exposed:
+
+| Environment | Port 5432 Status | Reasoning |
+|-------------|-----------------|-----------|
+| **Development** | ✅ Exposed (5432:5432) | Convenience for local development tools (pgAdmin, IDE plugins) |
+| **Staging** | ❌ Not exposed | Security - reduces attack surface, only internal containers can access |
+| **Production** | ❌ Not exposed | Security - CRITICAL for production, prevents external SQL injection attempts |
+
+**Network Architecture:**
+- Database is on internal Docker network only
+- API container connects via internal network (`database:5432`)
+- External access ONLY via SSH + docker exec (requires server access)
+
+**For emergency access or troubleshooting:**
+```bash
+# SSH tunnel (if port exposure is temporarily needed for tools like pgAdmin)
+ssh -L 5432:localhost:5432 {project}@{project}-stage
+# Then connect locally to localhost:5432 with pgAdmin/DBeaver
+# IMPORTANT: Close tunnel immediately after use
+```
 
 ### Password Generation
 
@@ -264,7 +310,7 @@ DB_READONLY_PASSWORD=[GENERATED_STRONG_PASSWORD]
    export DB_APP_PASSWORD="[NEW_PASSWORD]"
    psql -h localhost -U postgres -d {project}_dev \
      -v app_password="$DB_APP_PASSWORD" \
-     -f migrations/002_update_prod_passwords.sql
+     -f migrations/000_update_passwords.sql
    ```
 
 4. **Restart application:**
@@ -447,10 +493,10 @@ Use this checklist during Discovery and per-epic security reviews:
 
 #### Discovery Phase (DBA-00)
 
-- [ ] Database users created with least privilege ([01-create-app-user.sql](init-scripts/01-create-app-user.sql))  
-- [ ] Development passwords committed to Git (safe defaults)  
-- [ ] Staging/production passwords documented (NOT committed)  
-- [ ] ALTER USER migration created ([002_update_prod_passwords.sql](migrations/002_update_prod_passwords.sql))  
+- [ ] Database users created with least privilege ([00-init-users.sh](init-scripts/00-init-users.sh))
+- [ ] Development passwords committed to Git (safe defaults)
+- [ ] Staging/production passwords documented (NOT committed)
+- [ ] Password rotation utility created ([000_update_passwords.sql](migrations/000_update_passwords.sql))
 - [ ] Password rotation procedure documented (this README)  
 - [ ] Encryption at rest configured (pgcrypto extension)  
 - [ ] Audit logging enabled (pgaudit extension)  
