@@ -194,7 +194,13 @@ Ensure quality as **QUALITY GATE** at end of each epic - tests pass → approve 
 
 ### Responsibilities
 **Discovery (AFTER PE):** Test strategy (QAE-00), tools selection based on PE stack (xUnit vs Jest, Playwright vs Cypress), coverage criteria (≥70% domain, ≥60% application).  
-**Per Epic (Day 10 - QUALITY GATE):** Integration tests (SE APIs), E2E tests (UXD-01 journeys), regression tests (previous epics), smoke test (critical paths), DECISION: ✅ approve OR ❌ block deploy.  
+**Per Epic (Day 10 - QUALITY GATE):**
+- Expand SE's unit tests (≥70% coverage baseline) with edge cases, boundary conditions, error scenarios
+- Integration tests (SE APIs + cross-BC) - 100% ownership
+- E2E tests (UXD-01 journeys) - 100% ownership
+- Regression tests (previous epics)
+- Smoke test (critical paths)
+- DECISION: ✅ approve OR ❌ block deploy
 
 ### When Executes
 **Discovery:** QAE-00-Test-Strategy (AFTER PE defines stack)  

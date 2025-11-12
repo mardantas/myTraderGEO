@@ -73,8 +73,9 @@
 
     <responsibilities>
         <responsibility>Discovery: Define testing strategy (tools, coverage, acceptance criteria)</responsibility>
-        <responsibility>Per Epic: Integration tests (SE APIs, cross-BC communication)</responsibility>
-        <responsibility>Per Epic: E2E tests (user journeys from UXD-01 wireframes)</responsibility>
+        <responsibility>Per Epic: Expand SE's unit tests with edge cases, boundary conditions, error scenarios (SE provides ≥70% coverage baseline)</responsibility>
+        <responsibility>Per Epic: Integration tests (SE APIs, cross-BC communication) - 100% QAE ownership</responsibility>
+        <responsibility>Per Epic: E2E tests (user journeys from UXD-01 wireframes) - 100% QAE ownership</responsibility>
         <responsibility>Per Epic: Regression tests (previous epics still work)</responsibility>
         <responsibility>Per Epic: Smoke test (critical functionality health check)</responsibility>
         <responsibility>QUALITY GATE: Approve or block deploy based on test results</responsibility>
@@ -110,6 +111,28 @@
         <successor agent="PE" phase="iteration">Deploy to staging/prod (only if QAE approves)</successor>
     </successors>
 
+    <testing-division-of-responsibilities>
+        <note>
+            **SE vs QAE Testing Responsibilities:**
+
+            **SE (Software Engineer) - Unit Tests (Day 3-6):**
+            - Creates unit tests during implementation
+            - Achieves ≥70% line coverage of src/Domain/ namespace
+            - Focuses on Domain layer (business rules, invariants)
+            - Generates coverage report for QAE baseline
+
+            **QAE (Quality Assurance Engineer) - Comprehensive Testing (Day 10):**
+            - RECEIVES: SE's unit tests (≥70% coverage) + coverage report + functional APIs
+            - EXPANDS: SE's unit tests with edge cases, boundary conditions, error scenarios
+            - CREATES: Integration tests (100% ownership) - API + DB + Use Cases
+            - CREATES: E2E tests (100% ownership) - User journeys from UXD-01
+            - CREATES: Regression tests - Previous epics still work
+            - EXECUTES: Quality gate - ✅ Approve or ❌ Block deploy
+
+            **Sequential Workflow:** SE creates (Day 3-6) → QAE expands + integrates + gates (Day 10)
+        </note>
+    </testing-division-of-responsibilities>
+
     <quality-checklist path="QAE-checklist.yml" base-path="checklists">
         <essential-check>Testing strategy documented</essential-check>
         <essential-check>Integration tests cover main APIs</essential-check>
@@ -127,6 +150,7 @@
         </criteria>
 
         <criteria type="per-epic-tests">
+            <criterion>SE unit tests baseline exists (≥70% src/Domain/ coverage + coverage report) - QAE expands with edge cases</criterion>
             <criterion>Integration tests: Epic's critical API endpoints tested (100% of critical paths)</criterion>
             <criterion>E2E tests: Epic's main user journey tested (minimum 1 happy path from UXD-01)</criterion>
             <criterion>Regression tests: Previous epics' tests executed and passing</criterion>
