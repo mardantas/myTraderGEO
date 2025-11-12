@@ -27,19 +27,19 @@ This is a **quick reference guide** for executing database migrations and managi
 
 ## 📑 Índice
 
-- [About This Document](#about-this-document)
-- [Directory Structure](#directory-structure)
-- [PostgreSQL Users (Least Privilege)](#postgresql-users-least-privilege)
-- [Multi-Environment Password Strategy](#multi-environment-password-strategy)
-- [Security Best Practices](#security-best-practices)
-- [How to Execute Migrations](#how-to-execute-migrations)
-- [Quick Start for Software Engineers](#quick-start-for-software-engineers-se)
-- [Validation and Testing](#validation-and-testing)
-- [EF Core Scaffolding Reference](#ef-core-scaffolding-reference-quick)
-- [Migration Status](#migration-status)
-- [Related Artifacts](#related-artifacts)
-- [References](#references)
-- [Troubleshooting](#troubleshooting)
+- [About This Document](#📋-about-this-document)
+- [Directory Structure](#📁-directory-structure)
+- [PostgreSQL Users (Least Privilege)](#🔐-postgresql-users-least-privilege)
+- [Multi-Environment Password Strategy](#🔒-multi-environment-password-strategy)
+- [Security Best Practices](#🛡️-security-best-practices)
+- [How to Execute Migrations](#🚀-how-to-execute-migrations)
+- [Quick Start for Software Engineers](#🚀-quick-start-for-software-engineers-se)
+- [Validation and Testing](#🧪-validation-and-testing)
+- [EF Core Scaffolding Reference](#🛠️-ef-core-scaffolding-reference-quick)
+- [Migration Status](#📊-migration-status)
+- [Related Artifacts](#🔗-related-artifacts)
+- [References](#📚-references)
+- [Troubleshooting](#🛠️-troubleshooting)
 
 ---
 
