@@ -13,7 +13,7 @@ MARKDOWN FORMATTING:
 
 ---
 
-## 📋 About This Document
+## About This Document
 
 This is a **quick reference guide** for executing database migrations and managing database users. For strategic decisions, database design details, and trade-offs, consult [DBA-01-{EpicName}-Database-Design-Decisions.md](../00-doc-ddd/05-database-design/DBA-01-{EpicName}-Database-Design-Decisions.md).
 
@@ -25,21 +25,21 @@ This is a **quick reference guide** for executing database migrations and managi
 
 ---
 
-## 📑 Índice
+## Índice
 
-- [About This Document](#📋-about-this-document)
-- [Directory Structure](#📁-directory-structure)
-- [PostgreSQL Users (Least Privilege)](#🔐-postgresql-users-least-privilege)
-- [Multi-Environment Password Strategy](#🔒-multi-environment-password-strategy)
-- [Security Best Practices](#🛡️-security-best-practices)
-- [How to Execute Migrations](#🚀-how-to-execute-migrations)
-- [Quick Start for Software Engineers](#🚀-quick-start-for-software-engineers-se)
-- [Validation and Testing](#🧪-validation-and-testing)
-- [EF Core Scaffolding Reference](#🛠️-ef-core-scaffolding-reference-quick)
-- [Migration Status](#📊-migration-status)
-- [Related Artifacts](#🔗-related-artifacts)
-- [References](#📚-references)
-- [Troubleshooting](#🛠️-troubleshooting)
+- [About This Document](#about-this-document)
+- [Directory Structure](#directory-structure)
+- [PostgreSQL Users (Least Privilege)](#postgresql-users-least-privilege)
+- [Multi-Environment Password Strategy](#multi-environment-password-strategy)
+- [Security Best Practices](#security-best-practices)
+- [How to Execute Migrations](#how-to-execute-migrations)
+- [Quick Start for Software Engineers](#quick-start-for-software-engineers-se)
+- [Validation and Testing](#validation-and-testing)
+- [EF Core Scaffolding Reference](#ef-core-scaffolding-reference-quick)
+- [Migration Status](#migration-status)
+- [Related Artifacts](#related-artifacts)
+- [References](#references)
+- [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -47,7 +47,7 @@ This is a **quick reference guide** for executing database migrations and managi
 
 ---
 
-## 📁 Directory Structure
+## Directory Structure
 
 ```
 04-database/
@@ -76,7 +76,7 @@ This is a **quick reference guide** for executing database migrations and managi
 
 ---
 
-## 🔐 PostgreSQL Users (Least Privilege)
+## PostgreSQL Users (Least Privilege)
 
 ### Security Principle
 
@@ -135,7 +135,7 @@ Users are created automatically by the script:
 
 ---
 
-## 🔒 Multi-Environment Password Strategy
+## Multi-Environment Password Strategy
 
 ### Security Principle
 
@@ -354,7 +354,7 @@ DB_READONLY_PASSWORD=[GENERATED_STRONG_PASSWORD]
 
 ---
 
-## 🛡️ Security Best Practices
+## Security Best Practices
 
 ### 1. Least Privilege Access
 
@@ -543,9 +543,9 @@ Use this checklist during Discovery and per-epic security reviews:
 
 ---
 
-## 🚀 How to Execute Migrations
+## How to Execute Migrations
 
-### ⚠️ Correct Execution Order
+### Correct Execution Order
 
 **IMPORTANT**: Execute in this order to avoid permission issues:
 
@@ -572,7 +572,7 @@ docker compose -f 05-infra/docker/docker-compose.dev.yml `
   -f /db-scripts/seeds/001_seed_{epic_name}_defaults.sql
 ```
 
-### ⭐ Como Funciona: ALTER DEFAULT PRIVILEGES FOR ROLE
+### Como Funciona: ALTER DEFAULT PRIVILEGES FOR ROLE
 
 **Pergunta:** Como `{project}_readonly` recebe permissões automáticas em tabelas criadas por `{project}_app`?
 
@@ -593,7 +593,7 @@ ALTER DEFAULT PRIVILEGES FOR ROLE {project}_app IN SCHEMA public
 - ❌ `ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT...` → Só funciona para tabelas criadas por quem executou o comando (postgres)
 - ✅ `ALTER DEFAULT PRIVILEGES FOR ROLE {project}_app IN SCHEMA public GRANT SELECT...` → Funciona para tabelas criadas por `{project}_app`
 
-### 🔧 Fix Permissions (Apenas se Necessário)
+### Fix Permissions (Apenas se Necessário)
 
 Se você tem tabelas antigas criadas ANTES do init script com `FOR ROLE`, conceda manualmente:
 
@@ -655,7 +655,7 @@ docker compose exec database psql -U postgres -d {project}_staging
 ```
 
 
-## 🚀 Quick Start for Software Engineers (SE)
+## Quick Start for Software Engineers (SE)
 
 **⚠️ Database-First Approach:** DBA creates SQL migrations FIRST, then SE scaffolds EF Core models from database.
 
@@ -779,9 +779,9 @@ docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/con
 ---
 
 
-## 🧪 Validation and Testing
+## Validation and Testing
 
-**Prerequisites:** Database container running (see [Quick Start](#-quick-start-for-software-engineers-se) above).
+**Prerequisites:** Database container running (see [Quick Start](#quick-start-for-software-engineers-se) above).
 
 **Note:** Commands use abbreviated form (no `-f` or `--env-file` flags) since container is already running.
 
@@ -873,7 +873,7 @@ SELECT * FROM {TableWithSeeds} ORDER BY CreatedAt;
 
 ---
 
-## 🛠️ EF Core Scaffolding Reference (Quick)
+## EF Core Scaffolding Reference (Quick)
 
 **Database-First Approach:** DBA creates SQL migrations → SE scaffolds EF Core models from PostgreSQL.
 
@@ -903,7 +903,7 @@ dotnet ef dbcontext scaffold `
 ---
 
 
-## 📊 Migration Status
+## Migration Status
 
 ### {EPIC_NAME} - {Epic Description}
 
@@ -916,7 +916,7 @@ dotnet ef dbcontext scaffold `
 
 ---
 
-## 🔗 Related Artifacts
+## Related Artifacts
 
 This section connects operational README with strategic documentation.
 
@@ -929,7 +929,7 @@ This section connects operational README with strategic documentation.
 
 ---
 
-## 📚 References
+## References
 
 ### Internal Documentation
 
@@ -957,7 +957,7 @@ This section connects operational README with strategic documentation.
 
 ---
 
-## 🛠️ Troubleshooting
+## Troubleshooting
 
 ### Problem: Init script did not execute
 
