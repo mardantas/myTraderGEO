@@ -41,12 +41,40 @@ Definir estratégia abrangente de testes para o projeto, estabelecendo pirâmide
 
 ---
 
+## 🔄 Handoff SE/FE → QAE
+
+**Pré-requisitos para QAE executar (Day 10):**
+
+**Do SE (Day 3-6):**
+- ✅ Backend implementado (Domain + Application + Infrastructure + API)
+- ✅ Unit tests criados com ≥70% line coverage de `src/Domain/`
+- ✅ Coverage report gerado (`tests/coverage/coverage.cobertura.xml`)
+- ✅ APIs funcionais acessíveis via Swagger
+
+**Do FE (Day 7-9):**
+- ✅ Frontend implementado (componentes + state management + integração API)
+- ✅ Component unit tests básicos criados
+
+**QAE recebe como baseline:**
+- Unit tests do SE (≥70% coverage) + Coverage report
+- APIs funcionais do SE + OpenAPI spec
+- UI funcional do FE + Componentes
+
+**QAE adiciona valor:**
+- ⚡ Expande unit tests com edge cases, boundary conditions, error scenarios
+- 🔗 Integration tests (API + DB + Use Cases) - 100% ownership
+- 🌐 E2E tests (user journeys completos) - 100% ownership
+- 🔁 Regression tests (épicos anteriores ainda funcionam)
+- 🚦 Quality gate - ✅ Approve ou ❌ Block deploy
+
+---
+
 ## 🧪 Tipos de Testes
 
 ### 1. Unit Tests
 
-**Responsável Inicial:** DE (backend), FE (frontend)  
-**QAE Expande Com:** Casos extremos, boundary conditions, error scenarios  
+**Responsável Inicial:** SE (backend), FE (frontend)
+**QAE Expande Com:** Casos extremos, boundary conditions, error scenarios
 
 #### Backend (Domain Layer)
 
