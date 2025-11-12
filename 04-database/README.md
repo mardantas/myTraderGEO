@@ -25,6 +25,26 @@ This is a **quick reference guide** for executing database migrations and managi
 
 ---
 
+## 📑 Índice
+
+- [About This Document](#-about-this-document)
+- [Directory Structure](#-directory-structure)
+- [PostgreSQL Users (Least Privilege)](#-postgresql-users-least-privilege)
+- [Multi-Environment Password Strategy](#-multi-environment-password-strategy)
+- [Security Best Practices](#-security-best-practices)
+- [How to Execute Migrations](#-how-to-execute-migrations)
+- [Quick Start for Software Engineers](#-quick-start-for-software-engineers-se)
+- [Validation and Testing](#-validation-and-testing)
+- [TestContainers Setup](#-testcontainers-setup-for-integration-tests)
+- [EF Core Scaffolding Commands](#-ef-core-scaffolding-commands-reference)
+- [Scaffolding Strategy Across Epics](#-para-se-scaffolding-strategy-across-multiple-epics)
+- [Migration Status](#-migration-status)
+- [Related Artifacts](#-related-artifacts)
+- [References](#-references)
+- [Troubleshooting](#-troubleshooting)
+
+---
+
 > **💻 Comandos otimizados para PowerShell (Windows)**
 
 ---
@@ -860,6 +880,101 @@ docker compose exec database psql -U mytrader_app -d mytrader_dev \
 - **Learn about EF scaffolding:** [EF Core Scaffolding Commands](#ef-core-scaffolding-commands)
 - **Learn about multi-epic workflow:** [Scaffolding Strategy Across Multiple Epics](#-para-se-scaffolding-strategy-across-multiple-epics)
 - **CI/CD setup:** [GM-00 - Database Migrations in CI/CD](../07-github-management/GM-00-GitHub-Setup.md#database-migrations-in-cicd-database-first-approach)
+
+---
+
+## 🧪 Validation and Testing
+
+### Verify Users Created
+
+```bash
+# Connect as postgres (admin)
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev `
+  exec database psql -U postgres -d mytrader_dev
+
+# List users
+\du
+
+# Expected output:
+# postgres            | Superuser, Create role, Create DB
+# mytrader_app       | Cannot login (limited permissions)
+# mytrader_readonly  | Cannot login (read-only)
+```
+
+### Test mytrader_app Permissions
+
+```sql
+-- Connect as mytrader_app
+\c mytrader_dev mytrader_app
+
+-- ✅ CRUD should work
+INSERT INTO Users (Id, Email, PasswordHash, FullName, DisplayName, Role, Status)
+VALUES (gen_random_uuid(), 'test@test.com', 'hash123', 'Test User', 'TestU', 'Administrator', 'Active');
+
+SELECT * FROM Users WHERE Email = 'test@test.com';
+
+UPDATE Users SET DisplayName = 'Updated' WHERE Email = 'test@test.com';
+
+DELETE FROM Users WHERE Email = 'test@test.com';
+
+-- ✅ CREATE TABLE should work (migrations)
+CREATE TABLE test_table (id INT, name TEXT);
+DROP TABLE test_table;
+
+-- ❌ Administrative operations should FAIL
+DROP DATABASE mytrader_dev;        -- ERROR: permission denied
+CREATE ROLE hacker;                 -- ERROR: permission denied
+\c template1;                       -- ERROR: permission denied
+```
+
+### Test mytrader_readonly Permissions
+
+```sql
+-- Connect as mytrader_readonly
+\c mytrader_dev mytrader_readonly
+
+-- ✅ SELECT should work
+SELECT * FROM Users;
+SELECT COUNT(*) FROM Users;
+
+-- ✅ Also works on other tables
+SELECT * FROM SubscriptionPlans ORDER BY PriceMonthlyAmount;
+
+-- ❌ Modifications should FAIL
+INSERT INTO Users (Id, Email, PasswordHash, FullName, DisplayName, Role, Status)
+VALUES (gen_random_uuid(), 'hacker@test.com', 'hash', 'Hacker', 'H', 'Trader', 'Active');
+-- ERROR: permission denied for table users
+
+UPDATE Users SET Email = 'hacker@test.com';
+-- ERROR: permission denied for table users
+
+DELETE FROM Users;
+-- ERROR: permission denied for table users
+
+-- ❌ DDL operations should FAIL
+CREATE TABLE hacker_table (id INT);
+-- ERROR: permission denied for schema public
+```
+
+### Verify Schema Migrations
+
+```sql
+-- List tables created
+\dt
+
+-- Expected output:
+# subscriptionplans
+# systemconfigs
+# users
+
+-- Verify seed data
+SELECT Name, PriceMonthlyAmount FROM SubscriptionPlans ORDER BY PriceMonthlyAmount;
+
+-- Expected output:
+# Básico   | 0.00
+# Pleno    | 99.90
+# Consultor| 299.00
+```
 
 ---
 
@@ -1827,101 +1942,6 @@ public class StrategyConfiguration : IEntityTypeConfiguration<Strategy>
 - **DBA Schema Review**: [DBA-01-[EpicName]-Schema-Review.md](../../00-doc-ddd/05-database-design/DBA-01-[EpicName]-Schema-Review.md)
 - **EF Core Reverse Engineering**: [Microsoft Docs](https://learn.microsoft.com/en-us/ef/core/managing-schemas/scaffolding/)
 - **C# Partial Classes**: [Microsoft Docs](https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/partial-classes-and-methods)
-
----
-
-## 🧪 Validation and Testing
-
-### Verify Users Created
-
-```bash
-# Connect as postgres (admin)
-docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev `
-  exec database psql -U postgres -d mytrader_dev
-
-# List users
-\du
-
-# Expected output:
-# postgres            | Superuser, Create role, Create DB
-# mytrader_app       | Cannot login (limited permissions)
-# mytrader_readonly  | Cannot login (read-only)
-```
-
-### Test mytrader_app Permissions
-
-```sql
--- Connect as mytrader_app
-\c mytrader_dev mytrader_app
-
--- ✅ CRUD should work
-INSERT INTO Users (Id, Email, PasswordHash, FullName, DisplayName, Role, Status)
-VALUES (gen_random_uuid(), 'test@test.com', 'hash123', 'Test User', 'TestU', 'Administrator', 'Active');
-
-SELECT * FROM Users WHERE Email = 'test@test.com';
-
-UPDATE Users SET DisplayName = 'Updated' WHERE Email = 'test@test.com';
-
-DELETE FROM Users WHERE Email = 'test@test.com';
-
--- ✅ CREATE TABLE should work (migrations)
-CREATE TABLE test_table (id INT, name TEXT);
-DROP TABLE test_table;
-
--- ❌ Administrative operations should FAIL
-DROP DATABASE mytrader_dev;        -- ERROR: permission denied
-CREATE ROLE hacker;                 -- ERROR: permission denied
-\c template1;                       -- ERROR: permission denied
-```
-
-### Test mytrader_readonly Permissions
-
-```sql
--- Connect as mytrader_readonly
-\c mytrader_dev mytrader_readonly
-
--- ✅ SELECT should work
-SELECT * FROM Users;
-SELECT COUNT(*) FROM Users;
-
--- ✅ Also works on other tables
-SELECT * FROM SubscriptionPlans ORDER BY PriceMonthlyAmount;
-
--- ❌ Modifications should FAIL
-INSERT INTO Users (Id, Email, PasswordHash, FullName, DisplayName, Role, Status)
-VALUES (gen_random_uuid(), 'hacker@test.com', 'hash', 'Hacker', 'H', 'Trader', 'Active');
--- ERROR: permission denied for table users
-
-UPDATE Users SET Email = 'hacker@test.com';
--- ERROR: permission denied for table users
-
-DELETE FROM Users;
--- ERROR: permission denied for table users
-
--- ❌ DDL operations should FAIL
-CREATE TABLE hacker_table (id INT);
--- ERROR: permission denied for schema public
-```
-
-### Verify Schema Migrations
-
-```sql
--- List tables created
-\dt
-
--- Expected output:
-# subscriptionplans
-# systemconfigs
-# users
-
--- Verify seed data
-SELECT Name, PriceMonthlyAmount FROM SubscriptionPlans ORDER BY PriceMonthlyAmount;
-
--- Expected output:
-# Básico   | 0.00
-# Pleno    | 99.90
-# Consultor| 299.00
-```
 
 ---
 
