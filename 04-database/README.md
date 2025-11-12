@@ -1,4 +1,4 @@
-<!--
+﻿<!--
 MARKDOWN FORMATTING:
 - Use 2 spaces at end of line for compact line breaks (metadata)  
 - Use blank lines between sections for readability (content)  
@@ -13,7 +13,7 @@ MARKDOWN FORMATTING:
 
 ---
 
-## 📋 About This Document
+## About This Document
 
 This is a **quick reference guide** for executing database migrations and managing database users. For strategic decisions, database design details, and trade-offs, consult [DBA-01-{EpicName}-Database-Design-Decisions.md](../00-doc-ddd/05-database-design/DBA-01-{EpicName}-Database-Design-Decisions.md).
 
@@ -25,23 +25,23 @@ This is a **quick reference guide** for executing database migrations and managi
 
 ---
 
-## 📑 Índice
+## Índice
 
-- [About This Document](#📋-about-this-document)
-- [Directory Structure](#📁-directory-structure)
-- [PostgreSQL Users (Least Privilege)](#🔐-postgresql-users-least-privilege)
-- [Multi-Environment Password Strategy](#🔒-multi-environment-password-strategy)
-- [Security Best Practices](#🛡️-security-best-practices)
-- [How to Execute Migrations](#🚀-how-to-execute-migrations)
-- [Quick Start for Software Engineers](#🚀-quick-start-for-software-engineers-se)
-- [Validation and Testing](#🧪-validation-and-testing)
-- [TestContainers Setup](#🧪-testcontainers-setup-for-integration-tests)
-- [EF Core Scaffolding Commands](#🛠️-ef-core-scaffolding-commands-reference)
-- [Scaffolding Strategy Across Epics](#🔄-para-se-scaffolding-strategy-across-multiple-epics)
-- [Migration Status](#📊-migration-status)
-- [Related Artifacts](#🔗-related-artifacts)
-- [References](#📚-references)
-- [Troubleshooting](#🛠️-troubleshooting)
+- [About This Document](#about-this-document)
+- [Directory Structure](#directory-structure)
+- [PostgreSQL Users (Least Privilege)](#postgresql-users-least-privilege)
+- [Multi-Environment Password Strategy](#multi-environment-password-strategy)
+- [Security Best Practices](#security-best-practices)
+- [How to Execute Migrations](#how-to-execute-migrations)
+- [Quick Start for Software Engineers](#quick-start-for-software-engineers-se)
+- [Validation and Testing](#validation-and-testing)
+- [TestContainers Setup](#testcontainers-setup-for-integration-tests)
+- [EF Core Scaffolding Commands](#ef-core-scaffolding-commands-reference)
+- [Scaffolding Strategy Across Epics](#para-se-scaffolding-strategy-across-multiple-epics)
+- [Migration Status](#migration-status)
+- [Related Artifacts](#related-artifacts)
+- [References](#references)
+- [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -49,7 +49,7 @@ This is a **quick reference guide** for executing database migrations and managi
 
 ---
 
-## 📁 Directory Structure
+## Directory Structure
 
 ```
 04-database/
@@ -78,7 +78,7 @@ This is a **quick reference guide** for executing database migrations and managi
 
 ---
 
-## 🔐 PostgreSQL Users (Least Privilege)
+## PostgreSQL Users (Least Privilege)
 
 ### Security Principle
 
@@ -137,7 +137,7 @@ Users are created automatically by the script:
 
 ---
 
-## 🔒 Multi-Environment Password Strategy
+## Multi-Environment Password Strategy
 
 ### Security Principle
 
@@ -356,7 +356,7 @@ DB_READONLY_PASSWORD=[GENERATED_STRONG_PASSWORD]
 
 ---
 
-## 🛡️ Security Best Practices
+## Security Best Practices
 
 ### 1. Least Privilege Access
 
@@ -545,9 +545,9 @@ Use this checklist during Discovery and per-epic security reviews:
 
 ---
 
-## 🚀 How to Execute Migrations
+## How to Execute Migrations
 
-### ⚠️ Correct Execution Order
+### Correct Execution Order
 
 **IMPORTANT**: Execute in this order to avoid permission issues:
 
@@ -574,7 +574,7 @@ docker compose -f 05-infra/docker/docker-compose.dev.yml `
   -f /db-scripts/seeds/001_seed_user_management_defaults.sql
 ```
 
-### ⭐ Como Funciona: ALTER DEFAULT PRIVILEGES FOR ROLE
+### Como Funciona: ALTER DEFAULT PRIVILEGES FOR ROLE
 
 **Pergunta:** Como `mytrader_readonly` recebe permissões automáticas em tabelas criadas por `mytrader_app`?
 
@@ -595,7 +595,7 @@ ALTER DEFAULT PRIVILEGES FOR ROLE mytrader_app IN SCHEMA public
 - ❌ `ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT...` → Só funciona para tabelas criadas por quem executou o comando (postgres)
 - ✅ `ALTER DEFAULT PRIVILEGES FOR ROLE mytrader_app IN SCHEMA public GRANT SELECT...` → Funciona para tabelas criadas por `mytrader_app`
 
-### 🔧 Fix Permissions (Apenas se Necessário)
+### Fix Permissions (Apenas se Necessário)
 
 Se você tem tabelas antigas criadas ANTES do init script com `FOR ROLE`, conceda manualmente:
 
@@ -632,7 +632,7 @@ DROP TABLE IF EXISTS {Table3} CASCADE;
 
 ---
 
-## 🚀 Quick Start for Software Engineers (SE)
+## Quick Start for Software Engineers (SE)
 
 **⚠️ Database-First Approach:** DBA creates SQL migrations FIRST, then SE scaffolds EF Core models from database.
 
@@ -883,7 +883,7 @@ docker compose exec database psql -U mytrader_app -d mytrader_dev \
 
 ---
 
-## 🧪 Validation and Testing
+## Validation and Testing
 
 ### Verify Users Created
 
@@ -978,7 +978,7 @@ SELECT Name, PriceMonthlyAmount FROM SubscriptionPlans ORDER BY PriceMonthlyAmou
 
 ---
 
-## 🧪 TestContainers Setup for Integration Tests
+## TestContainers Setup for Integration Tests
 
 **Purpose:** Run integration tests against REAL PostgreSQL (not in-memory SQLite).
 
@@ -1358,7 +1358,7 @@ Console.WriteLine($"Looking for: {fullPath}");  // Debug
 
 ---
 
-## 🛠️ EF Core Scaffolding Commands Reference
+## EF Core Scaffolding Commands Reference
 
 ### Overview
 
@@ -1523,7 +1523,7 @@ dotnet ef dbcontext scaffold \
 
 ---
 
-## 🔄 Para SE: Scaffolding Strategy Across Multiple Epics
+## Para SE: Scaffolding Strategy Across Multiple Epics
 
 ### ⚠️ CRITICAL: Understanding the Scaffolding Problem
 
@@ -1945,7 +1945,7 @@ public class StrategyConfiguration : IEntityTypeConfiguration<Strategy>
 
 ---
 
-## 📊 Migration Status
+## Migration Status
 
 ### {EPIC_NAME} - {Epic Description}
 
@@ -1958,7 +1958,7 @@ public class StrategyConfiguration : IEntityTypeConfiguration<Strategy>
 
 ---
 
-## 🔗 Related Artifacts
+## Related Artifacts
 
 This section connects operational README with strategic documentation.
 
@@ -1971,7 +1971,7 @@ This section connects operational README with strategic documentation.
 
 ---
 
-## 📚 References
+## References
 
 ### Internal Documentation
 
@@ -1999,7 +1999,7 @@ This section connects operational README with strategic documentation.
 
 ---
 
-## 🛠️ Troubleshooting
+## Troubleshooting
 
 ### Problem: Init script did not execute
 
@@ -2064,3 +2064,4 @@ docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/con
 **DBA Agent** - {PROJECT_NAME} Database Management
 **Last Updated:** {YYYY-MM-DD}  
 **Status:** ⏳ {Epic Status}  
+
