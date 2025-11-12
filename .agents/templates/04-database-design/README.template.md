@@ -216,8 +216,8 @@ psql -h $DB_HOST -U postgres -d {project}_dev \
 
 **After password update (both options):**
 1. Update `.env` file on server with new passwords (if rotated)
-2. Restart API container: `docker compose restart api`
-3. Verify: `docker compose logs api | grep "Database connection"`
+2. Restart API container: `docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev restart api`
+3. Verify: `docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev logs api | grep "Database connection"`
 4. Document: `echo "$(date) - Password rotated" >> password-rotation.log`
 
 ---
@@ -481,7 +481,7 @@ database:
 
 **Audit Log Location:**
 
-- **Docker:** `docker compose logs database | grep AUDIT`  
+- **Docker:** `docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev logs database | grep AUDIT`
 - **Server:** `/var/log/postgresql/postgresql-15-main.log`  
 
 **Compliance Benefits:**
@@ -657,7 +657,7 @@ docker compose exec database psql -U postgres -d {project}_staging
 docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up database -d
 
 # Verify container is running
-docker compose ps database
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev ps database
 ```
 
 ### Step 2: Verify Database Connection
@@ -684,7 +684,8 @@ docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/con
   -f /db-scripts/migrations/001_create_{epic_name}_schema.sql
 
 # Verify tables created
-docker compose exec database psql -U {project}_app -d {project}_dev -c "\dt"
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev `
+  exec database psql -U {project}_app -d {project}_dev -c "\dt"
 ```
 
 ### Step 4: Scaffold EF Core Models from Database
@@ -744,7 +745,7 @@ database operations. SE is responsible for all C# implementation details.
 
 **Solution:** Check container status and verify connection:
 ```powershell
-docker compose ps database
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev ps database
 docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev `
   exec database psql -U {project}_app -d {project}_dev -c "SELECT 1"
 ```
@@ -770,7 +771,8 @@ docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/con
 
 ```bash
 # Connect as postgres (admin)
-docker compose exec database psql -U postgres -d {project}_dev
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev `
+  exec database psql -U postgres -d {project}_dev
 
 # List users
 \du
@@ -945,10 +947,10 @@ This section connects operational README with strategic documentation.
 
 **Cause:** PostgreSQL volume already existed (init scripts only execute on first time)  
 
-**Solution:**  
+**Solution:**
 ```bash
 # 1. Stop container
-docker compose down
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev down
 
 # 2. Remove database volume (⚠️ WARNING: deletes data!)
 docker volume rm postgres-data
@@ -957,7 +959,7 @@ docker volume rm postgres-data
 docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up database -d
 
 # 4. Verify logs
-docker compose logs database | grep "Creating application users"
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev logs database | grep "Creating application users"
 ```
 
 ### Problem: Permission denied when executing migration
@@ -975,7 +977,8 @@ docker compose logs database | grep "Creating application users"
 \c {project}_dev {project}_app
 
 # If still fails, re-execute init-scripts
-docker compose exec database psql -U postgres -d {project}_dev -f /docker-entrypoint-initdb.d/01-create-app-user.sql
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev `
+  exec database psql -U postgres -d {project}_dev -f /docker-entrypoint-initdb.d/01-create-app-user.sql
 ```
 
 ### Problem: .NET application cannot connect to database
@@ -993,7 +996,7 @@ cat 05-infra/configs/.env | grep ConnectionStrings__DefaultConnection
 # ConnectionStrings__DefaultConnection=Host=database;Port=5432;Database={project}_dev;Username={project}_app;Password={correct_password}
 
 # 3. If wrong, fix .env and restart application
-docker compose restart api
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev restart api
 ```
 
 ---
