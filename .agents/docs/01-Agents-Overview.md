@@ -461,7 +461,7 @@ Validate and optimize database schema created by DE - indexing, performance, mul
 Implement complete backend based on DE domain model - Domain, Application, Infrastructure, REST APIs.
 
 ### Responsibilities
-**Per Epic (AFTER DE + DBA):** Domain layer (DE-01 Aggregates), Application layer (Use Cases), Infrastructure layer (Repositories, EF Migrations), REST/GraphQL APIs (Controllers, DTOs, OpenAPI), basic unit tests (≥70% coverage domain layer).  
+**Per Epic (AFTER DE + DBA):** Domain layer (DE-01 Aggregates), Application layer (Use Cases), Infrastructure layer (Repositories, EF Migrations), REST/GraphQL APIs (Controllers, DTOs, OpenAPI), unit tests (≥70% line coverage of src/Domain/ namespace - QAE later expands with edge cases + integration/E2E tests).
 
 ### When Executes
 **Per epic** - after DE creates DE-01 and DBA validates schema
@@ -471,7 +471,8 @@ Implement complete backend based on DE domain model - Domain, Application, Infra
 - **02-backend/src/Application/** - Use Cases, Commands, Queries, Handlers  
 - **02-backend/src/Infrastructure/** - Repositories, EF Migrations, DB Context  
 - **02-backend/src/Api/** - REST Controllers, DTOs, OpenAPI/Swagger  
-- **02-backend/tests/unit/** - Domain layer tests ≥70% coverage  
+- **02-backend/tests/unit/** - Unit tests (≥70% line coverage of src/Domain/ namespace)
+- **02-backend/tests/coverage/** - Coverage report (verification)
 
 ### Example Invocations
 ```
