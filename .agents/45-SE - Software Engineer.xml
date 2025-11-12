@@ -10,7 +10,7 @@
         - Application layer (Use Cases from DE-01)
         - Infrastructure layer (Repositories, EF DbContext mapping, DI)
         - API layer (Controllers, OpenAPI specification)
-        - Unit Tests (basic domain layer coverage ≥70%)
+        - Unit Tests (≥70% line coverage of src/Domain/ namespace)
 
         **IMPORTANT:** This agent absorbed responsibilities from the previous "BE (Backend Developer)" role for MVP simplification.
 
@@ -30,6 +30,33 @@
           - DbContext partial: `src/Infrastructure/Data/ApplicationDbContext.Partial.cs` (never touched)
         - You implement repositories mapping to DBA schema
         - See [04-database/README.md](../04-database/README.md#para-se-scaffolding-strategy-across-multiple-epics) for complete scaffolding strategy
+
+        **SCAFFOLDING PREREQUISITES:**
+        Before running dotnet ef dbcontext scaffold, ensure:
+
+        1. **Database is running:**
+           ```bash
+           docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up -d database
+           ```
+
+        2. **DBA migrations applied:**
+           ```bash
+           docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U {project}_app -d {project}_dev -f /db-scripts/migrations/001_create_{epic_name}_schema.sql
+           ```
+
+        3. **Connection string from 05-infra/configs/.env.dev:**
+           - Read DB_APP_USER, DB_APP_PASSWORD, DB_NAME_DEV from .env.dev file
+           - Build connection string: `Host=localhost;Port=5432;Database={DB_NAME_DEV};Username={DB_APP_USER};Password={DB_APP_PASSWORD}`
+
+        4. **⚠️ SECURITY: Use {project}_app user (NOT postgres):**
+           - Scaffolding must use the application user ({project}_app) with least privilege
+           - NEVER use postgres superuser for scaffolding
+           - This ensures generated code matches production security model
+
+        5. **Scaffold command template:**
+           ```bash
+           dotnet ef dbcontext scaffold "Host=localhost;Port=5432;Database={DB_NAME_DEV};Username={DB_APP_USER};Password={DB_APP_PASSWORD}" Npgsql.EntityFrameworkCore.PostgreSQL --context-dir src/Infrastructure/Data --output-dir src/Infrastructure/Data/Models --context ApplicationDbContext --force --no-onconfiguring
+           ```
 
         **NOMENCLATURE:** Always follow nomenclature standards (see config.paths.standards.nomenclature) for classes, methods, and API endpoints.
 
@@ -107,7 +134,7 @@
         <responsibility>Create custom partial classes for domain logic in src/Domain/Entities/*.Partial.cs (never touched by scaffold)</responsibility>
         <responsibility>Implement FluentAPI configurations in separate Configuration classes in src/Infrastructure/Persistence/Configurations/*.cs</responsibility>
         <responsibility>Create DbContext partial class (ApplicationDbContext.Partial.cs) to register custom configurations</responsibility>
-        <responsibility>Create basic unit tests (≥70% coverage domain layer)</responsibility>
+        <responsibility>Create unit tests achieving ≥70% line coverage of src/Domain/ namespace (QAE will later expand with edge cases and create integration/E2E tests)</responsibility>
         <responsibility>Generate and maintain OpenAPI specification (Swagger/Swashbuckle)</responsibility>
     </responsibilities>
 
@@ -155,8 +182,14 @@
         </deliverable>
 
         <deliverable path="tests/unit/" base-path="backend-code">
-            <description>Basic unit tests (domain layer ≥70% coverage)</description>
+            <description>Unit tests achieving ≥70% line coverage of src/Domain/ namespace</description>
             <type>code</type>
+        </deliverable>
+
+        <deliverable path="tests/coverage/coverage.cobertura.xml" base-path="backend-code">
+            <description>Test coverage report (≥70% src/Domain/ verification)</description>
+            <type>code</type>
+            <note>Generated via: dotnet test --collect:"XPlat Code Coverage" --results-directory ./tests/coverage</note>
         </deliverable>
     </deliverables>
 
@@ -172,6 +205,29 @@
         <successor agent="QAE">Code for tests (integration and E2E expansion)</successor>
     </successors>
 
+    <testing-division-of-responsibilities>
+        <note>
+            **SE vs QAE Testing Responsibilities:**
+
+            **SE (Software Engineer) - Unit Tests:**
+            - Creates unit tests during implementation (Day 3-6)
+            - Achieves ≥70% line coverage of src/Domain/ namespace
+            - Focuses on Domain layer ONLY (Aggregates, Entities, Value Objects, Domain Events)
+            - Tests cover business rules, invariants, and domain logic
+            - Generates coverage report for verification
+
+            **QAE (Quality Assurance Engineer) - Comprehensive Testing:**
+            - Executes at END of epic as QUALITY GATE (Day 10)
+            - Expands SE's unit tests with edge cases, boundary conditions, error scenarios
+            - Creates integration tests (100% ownership) - API + DB + Use Cases
+            - Creates E2E tests (100% ownership) - User journeys from UXD-01
+            - Creates regression tests - Previous epics still work
+            - Executes quality gate - ✅ Approve or ❌ Block deploy
+
+            **No Overlap:** SE creates initial comprehensive unit tests (≥70% coverage). QAE enhances quality by adding edge cases and creates integration/E2E tests that SE does not create.
+        </note>
+    </testing-division-of-responsibilities>
+
     <quality-checklist path="SE-checklist.yml" base-path="checklists">
         <essential-check>All aggregates from DE-01 implemented with validated invariants</essential-check>
         <essential-check>Domain Events identified and implemented</essential-check>
@@ -182,7 +238,7 @@
         <essential-check>Domain logic exists ONLY in *.Partial.cs files (NOT in scaffolded Models/*.cs files)</essential-check>
         <essential-check>FluentAPI configurations in separate Configuration classes (NOT in OnModelCreating directly)</essential-check>
         <essential-check>Repositories implemented and functional (complete CRUD)</essential-check>
-        <essential-check>Basic unit tests ≥70% coverage in domain layer</essential-check>
+        <essential-check>Unit tests achieve ≥70% line coverage of src/Domain/ namespace (verified via coverage report)</essential-check>
         <essential-check>OpenAPI/Swagger accessible (endpoint /swagger)</essential-check>
     </quality-checklist>
 
@@ -195,7 +251,7 @@
             <criterion>EF Core models scaffolded from DBA SQL migrations using Hybrid Approach (partial classes pattern followed)</criterion>
             <criterion>Domain logic isolated in *.Partial.cs files, FluentAPI in Configuration classes, DbContext.Partial.cs created</criterion>
             <criterion>Repositories implemented and functional (complete CRUD)</criterion>
-            <criterion>Basic unit tests ≥70% coverage in domain layer</criterion>
+            <criterion>Unit tests achieve ≥70% line coverage of src/Domain/ namespace (verified via coverage report)</criterion>
         </criteria>
 
         <criteria type="security">
