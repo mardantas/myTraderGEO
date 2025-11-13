@@ -194,14 +194,31 @@ Authorization: Bearer {seu-token-jwt}
 - **subscriptionplans** - Planos de assinatura disponíveis
 - **systemconfigs** - Configurações globais do sistema (singleton)
 
-### Migrações
+### Migrações (Database First)
 
-O banco de dados já foi inicializado com o schema. Para aplicar mudanças futuras:
+Este projeto usa **Database First**: o DBA cria SQL migrations primeiro, depois o SE faz scaffold dos modelos.
 
+#### Workflow para mudanças no schema:
+
+**1. DBA cria migration SQL:**
 ```bash
-dotnet ef migrations add NomeDaMigracao --project 02-backend/src/MyTraderGEO.Infrastructure --startup-project 02-backend/src/MyTraderGEO.WebAPI
-dotnet ef database update --project 02-backend/src/MyTraderGEO.Infrastructure --startup-project 02-backend/src/MyTraderGEO.WebAPI
+# Exemplo: 04-database/migrations/002_add_new_feature.sql
 ```
+
+**2. Aplicar migration ao banco:**
+```bash
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev -f /db-scripts/migrations/002_add_new_feature.sql
+```
+
+**3. SE re-scaffold modelos EF Core:**
+```bash
+dotnet ef dbcontext scaffold "Host=localhost;Port=5432;Database=mytrader_dev;Username=mytrader_app;Password=app_dev_password_123" Npgsql.EntityFrameworkCore.PostgreSQL --project 02-backend/src/MyTraderGEO.Infrastructure --context-dir Data --output-dir Data/Models --context ApplicationDbContext --force --no-onconfiguring
+```
+
+**📝 Nota sobre Classes Parciais:**
+- Modelos EF Core são `partial` para permitir extensões
+- Código customizado fica em arquivos separados (ex: `User.Extensions.cs`)
+- Re-scaffold com `--force` só sobrescreve arquivos auto-gerados
 
 ## Desenvolvimento
 
