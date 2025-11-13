@@ -45,7 +45,8 @@
            ```
 
         3. **Connection string from 05-infra/configs/.env.dev:**
-           - Read DB_APP_USER, DB_APP_PASSWORD, DB_NAME_DEV from .env.dev file
+           - Read DB_APP_USER, DB_APP_PASSWORD, DB_NAME_DEV from `05-infra/configs/.env.dev` file
+           - **IMPORTANT:** .env files are ALWAYS in `05-infra/configs/`, NEVER in `05-infra/docker/`
            - Build connection string: `Host=localhost;Port=5432;Database={DB_NAME_DEV};Username={DB_APP_USER};Password={DB_APP_PASSWORD}`
 
         4. **⚠️ SECURITY: Use {project}_app user (NOT postgres):**
