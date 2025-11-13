@@ -18,6 +18,7 @@
 # IDEs
 .vscode/
 .idea/
+.claude/settings.local.json
 *.suo
 *.user
 *.userosscache
