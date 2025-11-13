@@ -16,8 +16,8 @@ services:
   api:
     container_name: mytrader-dev-api
     build:
-      context: ../../02-backend
-      dockerfile: ../../05-infra/dockerfiles/backend/Dockerfile.dev
+      context: ../..
+      dockerfile: 05-infra/dockerfiles/backend/Dockerfile.dev
     ports:
       - "5000:8080"
     environment:
@@ -52,24 +52,24 @@ services:
     networks:
       - backend
 
-  # Frontend (Vue 3 + Vite)
-  frontend:
-    container_name: mytrader-dev-frontend
-    build:
-      context: ../../01-frontend
-      dockerfile: ../../05-infra/dockerfiles/frontend/Dockerfile.dev
-    ports:
-      - "5173:5173"
-    environment:
-      - VITE_API_URL=http://localhost:5000
-      - VITE_WS_URL=ws://localhost:5000/hubs/market
-    volumes:
-      - ../../01-frontend:/app
-      - /app/node_modules
-    depends_on:
-      - api
-    networks:
-      - backend
+  # Frontend (Vue 3 + Vite) - COMMENTED OUT: Directory 01-frontend doesn't exist yet
+  # frontend:
+  #   container_name: mytrader-dev-frontend
+  #   build:
+  #     context: ../..
+  #     dockerfile: 05-infra/dockerfiles/frontend/Dockerfile.dev
+  #   ports:
+  #     - "5173:5173"
+  #   environment:
+  #     - VITE_API_URL=http://localhost:5000
+  #     - VITE_WS_URL=ws://localhost:5000/hubs/market
+  #   volumes:
+  #     - ../../01-frontend:/app
+  #     - /app/node_modules
+  #   depends_on:
+  #     - api
+  #   networks:
+  #     - backend
 
   # Database (PostgreSQL 15)
   database:

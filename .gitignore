@@ -35,12 +35,16 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Backend (.NET)
-02-backend/bin/
-02-backend/obj/
-02-backend/out/
-02-backend/*.user
+# Backend (.NET) - Recursive patterns
+02-backend/**/bin/
+02-backend/**/obj/
+02-backend/**/out/
+02-backend/**/*.user
 02-backend/.vs/
+*.dll
+*.exe
+*.pdb
+project.nuget.cache
 
 # Frontend (Vue + Node)
 01-frontend/node_modules/
