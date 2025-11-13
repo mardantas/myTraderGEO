@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\MyTraderGEO.WebAPI.props" />
+</Project>

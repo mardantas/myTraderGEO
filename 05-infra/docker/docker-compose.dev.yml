@@ -25,9 +25,15 @@ services:
       - Logging__LogLevel__Default=Information
       - Logging__LogLevel__Microsoft.AspNetCore=Warning
     volumes:
-      - ../../02-backend:/app
-      - /app/bin
-      - /app/obj
+      - ../../02-backend:/src
+      - /src/src/MyTraderGEO.Domain/bin
+      - /src/src/MyTraderGEO.Domain/obj
+      - /src/src/MyTraderGEO.Application/bin
+      - /src/src/MyTraderGEO.Application/obj
+      - /src/src/MyTraderGEO.Infrastructure/bin
+      - /src/src/MyTraderGEO.Infrastructure/obj
+      - /src/src/MyTraderGEO.WebAPI/bin
+      - /src/src/MyTraderGEO.WebAPI/obj
     depends_on:
       database:
         condition: service_healthy

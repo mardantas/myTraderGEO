@@ -1,0 +1,16 @@
+C:\Users\Marco\Projetos\myTraderGEO\02-backend\src\MyTraderGEO.Application\bin\Debug\net8.0\MyTraderGEO.Application.deps.json
+C:\Users\Marco\Projetos\myTraderGEO\02-backend\src\MyTraderGEO.Application\bin\Debug\net8.0\MyTraderGEO.Application.dll
+C:\Users\Marco\Projetos\myTraderGEO\02-backend\src\MyTraderGEO.Application\bin\Debug\net8.0\MyTraderGEO.Application.pdb
+C:\Users\Marco\Projetos\myTraderGEO\02-backend\src\MyTraderGEO.Application\bin\Debug\net8.0\MyTraderGEO.Domain.dll
+C:\Users\Marco\Projetos\myTraderGEO\02-backend\src\MyTraderGEO.Application\bin\Debug\net8.0\MyTraderGEO.Domain.pdb
+C:\Users\Marco\Projetos\myTraderGEO\02-backend\src\MyTraderGEO.Application\obj\Debug\net8.0\MyTraderGEO.Application.csproj.AssemblyReference.cache
+C:\Users\Marco\Projetos\myTraderGEO\02-backend\src\MyTraderGEO.Application\obj\Debug\net8.0\MyTraderGEO.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Marco\Projetos\myTraderGEO\02-backend\src\MyTraderGEO.Application\obj\Debug\net8.0\MyTraderGEO.Application.AssemblyInfoInputs.cache
+C:\Users\Marco\Projetos\myTraderGEO\02-backend\src\MyTraderGEO.Application\obj\Debug\net8.0\MyTraderGEO.Application.AssemblyInfo.cs
+C:\Users\Marco\Projetos\myTraderGEO\02-backend\src\MyTraderGEO.Application\obj\Debug\net8.0\MyTraderGEO.Application.csproj.CoreCompileInputs.cache
+C:\Users\Marco\Projetos\myTraderGEO\02-backend\src\MyTraderGEO.Application\obj\Debug\net8.0\MyTraderGEO.Application.sourcelink.json
+C:\Users\Marco\Projetos\myTraderGEO\02-backend\src\MyTraderGEO.Application\obj\Debug\net8.0\MyTrader.397A3EA1.Up2Date
+C:\Users\Marco\Projetos\myTraderGEO\02-backend\src\MyTraderGEO.Application\obj\Debug\net8.0\MyTraderGEO.Application.dll
+C:\Users\Marco\Projetos\myTraderGEO\02-backend\src\MyTraderGEO.Application\obj\Debug\net8.0\refint\MyTraderGEO.Application.dll
+C:\Users\Marco\Projetos\myTraderGEO\02-backend\src\MyTraderGEO.Application\obj\Debug\net8.0\MyTraderGEO.Application.pdb
+C:\Users\Marco\Projetos\myTraderGEO\02-backend\src\MyTraderGEO.Application\obj\Debug\net8.0\ref\MyTraderGEO.Application.dll

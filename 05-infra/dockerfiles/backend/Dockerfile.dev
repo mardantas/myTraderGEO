@@ -5,17 +5,31 @@
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS development
 
-WORKDIR /app
+WORKDIR /src
 
-# Copy csproj and restore dependencies
-COPY *.csproj ./
-RUN dotnet restore
+# Copy solution file
+COPY ["MyTraderGEO.sln", "./"]
 
-# Copy source code
-COPY . ./
+# Copy csproj files and restore dependencies
+COPY ["src/MyTraderGEO.Domain/MyTraderGEO.Domain.csproj", "src/MyTraderGEO.Domain/"]
+COPY ["src/MyTraderGEO.Application/MyTraderGEO.Application.csproj", "src/MyTraderGEO.Application/"]
+COPY ["src/MyTraderGEO.Infrastructure/MyTraderGEO.Infrastructure.csproj", "src/MyTraderGEO.Infrastructure/"]
+COPY ["src/MyTraderGEO.WebAPI/MyTraderGEO.WebAPI.csproj", "src/MyTraderGEO.WebAPI/"]
+COPY ["tests/MyTraderGEO.Domain.UnitTests/MyTraderGEO.Domain.UnitTests.csproj", "tests/MyTraderGEO.Domain.UnitTests/"]
+COPY ["tests/MyTraderGEO.Application.UnitTests/MyTraderGEO.Application.UnitTests.csproj", "tests/MyTraderGEO.Application.UnitTests/"]
+COPY ["tests/MyTraderGEO.IntegrationTests/MyTraderGEO.IntegrationTests.csproj", "tests/MyTraderGEO.IntegrationTests/"]
+
+# Restore dependencies
+RUN dotnet restore "MyTraderGEO.sln"
+
+# Copy all source code
+COPY . .
+
+# Set working directory to WebAPI project
+WORKDIR /src/src/MyTraderGEO.WebAPI
 
 # Expose port
 EXPOSE 8080
 
 # Run with hot reload
-CMD ["dotnet", "watch", "run", "--urls", "http://0.0.0.0:8080"]
+CMD ["dotnet", "watch", "run", "--urls", "http://0.0.0.0:8080", "--no-launch-profile"]
