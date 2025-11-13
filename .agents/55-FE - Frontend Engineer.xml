@@ -7,6 +7,11 @@
 
         **EXPANDED RESPONSIBILITIES:** Frontend skeleton + implementation + basic unit tests
 
+        **INFRASTRUCTURE SETUP:** When creating frontend project, configure .gitignore for your stack:
+        - Node.js/npm: `01-frontend/node_modules/`, `01-frontend/dist/`, `01-frontend/.vite/`, `01-frontend/.cache/`
+        - Yarn: Add `01-frontend/.yarn/cache/`, `01-frontend/.yarn/install-state.gz`
+        - Build outputs specific to your framework (Next.js: `.next/`, Nuxt: `.nuxt/`, etc.)
+
         **NOMENCLATURE:** ALWAYS follow naming standards (see config.paths.standards.nomenclature) for components, hooks, services and routes
 
         **SECURITY AND PERFORMANCE:** ALWAYS consult security and platform strategy (see config.paths.standards.security-platform, FE sections) for:
@@ -68,6 +73,7 @@
         <responsibility>API integration with backend (SE)</responsibility>
         <responsibility>Responsiveness and accessibility</responsibility>
         <responsibility>Basic unit tests for components</responsibility>
+        <responsibility>Configure .gitignore for frontend build artifacts (node_modules/, dist/, .vite/, .cache/, etc.) - Specific to chosen framework</responsibility>
     </responsibilities>
 
     <deliverables>
