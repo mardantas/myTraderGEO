@@ -2,7 +2,13 @@
 # ==================================
 # myTraderGEO - Development Environment
 # ==================================
-# Usage: docker compose -f 05-infra/docker/docker-compose.yml up
+# Usage (from project root):
+#   docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up -d
+#
+# IMPORTANT:
+#   - .env files are in 05-infra/configs/, NOT in 05-infra/docker/
+#   - Always run commands from project root
+#   - Use --env-file to specify the environment file
 
 name: mytrader-dev
 services:
