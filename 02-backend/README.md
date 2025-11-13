@@ -72,8 +72,7 @@ API RESTful desenvolvida em .NET 8 seguindo princípios de **Clean Architecture*
 
 1. **Inicie o banco de dados e a API:**
    ```bash
-   cd 05-infra/docker
-   docker compose -f docker-compose.dev.yml --env-file .env.dev up -d
+   docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up -d
    ```
 
 2. **Acesse a aplicação:**
@@ -84,15 +83,14 @@ API RESTful desenvolvida em .NET 8 seguindo princípios de **Clean Architecture*
 
 3. **Para parar os serviços:**
    ```bash
-   docker compose -f docker-compose.dev.yml down
+   docker compose -f 05-infra/docker/docker-compose.dev.yml down
    ```
 
 ### Opção 2: Executando Localmente
 
 1. **Inicie o banco de dados PostgreSQL:**
    ```bash
-   cd 05-infra/docker
-   docker compose -f docker-compose.dev.yml --env-file .env.dev up -d database
+   docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up -d database
    ```
 
 2. **Configure a string de conexão:**
@@ -108,8 +106,7 @@ API RESTful desenvolvida em .NET 8 seguindo princípios de **Clean Architecture*
 
 3. **Execute a API:**
    ```bash
-   cd 02-backend/src/MyTraderGEO.WebAPI
-   dotnet run
+   dotnet run --project 02-backend/src/MyTraderGEO.WebAPI
    ```
 
 4. **Acesse a aplicação:**
@@ -202,9 +199,8 @@ Authorization: Bearer {seu-token-jwt}
 O banco de dados já foi inicializado com o schema. Para aplicar mudanças futuras:
 
 ```bash
-cd 02-backend/src/MyTraderGEO.Infrastructure
-dotnet ef migrations add NomeDaMigracao --startup-project ../MyTraderGEO.WebAPI
-dotnet ef database update --startup-project ../MyTraderGEO.WebAPI
+dotnet ef migrations add NomeDaMigracao --project 02-backend/src/MyTraderGEO.Infrastructure --startup-project 02-backend/src/MyTraderGEO.WebAPI
+dotnet ef database update --project 02-backend/src/MyTraderGEO.Infrastructure --startup-project 02-backend/src/MyTraderGEO.WebAPI
 ```
 
 ## Desenvolvimento
@@ -212,21 +208,20 @@ dotnet ef database update --startup-project ../MyTraderGEO.WebAPI
 ### Build
 
 ```bash
-cd 02-backend
-dotnet build MyTraderGEO.sln
+dotnet build 02-backend/MyTraderGEO.sln
 ```
 
 ### Testes
 
 ```bash
 # Todos os testes
-dotnet test MyTraderGEO.sln
+dotnet test 02-backend/MyTraderGEO.sln
 
 # Testes unitários do domínio
-dotnet test tests/MyTraderGEO.Domain.UnitTests/
+dotnet test 02-backend/tests/MyTraderGEO.Domain.UnitTests/
 
 # Testes de integração
-dotnet test tests/MyTraderGEO.IntegrationTests/
+dotnet test 02-backend/tests/MyTraderGEO.IntegrationTests/
 ```
 
 ### Hot Reload
@@ -234,8 +229,7 @@ dotnet test tests/MyTraderGEO.IntegrationTests/
 O projeto suporta hot reload durante o desenvolvimento:
 
 ```bash
-cd 02-backend/src/MyTraderGEO.WebAPI
-dotnet watch run
+dotnet watch --project 02-backend/src/MyTraderGEO.WebAPI
 ```
 
 ## Configurações
