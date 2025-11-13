@@ -114,6 +114,86 @@ Examples:
 - `docs(dba): Create operational README for database procedures`
 - `docs(agents): Update Markdown formatting guidelines in specs`
 
+## Epic Closure Restriction
+
+**🚨 CRITICAL RULE:** Claude and all agents MUST NEVER suggest epic closure actions in plans.
+
+**Forbidden Actions in Plans:**
+- `epic-deploy.sh` execution
+- `epic-close.sh` execution
+- `gh pr merge` command
+- "merge PR" suggestions
+- "close milestone" suggestions
+- "create release" suggestions
+- Any action that ends/closes/merges a Pull Request
+
+**Allowed Actions:**
+- ✅ Validate deliverables (list what exists vs expected)
+- ✅ Report agent completion status
+- ✅ Check files on disk
+- ✅ Inform "epic ready for closure" (information only, NOT action)
+
+**User Controls Closure:**
+
+Only the USER can explicitly request closure actions:
+- "Execute epic-deploy.sh"
+- "Merge this PR"
+- "Close the epic"
+- "Create release"
+
+If Claude suggests closure in a plan → User will reject and remind of this rule.
+
+## Workflow Cascade Guarantee
+
+**🔄 AUTOMATIC CASCADE:** After ANY commit to workflow branch, changes MUST cascade to all branches.
+
+**Mandatory Cascade Sequence:**
+
+1. **workflow** → commit → push to origin/workflow
+2. **workflow → main** → merge (no-ff) → push to origin/main
+3. **main → develop** → merge (no-ff) → push to origin/develop
+4. **develop → feature/\*** → merge (no-ff) → push to origin/feature/\*
+
+**When This Applies:**
+- ✅ Template modifications (`.agents/templates/`)
+- ✅ Agent specification updates (`.agents/*.xml`)
+- ✅ Documentation updates (`.agents/docs/`)
+- ✅ Claude instructions (`.claude/`)
+- ✅ ANY file in workflow branch
+
+**Implementation:**
+
+After modifying workflow branch:
+```bash
+# 1. Commit and push workflow
+git add .
+git commit -m "type(scope): description"
+git push origin workflow
+
+# 2. Cascade to main
+git checkout main
+git pull origin main
+git merge workflow --no-ff -m "Merge workflow to main: description"
+git push origin main
+
+# 3. Cascade to develop
+git checkout develop
+git pull origin develop
+git merge main --no-ff -m "Merge main to develop: description"
+git push origin develop
+
+# 4. Cascade to current feature branch
+git checkout feature/current-epic
+git pull origin feature/current-epic
+git merge develop --no-ff -m "Merge develop to feature: description"
+git push origin feature/current-epic
+```
+
+**Why This Matters:**
+- Ensures all branches receive template/spec updates
+- Prevents divergence between workflow and active branches
+- Guarantees consistency across all environments
+
 ---
 
 **Last Updated:** 2025-10-27
