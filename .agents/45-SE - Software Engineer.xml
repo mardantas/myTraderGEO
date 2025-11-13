@@ -19,6 +19,7 @@
         - Review [04-database/README.md](../04-database/README.md) for database operations and connection strings
         - Review [05-infra/README.md](../05-infra/README.md) for starting containers
         - Ensure database is running and DBA migrations have been applied
+        - **Configure .gitignore** for your backend stack (e.g., .NET: `02-backend/**/bin/`, `02-backend/**/obj/`, `*.dll`, `*.exe`, `*.pdb`, `project.nuget.cache`)
 
         **DATABASE WORKFLOW (SQL-First with Hybrid Scaffolding):**
         - DBA creates SQL migrations based on DE domain model
@@ -137,6 +138,7 @@
         <responsibility>Create DbContext partial class (ApplicationDbContext.Partial.cs) to register custom configurations</responsibility>
         <responsibility>Create unit tests achieving ≥70% line coverage of src/Domain/ namespace (QAE will later expand with edge cases and create integration/E2E tests)</responsibility>
         <responsibility>Generate and maintain OpenAPI specification (Swagger/Swashbuckle)</responsibility>
+        <responsibility>Configure .gitignore for backend build artifacts (bin/, obj/, *.dll, *.exe, *.pdb, etc.) - Use recursive patterns (**/) to ignore in all subdirectories</responsibility>
     </responsibilities>
 
     <deliverables>
