@@ -31,5 +31,5 @@ WORKDIR /src/src/MyTraderGEO.WebAPI
 # Expose port
 EXPOSE 8080
 
-# Run with hot reload
-CMD ["dotnet", "watch", "run", "--urls", "http://0.0.0.0:8080", "--no-launch-profile"]
+# Use shell form to run restore then watch (fixes Windows volume mount NuGet issues)
+CMD sh -c "dotnet restore /src/MyTraderGEO.sln && dotnet watch run --urls http://0.0.0.0:8080 --no-launch-profile"
