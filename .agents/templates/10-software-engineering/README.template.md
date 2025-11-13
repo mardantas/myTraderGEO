@@ -119,7 +119,7 @@ nano src/Api/appsettings.Development.json
 {MIGRATION_COMMAND}  # e.g., dotnet ef database update
 
 # Or via Docker (if database in container)
-docker compose -f ../05-infra/docker/docker-compose.dev.yml exec api {MIGRATION_COMMAND}
+docker compose -f 05-infra/docker/docker-compose.dev.yml exec api {MIGRATION_COMMAND}
 ```
 
 ### 5. Run API (Development)
@@ -129,7 +129,7 @@ docker compose -f ../05-infra/docker/docker-compose.dev.yml exec api {MIGRATION_
 {RUN_COMMAND}  # e.g., dotnet run --project src/Api
 
 # Or via Docker
-docker compose -f ../05-infra/docker/docker-compose.dev.yml up api -d
+docker compose -f 05-infra/docker/docker-compose.dev.yml up api -d
 ```
 
 **Access:**  
@@ -222,10 +222,10 @@ docker compose -f ../05-infra/docker/docker-compose.dev.yml up api -d
 
 ```bash
 # Build Docker image
-docker build -f ../05-infra/dockerfiles/backend/Dockerfile -t {project}-api:latest .
+docker build -f 05-infra/dockerfiles/backend/Dockerfile -t {project}-api:latest 02-backend
 
 # Run container
-docker run -p 5000:8080 --env-file ../05-infra/configs/.env {project}-api:latest
+docker run -p 5000:8080 --env-file 05-infra/configs/.env {project}-api:latest
 ```
 
 ---
@@ -254,7 +254,7 @@ docker run -p 5000:8080 --env-file ../05-infra/configs/.env {project}-api:latest
 {TEST_INTEGRATION_COMMAND}  # e.g., dotnet test tests/integration
 
 # Setup test database
-docker compose -f ../05-infra/docker/docker-compose.test.yml up -d database
+docker compose -f 05-infra/docker/docker-compose.test.yml up -d database
 ```
 
 ### Manual Testing (Swagger)
@@ -440,10 +440,10 @@ This section connects operational README with strategic documentation.
 
 **Symptom:** `Unable to connect to database` error  
 
-**Solution:**  
+**Solution:**
 ```bash
 # 1. Check if database container is running
-docker compose -f ../05-infra/docker/docker-compose.dev.yml ps database
+docker compose -f 05-infra/docker/docker-compose.dev.yml ps database
 
 # 2. Verify connection string in appsettings.Development.json
 cat src/Api/appsettings.Development.json | grep ConnectionString
