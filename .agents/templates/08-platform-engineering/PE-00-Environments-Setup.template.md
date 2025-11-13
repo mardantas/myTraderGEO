@@ -1115,6 +1115,54 @@ Docker Desktop armazena named volumes no filesystem WSL2:
 - [ ] `05-infra/README.md`
 - [ ] `.gitignore`
 
+### Docker Compose Best Practices
+
+**IMPORTANT:** When creating docker-compose files, follow these standards to prevent configuration errors:
+
+#### 1. Usage Comments
+
+All docker-compose files MUST include a correct Usage comment at the top:
+
+```yaml
+# ==================================
+# [PROJECT_NAME] - [Environment] Environment
+# ==================================
+# Usage (from project root):
+#   docker compose -f 05-infra/docker/docker-compose.[env].yml --env-file 05-infra/configs/.env.[env] up -d
+#
+# IMPORTANT:
+#   - .env files are in 05-infra/configs/, NOT in 05-infra/docker/
+#   - Always run commands from project root
+#   - Use --env-file to specify the environment file
+```
+
+**Examples:**
+- **Development:** `docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up -d`
+- **Staging:** `docker compose -f 05-infra/docker/docker-compose.staging.yml --env-file 05-infra/configs/.env.staging up -d`
+- **Production:** `docker compose -f 05-infra/docker/docker-compose.prod.yml --env-file 05-infra/configs/.env.prod up -d`
+
+#### 2. Environment Files Location
+
+**NEVER create .env files in `05-infra/docker/`**
+
+- ✅ **Correct:** `05-infra/configs/.env.dev`, `05-infra/configs/.env.staging`, `05-infra/configs/.env.prod`
+- ❌ **Wrong:** `05-infra/docker/.env.dev`, `05-infra/docker/.env`, etc.
+
+**Reason:** Centralized configuration management and clear separation between orchestration (docker/) and configuration (configs/)
+
+#### 3. .gitignore Protection
+
+Ensure `.gitignore` includes:
+```
+# Environment files (except examples)
+*.env
+!.env.example
+!*.env.example
+
+# Never ignore these in 05-infra/docker/
+05-infra/docker/.env*
+```
+
 ### Validation
 - [ ] Outros agentes podem começar desenvolvimento (environments prontos)
 - [ ] Deploy testado em staging
