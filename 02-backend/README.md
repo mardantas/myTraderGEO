@@ -95,11 +95,11 @@ API RESTful desenvolvida em .NET 8 seguindo princípios de **Clean Architecture*
 
 2. **Configure a string de conexão:**
 
-   Edite `02-backend/src/MyTraderGEO.WebAPI/appsettings.json`:
+   O arquivo `02-backend/src/MyTraderGEO.WebAPI/appsettings.json` já está configurado com as credenciais corretas:
    ```json
    {
      "ConnectionStrings": {
-       "DefaultConnection": "Host=localhost;Port=5432;Database=mytrader_dev;Username=mytrader_app;Password=app_dev_password_123"
+       "DefaultConnection": "Host=localhost;Port=5432;Database=mytrader_dev;Username=mytrader_app;Password=local_app"
      }
    }
    ```
@@ -212,7 +212,7 @@ docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/con
 
 **3. SE re-scaffold modelos EF Core:**
 ```bash
-dotnet ef dbcontext scaffold "Host=localhost;Port=5432;Database=mytrader_dev;Username=mytrader_app;Password=app_dev_password_123" Npgsql.EntityFrameworkCore.PostgreSQL --project 02-backend/src/MyTraderGEO.Infrastructure --context-dir Data --output-dir Data/Models --context ApplicationDbContext --force --no-onconfiguring
+dotnet ef dbcontext scaffold "Host=localhost;Port=5432;Database=mytrader_dev;Username=mytrader_app;Password=local_app" Npgsql.EntityFrameworkCore.PostgreSQL --project 02-backend/src/MyTraderGEO.Infrastructure --context-dir Data --output-dir Data/Models --context ApplicationDbContext --force --no-onconfiguring
 ```
 
 **📝 Nota sobre Classes Parciais:**
@@ -256,14 +256,42 @@ dotnet watch --project 02-backend/src/MyTraderGEO.WebAPI
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Port=5432;Database=mytrader_dev;Username=mytrader_app;Password=app_dev_password_123"
+    "DefaultConnection": "Host=localhost;Port=5432;Database=mytrader_dev;Username=mytrader_app;Password=local_app",
+    "_Note": "In Docker: This is overridden by ConnectionStrings__DefaultConnection environment variable (docker-compose.dev.yml line 26). In Local: Ensure PostgreSQL is running with DB_APP_PASSWORD=local_app"
   },
   "JwtSettings": {
     "Secret": "dev-secret-key-change-in-production-minimum-32-chars-long-for-security",
     "Issuer": "myTraderGEO",
     "Audience": "myTraderGEO",
     "ExpirationMinutes": "60"
-  }
+  },
+  "Serilog": {
+    "Using": [ "Serilog.Sinks.Console" ],
+    "MinimumLevel": {
+      "Default": "Information",
+      "Override": {
+        "Microsoft": "Warning",
+        "Microsoft.AspNetCore": "Warning",
+        "Microsoft.EntityFrameworkCore": "Warning"
+      }
+    },
+    "WriteTo": [
+      {
+        "Name": "Console",
+        "Args": {
+          "outputTemplate": "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}"
+        }
+      }
+    ],
+    "Enrich": [ "FromLogContext" ]
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
 }
 ```
 
