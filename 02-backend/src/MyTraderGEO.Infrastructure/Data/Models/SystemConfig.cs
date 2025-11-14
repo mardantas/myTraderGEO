@@ -8,7 +8,7 @@ namespace MyTraderGEO.Infrastructure.Data.Models;
 /// </summary>
 public partial class SystemConfig
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
 
     // Taxas Operacionais
     public decimal BrokerCommissionRate { get; set; }
