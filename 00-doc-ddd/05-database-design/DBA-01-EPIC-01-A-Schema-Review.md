@@ -60,6 +60,153 @@ SystemConfigs (1) ---- UpdatedBy ---> (1) Users
 
 ---
 
+## 🔑 Primary Key Strategy
+
+### Contexto
+
+A escolha do tipo de chave primária (UUID vs INT/SERIAL) é uma das decisões arquiteturais mais importantes no design de banco de dados, impactando **performance**, **storage**, **segurança** e **distribuição**.
+
+Para EPIC-01-A, analisamos cada tabela individualmente usando os critérios estabelecidos no **DBA Agent Specification** (adicionado em commit `90767ce`).
+
+### Decision Matrix: EPIC-01-A Tables
+
+| Tabela | Size | API Exposure | Security | Join Freq | Distributed | **Decisão** | Rationale |
+|--------|------|--------------|----------|-----------|-------------|-------------|-----------|
+| **Users** | >1k rows | ✅ Yes (Aggregate Root) | 🔴 High | Medium | Future | **UUID** ✅ | Aggregate root exposto em API pública, IDs não-enumeráveis protegem privacidade |
+| **SubscriptionPlans** | 3-5 rows | ✅ Yes (Lookup) | 🟢 Low (catálogo público) | 🔴 High | No | **UUID** ⚠️ | **Sub-ótimo** (deveria ser INT), mas aceitável (ver Trade-off) |
+| **SystemConfigs** | 1 row | ❌ No (Internal) | 🟢 Low | Low | No | **UUID** ✅ | Singleton pattern, UUID irrelevante (1 registro) |
+
+### Análise Detalhada
+
+#### 1. Users Table: UUID (Correto ✅)
+
+**Decisão:** `Id UUID PRIMARY KEY DEFAULT gen_random_uuid()`
+
+**Critérios aplicados:**
+- ✅ **API Exposure**: Aggregate root exposto em `GET /v1/users/{id}`
+- ✅ **Security**: IDs não-enumeráveis impedem ataques de enumeração (ex: `/users/1`, `/users/2`, ...)
+- ✅ **Distributed Systems**: Futura replicação multi-região (roadmap)
+- ✅ **Table Size**: >1k users esperados (high-volume)
+- ⚠️ **Join Frequency**: Média (FK em SystemConfigs.UpdatedBy)
+
+**Trade-off aceito:**
+- ❌ Storage overhead: 16 bytes vs 4 bytes (aceitável para aggregate root)
+- ❌ Join performance: String comparison vs integer (mitigado com índices)
+
+**Conclusão:** UUID é a escolha correta para Users.
+
+---
+
+#### 2. SubscriptionPlans Table: UUID (Sub-ótimo ⚠️)
+
+**Decisão:** `Id UUID PRIMARY KEY DEFAULT gen_random_uuid()`
+
+**⚠️ FEEDBACK-010 Analysis:**
+
+Esta tabela foi identificada como **sub-ótima** no FEEDBACK-010. Aplicando os novos critérios DBA:
+
+**Critérios que indicam INT/SERIAL:**
+- 🔴 **Table Size**: 3-5 registros apenas (Básico, Pleno, Consultor) → Lookup table
+- 🔴 **Join Frequency**: High (Users.SubscriptionPlanId FK, consultado em toda operação de usuário)
+- 🟢 **Security**: Enumeration OK (catálogo público de planos, não há risco de segurança)
+- 🟢 **Distributed**: Não requer replicação multi-região (dados mestres centralizados)
+
+**Critérios que indicam UUID:**
+- ✅ **API Exposure**: Exposto em `GET /v1/plans/{id}` (mas é catálogo público)
+
+**Comparativo Storage/Performance:**
+
+```
+Storage:
+  UUID:       16 bytes × 3 rows = 48 bytes
+  INT/SERIAL: 4 bytes × 3 rows  = 12 bytes
+  Economia:   75% (36 bytes)
+
+Join Performance (Users.SubscriptionPlanId FK):
+  UUID:       String comparison (slower)
+  INT:        Integer comparison (2-3x faster)
+```
+
+**Por que UUID foi escolhido (decisão original):**
+
+Na análise inicial (seção 8.1 do documento), UUID foi escolhido para **todas as tabelas** por consistência, sem aplicar a matriz de decisão detalhada (que não existia na época).
+
+**Por que UUID está sendo mantido (FEEDBACK-010, Opção 3):**
+
+1. ✅ **Sunk Cost**: Tabela já implementada, testada e em uso
+2. ✅ **Sem Breaking Changes**: API já publicada com UUID (`GET /v1/plans/{id:guid}`)
+3. ✅ **Impacto Negligenciável**: 3-5 registros apenas, overhead irrelevante para MVP
+4. ✅ **Documentação**: Trade-off explicitamente documentado (este documento)
+5. ✅ **Lições Aprendidas**: Novos épicos (EPIC-01-B+) já usarão critérios corretos
+
+**Recomendação futura (Future Optimization Opportunities):**
+
+Se as seguintes condições ocorrerem:
+- Sistema com >1000 usuários (join frequency se torna gargalo)
+- Performance de queries se torna crítica (monitoramento identifica bottleneck)
+- API requer versionamento (v1 → v2, oportunidade para breaking change)
+
+Então: Migrar para INT/SERIAL usando migration `002_subscriptionplans_uuid_to_int.sql` (descrita em FEEDBACK-010, Opção 2).
+
+**Conclusão:** UUID é **sub-ótimo mas aceitável** para SubscriptionPlans. Novos épicos devem usar INT/SERIAL para lookup tables.
+
+---
+
+#### 3. SystemConfigs Table: UUID (Aceitável ✅)
+
+**Decisão:** `Id UUID PRIMARY KEY DEFAULT gen_random_uuid()`
+
+**Critérios aplicados:**
+- 🟢 **Table Size**: 1 registro (singleton pattern)
+- 🟢 **Join Frequency**: Baixa (apenas UpdatedBy FK)
+- 🟢 **API Exposure**: Não exposto publicamente (internal)
+- 🟢 **Security**: Irrelevante (1 registro apenas)
+
+**Conclusão:** UUID é aceitável para SystemConfigs. Com apenas 1 registro, a escolha de PK type é irrelevante (não há impacto de performance ou storage).
+
+---
+
+### Lessons Learned (para EPIC-01-B e posteriores)
+
+**✅ Aplicar ANTES de criar migrations:**
+
+1. **Identificar tipo de tabela:**
+   - Aggregate Root (API-exposed, domain entity) → UUID
+   - Lookup Table (<100 rows, high join frequency) → INT/SERIAL
+   - Transactional Table (high-volume, distributed) → UUID
+   - Internal Table (não exposto, baixo volume) → INT/SERIAL
+
+2. **Documentar rationale:**
+   - Preencher Decision Matrix no DBA-01 ANTES de criar migration
+   - Explicitar trade-offs aceitos (storage vs security, performance vs flexibility)
+
+3. **Revisar com SE Agent:**
+   - Validar se PK type está alinhado com API design (route constraints)
+   - Validar se há requisitos de segurança (enumeration attacks)
+
+**❌ Anti-patterns a evitar:**
+
+- ❌ Usar UUID "por padrão" sem analisar critérios
+- ❌ Usar INT/SERIAL em aggregate roots expostos em API pública
+- ❌ Alterar PK type após implementação (breaking change)
+
+---
+
+### Summary
+
+| Tabela | PK Type | Status | Próximos Épicos |
+|--------|---------|--------|-----------------|
+| Users | UUID | ✅ Correto | Manter padrão |
+| SubscriptionPlans | UUID | ⚠️ Sub-ótimo (deveria ser INT) | Usar INT/SERIAL para novas lookup tables |
+| SystemConfigs | UUID | ✅ Aceitável (irrelevante) | Usar INT/SERIAL se não for singleton |
+
+**Referências:**
+- FEEDBACK-010: Primary Key Strategy Review
+- DBA Agent Specification (commit `90767ce`): UUID vs INT/SERIAL Decision Criteria
+- Migration `001_create_user_management_schema.sql`: Implementação atual
+
+---
+
 ## 🔧 Decisões de Modelagem
 
 ### 1. Value Objects: Embedded vs JSON
@@ -596,6 +743,146 @@ VALUES (gen_random_uuid(), 'admin@mytradergeo.com', 'hash', 'Test', 'Test', 'Adm
 - **DDD Patterns**: `.agents/docs/05-DDD-Patterns-Reference.md`
 - **PostgreSQL Docs**: https://www.postgresql.org/docs/14/
 - **JSONB Indexing**: https://www.postgresql.org/docs/14/datatype-json.html#JSON-INDEXING
+
+---
+
+## 🔮 Future Optimization Opportunities
+
+Esta seção documenta oportunidades de otimização identificadas durante o design review, que **NÃO** serão implementadas no EPIC-01-A mas devem ser consideradas em épicos futuros.
+
+### 1. SubscriptionPlans: UUID → INT/SERIAL Migration
+
+**Contexto:** Identificado em FEEDBACK-010 que SubscriptionPlans usa UUID mas deveria usar INT/SERIAL (lookup table com 3-5 registros).
+
+**Trade-off atual:**
+- ❌ Storage overhead: 75% maior (16 bytes vs 4 bytes)
+- ❌ Join performance: 2-3x mais lento (string comparison vs integer)
+- ✅ Consistência API: Mantém UUID em todas as rotas
+- ✅ Sem breaking changes: Não requer versionamento v1 → v2
+
+**Quando otimizar:**
+
+Reavaliar se **TODAS** as seguintes condições ocorrerem:
+
+1. **Scale threshold:** Sistema com >1,000 usuários ativos
+   - Rationale: Join frequency Users ↔ SubscriptionPlans se torna crítico
+
+2. **Performance bottleneck:** Monitoramento identifica queries Users/SubscriptionPlans como top 5 mais lentas
+   - Metrics: Query time >100ms, JOIN overhead >50ms
+
+3. **API versioning opportunity:** Planejamento de v2 da API
+   - Rationale: Oportunidade para breaking change sem impacto v1
+
+**Migration path:**
+
+Se condições atendidas, seguir FEEDBACK-010, Opção 2:
+- Migration: `002_subscriptionplans_uuid_to_int.sql`
+- API: Atualizar rotas para `GET /v2/plans/{id:int}`
+- Backend: Atualizar DTOs e Controllers
+- Frontend: Atualizar API calls
+
+**Status:** 🟡 Monitorar (não implementar agora)
+
+---
+
+### 2. Índices JSONB: GIN vs Expression Indexes
+
+**Contexto:** Atualmente usamos GIN indexes em `Users.PlanOverride` e `Users.CustomFees` para busca genérica.
+
+**Trade-off atual:**
+- ✅ Flexibilidade: GIN suporta qualquer query JSONB
+- ❌ Storage: GIN indexes são maiores (~3x tamanho da coluna)
+- ❌ Write performance: GIN updates mais lentos
+
+**Quando otimizar:**
+
+Se queries mostrarem padrões específicos (ex: sempre filtrar por `PlanOverride->>'ExpiresAt'`):
+
+```sql
+-- Substituir GIN genérico:
+DROP INDEX IX_Users_PlanOverride;
+
+-- Por expression index específico:
+CREATE INDEX IX_Users_PlanOverride_ExpiresAt
+ON Users ((PlanOverride->>'ExpiresAt')::timestamp)
+WHERE PlanOverride IS NOT NULL;
+```
+
+**Benefícios:**
+- ✅ Storage: 60-70% menor que GIN
+- ✅ Query performance: 2x mais rápido para queries específicas
+
+**Status:** 🟢 Aplicar quando padrões de query estiverem estabelecidos (3-6 meses de uso)
+
+---
+
+### 3. Partitioning: Users Table
+
+**Contexto:** Tabela Users atualmente não particionada (single table).
+
+**Quando considerar:**
+
+Se **QUALQUER** condição ocorrer:
+
+1. **Volume:** >100,000 usuários
+2. **Query performance:** Full table scans >1 segundo
+3. **Backup window:** Backup completo >30 minutos
+
+**Estratégia de particionamento:**
+
+```sql
+-- Partition por Status (hot/cold data)
+CREATE TABLE Users_Active PARTITION OF Users FOR VALUES IN ('Active', 'Suspended');
+CREATE TABLE Users_Deleted PARTITION OF Users FOR VALUES IN ('Deleted');
+```
+
+**Benefícios:**
+- ✅ Query performance: 3-5x mais rápido (partition pruning)
+- ✅ Maintenance: VACUUM/ANALYZE mais rápidos
+- ✅ Archiving: DROP partition Users_Deleted sem full table lock
+
+**Status:** 🔴 Não aplicar (volume ainda muito baixo)
+
+---
+
+### 4. Read Replicas para Analytics
+
+**Contexto:** Atualmente single-instance PostgreSQL.
+
+**Quando implementar:**
+
+Se queries de analytics (relatórios, dashboards) impactarem performance transacional:
+
+1. **Setup:** PostgreSQL streaming replication
+2. **Connection strings:**
+   - `mytrader_app` → Primary (writes + reads transacionais)
+   - `mytrader_readonly` → Replica (reads analytics)
+
+**Benefícios:**
+- ✅ Isolamento: Analytics não impacta transações
+- ✅ Scale: Read throughput horizontal
+- ✅ HA: Replica pode ser promovida a primary (failover)
+
+**Status:** 🟡 Avaliar quando analytics se tornarem críticos
+
+---
+
+### Summary
+
+| Otimização | Trigger | Priority | Esforço | Impacto |
+|------------|---------|----------|---------|---------|
+| SubscriptionPlans UUID→INT | >1k users + perf bottleneck + API v2 | 🟡 Medium | 🔴 High (breaking change) | 🟢 Low-Medium |
+| JSONB Expression Indexes | Padrões de query estabelecidos | 🟢 High | 🟢 Low | 🟡 Medium |
+| Users Partitioning | >100k users | 🔴 Low | 🔴 High | 🔴 High (only at scale) |
+| Read Replicas | Analytics impactando OLTP | 🟡 Medium | 🟡 Medium | 🟢 High |
+
+**Monitoramento recomendado:**
+- Query performance: `pg_stat_statements`
+- Table sizes: `pg_total_relation_size()`
+- Index usage: `pg_stat_user_indexes`
+- Slow queries: Log queries >100ms
+
+**Revisão:** Reavaliar estas otimizações a cada 6 meses ou quando triggers específicos ocorrerem.
 
 ---
 

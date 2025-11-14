@@ -12,9 +12,10 @@ MARKDOWN FORMATTING:
 ---
 
 **Data Abertura:** 2025-11-13
+**Data Resolução:** 2025-11-13
 **Solicitante:** SE Agent (após atualização de especificação DBA)
 **Destinatário:** DBA Agent
-**Status:** 🔴 Aberto
+**Status:** 🟢 Resolvido
 
 **Tipo:**
 - [x] Correção (deliverable já entregue precisa ajuste)
@@ -358,18 +359,26 @@ public async Task<IActionResult> GetPlan(int id) { }
 
 [Será preenchido após implementação da opção escolhida]
 
-**Opção Escolhida:** [1, 2, ou 3]
+**Opção Escolhida:** Opção 3 (Híbrida - Recomendada)
 
 **Deliverables Atualizados:**
-- [ ] `00-doc-ddd/05-database-design/DBA-01-EPIC-01-A-Schema-Review.md` - Atualizado com seção Primary Key Strategy
-- [ ] `04-database/migrations/002_*.sql` - [Apenas se Opção 2]
-- [ ] Backend code (Controllers, DTOs) - [Apenas se Opção 2]
+- [x] `00-doc-ddd/05-database-design/DBA-01-EPIC-01-A-Schema-Review.md` - Atualizado com seção Primary Key Strategy
+  - Seção "🔑 Primary Key Strategy" adicionada (linhas 63-208)
+  - Decision Matrix para Users, SubscriptionPlans, SystemConfigs
+  - Análise detalhada do trade-off SubscriptionPlans UUID
+  - Lessons Learned para EPIC-01-B+
+- [x] `00-doc-ddd/05-database-design/DBA-01-EPIC-01-A-Schema-Review.md` - Seção "🔮 Future Optimization Opportunities" adicionada
+  - Condições para migrar SubscriptionPlans UUID→INT
+  - Outras otimizações (JSONB indexes, partitioning, read replicas)
+  - Triggers e métricas de monitoramento
+- [ ] `04-database/migrations/002_*.sql` - Não aplicável (Opção 3: mantém UUID)
+- [ ] Backend code (Controllers, DTOs) - Não aplicável (Opção 3: sem breaking changes)
 
 **Referência Git Commit:** [será preenchido após commit]
 
 ---
 
-**Status Atual:** 🔴 Aberto (Aguardando decisão sobre Opção 1, 2 ou 3)
+**Status Atual:** 🟢 Resolvido (Opção 3 implementada - Documentação atualizada, UUID mantido para EPIC-01-A)
 
 ---
 
@@ -378,6 +387,7 @@ public async Task<IActionResult> GetPlan(int id) { }
 | Data | Mudança | Autor |
 |------|---------|-------|
 | 2025-11-13 | Criado (após atualização de especificação DBA com critérios UUID vs INT/SERIAL) | SE Agent |
+| 2025-11-13 | Resolvido - Opção 3 implementada: DBA-01 atualizado com Primary Key Strategy e Future Optimization Opportunities | DBA Agent |
 
 ---
 
