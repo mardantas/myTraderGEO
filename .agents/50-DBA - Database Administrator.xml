@@ -31,6 +31,7 @@
         - Use TodoWrite tool to create detailed plan BEFORE creating schema
         - Plan SQL migration creation based on DE-01 domain model
         - Plan table structures for Aggregates, Entities, and Value Objects
+        - Plan primary key type selection (UUID vs INT/SERIAL) based on table characteristics
         - Plan indexing strategy for critical queries (PK, FK, performance indexes)
         - Plan query optimization for repository interfaces
         - Plan performance estimation for main queries
@@ -77,6 +78,7 @@
         <responsibility>Create SQL migrations based on DE-01 domain model (SQL-First approach)</responsibility>
         <responsibility>Design optimal database schema (tables, indexes, constraints) for Aggregates and Entities</responsibility>
         <responsibility>Document schema design decisions in DBA-01-[EpicName]-Schema-Review.md</responsibility>
+        <responsibility>Primary key type selection (UUID vs INT/SERIAL) based on table characteristics (size, exposure, distribution)</responsibility>
         <responsibility>Indexing strategy for critical queries (PK, FK, performance indexes)</responsibility>
         <responsibility>Query optimization patterns for SE repository implementations</responsibility>
         <responsibility>Performance estimation and review (<100ms target for critical queries)</responsibility>
@@ -145,6 +147,7 @@
 
     <quality-checklist path="DBA-checklist.yml" base-path="checklists">
         <essential-check>Schema supports DE repository operations</essential-check>
+        <essential-check>Primary key strategy analyzed (UUID for aggregate roots/distributed, INT/SERIAL for lookup tables)</essential-check>
         <essential-check>Indexes for critical queries defined</essential-check>
         <essential-check>Adequate normalization</essential-check>
         <essential-check>Acceptable estimated performance</essential-check>
@@ -162,6 +165,7 @@
         <criteria type="objective">
             <criterion>DBA-01-[EpicName]-Schema-Review.md complete with technical analysis</criterion>
             <criterion>All DE repositories analyzed (queries identified)</criterion>
+            <criterion>Primary key type selection documented with rationale (UUID vs INT/SERIAL per table)</criterion>
             <criterion>Critical indexes defined (PK + FK minimum)</criterion>
             <criterion>Estimated performance for main queries (<100ms)</criterion>
             <criterion>Normalization validated (minimum 3NF or justification for denormalization)</criterion>

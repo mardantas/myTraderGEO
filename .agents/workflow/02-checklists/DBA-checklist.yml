@@ -2,11 +2,21 @@ agent: "DBA"
 phase: "Database Review"
 essential_checks:
   - "Schema suporta operações dos repositories DE"
+  - "Primary key strategy documentada (UUID vs INT/SERIAL com rationale por tabela)"
+  - "UUID usado para: Aggregate roots expostos em API, high-volume, security-sensitive"
+  - "INT/SERIAL usado para: Lookup tables (<100 rows), internal-only, high-join frequency"
   - "Indexes CRÍTICOS em todas FKs (performance blocking)"
   - "Indexes em colunas de filtro frequente (status, createdAt)"
   - "Normalização adequada (3NF mínimo)"
   - "Performance estimada aceitável (<100ms queries principais)"
   - "Concurrency control (Version column para optimistic locking)"
+
+primary_key_strategy:
+  - "Tabela exposta em API pública? → UUID (security: non-enumerable)"
+  - "Lookup table (<100 rows)? → INT/SERIAL (storage + performance)"
+  - "High-volume transactional (>100k rows)? → UUID (distributed ID generation)"
+  - "High join frequency (>5 joins/query)? → INT/SERIAL (performance)"
+  - "Documentar trade-offs em DBA-01 Primary Key Strategy section"
 
 backup_and_recovery:
   - "Backup strategy configurado (daily full + 30min incremental)"
