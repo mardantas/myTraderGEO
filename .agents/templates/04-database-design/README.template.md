@@ -17,11 +17,38 @@ MARKDOWN FORMATTING:
 
 This is a **quick reference guide** for executing database migrations and managing database users. For strategic decisions, database design details, and trade-offs, consult [DBA-01-{EpicName}-Database-Design-Decisions.md](../00-doc-ddd/05-database-design/DBA-01-{EpicName}-Database-Design-Decisions.md).
 
-**Document Separation:**  
-- **This README:** Commands and checklists (HOW to execute)  
-- **DBA-01:** Design decisions, justifications, and trade-offs (WHY and WHAT)  
+**Document Separation:**
+- **This README:** Commands and checklists (HOW to execute)
+- **DBA-01:** Design decisions, justifications, and trade-offs (WHY and WHAT)
 
 **Principle:** README is an INDEX/QUICK-REFERENCE to DBA-01, not a duplicate.
+
+---
+
+## Primary Key Selection Criteria (Quick Reference)
+
+For detailed analysis, see [DBA-01-{EpicName}-Schema-Review.md § Primary Key Strategy](../00-doc-ddd/05-database-design/DBA-01-{EpicName}-Schema-Review.md#-primary-key-strategy).
+
+### Quick Decision Matrix
+
+| Table Type | Use UUID | Use INT/SERIAL |
+|------------|----------|----------------|
+| **Aggregate root exposed in API** (Users, Orders) | ✅ | ❌ |
+| **Lookup table** (<100 rows: SubscriptionPlans, Categories) | ❌ | ✅ |
+| **High-volume transactional** (>100k rows: AuditLog) | ✅ | ❌ |
+| **High join frequency** (>5 joins/query) | ❌ | ✅ |
+| **Security-sensitive** (prevent enumeration attacks) | ✅ | ❌ |
+| **Internal-only** (not exposed in API) | ⚠️ | ✅ |
+
+**Examples:**
+- **UUID:** Users (API-exposed, security), Orders (high-volume), Transactions (distributed)
+- **INT/SERIAL:** SubscriptionPlans (lookup, 3-5 rows), Categories (lookup, <100 rows)
+
+**Trade-offs:**
+- UUID: 16 bytes (4x larger storage), slower joins, non-enumerable (security+)
+- INT/SERIAL: 4 bytes (compact), faster joins, enumerable (security-)
+
+**See full decision tree, migration paths, and best practices in DBA-01.**
 
 ---
 

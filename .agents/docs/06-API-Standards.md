@@ -253,6 +253,211 @@ Se você está fazendo isso **no Epic 1**, PARE:
 
 ---
 
+## 🆔 ID Strategies in API Endpoints
+
+### Why Different ID Types?
+
+You'll notice some endpoints use **UUIDs** while others use **integers**. This is intentional and based on DBA primary key selection criteria.
+
+**Quick Reference:** See [DBA-01 § Primary Key Strategy](../.agents/templates/04-database-design/DBA-01-[EpicName]-Schema-Review.template.md#-primary-key-strategy) for full rationale.
+
+---
+
+### UUID Endpoints (Recommended for Most Resources)
+
+**Pattern:** `/v1/users/{uuid}` or `/v1/orders/{uuid}`
+
+**When Used:**
+- Aggregate roots exposed in public API (Users, Orders, Transactions)
+- Security-sensitive resources (prevent enumeration attacks)
+- High-volume transactional data (distributed ID generation)
+
+**Examples:**
+```http
+GET /v1/users/550e8400-e29b-41d4-a716-446655440000
+GET /v1/orders/7c9e6679-7425-40de-944b-e07fc1f90ae7
+POST /v1/transactions
+```
+
+**Benefits for API:**
+- ✅ **Security:** Non-enumerable (`/users/123` → attacker can guess all IDs, `/users/{uuid}` → cannot)
+- ✅ **Client-side generation:** Client can generate UUID before POST (idempotency)
+- ✅ **No leaking business metrics:** Integer IDs reveal volume ("Order 50,000" = 50k orders)
+- ✅ **Industry standard:** Stripe, GitHub, AWS all use UUIDs/opaque IDs
+
+**OpenAPI Spec:**
+```yaml
+paths:
+  /v1/users/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+```
+
+---
+
+### Integer Endpoints (Lookup Tables Only)
+
+**Pattern:** `/v1/plans/{id}` or `/v1/categories/{id}`
+
+**When Used:**
+- Lookup/reference tables with few records (<100 rows)
+- Public catalog data (SubscriptionPlans, Categories, Countries)
+- Data where enumeration is acceptable or desired
+
+**Examples:**
+```http
+GET /v1/plans/1              # Basic plan
+GET /v1/plans/2              # Premium plan
+GET /v1/categories/5         # Electronics category
+```
+
+**Benefits for API:**
+- ✅ **User-friendly:** Easier to remember and type (`/plans/1` vs `/plans/550e8400...`)
+- ✅ **URL brevity:** Shorter URLs for public catalogs
+- ✅ **Caching:** Simpler cache keys (`plan:1` vs `plan:550e8400...`)
+
+**Trade-off:**
+- ⚠️ **Enumerable:** `/plans/1`, `/plans/2`, `/plans/3` → client can iterate all IDs (acceptable for public catalogs)
+
+**OpenAPI Spec:**
+```yaml
+paths:
+  /v1/plans/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+          example: 1
+```
+
+---
+
+### Hybrid Pattern (When to Use Both)
+
+Some APIs use **integer IDs** for lookups but **UUID slugs** for security:
+
+```http
+GET /v1/plans/1                                           # Public lookup (integer)
+GET /v1/users/550e8400-e29b-41d4-a716-446655440000       # User resource (UUID)
+GET /v1/users/550e8400.../subscription/plans/2           # Hybrid (UUID user, integer plan)
+```
+
+**Rationale:**
+- User ID is **security-sensitive** → UUID (non-enumerable)
+- Plan ID is **public catalog** → Integer (user-friendly)
+
+---
+
+### Client Implementation Guidance
+
+#### Frontend (TypeScript/JavaScript)
+
+```typescript
+// UUID endpoints - use string type
+interface User {
+  id: string;  // UUID
+  email: string;
+  planId: number;  // Integer FK to Plans
+}
+
+// API calls
+const user = await api.get<User>(`/v1/users/${userId}`);
+const plan = await api.get<Plan>(`/v1/plans/${user.planId}`);
+```
+
+#### Validation
+
+```typescript
+// UUID validation
+function isValidUUID(id: string): boolean {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(id);
+}
+
+// Integer validation
+function isValidPlanId(id: number): boolean {
+  return Number.isInteger(id) && id > 0;
+}
+```
+
+---
+
+### Backend Implementation (.NET)
+
+```csharp
+// UUID endpoints
+[HttpGet("/v1/users/{id:guid}")]  // Route constraint: only UUIDs
+public async Task<IActionResult> GetUser(Guid id)
+{
+    var user = await _userRepository.GetByIdAsync(id);
+    return user != null ? Ok(user) : NotFound();
+}
+
+// Integer endpoints
+[HttpGet("/v1/plans/{id:int}")]  // Route constraint: only integers
+public async Task<IActionResult> GetPlan(int id)
+{
+    var plan = await _planRepository.GetByIdAsync(id);
+    return plan != null ? Ok(plan) : NotFound();
+}
+```
+
+---
+
+### Migration Considerations
+
+**If you need to change from INT to UUID (or vice versa):**
+
+❌ **Don't:** Change existing production endpoints (breaking change for clients)
+
+✅ **Do:** Version the API
+
+```http
+# v1 (deprecated - integer IDs)
+GET /v1/users/123
+
+# v2 (new - UUID IDs)
+GET /v2/users/550e8400-e29b-41d4-a716-446655440000
+```
+
+**Migration path:**
+1. Deploy v2 endpoints with UUID
+2. Deprecate v1 endpoints (add `X-API-Deprecated: true` header)
+3. Communicate sunset timeline to clients (6-12 months)
+4. Remove v1 endpoints after sunset date
+
+---
+
+### Summary: When to Use What?
+
+| Resource Type | ID Type | Example | Rationale |
+|---------------|---------|---------|-----------|
+| **Users** | UUID | `/v1/users/{uuid}` | Security (non-enumerable), aggregate root |
+| **Orders** | UUID | `/v1/orders/{uuid}` | Security, high-volume, transactional |
+| **Transactions** | UUID | `/v1/transactions/{uuid}` | Security, distributed, audit trail |
+| **Subscription Plans** | INT | `/v1/plans/{id}` | Lookup table (3-5 records), public catalog |
+| **Categories** | INT | `/v1/categories/{id}` | Lookup table (<100 records), enumeration OK |
+| **System Config** | UUID | `/v1/config/{uuid}` | Singleton (fixed ID), internal admin API |
+
+**Rule of Thumb:**
+- **Default to UUID** for aggregate roots and user-facing resources
+- **Use INT only** for small lookup tables where enumeration is acceptable
+
+**For full decision criteria, see:** [DBA Primary Key Strategy Documentation](../.agents/templates/04-database-design/DBA-01-[EpicName]-Schema-Review.template.md#-primary-key-strategy)
+
+---
+
 ## 🌐 Estrutura de URLs
 
 ### Padrão Base

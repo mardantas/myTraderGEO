@@ -411,17 +411,17 @@ Model tactical domain PER EPIC - Aggregates, Entities, Value Objects (does NOT i
 ## 50 - DBA (Database Administrator)
 
 ### Objective
-Validate and optimize database schema created by DE - indexing, performance, multi-environment password strategy.
+Validate and optimize database schema created by DE - primary key selection, indexing, performance, multi-environment password strategy.
 
 ### Responsibilities
-**Per Epic (AFTER DE):** Validate DE-01 schema, indexing strategy, query optimization, performance review, guidance for DE adjustments, multi-environment password strategy (dev simple, staging/prod strong via ALTER USER), security best practices (least privilege, rotation, LGPD/SOC2).  
+**Per Epic (AFTER DE):** Validate DE-01 schema, primary key type selection (UUID vs INT/SERIAL based on table characteristics), indexing strategy, query optimization, performance review, guidance for DE adjustments, multi-environment password strategy (dev simple, staging/prod strong via ALTER USER), security best practices (least privilege, rotation, LGPD/SOC2).  
 
 ### When Executes
 **Per Epic:** After DE creates schema  
 
 ### Key Deliverables
-- **README.md** - Multi-environment password strategy, security best practices  
-- **DBA-01-[EpicName]-Schema-Review.md** - Per epic validation  
+- **README.md** - Multi-environment password strategy, security best practices, primary key selection criteria
+- **DBA-01-[EpicName]-Schema-Review.md** - Per epic validation with primary key strategy analysis
 - **Migrations** - 001_initial_schema.sql (dev passwords), 002_update_prod_passwords.sql (ALTER USER)  
 
 ### Example Invocations
@@ -429,10 +429,11 @@ Validate and optimize database schema created by DE - indexing, performance, mul
 # Per Epic (AFTER DE)
 "DBA, revise schema para épico 'Criar Estratégia'"
 → Creates DBA-01-EPIC-01-Schema-Review.md
-→ Validates DE-01 schema, suggests indexes, checks FK relationships
+→ Validates DE-01 schema, analyzes primary key strategy (UUID vs INT/SERIAL), suggests indexes, checks FK relationships
 
 "DBA, crie migration para épico 'Calculate Greeks' com índices de performance"
 → Creates migration file with indexes for query optimization
+→ Documents primary key type decisions with rationale
 → Validates schema supports DE-01 repository interfaces
 
 # Security & Performance
