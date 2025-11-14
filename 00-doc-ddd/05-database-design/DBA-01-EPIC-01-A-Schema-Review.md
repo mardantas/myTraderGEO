@@ -73,8 +73,8 @@ Para EPIC-01-A, analisamos cada tabela individualmente usando os critérios esta
 | Tabela | Size | API Exposure | Security | Join Freq | Distributed | **Decisão** | Rationale |
 |--------|------|--------------|----------|-----------|-------------|-------------|-----------|
 | **Users** | >1k rows | ✅ Yes (Aggregate Root) | 🔴 High | Medium | Future | **UUID** ✅ | Aggregate root exposto em API pública, IDs não-enumeráveis protegem privacidade |
-| **SubscriptionPlans** | 3-5 rows | ✅ Yes (Lookup) | 🟢 Low (catálogo público) | 🔴 High | No | **UUID** ⚠️ | **Sub-ótimo** (deveria ser INT), mas aceitável (ver Trade-off) |
-| **SystemConfigs** | 1 row | ❌ No (Internal) | 🟢 Low | Low | No | **UUID** ✅ | Singleton pattern, UUID irrelevante (1 registro) |
+| **SubscriptionPlans** | 3-5 rows | ✅ Yes (Lookup) | 🟢 Low (catálogo público) | 🔴 High | No | **INT SERIAL** ✅ | Lookup table, IDs human-readable (1=Básico, 2=Pleno, 3=Consultor), joins otimizados (75% menos storage) |
+| **SystemConfigs** | 1 row | ❌ No (Internal) | 🟢 Low | Low | No | **INT SERIAL** ✅ | Singleton (Id=1), INT apropriado para registro único interno |
 
 ### Análise Detalhada
 
@@ -97,72 +97,71 @@ Para EPIC-01-A, analisamos cada tabela individualmente usando os critérios esta
 
 ---
 
-#### 2. SubscriptionPlans Table: UUID (Sub-ótimo ⚠️)
+#### 2. SubscriptionPlans Table: INT SERIAL (Correto ✅)
 
-**Decisão:** `Id UUID PRIMARY KEY DEFAULT gen_random_uuid()`
+**Decisão:** `Id SERIAL PRIMARY KEY`
 
-**⚠️ FEEDBACK-010 Analysis:**
+**Critérios aplicados:**
+- ✅ **Table Size**: 3-5 registros apenas (Básico, Pleno, Consultor) → Lookup table clássica
+- ✅ **Join Frequency**: High (Users.SubscriptionPlanId FK, consultado em toda operação de usuário)
+- ✅ **Security**: Enumeration OK - catálogo público de planos, sem risco de segurança
+- ✅ **API Exposure**: Exposto em `GET /v1/plans/{id}`, mas é catálogo público (não requer UUID)
+- ✅ **Distributed**: Não requer replicação multi-região (dados mestres centralizados)
 
-Esta tabela foi identificada como **sub-ótima** no FEEDBACK-010. Aplicando os novos critérios DBA:
-
-**Critérios que indicam INT/SERIAL:**
-- 🔴 **Table Size**: 3-5 registros apenas (Básico, Pleno, Consultor) → Lookup table
-- 🔴 **Join Frequency**: High (Users.SubscriptionPlanId FK, consultado em toda operação de usuário)
-- 🟢 **Security**: Enumeration OK (catálogo público de planos, não há risco de segurança)
-- 🟢 **Distributed**: Não requer replicação multi-região (dados mestres centralizados)
-
-**Critérios que indicam UUID:**
-- ✅ **API Exposure**: Exposto em `GET /v1/plans/{id}` (mas é catálogo público)
-
-**Comparativo Storage/Performance:**
+**Benefícios da escolha INT SERIAL:**
 
 ```
-Storage:
-  UUID:       16 bytes × 3 rows = 48 bytes
-  INT/SERIAL: 4 bytes × 3 rows  = 12 bytes
-  Economia:   75% (36 bytes)
+Storage Optimization:
+  INT SERIAL: 4 bytes × 3 rows = 12 bytes
+  (vs UUID:   16 bytes × 3 rows = 48 bytes → economia de 75%)
 
 Join Performance (Users.SubscriptionPlanId FK):
-  UUID:       String comparison (slower)
-  INT:        Integer comparison (2-3x faster)
+  INT:  Integer comparison (2-3x mais rápido que UUID)
+
+Human-Readable IDs:
+  1 = Plano Básico
+  2 = Plano Pleno
+  3 = Plano Consultor
+
+  (facilita debugging, queries manuais, e seed data)
 ```
 
-**Por que UUID foi escolhido (decisão original):**
+**Trade-off aceito:**
+- ❌ **IDs Enumeráveis**: `/v1/plans/1`, `/v1/plans/2`, `/v1/plans/3` são previsíveis
+  - ✅ **Aceitável**: Planos são catálogo público, enumeration não é risco de segurança
+  - ✅ **User-Friendly**: IDs previsíveis facilitam integração (ex: frontend hardcode plano Básico = 1)
 
-Na análise inicial (seção 8.1 do documento), UUID foi escolhido para **todas as tabelas** por consistência, sem aplicar a matriz de decisão detalhada (que não existia na época).
-
-**Por que UUID está sendo mantido (FEEDBACK-010, Opção 3):**
-
-1. ✅ **Sunk Cost**: Tabela já implementada, testada e em uso
-2. ✅ **Sem Breaking Changes**: API já publicada com UUID (`GET /v1/plans/{id:guid}`)
-3. ✅ **Impacto Negligenciável**: 3-5 registros apenas, overhead irrelevante para MVP
-4. ✅ **Documentação**: Trade-off explicitamente documentado (este documento)
-5. ✅ **Lições Aprendidas**: Novos épicos (EPIC-01-B+) já usarão critérios corretos
-
-**Recomendação futura (Future Optimization Opportunities):**
-
-Se as seguintes condições ocorrerem:
-- Sistema com >1000 usuários (join frequency se torna gargalo)
-- Performance de queries se torna crítica (monitoramento identifica bottleneck)
-- API requer versionamento (v1 → v2, oportunidade para breaking change)
-
-Então: Migrar para INT/SERIAL usando migration `002_subscriptionplans_uuid_to_int.sql` (descrita em FEEDBACK-010, Opção 2).
-
-**Conclusão:** UUID é **sub-ótimo mas aceitável** para SubscriptionPlans. Novos épicos devem usar INT/SERIAL para lookup tables.
+**Conclusão:** INT SERIAL é a escolha **ótima** para SubscriptionPlans. Lookup tables devem sempre usar INT/SERIAL.
 
 ---
 
-#### 3. SystemConfigs Table: UUID (Aceitável ✅)
+#### 3. SystemConfigs Table: INT SERIAL (Correto ✅)
 
-**Decisão:** `Id UUID PRIMARY KEY DEFAULT gen_random_uuid()`
+**Decisão:** `Id SERIAL PRIMARY KEY` (Singleton: sempre `Id = 1`)
 
 **Critérios aplicados:**
-- 🟢 **Table Size**: 1 registro (singleton pattern)
-- 🟢 **Join Frequency**: Baixa (apenas UpdatedBy FK)
-- 🟢 **API Exposure**: Não exposto publicamente (internal)
-- 🟢 **Security**: Irrelevante (1 registro apenas)
+- ✅ **Table Size**: 1 registro (singleton pattern)
+- ✅ **API Exposure**: Não exposto publicamente (internal configuration)
+- ✅ **Security**: Irrelevante (1 registro, não exposto)
+- ✅ **Join Frequency**: Baixa (apenas UpdatedBy FK para Users)
+- ✅ **Distributed**: Não requer replicação (configuração centralizada)
 
-**Conclusão:** UUID é aceitável para SystemConfigs. Com apenas 1 registro, a escolha de PK type é irrelevante (não há impacto de performance ou storage).
+**Benefícios da escolha INT SERIAL:**
+
+```
+Singleton Pattern:
+  Id = 1 (fixo, sempre)
+
+Query Simplificada:
+  SELECT * FROM SystemConfigs WHERE Id = 1;
+  (vs UUID hardcoded: WHERE Id = '00000000-0000-0000-0000-000000000001')
+
+Human-Readable:
+  INSERT INTO SystemConfigs (Id, ...) VALUES (1, ...);
+  (vs UUID: INSERT ... VALUES ('00000000-0000-0000-0000-000000000001', ...);)
+```
+
+**Conclusão:** INT SERIAL é a escolha **ótima** para SystemConfigs. Singleton pattern com Id=1 é mais simples e legível que UUID hardcoded.
 
 ---
 
@@ -196,9 +195,9 @@ Então: Migrar para INT/SERIAL usando migration `002_subscriptionplans_uuid_to_i
 
 | Tabela | PK Type | Status | Próximos Épicos |
 |--------|---------|--------|-----------------|
-| Users | UUID | ✅ Correto | Manter padrão |
-| SubscriptionPlans | UUID | ⚠️ Sub-ótimo (deveria ser INT) | Usar INT/SERIAL para novas lookup tables |
-| SystemConfigs | UUID | ✅ Aceitável (irrelevante) | Usar INT/SERIAL se não for singleton |
+| Users | UUID | ✅ Correto | Manter padrão para aggregate roots |
+| SubscriptionPlans | INT SERIAL | ✅ Correto | Manter padrão para lookup tables |
+| SystemConfigs | INT SERIAL | ✅ Correto | Manter padrão para singletons |
 
 **Referências:**
 - FEEDBACK-010: Primary Key Strategy Review
@@ -750,42 +749,7 @@ VALUES (gen_random_uuid(), 'admin@mytradergeo.com', 'hash', 'Test', 'Test', 'Adm
 
 Esta seção documenta oportunidades de otimização identificadas durante o design review, que **NÃO** serão implementadas no EPIC-01-A mas devem ser consideradas em épicos futuros.
 
-### 1. SubscriptionPlans: UUID → INT/SERIAL Migration
-
-**Contexto:** Identificado em FEEDBACK-010 que SubscriptionPlans usa UUID mas deveria usar INT/SERIAL (lookup table com 3-5 registros).
-
-**Trade-off atual:**
-- ❌ Storage overhead: 75% maior (16 bytes vs 4 bytes)
-- ❌ Join performance: 2-3x mais lento (string comparison vs integer)
-- ✅ Consistência API: Mantém UUID em todas as rotas
-- ✅ Sem breaking changes: Não requer versionamento v1 → v2
-
-**Quando otimizar:**
-
-Reavaliar se **TODAS** as seguintes condições ocorrerem:
-
-1. **Scale threshold:** Sistema com >1,000 usuários ativos
-   - Rationale: Join frequency Users ↔ SubscriptionPlans se torna crítico
-
-2. **Performance bottleneck:** Monitoramento identifica queries Users/SubscriptionPlans como top 5 mais lentas
-   - Metrics: Query time >100ms, JOIN overhead >50ms
-
-3. **API versioning opportunity:** Planejamento de v2 da API
-   - Rationale: Oportunidade para breaking change sem impacto v1
-
-**Migration path:**
-
-Se condições atendidas, seguir FEEDBACK-010, Opção 2:
-- Migration: `002_subscriptionplans_uuid_to_int.sql`
-- API: Atualizar rotas para `GET /v2/plans/{id:int}`
-- Backend: Atualizar DTOs e Controllers
-- Frontend: Atualizar API calls
-
-**Status:** 🟡 Monitorar (não implementar agora)
-
----
-
-### 2. Índices JSONB: GIN vs Expression Indexes
+### 1. Índices JSONB: GIN vs Expression Indexes
 
 **Contexto:** Atualmente usamos GIN indexes em `Users.PlanOverride` e `Users.CustomFees` para busca genérica.
 
@@ -816,7 +780,7 @@ WHERE PlanOverride IS NOT NULL;
 
 ---
 
-### 3. Partitioning: Users Table
+### 2. Partitioning: Users Table
 
 **Contexto:** Tabela Users atualmente não particionada (single table).
 
@@ -845,7 +809,7 @@ CREATE TABLE Users_Deleted PARTITION OF Users FOR VALUES IN ('Deleted');
 
 ---
 
-### 4. Read Replicas para Analytics
+### 3. Read Replicas para Analytics
 
 **Contexto:** Atualmente single-instance PostgreSQL.
 
@@ -871,7 +835,6 @@ Se queries de analytics (relatórios, dashboards) impactarem performance transac
 
 | Otimização | Trigger | Priority | Esforço | Impacto |
 |------------|---------|----------|---------|---------|
-| SubscriptionPlans UUID→INT | >1k users + perf bottleneck + API v2 | 🟡 Medium | 🔴 High (breaking change) | 🟢 Low-Medium |
 | JSONB Expression Indexes | Padrões de query estabelecidos | 🟢 High | 🟢 Low | 🟡 Medium |
 | Users Partitioning | >100k users | 🔴 Low | 🔴 High | 🔴 High (only at scale) |
 | Read Replicas | Analytics impactando OLTP | 🟡 Medium | 🟡 Medium | 🟢 High |
