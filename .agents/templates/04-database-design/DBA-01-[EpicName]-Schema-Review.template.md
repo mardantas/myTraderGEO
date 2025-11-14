@@ -86,7 +86,7 @@ MARKDOWN FORMATTING:
 | **Foreign Key** | ✅ OK | FK com ON DELETE CASCADE configurado |
 | **Index em FK** | ⚠️ FALTA | **CRÍTICO:** Adicionar index em `[Parent]Id` |
 
-**Sugestões:**  
+**Sugestões:**
 1. **CRIAR INDEX:** `IX_[ChildTable]_[Parent]Id` em `[Parent]Id` (performance crítica)
 2. Considerar index composto se queries filtram por `[Parent]Id + Status`
 
@@ -94,6 +94,190 @@ MARKDOWN FORMATTING:
 
 ### [BC Name 2]
 ...
+
+---
+
+## 🔑 Primary Key Strategy
+
+### Decision Criteria
+
+When designing the database schema, one of the first decisions is choosing the primary key type. This section documents the rationale for UUID vs INT/SERIAL selection per table.
+
+**Core Question:** Should this table use UUID (16 bytes) or INT/SERIAL (4 bytes)?
+
+---
+
+### UUID vs INT/SERIAL Selection Matrix
+
+| Criteria | Use UUID | Use INT/SERIAL | Weight |
+|----------|----------|----------------|--------|
+| **Table Size** | High-volume tables (>100k rows expected) | Lookup tables (<100 rows) | 🔴 HIGH |
+| **API Exposure** | Aggregate root exposed in public API (Users, Orders, Transactions) | Internal-only tables (not exposed) | 🔴 HIGH |
+| **Security** | Non-enumerable IDs required (prevent user enumeration attacks) | Enumeration acceptable | 🟡 MEDIUM |
+| **Distributed System** | Multi-database, distributed ID generation | Single database, centralized | 🟡 MEDIUM |
+| **Merge/Import** | Data merging from multiple sources | No merging scenarios | 🟢 LOW |
+| **Join Frequency** | Low join frequency (<3 joins per query) | High join frequency (>5 joins) | 🟡 MEDIUM |
+| **Storage Optimization** | Storage cost acceptable | Storage optimization critical | 🟢 LOW |
+
+---
+
+### Decision Tree
+
+```
+Is this table exposed in public API (REST endpoints)?
+├─ YES → Is it an Aggregate Root (Users, Orders, etc)?
+│         ├─ YES → ✅ Use UUID (security + distributed + API best practices)
+│         └─ NO  → Is it a lookup/reference table (<100 rows)?
+│                   ├─ YES → ✅ Use INT/SERIAL (performance + storage)
+│                   └─ NO  → ⚠️ Evaluate case-by-case (default: UUID for flexibility)
+│
+└─ NO → Is it a lookup/reference table (<100 rows)?
+         ├─ YES → ✅ Use INT/SERIAL (performance + storage + simplicity)
+         └─ NO  → Is storage/performance critical (millions of rows + frequent joins)?
+                   ├─ YES → ✅ Use INT/SERIAL (optimization)
+                   └─ NO  → ✅ Use UUID (flexibility + future-proof)
+```
+
+---
+
+### Recommended Patterns by Table Type
+
+#### ✅ Use UUID When:
+
+| Table Type | Example Tables | Reason |
+|------------|----------------|--------|
+| **Aggregate Roots (API-Exposed)** | Users, Orders, Transactions, Invoices | Security (non-enumerable), distributed systems, API best practices |
+| **High-Volume Transactional** | AuditLogs, Events, Notifications | Distributed ID generation, merge scenarios |
+| **Cross-System Integration** | ExternalOrders, ThirdPartyData | Merge from multiple sources, avoid ID collisions |
+| **Security-Sensitive** | Passwords, Tokens, Sessions | Non-enumerable IDs prevent enumeration attacks |
+
+**Benefits:**
+- ✅ Non-enumerable (security: `/users/123` → attacker can guess IDs)
+- ✅ Distributed-friendly (generate IDs in app, no DB round-trip)
+- ✅ Merge-safe (no ID collisions when importing data)
+- ✅ Future-proof (easier to scale to multi-database)
+
+**Trade-offs:**
+- ❌ Larger storage (16 bytes vs 4 bytes)
+- ❌ Slower joins (string comparison vs integer)
+- ❌ Less human-readable (debugging harder)
+
+---
+
+#### ✅ Use INT/SERIAL When:
+
+| Table Type | Example Tables | Reason |
+|------------|----------------|--------|
+| **Lookup/Reference Tables** | SubscriptionPlans, Categories, Statuses, Countries | Small size (<100 rows), high join frequency, storage optimization |
+| **Internal-Only Tables** | ConfigSettings, FeatureFlags | Not exposed in API, centralized, simplicity |
+| **Audit/Logging (Low Volume)** | AdminAuditLog (<10k rows) | Simple, sequential, chronological ordering |
+| **High-Join Tables** | ProductCategories (joined in every product query) | Performance-critical joins (integer comparison faster) |
+
+**Benefits:**
+- ✅ Storage-efficient (4 bytes vs 16 bytes → 75% reduction)
+- ✅ Faster joins (integer comparison 2-3x faster than UUID string)
+- ✅ Human-readable (debugging: "user ID 5" vs "550e8400-e29b-41d4-a716-446655440000")
+- ✅ Sequential (natural ordering, simpler pagination)
+
+**Trade-offs:**
+- ❌ Enumerable (security: `/plans/1`, `/plans/2` → attacker can list all)
+- ❌ Centralized (must query DB for next ID, not distributed-friendly)
+- ❌ Merge conflicts (importing data with same IDs requires remapping)
+
+---
+
+### Trade-off Analysis: UUID vs INT/SERIAL
+
+| Aspect | UUID (16 bytes) | INT/SERIAL (4 bytes) | Winner |
+|--------|-----------------|----------------------|--------|
+| **Storage Size** | 16 bytes | 4 bytes (75% smaller) | INT/SERIAL |
+| **Index Size** | 2x-3x larger B-tree | Compact B-tree | INT/SERIAL |
+| **Join Performance** | Slower (string comparison) | Faster (integer comparison) | INT/SERIAL |
+| **Insert Performance** | Fast (app-generated, no DB lock) | Slower (DB sequence, lock contention) | UUID |
+| **Security** | Non-enumerable | Enumerable (predictable) | UUID |
+| **Distributed Systems** | ID generation in app | Must query DB | UUID |
+| **Merge/Import** | No collisions | Requires ID remapping | UUID |
+| **Human Readability** | Hard to debug | Easy to read | INT/SERIAL |
+| **API Best Practices** | Industry standard (opaque IDs) | Exposes internal details | UUID |
+
+**Conclusion:**
+- **Small/medium projects (MVP):** INT/SERIAL for lookup tables (SubscriptionPlans, Categories), UUID for Users/Orders
+- **Large-scale/distributed:** UUID everywhere except tiny lookup tables
+- **Security-critical:** UUID for all user-facing IDs
+
+---
+
+### Examples from This Epic
+
+#### [Epic Name] - Primary Key Decisions
+
+| Table | PK Type | Rows Expected | API Exposed? | Rationale |
+|-------|---------|---------------|--------------|-----------|
+| `Users` | UUID | 10k-1M | ✅ Yes (GET /users/{id}) | Aggregate root, security (non-enumerable), distributed, API best practices |
+| `SubscriptionPlans` | INT | 3-5 | ✅ Yes (GET /plans/{id}) | ⚠️ **Revisit:** Lookup table (<10 rows), high join frequency → INT/SERIAL better (storage + performance). **Trade-off:** API exposes enumerable IDs (acceptable for public plans catalog). |
+| `Orders` | UUID | 100k-10M | ✅ Yes (GET /orders/{id}) | Aggregate root, high-volume, security, distributed |
+| `OrderItems` | UUID | 1M-100M | ❌ No (internal) | High-volume, child of Orders (FK uses UUID), consistency |
+| `SystemConfig` | UUID | 1 (singleton) | ❌ No (internal) | Singleton pattern (fixed ID: 00000000-0000-0000-0000-000000000001) |
+| `AuditLog` | UUID | 1M-100M | ❌ No (internal) | High-volume, distributed writes, no joins |
+
+**Key Decision:**
+- **Users, Orders, Transactions:** UUID (security + distributed + API)
+- **SubscriptionPlans:** INT/SERIAL recommended (lookup table, <10 rows, high joins) → ⚠️ Current implementation uses UUID (acceptable but sub-optimal)
+- **OrderItems:** UUID (consistency with Orders FK, high-volume)
+
+---
+
+### When to Revisit PK Strategy
+
+**Triggers for Re-evaluation:**
+
+| Trigger | Action | Example |
+|---------|--------|---------|
+| Table grows >1M rows | Consider UUID if INT | Categories table unexpectedly grows to 10k rows |
+| API exposure changes | Switch to UUID | Internal table now exposed in public API |
+| Distributed system planned | Switch to UUID | Moving to multi-region architecture |
+| Join performance issues | Consider INT if UUID | 10-table joins with UUID causing slowness |
+| Security audit findings | Switch to UUID | Enumeration attack discovered |
+
+**Migration Path (INT → UUID):**
+1. Add new UUID column (nullable)
+2. Backfill UUIDs for existing rows
+3. Update app to use UUID (dual-write period)
+4. Migrate FKs to point to UUID
+5. Drop old INT column (after 2 sprints)
+
+**Migration Path (UUID → INT):**
+❌ **Not recommended** (breaking change, data loss risk)
+- Only if table is internal-only AND <10k rows AND no distributed writes
+
+---
+
+### Best Practices Summary
+
+#### ✅ DO:
+- Use UUID for Aggregate Roots exposed in public APIs (Users, Orders, Transactions)
+- Use INT/SERIAL for lookup tables (<100 rows, high join frequency)
+- Document PK type decision rationale in DBA-01 (this section)
+- Consider security implications (enumerable vs non-enumerable)
+- Plan for future distributed systems (UUID = easier scaling)
+
+#### ❌ DON'T:
+- Use UUID everywhere "just because" (storage/performance cost)
+- Use INT for security-sensitive user-facing IDs (enumeration attacks)
+- Mix PK types arbitrarily (be consistent within bounded context)
+- Ignore storage costs (UUID = 4x larger than INT in indexes)
+- Change PK type after production (migration risk)
+
+---
+
+### References
+
+- **PostgreSQL UUID Performance:** https://www.postgresql.org/docs/current/datatype-uuid.html
+- **Stripe API Design (UUID):** https://stripe.com/docs/api
+- **GitHub REST API (INT):** https://docs.github.com/en/rest
+- **Sequential vs Random IDs:** https://www.2ndquadrant.com/en/blog/sequential-uuid-generators/
+
+---
 
 ---
 
