@@ -2,7 +2,17 @@
 # ==================================
 # myTraderGEO - Staging Environment
 # ==================================
-# Usage: 05-infra/scripts/deploy.sh staging
+# Usage (automated deployment):
+#   05-infra/scripts/deploy.sh staging
+#
+# Manual usage (from project root):
+#   docker compose -f 05-infra/docker/docker-compose.staging.yml --env-file 05-infra/configs/.env.staging up -d
+#
+# IMPORTANT:
+#   - .env files are in 05-infra/configs/, NOT in 05-infra/docker/
+#   - Always run commands from project root
+#   - Use --env-file to specify the environment file
+#
 # Architecture: Cloudflare -> Traefik (Let's Encrypt) -> API/Frontend
 
 name: mytrader-staging

@@ -72,8 +72,7 @@ API RESTful desenvolvida em .NET 8 seguindo princípios de **Clean Architecture*
 
 1. **Inicie o banco de dados e a API:**
    ```bash
-   cd 05-infra/docker
-   docker compose -f docker-compose.dev.yml --env-file .env.dev up -d
+   docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up -d
    ```
 
 2. **Acesse a aplicação:**
@@ -84,32 +83,30 @@ API RESTful desenvolvida em .NET 8 seguindo princípios de **Clean Architecture*
 
 3. **Para parar os serviços:**
    ```bash
-   docker compose -f docker-compose.dev.yml down
+   docker compose -f 05-infra/docker/docker-compose.dev.yml down
    ```
 
 ### Opção 2: Executando Localmente
 
 1. **Inicie o banco de dados PostgreSQL:**
    ```bash
-   cd 05-infra/docker
-   docker compose -f docker-compose.dev.yml --env-file .env.dev up -d database
+   docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up -d database
    ```
 
 2. **Configure a string de conexão:**
 
-   Edite `02-backend/src/MyTraderGEO.WebAPI/appsettings.json`:
+   O arquivo `02-backend/src/MyTraderGEO.WebAPI/appsettings.json` já está configurado com as credenciais corretas:
    ```json
    {
      "ConnectionStrings": {
-       "DefaultConnection": "Host=localhost;Port=5432;Database=mytrader_dev;Username=mytrader_app;Password=app_dev_password_123"
+       "DefaultConnection": "Host=localhost;Port=5432;Database=mytrader_dev;Username=mytrader_app;Password=local_app"
      }
    }
    ```
 
 3. **Execute a API:**
    ```bash
-   cd 02-backend/src/MyTraderGEO.WebAPI
-   dotnet run
+   dotnet run --project 02-backend/src/MyTraderGEO.WebAPI
    ```
 
 4. **Acesse a aplicação:**
@@ -197,36 +194,51 @@ Authorization: Bearer {seu-token-jwt}
 - **subscriptionplans** - Planos de assinatura disponíveis
 - **systemconfigs** - Configurações globais do sistema (singleton)
 
-### Migrações
+### Migrações (Database First)
 
-O banco de dados já foi inicializado com o schema. Para aplicar mudanças futuras:
+Este projeto usa **Database First**: o DBA cria SQL migrations primeiro, depois o SE faz scaffold dos modelos.
 
+#### Workflow para mudanças no schema:
+
+**1. DBA cria migration SQL:**
 ```bash
-cd 02-backend/src/MyTraderGEO.Infrastructure
-dotnet ef migrations add NomeDaMigracao --startup-project ../MyTraderGEO.WebAPI
-dotnet ef database update --startup-project ../MyTraderGEO.WebAPI
+# Exemplo: 04-database/migrations/002_add_new_feature.sql
 ```
+
+**2. Aplicar migration ao banco:**
+```bash
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev -f /db-scripts/migrations/002_add_new_feature.sql
+```
+
+**3. SE re-scaffold modelos EF Core:**
+```bash
+dotnet ef dbcontext scaffold "Host=localhost;Port=5432;Database=mytrader_dev;Username=mytrader_app;Password=local_app" Npgsql.EntityFrameworkCore.PostgreSQL --project 02-backend/src/MyTraderGEO.Infrastructure --context-dir Data --output-dir Data/Models --context ApplicationDbContext --force --no-onconfiguring
+```
+
+**📝 Nota sobre Classes Parciais:**
+- Modelos EF Core são `partial` para permitir extensões
+- Código customizado fica em arquivos separados (ex: `User.Extensions.cs`)
+- Re-scaffold com `--force` só sobrescreve arquivos auto-gerados
 
 ## Desenvolvimento
 
 ### Build
 
 ```bash
-cd 02-backend
-dotnet build MyTraderGEO.sln
+dotnet build 02-backend/MyTraderGEO.sln
 ```
 
 ### Testes
 
 ```bash
 # Todos os testes
-dotnet test MyTraderGEO.sln
+dotnet test 02-backend/MyTraderGEO.sln
 
 # Testes unitários do domínio
-dotnet test tests/MyTraderGEO.Domain.UnitTests/
+dotnet test 02-backend/tests/MyTraderGEO.Domain.UnitTests/
 
 # Testes de integração
-dotnet test tests/MyTraderGEO.IntegrationTests/
+dotnet test 02-backend/tests/MyTraderGEO.IntegrationTests/
 ```
 
 ### Hot Reload
@@ -234,8 +246,7 @@ dotnet test tests/MyTraderGEO.IntegrationTests/
 O projeto suporta hot reload durante o desenvolvimento:
 
 ```bash
-cd 02-backend/src/MyTraderGEO.WebAPI
-dotnet watch run
+dotnet watch --project 02-backend/src/MyTraderGEO.WebAPI
 ```
 
 ## Configurações
@@ -245,14 +256,42 @@ dotnet watch run
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Port=5432;Database=mytrader_dev;Username=mytrader_app;Password=app_dev_password_123"
+    "DefaultConnection": "Host=localhost;Port=5432;Database=mytrader_dev;Username=mytrader_app;Password=local_app",
+    "_Note": "In Docker: This is overridden by ConnectionStrings__DefaultConnection environment variable (docker-compose.dev.yml line 26). In Local: Ensure PostgreSQL is running with DB_APP_PASSWORD=local_app"
   },
   "JwtSettings": {
     "Secret": "dev-secret-key-change-in-production-minimum-32-chars-long-for-security",
     "Issuer": "myTraderGEO",
     "Audience": "myTraderGEO",
     "ExpirationMinutes": "60"
-  }
+  },
+  "Serilog": {
+    "Using": [ "Serilog.Sinks.Console" ],
+    "MinimumLevel": {
+      "Default": "Information",
+      "Override": {
+        "Microsoft": "Warning",
+        "Microsoft.AspNetCore": "Warning",
+        "Microsoft.EntityFrameworkCore": "Warning"
+      }
+    },
+    "WriteTo": [
+      {
+        "Name": "Console",
+        "Args": {
+          "outputTemplate": "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}"
+        }
+      }
+    ],
+    "Enrich": [ "FromLogContext" ]
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
 }
 ```
 

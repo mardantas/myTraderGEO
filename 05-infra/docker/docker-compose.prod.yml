@@ -2,7 +2,17 @@
 # ==================================
 # myTraderGEO - Production Environment
 # ==================================
-# Usage: 05-infra/scripts/deploy.sh production
+# Usage (automated deployment):
+#   05-infra/scripts/deploy.sh production
+#
+# Manual usage (from project root):
+#   docker compose -f 05-infra/docker/docker-compose.prod.yml --env-file 05-infra/configs/.env.prod up -d
+#
+# IMPORTANT:
+#   - .env files are in 05-infra/configs/, NOT in 05-infra/docker/
+#   - Always run commands from project root
+#   - Use --env-file to specify the environment file
+#
 # Architecture: Cloudflare -> Traefik (Let's Encrypt) -> API/Frontend
 
 name: mytrader-prod

@@ -70,34 +70,26 @@ public class UsersController : ControllerBase
         Guid id,
         [FromBody] GrantPlanOverrideRequest request)
     {
-        try
-        {
-            var adminIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(adminIdClaim) || !Guid.TryParse(adminIdClaim, out var adminId))
-                return Unauthorized(new { error = "Invalid admin ID in token" });
+        var adminIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(adminIdClaim) || !Guid.TryParse(adminIdClaim, out var adminId))
+            return Unauthorized(new { error = "Invalid admin ID in token" });
 
-            var command = new GrantPlanOverrideCommand
-            {
-                UserId = id,
-                AdministratorId = adminId,
-                Reason = request.Reason,
-                StrategyLimitOverride = request.StrategyLimitOverride,
-                FeatureRealtimeDataOverride = request.FeatureRealtimeDataOverride,
-                FeatureAdvancedAlertsOverride = request.FeatureAdvancedAlertsOverride,
-                FeatureConsultingToolsOverride = request.FeatureConsultingToolsOverride,
-                FeatureCommunityAccessOverride = request.FeatureCommunityAccessOverride,
-                ExpiresAt = request.ExpiresAt
-            };
-
-            var result = await _mediator.Send(command);
-            _logger.LogInformation("Plan override granted to user {UserId} by admin {AdminId}", id, adminId);
-            return Ok(result);
-        }
-        catch (Exception ex)
+        var command = new GrantPlanOverrideCommand
         {
-            _logger.LogError(ex, "Error granting plan override to user {UserId}", id);
-            return BadRequest(new { error = ex.Message });
-        }
+            UserId = id,
+            AdministratorId = adminId,
+            Reason = request.Reason,
+            StrategyLimitOverride = request.StrategyLimitOverride,
+            FeatureRealtimeDataOverride = request.FeatureRealtimeDataOverride,
+            FeatureAdvancedAlertsOverride = request.FeatureAdvancedAlertsOverride,
+            FeatureConsultingToolsOverride = request.FeatureConsultingToolsOverride,
+            FeatureCommunityAccessOverride = request.FeatureCommunityAccessOverride,
+            ExpiresAt = request.ExpiresAt
+        };
+
+        var result = await _mediator.Send(command);
+        _logger.LogInformation("Plan override granted to user {UserId} by admin {AdminId}", id, adminId);
+        return Ok(result);
     }
 
     /// <summary>
@@ -110,18 +102,10 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> RevokePlanOverride(Guid id)
     {
-        try
-        {
-            var command = new RevokePlanOverrideCommand { UserId = id };
-            var result = await _mediator.Send(command);
-            _logger.LogInformation("Plan override revoked from user {UserId}", id);
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error revoking plan override from user {UserId}", id);
-            return BadRequest(new { error = ex.Message });
-        }
+        var command = new RevokePlanOverrideCommand { UserId = id };
+        var result = await _mediator.Send(command);
+        _logger.LogInformation("Plan override revoked from user {UserId}", id);
+        return Ok(result);
     }
 }
 

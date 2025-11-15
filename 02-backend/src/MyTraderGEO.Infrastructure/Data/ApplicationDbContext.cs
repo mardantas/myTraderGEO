@@ -27,6 +27,7 @@ public partial class ApplicationDbContext : DbContext
             entity.HasKey(e => e.Id);
 
             entity.Property(e => e.Id)
+                .ValueGeneratedOnAdd()
                 .HasColumnName("id");
 
             entity.Property(e => e.Name)
@@ -104,6 +105,7 @@ public partial class ApplicationDbContext : DbContext
             entity.HasKey(e => e.Id);
 
             entity.Property(e => e.Id)
+                .ValueGeneratedOnAdd()
                 .HasColumnName("id");
 
             entity.Property(e => e.BrokerCommissionRate)

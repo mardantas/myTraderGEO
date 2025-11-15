@@ -9,7 +9,7 @@ namespace MyTraderGEO.Application.UserManagement.Commands;
 /// </summary>
 public sealed record ConfigureSubscriptionPlanCommand : IRequest<ConfigureSubscriptionPlanCommandResult>
 {
-    public Guid? PlanId { get; init; } // Null = Create, Not Null = Update
+    public int? PlanId { get; init; } // Null = Create, Not Null = Update
     public string Name { get; init; } = string.Empty;
     public decimal PriceMonthlyAmount { get; init; }
     public decimal PriceAnnualAmount { get; init; }
@@ -25,7 +25,7 @@ public sealed record ConfigureSubscriptionPlanCommand : IRequest<ConfigureSubscr
 
 public sealed record ConfigureSubscriptionPlanCommandResult
 {
-    public Guid PlanId { get; init; }
+    public int PlanId { get; init; }
     public string Name { get; init; } = string.Empty;
     public string Message { get; init; } = string.Empty;
 }

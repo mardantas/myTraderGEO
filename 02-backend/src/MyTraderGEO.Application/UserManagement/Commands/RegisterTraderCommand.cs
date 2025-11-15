@@ -15,7 +15,7 @@ public sealed record RegisterTraderCommand : IRequest<RegisterTraderCommandResul
     public string FullName { get; init; } = string.Empty;
     public string DisplayName { get; init; } = string.Empty;
     public RiskProfile RiskProfile { get; init; }
-    public Guid SubscriptionPlanId { get; init; }
+    public int SubscriptionPlanId { get; init; }
     public BillingPeriod BillingPeriod { get; init; }
 }
 

@@ -14,7 +14,7 @@ public interface ISubscriptionPlanRepository
     /// <summary>
     /// Gets a subscription plan by ID
     /// </summary>
-    Task<SubscriptionPlan?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<SubscriptionPlan?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets a subscription plan by name

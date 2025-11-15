@@ -24,7 +24,7 @@ public sealed class SubscriptionPlanRepository : ISubscriptionPlanRepository
         _context = context;
     }
 
-    public async Task<SubscriptionPlan?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<SubscriptionPlan?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         var dataModel = await _context.SubscriptionPlans
             .AsNoTracking()

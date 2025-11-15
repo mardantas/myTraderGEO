@@ -177,9 +177,13 @@ docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/con
 docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev down
 ```
 
+**⚠️ Nota para Windows:** O Dockerfile.dev executa `dotnet restore` automaticamente ao iniciar para resolver incompatibilidades de NuGet packages entre Windows e Linux. O primeiro startup pode levar ~30 segundos.
+
 **Acessar:**
-- Frontend (Vue + Vite): http://localhost:5173
-- Backend API (.NET): http://localhost:5000
+- **Backend API (.NET):** http://localhost:5000
+  - Swagger UI: http://localhost:5000/swagger
+  - Health Check: http://localhost:5000/health
+- Frontend (Vue + Vite): http://localhost:5173 *(ainda não implementado)*
 - Database (PostgreSQL): localhost:5432
 - PgAdmin (opcional): http://localhost:8080
   - Email: `admin@mytrader.local`

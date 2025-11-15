@@ -33,7 +33,7 @@ public class User
     public RiskProfile? RiskProfile { get; private set; }
 
     // Subscription (for Traders only)
-    public Guid? SubscriptionPlanId { get; private set; }
+    public int? SubscriptionPlanId { get; private set; }
     public BillingPeriod? BillingPeriod { get; private set; }
 
     // Plan Override (VIP, trial, beta, staff)
@@ -76,13 +76,13 @@ public class User
         string fullName,
         string displayName,
         RiskProfile riskProfile,
-        Guid subscriptionPlanId,
+        int subscriptionPlanId,
         BillingPeriod billingPeriod)
     {
         ValidateFullName(fullName);
         ValidateDisplayName(displayName);
 
-        if (subscriptionPlanId == Guid.Empty)
+        if (subscriptionPlanId <= 0)
             throw new ArgumentException("Subscription plan is required for Traders", nameof(subscriptionPlanId));
 
         var user = new User(email, passwordHash, fullName.Trim(), displayName.Trim(), UserRole.Trader)
@@ -200,12 +200,12 @@ public class User
     /// <summary>
     /// Updates subscription plan
     /// </summary>
-    public void UpdateSubscription(Guid subscriptionPlanId, BillingPeriod billingPeriod)
+    public void UpdateSubscription(int subscriptionPlanId, BillingPeriod billingPeriod)
     {
         if (Role != UserRole.Trader)
             throw new InvalidOperationException("Only traders can have subscriptions");
 
-        if (subscriptionPlanId == Guid.Empty)
+        if (subscriptionPlanId <= 0)
             throw new ArgumentException("Subscription plan cannot be empty", nameof(subscriptionPlanId));
 
         SubscriptionPlanId = subscriptionPlanId;

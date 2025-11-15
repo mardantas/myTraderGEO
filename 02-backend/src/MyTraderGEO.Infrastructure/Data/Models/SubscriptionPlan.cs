@@ -8,7 +8,7 @@ namespace MyTraderGEO.Infrastructure.Data.Models;
 /// </summary>
 public partial class SubscriptionPlan
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
 
     // Core Properties
     public string Name { get; set; } = null!;

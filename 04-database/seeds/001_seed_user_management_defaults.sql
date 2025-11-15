@@ -28,7 +28,7 @@ INSERT INTO SubscriptionPlans (
     IsActive,
     CreatedAt
 ) VALUES (
-    '10000000-0000-0000-0000-000000000001', -- Plano Básico
+    1, -- Plano Básico
     'Básico',
     0.00,     -- Free
     'BRL',
@@ -61,7 +61,7 @@ INSERT INTO SubscriptionPlans (
     IsActive,
     CreatedAt
 ) VALUES (
-    '20000000-0000-0000-0000-000000000002', -- Plano Pleno
+    2, -- Plano Pleno
     'Pleno',
     49.90,    -- R$ 49,90/mês
     'BRL',
@@ -94,7 +94,7 @@ INSERT INTO SubscriptionPlans (
     IsActive,
     CreatedAt
 ) VALUES (
-    '30000000-0000-0000-0000-000000000003', -- Plano Consultor
+    3, -- Plano Consultor
     'Consultor',
     99.90,    -- R$ 99,90/mês
     'BRL',
@@ -170,7 +170,7 @@ INSERT INTO SystemConfigs (
     UpdatedAt,
     UpdatedBy
 ) VALUES (
-    '00000000-0000-0000-0000-000000000001', -- Singleton ID
+    1, -- Singleton ID
     0.00000000, -- 0% - Maioria das corretoras tem corretagem zero
     0.00032500, -- 0.0325% - Taxa B3
     0.00027500, -- 0.0275% - Taxa de liquidação
@@ -267,7 +267,7 @@ INSERT INTO Users (
     'Trader',
     'Active',
     'Conservador',
-    '10000000-0000-0000-0000-000000000001', -- Plano Básico
+    1, -- Plano Básico
     1, -- Monthly
     NULL,
     NULL,
@@ -309,7 +309,7 @@ INSERT INTO Users (
     'Trader',
     'Active',
     'Moderado',
-    '20000000-0000-0000-0000-000000000002', -- Plano Pleno
+    2, -- Plano Pleno
     12, -- Annual
     NULL,
     NULL,
@@ -351,7 +351,7 @@ INSERT INTO Users (
     'Trader',
     'Active',
     'Agressivo',
-    '30000000-0000-0000-0000-000000000003', -- Plano Consultor
+    3, -- Plano Consultor
     12, -- Annual
     NULL,
     NULL,
@@ -393,7 +393,7 @@ INSERT INTO Users (
     'Trader',
     'Active',
     'Moderado',
-    '10000000-0000-0000-0000-000000000001', -- Plano Básico
+    1, -- Plano Básico
     1, -- Monthly
     '{
         "StrategyLimitOverride": 50,

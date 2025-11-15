@@ -32,7 +32,7 @@ public partial class User
     public string? RiskProfile { get; set; }
 
     // Subscription
-    public Guid? SubscriptionPlanId { get; set; }
+    public int? SubscriptionPlanId { get; set; }
     public int? BillingPeriod { get; set; }
 
     // Plan Override (JSONB)

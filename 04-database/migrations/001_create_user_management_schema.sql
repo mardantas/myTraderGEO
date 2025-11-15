@@ -13,7 +13,7 @@
 -- =====================================================
 CREATE TABLE SubscriptionPlans (
     -- Primary Key
-    Id UUID PRIMARY KEY,
+    Id SERIAL PRIMARY KEY,
 
     -- Core Properties
     Name VARCHAR(50) NOT NULL,
@@ -62,8 +62,8 @@ CREATE INDEX IX_SubscriptionPlans_CreatedAt ON SubscriptionPlans(CreatedAt DESC)
 -- Aggregate Root: SystemConfig (Singleton)
 -- =====================================================
 CREATE TABLE SystemConfigs (
-    -- Primary Key (Singleton - sempre 00000000-0000-0000-0000-000000000001)
-    Id UUID PRIMARY KEY,
+    -- Primary Key (Singleton - sempre Id = 1)
+    Id SERIAL PRIMARY KEY,
 
     -- Taxas Operacionais
     BrokerCommissionRate DECIMAL(10,8) NOT NULL, -- 0.00000000 = 0%
@@ -132,7 +132,7 @@ CREATE TABLE Users (
     RiskProfile VARCHAR(20) NULL, -- Conservador, Moderado, Agressivo
 
     -- Subscription (nullable for Admin/Moderator)
-    SubscriptionPlanId UUID NULL,
+    SubscriptionPlanId INT NULL,
     BillingPeriod INT NULL, -- 1=Monthly, 12=Annual (enum value)
 
     -- Plan Override (JSON for flexibility)
