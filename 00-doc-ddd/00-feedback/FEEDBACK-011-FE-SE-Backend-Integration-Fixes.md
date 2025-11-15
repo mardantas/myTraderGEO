@@ -839,7 +839,7 @@ private static async Task HandleExceptionAsync(HttpContext context, Exception ex
 - [ ] `02-backend/src/MyTraderGEO.Application/Common/Behaviors/ValidationBehavior.cs`
 - [ ] `02-backend/docs/API-Testing-Checklist.md`
 
-**Referência Git Commit:** _Será adicionado após commit_
+**Referência Git Commit:** `e8ad82e` - fix(backend): implement JSONB deserialization for PlanOverride and CustomFees (FEEDBACK-011 Phase 1/4)
 
 ---
 
