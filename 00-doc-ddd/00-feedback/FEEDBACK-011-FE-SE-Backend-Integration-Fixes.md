@@ -12,10 +12,10 @@ MARKDOWN FORMATTING:
 ---
 
 **Data Abertura:** 2025-11-15
-**Data Resolução:** _Em progresso (Fase 1/4 concluída)_
+**Data Resolução:** _Em progresso (Fase 2/4 concluída)_
 **Solicitante:** FE Agent (Frontend Engineer)
 **Destinatário:** SE Agent (Software Engineer)
-**Status:** 🟡 Parcialmente Resolvido (1/4 completa)
+**Status:** 🟡 Parcialmente Resolvido (2/4 completas)
 
 **Tipo:**
 - [x] Correção (deliverable já entregue precisa ajuste)
@@ -765,12 +765,12 @@ private static async Task HandleExceptionAsync(HttpContext context, Exception ex
   - [x] Adicionar try-catch para backwards compatibility
   - [ ] Testar com usuário que tem PlanOverride no banco (aguarda testes manuais via Swagger)
 
-- [ ] **Error Handling Middleware (1 hora)**
-  - [ ] Criar `GlobalExceptionHandlerMiddleware.cs`
-  - [ ] Implementar RFC 7807 Problem Details
-  - [ ] Registrar middleware em `Program.cs`
-  - [ ] Remover try-catch dos Controllers
-  - [ ] Testar resposta de erro padronizada
+- [x] **Error Handling Middleware (1 hora)** ✅ CONCLUÍDO
+  - [x] Criar `GlobalExceptionHandlerMiddleware.cs`
+  - [x] Implementar RFC 7807 Problem Details
+  - [x] Registrar middleware em `Program.cs`
+  - [x] Remover try-catch dos Controllers (AuthController, UsersController)
+  - [ ] Testar resposta de erro padronizada (aguarda testes manuais via Swagger)
 
 - [ ] **FluentValidation (2 horas)**
   - [ ] Adicionar NuGet packages (FluentValidation + DI Extensions)
@@ -825,25 +825,53 @@ private static async Task HandleExceptionAsync(HttpContext context, Exception ex
 
 3. ✅ Compilação validada: `dotnet build` bem-sucedido (0 erros, 11 warnings pré-existentes)
 
+### ✅ Fase 2: Error Handling Middleware (CONCLUÍDA - 2025-11-15)
+
+**Implementação:**
+1. ✅ Criado `GlobalExceptionHandlerMiddleware.cs` (novo arquivo)
+   - Implementa RFC 7807 Problem Details for HTTP APIs
+   - Mapeia exceções para status codes apropriados:
+     - `InvalidOperationException` → 400 Bad Request (business rule violation)
+     - `UnauthorizedAccessException` → 401 Unauthorized
+     - `ArgumentException` → 400 Bad Request (invalid argument)
+     - Exceções genéricas → 500 Internal Server Error
+   - Adiciona `traceId` para debugging (correlação de logs)
+   - Usa `application/problem+json` content-type
+   - Logging estruturado de erros
+
+2. ✅ Registrado middleware em `Program.cs` (linha 158)
+   - Posicionado após `UseHttpsRedirection` e ANTES de `UseAuthentication`
+   - Garante que todas as exceções sejam capturadas centralizadamente
+
+3. ✅ Removidos try-catch dos Controllers:
+   - `AuthController.cs`: Removidos blocos try-catch de Register e Login
+   - `UsersController.cs`: Removidos blocos try-catch de GrantPlanOverride e RevokePlanOverride
+   - Controllers agora delegam tratamento de erro para middleware
+
+4. ✅ Compilação validada: `dotnet build` bem-sucedido (0 erros)
+
 **Próximos Passos:**
-- Fase 2: Error Handling Middleware
 - Fase 3: FluentValidation
 - Fase 4: Testes Manuais via Swagger
 
 **Deliverables Atualizados:**
 - [x] `02-backend/src/MyTraderGEO.Infrastructure/Persistence/Repositories/UserRepository.cs` (linhas 149-229)
-- [ ] `02-backend/src/MyTraderGEO.WebAPI/Middleware/GlobalExceptionHandlerMiddleware.cs`
-- [ ] `02-backend/src/MyTraderGEO.WebAPI/Program.cs`
+- [x] `02-backend/src/MyTraderGEO.WebAPI/Middleware/GlobalExceptionHandlerMiddleware.cs` (novo arquivo, 85 linhas)
+- [x] `02-backend/src/MyTraderGEO.WebAPI/Program.cs` (linha 158 - registro middleware)
+- [x] `02-backend/src/MyTraderGEO.WebAPI/Controllers/AuthController.cs` (try-catch removidos)
+- [x] `02-backend/src/MyTraderGEO.WebAPI/Controllers/UsersController.cs` (try-catch removidos)
 - [ ] `02-backend/src/MyTraderGEO.Application/UserManagement/Commands/RegisterTraderCommandValidator.cs`
 - [ ] `02-backend/src/MyTraderGEO.Application/UserManagement/Commands/LoginCommandValidator.cs`
 - [ ] `02-backend/src/MyTraderGEO.Application/Common/Behaviors/ValidationBehavior.cs`
 - [ ] `02-backend/docs/API-Testing-Checklist.md`
 
-**Referência Git Commit:** `e8ad82e` - fix(backend): implement JSONB deserialization for PlanOverride and CustomFees (FEEDBACK-011 Phase 1/4)
+**Referências Git Commits:**
+- `e8ad82e` - fix(backend): implement JSONB deserialization for PlanOverride and CustomFees (FEEDBACK-011 Phase 1/4)
+- _Pendente Fase 2_
 
 ---
 
-**Status Atual:** 🟡 Parcialmente Resolvido (Fase 1/4 concluída - JSONB Deserialization implementada)
+**Status Atual:** 🟡 Parcialmente Resolvido (Fases 1-2/4 concluídas - JSONB Deserialization + Error Handling Middleware)
 
 ---
 
@@ -853,6 +881,7 @@ private static async Task HandleExceptionAsync(HttpContext context, Exception ex
 |------|---------|-------|
 | 2025-11-15 | Criado (após análise completa do backend C# para integração com frontend Vue 3) | FE Agent |
 | 2025-11-15 | **Fase 1/4 Concluída:** Implementada desserialização JSONB para PlanOverride e CustomFees em UserRepository.cs | SE Agent |
+| 2025-11-15 | **Fase 2/4 Concluída:** Implementado GlobalExceptionHandlerMiddleware com RFC 7807 Problem Details, removidos try-catch dos controllers | SE Agent |
 
 ---
 

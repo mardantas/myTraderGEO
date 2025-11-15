@@ -25,17 +25,9 @@ public class AuthController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Register([FromBody] RegisterTraderCommand command)
     {
-        try
-        {
-            var result = await _mediator.Send(command);
-            _logger.LogInformation("Trader registered: {UserId} - {Email}", result.UserId, result.Email);
-            return CreatedAtAction(nameof(Register), new { id = result.UserId }, result);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error registering trader: {Email}", command.Email);
-            return BadRequest(new { error = ex.Message });
-        }
+        var result = await _mediator.Send(command);
+        _logger.LogInformation("Trader registered: {UserId} - {Email}", result.UserId, result.Email);
+        return CreatedAtAction(nameof(Register), new { id = result.UserId }, result);
     }
 
     /// <summary>
@@ -46,21 +38,8 @@ public class AuthController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Login([FromBody] LoginCommand command)
     {
-        try
-        {
-            var result = await _mediator.Send(command);
-            _logger.LogInformation("User logged in: {Email}", result.Email);
-            return Ok(result);
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            _logger.LogWarning("Failed login attempt: {Email}", command.Email);
-            return Unauthorized(new { error = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error during login: {Email}", command.Email);
-            return BadRequest(new { error = ex.Message });
-        }
+        var result = await _mediator.Send(command);
+        _logger.LogInformation("User logged in: {Email}", result.Email);
+        return Ok(result);
     }
 }

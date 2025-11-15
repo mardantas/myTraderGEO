@@ -154,6 +154,9 @@ app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
 
+// Global Exception Handler (MUST be before UseAuthentication)
+app.UseMiddleware<MyTraderGEO.WebAPI.Middleware.GlobalExceptionHandlerMiddleware>();
+
 app.UseCors("AllowAll");
 
 app.UseAuthentication();
