@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Text.Json;
@@ -37,6 +38,21 @@ public class GlobalExceptionHandlerMiddleware
     {
         var problemDetails = exception switch
         {
+            ValidationException validationException => new ProblemDetails
+            {
+                Type = "https://api.mytrader.com/errors/validation-error",
+                Title = "Validation Error",
+                Status = (int)HttpStatusCode.BadRequest,
+                Detail = "One or more validation errors occurred.",
+                Extensions =
+                {
+                    ["errors"] = validationException.Errors
+                        .GroupBy(e => e.PropertyName)
+                        .ToDictionary(
+                            g => g.Key,
+                            g => g.Select(e => e.ErrorMessage).ToArray())
+                }
+            },
             InvalidOperationException => new ProblemDetails
             {
                 Type = "https://api.mytrader.com/errors/business-rule-violation",
@@ -67,8 +83,11 @@ public class GlobalExceptionHandlerMiddleware
             }
         };
 
-        // Add traceId for debugging
-        problemDetails.Extensions["traceId"] = context.TraceIdentifier;
+        // Add traceId for debugging (if not already added by validation exception)
+        if (!problemDetails.Extensions.ContainsKey("traceId"))
+        {
+            problemDetails.Extensions["traceId"] = context.TraceIdentifier;
+        }
 
         context.Response.ContentType = "application/problem+json";
         context.Response.StatusCode = problemDetails.Status ?? 500;

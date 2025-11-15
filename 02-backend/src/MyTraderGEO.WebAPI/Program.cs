@@ -1,8 +1,11 @@
 using System.Text;
+using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MyTraderGEO.Application.Common.Behaviors;
 using MyTraderGEO.Application.UserManagement.Services;
 using MyTraderGEO.Domain.UserManagement.Interfaces;
 using MyTraderGEO.Infrastructure.Data;
@@ -46,10 +49,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 // Add MediatR
+var applicationAssembly = typeof(MyTraderGEO.Application.UserManagement.Commands.RegisterTraderCommand).Assembly;
 builder.Services.AddMediatR(cfg =>
 {
-    cfg.RegisterServicesFromAssembly(typeof(MyTraderGEO.Application.UserManagement.Commands.RegisterTraderCommand).Assembly);
+    cfg.RegisterServicesFromAssembly(applicationAssembly);
 });
+
+// Add FluentValidation
+builder.Services.AddValidatorsFromAssembly(applicationAssembly);
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
 // Add repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
