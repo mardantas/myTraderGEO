@@ -867,7 +867,7 @@ private static async Task HandleExceptionAsync(HttpContext context, Exception ex
 
 **Referências Git Commits:**
 - `e8ad82e` - fix(backend): implement JSONB deserialization for PlanOverride and CustomFees (FEEDBACK-011 Phase 1/4)
-- _Pendente Fase 2_
+- `58a5f59` - feat(backend): implement global exception handler middleware with RFC 7807 (FEEDBACK-011 Phase 2/4)
 
 ---
 
