@@ -12,10 +12,10 @@ MARKDOWN FORMATTING:
 ---
 
 **Data Abertura:** 2025-11-15
-**Data Resolução:** _Aguardando implementação_
+**Data Resolução:** _Em progresso (Fase 1/4 concluída)_
 **Solicitante:** FE Agent (Frontend Engineer)
 **Destinatário:** SE Agent (Software Engineer)
-**Status:** 🔴 Aberto
+**Status:** 🟡 Parcialmente Resolvido (1/4 completa)
 
 **Tipo:**
 - [x] Correção (deliverable já entregue precisa ajuste)
@@ -759,11 +759,11 @@ private static async Task HandleExceptionAsync(HttpContext context, Exception ex
 
 ### SE Agent:
 
-- [ ] **JSONB Deserialization (30 min)**
-  - [ ] Descomentar e implementar deserialization de `PlanOverride`
-  - [ ] Descomentar e implementar deserialization de `CustomFees`
-  - [ ] Adicionar try-catch para backwards compatibility
-  - [ ] Testar com usuário que tem PlanOverride no banco
+- [x] **JSONB Deserialization (30 min)** ✅ CONCLUÍDO
+  - [x] Descomentar e implementar deserialization de `PlanOverride`
+  - [x] Descomentar e implementar deserialization de `CustomFees`
+  - [x] Adicionar try-catch para backwards compatibility
+  - [ ] Testar com usuário que tem PlanOverride no banco (aguarda testes manuais via Swagger)
 
 - [ ] **Error Handling Middleware (1 hora)**
   - [ ] Criar `GlobalExceptionHandlerMiddleware.cs`
@@ -803,14 +803,35 @@ private static async Task HandleExceptionAsync(HttpContext context, Exception ex
 
 > _Seção preenchida pelo agent destinatário após resolver_
 
-**Data Resolução:** _Aguardando implementação_
+**Data Resolução:** _Em progresso (Fase 1/4 concluída em 2025-11-15)_
 **Resolvido por:** SE Agent
 
 **Ação Tomada:**
-_Pendente_
+
+### ✅ Fase 1: JSONB Deserialization (CONCLUÍDA - 2025-11-15)
+
+**Implementação:**
+1. ✅ Implementada desserialização de `PlanOverride` no `UserRepository.cs` (linhas 149-188)
+   - Usa `System.Text.Json.JsonSerializer` para deserializar JSONB
+   - Extrai campos: `strategyLimitOverride`, `expiresAt`, `reason`, `grantedBy`, `grantedAt`
+   - Usa reflection para instanciar `UserPlanOverride` (construtor privado)
+   - Try-catch para backwards compatibility (log warning, não falha)
+
+2. ✅ Implementada desserialização de `CustomFees` no `UserRepository.cs` (linhas 190-229)
+   - Deserializa campos: `brokerCommissionRate`, `b3EmolumentRate`, `settlementFeeRate`, `incomeTaxRate`, `dayTradeIncomeTaxRate`
+   - Usa factory method `TradingFees.Create()` (validação automática)
+   - Verifica `HasCustomFees` antes de setar campo privado
+   - Try-catch para backwards compatibility
+
+3. ✅ Compilação validada: `dotnet build` bem-sucedido (0 erros, 11 warnings pré-existentes)
+
+**Próximos Passos:**
+- Fase 2: Error Handling Middleware
+- Fase 3: FluentValidation
+- Fase 4: Testes Manuais via Swagger
 
 **Deliverables Atualizados:**
-- [ ] `02-backend/src/MyTraderGEO.Infrastructure/Persistence/Repositories/UserRepository.cs`
+- [x] `02-backend/src/MyTraderGEO.Infrastructure/Persistence/Repositories/UserRepository.cs` (linhas 149-229)
 - [ ] `02-backend/src/MyTraderGEO.WebAPI/Middleware/GlobalExceptionHandlerMiddleware.cs`
 - [ ] `02-backend/src/MyTraderGEO.WebAPI/Program.cs`
 - [ ] `02-backend/src/MyTraderGEO.Application/UserManagement/Commands/RegisterTraderCommandValidator.cs`
@@ -818,11 +839,11 @@ _Pendente_
 - [ ] `02-backend/src/MyTraderGEO.Application/Common/Behaviors/ValidationBehavior.cs`
 - [ ] `02-backend/docs/API-Testing-Checklist.md`
 
-**Referência Git Commit:** _Pendente_
+**Referência Git Commit:** _Será adicionado após commit_
 
 ---
 
-**Status Atual:** 🔴 Aberto (Aguardando implementação do SE Agent)
+**Status Atual:** 🟡 Parcialmente Resolvido (Fase 1/4 concluída - JSONB Deserialization implementada)
 
 ---
 
@@ -831,6 +852,7 @@ _Pendente_
 | Data | Mudança | Autor |
 |------|---------|-------|
 | 2025-11-15 | Criado (após análise completa do backend C# para integração com frontend Vue 3) | FE Agent |
+| 2025-11-15 | **Fase 1/4 Concluída:** Implementada desserialização JSONB para PlanOverride e CustomFees em UserRepository.cs | SE Agent |
 
 ---
 
