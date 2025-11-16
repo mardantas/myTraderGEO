@@ -85,14 +85,14 @@ Content-Type: application/json
   "password": "Senha@1234",
   "subscriptionPlanId": 1,
   "riskProfile": 1,
-  "billingPeriod": 0
+  "billingPeriod": 1
 }
 ```
 
-**Parâmetros:**
-- `riskProfile`: 0 = Conservador, 1 = Moderado, 2 = Agressivo
-- `billingPeriod`: 0 = Monthly, 1 = Annually
-- `subscriptionPlanId`: 1 = Básico, 2 = Pleno, 3 = Consultor
+**⚠️ IMPORTANTE - Valores dos Enums:**
+- `riskProfile`: **NÚMERO** (0 = Conservador, 1 = Moderado, 2 = Agressivo) - NÃO usar strings
+- `billingPeriod`: **NÚMERO** (1 = Monthly/Mensal, 12 = Annual/Anual) - NÃO usar strings
+- `subscriptionPlanId`: **NÚMERO** (1 = Básico, 2 = Pleno, 3 = Consultor)
 
 **Resultado Esperado:**
 - Status: `201 Created`
@@ -131,7 +131,7 @@ Content-Type: application/json
   "password": "Senha@1234",
   "subscriptionPlanId": 1,
   "riskProfile": 1,
-  "billingPeriod": 0
+  "billingPeriod": 1
 }
 ```
 
@@ -191,9 +191,8 @@ Content-Type: application/json
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
   "email": "joao.teste.feedback011@email.com",
-  "fullName": "João da Silva Teste",
-  "displayName": "João Teste",
-  "role": "Trader"
+  "role": "Trader",
+  "message": "Login successful"
 }
 ```
 
@@ -313,6 +312,8 @@ GET /api/users/me
 
 ### ✅ Teste 8: POST /api/auth/register (Email Inválido)
 
+**Objetivo:** Validar FluentValidation para email com formato inválido
+
 **Request:**
 ```json
 {
@@ -322,7 +323,7 @@ GET /api/users/me
   "password": "Senha@1234",
   "subscriptionPlanId": 1,
   "riskProfile": 1,
-  "billingPeriod": 0
+  "billingPeriod": 1
 }
 ```
 
@@ -334,6 +335,8 @@ GET /api/users/me
 
 ### ✅ Teste 9: POST /api/auth/register (Senha Curta)
 
+**Objetivo:** Validar FluentValidation para senha com menos de 8 caracteres
+
 **Request:**
 ```json
 {
@@ -343,7 +346,7 @@ GET /api/users/me
   "password": "123",
   "subscriptionPlanId": 1,
   "riskProfile": 1,
-  "billingPeriod": 0
+  "billingPeriod": 1
 }
 ```
 
@@ -355,6 +358,8 @@ GET /api/users/me
 
 ### ✅ Teste 10: POST /api/auth/register (Plano Inválido)
 
+**Objetivo:** Validar FluentValidation assíncrona para plano inexistente no banco
+
 **Request:**
 ```json
 {
@@ -364,7 +369,7 @@ GET /api/users/me
   "password": "Senha@1234",
   "subscriptionPlanId": 999,
   "riskProfile": 1,
-  "billingPeriod": 0
+  "billingPeriod": 1
 }
 ```
 
