@@ -12,10 +12,10 @@ MARKDOWN FORMATTING:
 ---
 
 **Data Abertura:** 2025-11-15
-**Data Resolução:** _Em progresso (Fase 2/4 concluída)_
+**Data Resolução:** _Em progresso (Fase 3/4 concluída)_
 **Solicitante:** FE Agent (Frontend Engineer)
 **Destinatário:** SE Agent (Software Engineer)
-**Status:** 🟡 Parcialmente Resolvido (2/4 completas)
+**Status:** 🟡 Parcialmente Resolvido (3/4 completas)
 
 **Tipo:**
 - [x] Correção (deliverable já entregue precisa ajuste)
@@ -772,26 +772,27 @@ private static async Task HandleExceptionAsync(HttpContext context, Exception ex
   - [x] Remover try-catch dos Controllers (AuthController, UsersController)
   - [ ] Testar resposta de erro padronizada (aguarda testes manuais via Swagger)
 
-- [ ] **FluentValidation (2 horas)**
-  - [ ] Adicionar NuGet packages (FluentValidation + DI Extensions)
-  - [ ] Criar `RegisterTraderCommandValidator`
-  - [ ] Criar `LoginCommandValidator`
-  - [ ] Criar `ValidationBehavior` (MediatR pipeline)
-  - [ ] Registrar validators no DI container
-  - [ ] Atualizar `GlobalExceptionHandlerMiddleware` para `ValidationException`
-  - [ ] Remover validações inline dos Handlers
-  - [ ] Testar validação com input inválido
+- [x] **FluentValidation (2 horas)** ✅ CONCLUÍDO
+  - [x] Adicionar NuGet packages (FluentValidation + DI Extensions)
+  - [x] Criar `RegisterTraderCommandValidator`
+  - [x] Criar `LoginCommandValidator`
+  - [x] Criar `ValidationBehavior` (MediatR pipeline)
+  - [x] Registrar validators no DI container
+  - [x] Atualizar `GlobalExceptionHandlerMiddleware` para `ValidationException`
+  - [x] Remover validações inline dos Handlers
+  - [ ] Testar validação com input inválido (aguarda testes manuais via Swagger)
 
-- [ ] **Testes Manuais via Swagger (1 hora)**
-  - [ ] Executar checklist de 7 testes documentado acima
+- [ ] **Testes Manuais via Swagger (1 hora)** 🔄 EM PROGRESSO
+  - [x] Criar documentação completa de testes (`02-backend/docs/FEEDBACK-011-API-Testing-Checklist.md`)
+  - [ ] Executar checklist de 10 testes documentados (ver FEEDBACK-011-API-Testing-Checklist.md)
   - [ ] Validar respostas de sucesso (200, 201)
   - [ ] Validar respostas de erro (400, 401)
   - [ ] Validar JWT authentication funcionando
   - [ ] Validar JSONB deserialization (planOverride, customFees)
-  - [ ] Documentar resultados em `02-backend/docs/API-Testing-Checklist.md`
+  - [ ] Validar FluentValidation field-level errors
 
 - [ ] **Validação Final**
-  - [ ] Todos os 7 testes manuais passando ✅
+  - [ ] Todos os 10 testes manuais passando ✅
   - [ ] Respostas de erro seguem RFC 7807 ✅
   - [ ] JSONB fields deserializando corretamente ✅
   - [ ] Validações retornam campos específicos ✅
@@ -850,28 +851,66 @@ private static async Task HandleExceptionAsync(HttpContext context, Exception ex
 
 4. ✅ Compilação validada: `dotnet build` bem-sucedido (0 erros)
 
+### ✅ Fase 3: FluentValidation (CONCLUÍDA - 2025-11-15)
+
+**Implementação:**
+1. ✅ Adicionados NuGet packages FluentValidation 11.9.0
+   - `FluentValidation` (core library)
+   - `FluentValidation.DependencyInjectionExtensions` (ASP.NET Core integration)
+
+2. ✅ Criado `RegisterTraderCommandValidator.cs` (novo arquivo, 67 linhas)
+   - Validações de campos obrigatórios (FullName, DisplayName, Email, Password)
+   - Validação de formato de email
+   - Validação assíncrona de email único (verifica no banco)
+   - Validação assíncrona de plano existente (verifica no banco)
+   - Validação de enum (RiskProfile, BillingPeriod) usando `.IsInEnum()`
+   - Mensagens de erro em português
+
+3. ✅ Criado `LoginCommandValidator.cs` (novo arquivo, 17 linhas)
+   - Validação de email obrigatório e formato válido
+   - Validação de senha obrigatória
+
+4. ✅ Criado `ValidationBehavior.cs` (novo arquivo, 45 linhas)
+   - MediatR Pipeline Behavior que intercepta todos os comandos
+   - Executa validações antes do handler
+   - Lança `ValidationException` com todos os erros coletados
+   - Suporta múltiplos validators por comando
+
+5. ✅ Registrados validators no DI container (`Program.cs` linhas 56-59)
+   - `AddValidatorsFromAssembly()` - auto-descoberta de validators
+   - `AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>))` - pipeline behavior
+
+6. ✅ Atualizado `GlobalExceptionHandlerMiddleware.cs` para capturar `ValidationException`
+   - Mapeia `ValidationException` → 400 Bad Request
+   - Agrupa erros por campo (field-level errors)
+   - Retorna RFC 7807 Problem Details com campo `errors` contendo dicionário de erros
+   - Exemplo: `{ "errors": { "Email": ["Email já cadastrado"], "Password": ["Senha deve ter no mínimo 8 caracteres"] } }`
+
+7. ✅ Compilação validada: `dotnet build` bem-sucedido (0 erros)
+
 **Próximos Passos:**
-- Fase 3: FluentValidation
-- Fase 4: Testes Manuais via Swagger
+- Fase 4: Testes Manuais via Swagger (em progresso - documentação criada)
 
 **Deliverables Atualizados:**
 - [x] `02-backend/src/MyTraderGEO.Infrastructure/Persistence/Repositories/UserRepository.cs` (linhas 149-229)
-- [x] `02-backend/src/MyTraderGEO.WebAPI/Middleware/GlobalExceptionHandlerMiddleware.cs` (novo arquivo, 85 linhas)
-- [x] `02-backend/src/MyTraderGEO.WebAPI/Program.cs` (linha 158 - registro middleware)
+- [x] `02-backend/src/MyTraderGEO.WebAPI/Middleware/GlobalExceptionHandlerMiddleware.cs` (novo arquivo, 86 linhas)
+- [x] `02-backend/src/MyTraderGEO.WebAPI/Program.cs` (linhas 56-59 FluentValidation, linha 166 middleware)
 - [x] `02-backend/src/MyTraderGEO.WebAPI/Controllers/AuthController.cs` (try-catch removidos)
 - [x] `02-backend/src/MyTraderGEO.WebAPI/Controllers/UsersController.cs` (try-catch removidos)
-- [ ] `02-backend/src/MyTraderGEO.Application/UserManagement/Commands/RegisterTraderCommandValidator.cs`
-- [ ] `02-backend/src/MyTraderGEO.Application/UserManagement/Commands/LoginCommandValidator.cs`
-- [ ] `02-backend/src/MyTraderGEO.Application/Common/Behaviors/ValidationBehavior.cs`
-- [ ] `02-backend/docs/API-Testing-Checklist.md`
+- [x] `02-backend/src/MyTraderGEO.Application/UserManagement/Commands/RegisterTraderCommandValidator.cs` (novo arquivo, 67 linhas)
+- [x] `02-backend/src/MyTraderGEO.Application/UserManagement/Commands/LoginCommandValidator.cs` (novo arquivo, 17 linhas)
+- [x] `02-backend/src/MyTraderGEO.Application/Common/Behaviors/ValidationBehavior.cs` (novo arquivo, 45 linhas)
+- [x] `02-backend/docs/FEEDBACK-011-API-Testing-Checklist.md` (novo arquivo, checklist com 10 testes)
 
 **Referências Git Commits:**
 - `e8ad82e` - fix(backend): implement JSONB deserialization for PlanOverride and CustomFees (FEEDBACK-011 Phase 1/4)
 - `58a5f59` - feat(backend): implement global exception handler middleware with RFC 7807 (FEEDBACK-011 Phase 2/4)
+- `3c70d82` - feat(backend): implement FluentValidation with MediatR pipeline behavior (FEEDBACK-011 Phase 3/4)
 
 ---
 
-**Status Atual:** 🟡 Parcialmente Resolvido (Fases 1-2/4 concluídas - JSONB Deserialization + Error Handling Middleware)
+**Status Atual:** 🟡 Parcialmente Resolvido (Fases 1-3/4 concluídas - JSONB Deserialization + Error Handling Middleware + FluentValidation)
+**Próxima Fase:** Fase 4 - Testes Manuais via Swagger (documentação criada, aguardando execução)
 
 ---
 
@@ -880,8 +919,10 @@ private static async Task HandleExceptionAsync(HttpContext context, Exception ex
 | Data | Mudança | Autor |
 |------|---------|-------|
 | 2025-11-15 | Criado (após análise completa do backend C# para integração com frontend Vue 3) | FE Agent |
-| 2025-11-15 | **Fase 1/4 Concluída:** Implementada desserialização JSONB para PlanOverride e CustomFees em UserRepository.cs | SE Agent |
-| 2025-11-15 | **Fase 2/4 Concluída:** Implementado GlobalExceptionHandlerMiddleware com RFC 7807 Problem Details, removidos try-catch dos controllers | SE Agent |
+| 2025-11-15 | **Fase 1/4 Concluída:** Implementada desserialização JSONB para PlanOverride e CustomFees em UserRepository.cs (commit `e8ad82e`) | SE Agent |
+| 2025-11-15 | **Fase 2/4 Concluída:** Implementado GlobalExceptionHandlerMiddleware com RFC 7807 Problem Details, removidos try-catch dos controllers (commit `58a5f59`) | SE Agent |
+| 2025-11-15 | **Fase 3/4 Concluída:** Implementado FluentValidation com validators, MediatR pipeline behavior, field-level error responses (commit `3c70d82`) | SE Agent |
+| 2025-11-15 | **Fase 4/4 Em Progresso:** Criada documentação completa de testes manuais via Swagger (FEEDBACK-011-API-Testing-Checklist.md com 10 testes) | SE Agent |
 
 ---
 
