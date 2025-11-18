@@ -134,8 +134,10 @@ public sealed class UserRepository : IUserRepository
         // Set private fields using reflection
         SetPrivateField(user, "Id", dataModel.Id);
         SetPrivateField(user, "Status", status);
-        SetPrivateField(user, "CreatedAt", dataModel.CreatedAt);
-        SetPrivateField(user, "LastLoginAt", dataModel.LastLoginAt);
+        SetPrivateField(user, "CreatedAt", DateTime.SpecifyKind(dataModel.CreatedAt, DateTimeKind.Utc));
+        SetPrivateField(user, "LastLoginAt", dataModel.LastLoginAt.HasValue
+            ? DateTime.SpecifyKind(dataModel.LastLoginAt.Value, DateTimeKind.Utc)
+            : (DateTime?)null);
 
         // Phone
         if (dataModel.PhoneCountryCode != null && dataModel.PhoneNumber != null)
@@ -143,7 +145,9 @@ public sealed class UserRepository : IUserRepository
             var phone = PhoneNumber.Create(dataModel.PhoneCountryCode, dataModel.PhoneNumber);
             SetPrivateField(user, "Phone", phone);
             SetPrivateField(user, "IsPhoneVerified", dataModel.IsPhoneVerified);
-            SetPrivateField(user, "PhoneVerifiedAt", dataModel.PhoneVerifiedAt);
+            SetPrivateField(user, "PhoneVerifiedAt", dataModel.PhoneVerifiedAt.HasValue
+                ? DateTime.SpecifyKind(dataModel.PhoneVerifiedAt.Value, DateTimeKind.Utc)
+                : (DateTime?)null);
         }
 
         // Deserialize PlanOverride from JSONB
@@ -157,11 +161,13 @@ public sealed class UserRepository : IUserRepository
                     ? slProp.GetInt32() : (int?)null;
 
                 var expiresAt = planOverrideData.TryGetProperty("expiresAt", out var expProp) && expProp.ValueKind != System.Text.Json.JsonValueKind.Null
-                    ? expProp.GetDateTime() : (DateTime?)null;
+                    ? DateTime.SpecifyKind(expProp.GetDateTime(), DateTimeKind.Utc) : (DateTime?)null;
 
                 var reason = planOverrideData.TryGetProperty("reason", out var reasonProp) ? reasonProp.GetString() : string.Empty;
                 var grantedBy = planOverrideData.TryGetProperty("grantedBy", out var grantedByProp) ? grantedByProp.GetGuid() : Guid.Empty;
-                var grantedAt = planOverrideData.TryGetProperty("grantedAt", out var grantedAtProp) ? grantedAtProp.GetDateTime() : DateTime.UtcNow;
+                var grantedAt = planOverrideData.TryGetProperty("grantedAt", out var grantedAtProp)
+                    ? DateTime.SpecifyKind(grantedAtProp.GetDateTime(), DateTimeKind.Utc)
+                    : DateTime.UtcNow;
 
                 if (!string.IsNullOrEmpty(reason) && grantedBy != Guid.Empty)
                 {
