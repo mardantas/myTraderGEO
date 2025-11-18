@@ -408,6 +408,36 @@ dotnet ef dbcontext scaffold ... --force
 
 **Guia Completo:** Ver `04-database/README.md` seção "Scaffolding Strategy" (criado pelo DBA Agent no primeiro épico)
 
+### Integration Test Fixtures (TestContainers)
+
+**Responsabilidade:** SE cria fixtures de teste usando templates disponibilizados.
+
+**Templates Disponíveis:**
+- `.agents/templates/10-software-engineering/fixtures/DatabaseFixture.cs.template`
+- `.agents/templates/10-software-engineering/fixtures/DatabaseCollection.cs.template`
+
+**Workflow SE:**
+```bash
+# 1. Copiar templates para projeto de testes
+cp .agents/templates/10-software-engineering/fixtures/DatabaseFixture.cs.template \
+   02-backend/tests/{ProjectName}.IntegrationTests/Fixtures/DatabaseFixture.cs
+
+# 2. Substituir placeholders:
+#    - {PROJECT_NAME} → MyTraderGEO
+#    - {DB_NAME}_test → mytrader_test
+#    - {DB_USER} → mytrader_app
+#    - Atualizar migrationFiles[] com paths reais
+#    - Atualizar seedFiles[] com paths reais
+
+# 3. Fazer o mesmo para DatabaseCollection.cs.template
+```
+
+**Características:**
+- ✅ Usa PostgreSQL real (não SQLite in-memory)
+- ✅ Aplica migrations DBA automaticamente
+- ✅ Database-First (valida contra schema SQL real)
+- ✅ Container isolado (destruído após testes)
+
 **Referências:**
 - [DBA Agent Overview](01-Agents-Overview.md#50---dba-database-administrator)
 - [SE Agent XML](../.agents/45-SE%20-%20Software%20Engineer.xml) - DATABASE WORKFLOW section
