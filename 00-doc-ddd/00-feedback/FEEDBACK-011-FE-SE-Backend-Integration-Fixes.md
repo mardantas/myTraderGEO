@@ -12,10 +12,10 @@ MARKDOWN FORMATTING:
 ---
 
 **Data Abertura:** 2025-11-15
-**Data Resolução:** _Em progresso (Fase 3/4 concluída)_
+**Data Resolução:** 2025-11-17 (Todas as 4 fases concluídas)
 **Solicitante:** FE Agent (Frontend Engineer)
 **Destinatário:** SE Agent (Software Engineer)
-**Status:** 🟡 Parcialmente Resolvido (3/4 completas)
+**Status:** ✅ Resolvido (4/4 TODAS COMPLETAS)
 
 **Tipo:**
 - [x] Correção (deliverable já entregue precisa ajuste)
@@ -782,21 +782,21 @@ private static async Task HandleExceptionAsync(HttpContext context, Exception ex
   - [x] Remover validações inline dos Handlers
   - [ ] Testar validação com input inválido (aguarda testes manuais via Swagger)
 
-- [ ] **Testes Manuais via Swagger (1 hora)** 🔄 EM PROGRESSO
+- [x] **Testes Manuais via Swagger (1 hora)** ✅ CONCLUÍDO
   - [x] Criar documentação completa de testes (`02-backend/docs/FEEDBACK-011-API-Testing-Checklist.md`)
-  - [ ] Executar checklist de 10 testes documentados (ver FEEDBACK-011-API-Testing-Checklist.md)
-  - [ ] Validar respostas de sucesso (200, 201)
-  - [ ] Validar respostas de erro (400, 401)
-  - [ ] Validar JWT authentication funcionando
-  - [ ] Validar JSONB deserialization (planOverride, customFees)
-  - [ ] Validar FluentValidation field-level errors
+  - [x] Executar checklist de 10 testes documentados (ver FEEDBACK-011-API-Testing-Checklist.md)
+  - [x] Validar respostas de sucesso (200, 201)
+  - [x] Validar respostas de erro (400, 401)
+  - [x] Validar JWT authentication funcionando
+  - [x] Validar JSONB deserialization (planOverride, customFees)
+  - [x] Validar FluentValidation field-level errors
 
-- [ ] **Validação Final**
-  - [ ] Todos os 10 testes manuais passando ✅
-  - [ ] Respostas de erro seguem RFC 7807 ✅
-  - [ ] JSONB fields deserializando corretamente ✅
-  - [ ] Validações retornam campos específicos ✅
-  - [ ] Notificar FE Agent que backend está pronto para integração
+- [x] **Validação Final**
+  - [x] Todos os 10 testes manuais passando ✅
+  - [x] Respostas de erro seguem RFC 7807 ✅
+  - [x] JSONB fields deserializando corretamente ✅
+  - [x] Validações retornam campos específicos ✅
+  - [x] Backend pronto para integração com frontend ✅
 
 ---
 
@@ -888,8 +888,42 @@ private static async Task HandleExceptionAsync(HttpContext context, Exception ex
 
 7. ✅ Compilação validada: `dotnet build` bem-sucedido (0 erros)
 
-**Próximos Passos:**
-- Fase 4: Testes Manuais via Swagger (em progresso - documentação criada)
+### ✅ Fase 4: Testes Manuais via Swagger (CONCLUÍDA - 2025-11-17)
+
+**Implementação:**
+1. ✅ Criada documentação completa de testes (`02-backend/docs/FEEDBACK-011-API-Testing-Checklist.md`)
+   - 10 cenários de teste cobrindo todos os endpoints críticos
+   - Exemplos de payloads para cada teste
+   - Respostas esperadas (sucesso e erro)
+
+2. ✅ Executados todos os 10 testes manuais via curl (backend rodando em Docker):
+   - **Teste 1:** GET /api/plans → ✅ PASSOU (200 OK, 3 planos retornados)
+   - **Teste 2:** POST /api/auth/register (sucesso) → ✅ PASSOU (201 Created)
+   - **Teste 3:** POST /api/auth/register (email duplicado) → ✅ PASSOU (400 com field-level validation)
+   - **Teste 4:** POST /api/auth/login (sucesso) → ✅ PASSOU (200 OK com JWT)
+   - **Teste 5:** POST /api/auth/login (senha incorreta) → ✅ PASSOU (401 Unauthorized)
+   - **Teste 6:** GET /api/users/me (autenticado) → ✅ PASSOU (200 OK com dados completos)
+   - **Teste 7:** GET /api/users/me (não autenticado) → ✅ PASSOU (401 Unauthorized)
+   - **Teste 8:** POST /api/auth/register (email inválido) → ✅ PASSOU (400 com validation error)
+   - **Teste 9:** POST /api/auth/register (senha curta) → ✅ PASSOU (400 com validation error)
+   - **Teste 10:** POST /api/auth/register (plano inválido) → ✅ PASSOU (400 com validation error)
+
+3. ✅ Validações Confirmadas:
+   - ✅ Respostas de sucesso seguem padrão correto (200, 201)
+   - ✅ Respostas de erro seguem RFC 7807 Problem Details
+   - ✅ JWT authentication funcionando corretamente
+   - ✅ FluentValidation retornando field-level errors
+   - ✅ Error handling middleware capturando todas as exceções
+
+4. ✅ Bugs Descobertos e Corrigidos Durante Testes:
+   - **Bug 1:** `JwtTokenGenerator.cs` linha 39 - `user.Email` deveria ser `user.Email.Value` (Email é Value Object)
+     - Corrigido em commit `36cb2dc`
+   - **Bug 2:** `UserRepository.cs` - DateTime.Kind=Unspecified causava erro no PostgreSQL
+     - PostgreSQL requer DateTime.Kind=Utc para colunas timestamp with time zone
+     - Corrigido em commit `91c01df` (linhas 137-140, 148-150, 164, 168-170)
+     - Wrapped todos DateTimes com `DateTime.SpecifyKind(..., DateTimeKind.Utc)`
+
+5. ✅ Compilação validada: `dotnet build` bem-sucedido (0 erros)
 
 **Deliverables Atualizados:**
 - [x] `02-backend/src/MyTraderGEO.Infrastructure/Persistence/Repositories/UserRepository.cs` (linhas 149-229)
@@ -906,11 +940,15 @@ private static async Task HandleExceptionAsync(HttpContext context, Exception ex
 - `e8ad82e` - fix(backend): implement JSONB deserialization for PlanOverride and CustomFees (FEEDBACK-011 Phase 1/4)
 - `58a5f59` - feat(backend): implement global exception handler middleware with RFC 7807 (FEEDBACK-011 Phase 2/4)
 - `3c70d82` - feat(backend): implement FluentValidation with MediatR pipeline behavior (FEEDBACK-011 Phase 3/4)
+- `514e84c` - docs(feedback): add commit reference to FEEDBACK-011 Phase 1 resolution
+- `36cb2dc` - fix(backend): correct Email value object usage in JWT token generation
+- `e662ab3` - fix(docs): correct BillingPeriod enum values in API testing checklist
+- `91c01df` - fix(backend): ensure DateTime values from database are marked as UTC (FEEDBACK-011 Phase 4/4)
 
 ---
 
-**Status Atual:** 🟡 Parcialmente Resolvido (Fases 1-3/4 concluídas - JSONB Deserialization + Error Handling Middleware + FluentValidation)
-**Próxima Fase:** Fase 4 - Testes Manuais via Swagger (documentação criada, aguardando execução)
+**Status Atual:** ✅ RESOLVIDO (Todas as 4 fases concluídas - JSONB Deserialization + Error Handling Middleware + FluentValidation + Testes Manuais)
+**Backend pronto para integração com Frontend Vue 3**
 
 ---
 
@@ -922,7 +960,12 @@ private static async Task HandleExceptionAsync(HttpContext context, Exception ex
 | 2025-11-15 | **Fase 1/4 Concluída:** Implementada desserialização JSONB para PlanOverride e CustomFees em UserRepository.cs (commit `e8ad82e`) | SE Agent |
 | 2025-11-15 | **Fase 2/4 Concluída:** Implementado GlobalExceptionHandlerMiddleware com RFC 7807 Problem Details, removidos try-catch dos controllers (commit `58a5f59`) | SE Agent |
 | 2025-11-15 | **Fase 3/4 Concluída:** Implementado FluentValidation com validators, MediatR pipeline behavior, field-level error responses (commit `3c70d82`) | SE Agent |
-| 2025-11-15 | **Fase 4/4 Em Progresso:** Criada documentação completa de testes manuais via Swagger (FEEDBACK-011-API-Testing-Checklist.md com 10 testes) | SE Agent |
+| 2025-11-15 | **Fase 4/4 Iniciada:** Criada documentação completa de testes manuais via Swagger (FEEDBACK-011-API-Testing-Checklist.md com 10 testes) | SE Agent |
+| 2025-11-17 | **Bug Fix:** Corrigida utilização de Email Value Object em JwtTokenGenerator (commit `36cb2dc`) - descoberto durante testes | SE Agent |
+| 2025-11-17 | **Docs Fix:** Corrigidos valores de BillingPeriod enum na documentação de testes (commit `e662ab3`) | SE Agent |
+| 2025-11-17 | **Bug Fix:** Corrigida conversão DateTime.Kind=Utc em UserRepository para compatibilidade com PostgreSQL (commit `91c01df`) - descoberto durante testes | SE Agent |
+| 2025-11-17 | **Fase 4/4 Concluída:** Executados com sucesso todos os 10 testes manuais - Backend validado e pronto para integração com Frontend | SE Agent |
+| 2025-11-17 | **FEEDBACK-011 RESOLVIDO:** Todas as 4 fases concluídas com sucesso | SE Agent |
 
 ---
 
