@@ -13,7 +13,6 @@
 
 -- Plano Básico (Free)
 INSERT INTO SubscriptionPlans (
-    Id,
     Name,
     PriceMonthlyAmount,
     PriceMonthlyCurrency,
@@ -28,7 +27,6 @@ INSERT INTO SubscriptionPlans (
     IsActive,
     CreatedAt
 ) VALUES (
-    1, -- Plano Básico
     'Básico',
     0.00,     -- Free
     'BRL',
@@ -42,11 +40,10 @@ INSERT INTO SubscriptionPlans (
     TRUE,     -- Acesso à comunidade
     TRUE,     -- Ativo
     CURRENT_TIMESTAMP
-);
+) ON CONFLICT (Name) DO NOTHING;
 
 -- Plano Pleno (Paid - R$ 49.90/mês)
 INSERT INTO SubscriptionPlans (
-    Id,
     Name,
     PriceMonthlyAmount,
     PriceMonthlyCurrency,
@@ -61,7 +58,6 @@ INSERT INTO SubscriptionPlans (
     IsActive,
     CreatedAt
 ) VALUES (
-    2, -- Plano Pleno
     'Pleno',
     49.90,    -- R$ 49,90/mês
     'BRL',
@@ -75,11 +71,10 @@ INSERT INTO SubscriptionPlans (
     TRUE,     -- Acesso à comunidade
     TRUE,     -- Ativo
     CURRENT_TIMESTAMP
-);
+) ON CONFLICT (Name) DO NOTHING;
 
 -- Plano Consultor (Premium - R$ 99.90/mês)
 INSERT INTO SubscriptionPlans (
-    Id,
     Name,
     PriceMonthlyAmount,
     PriceMonthlyCurrency,
@@ -94,7 +89,6 @@ INSERT INTO SubscriptionPlans (
     IsActive,
     CreatedAt
 ) VALUES (
-    3, -- Plano Consultor
     'Consultor',
     99.90,    -- R$ 99,90/mês
     'BRL',
@@ -108,7 +102,7 @@ INSERT INTO SubscriptionPlans (
     TRUE,     -- Acesso à comunidade
     TRUE,     -- Ativo
     CURRENT_TIMESTAMP
-);
+) ON CONFLICT (Name) DO NOTHING;
 
 -- =====================================================
 -- SEED: SystemConfig (Singleton - configuração global)
@@ -158,7 +152,6 @@ INSERT INTO Users (
 
 -- Configuração global do sistema (valores padrão do mercado brasileiro)
 INSERT INTO SystemConfigs (
-    Id,
     BrokerCommissionRate,
     B3EmolumentRate,
     SettlementFeeRate,
@@ -170,7 +163,6 @@ INSERT INTO SystemConfigs (
     UpdatedAt,
     UpdatedBy
 ) VALUES (
-    1, -- Singleton ID
     0.00000000, -- 0% - Maioria das corretoras tem corretagem zero
     0.00032500, -- 0.0325% - Taxa B3
     0.00027500, -- 0.0275% - Taxa de liquidação
@@ -181,7 +173,7 @@ INSERT INTO SystemConfigs (
     10,         -- Limite: 10 estratégias por template
     CURRENT_TIMESTAMP,
     '00000000-0000-0000-0000-000000000000' -- System User
-);
+) ON CONFLICT DO NOTHING;
 
 -- =====================================================
 -- SEED: Admin User (primeiro administrador)
@@ -267,7 +259,7 @@ INSERT INTO Users (
     'Trader',
     'Active',
     'Conservador',
-    1, -- Plano Básico
+    (SELECT Id FROM SubscriptionPlans WHERE Name = 'Básico'), -- Plano Básico
     1, -- Monthly
     NULL,
     NULL,
@@ -309,7 +301,7 @@ INSERT INTO Users (
     'Trader',
     'Active',
     'Moderado',
-    2, -- Plano Pleno
+    (SELECT Id FROM SubscriptionPlans WHERE Name = 'Pleno'), -- Plano Pleno
     12, -- Annual
     NULL,
     NULL,
@@ -351,7 +343,7 @@ INSERT INTO Users (
     'Trader',
     'Active',
     'Agressivo',
-    3, -- Plano Consultor
+    (SELECT Id FROM SubscriptionPlans WHERE Name = 'Consultor'), -- Plano Consultor
     12, -- Annual
     NULL,
     NULL,
@@ -393,7 +385,7 @@ INSERT INTO Users (
     'Trader',
     'Active',
     'Moderado',
-    1, -- Plano Básico
+    (SELECT Id FROM SubscriptionPlans WHERE Name = 'Básico'), -- Plano Básico
     1, -- Monthly
     '{
         "StrategyLimitOverride": 50,
