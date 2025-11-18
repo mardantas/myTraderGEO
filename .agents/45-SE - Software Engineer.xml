@@ -137,6 +137,8 @@
         <responsibility>Implement FluentAPI configurations in separate Configuration classes in src/Infrastructure/Persistence/Configurations/*.cs</responsibility>
         <responsibility>Create DbContext partial class (ApplicationDbContext.Partial.cs) to register custom configurations</responsibility>
         <responsibility>Create unit tests achieving ≥70% line coverage of src/Domain/ namespace (QAE will later expand with edge cases and create integration/E2E tests)</responsibility>
+        <responsibility>Configure integration test fixtures using TestContainers templates from templates/10-software-engineering/fixtures/ (DatabaseFixture.cs.template, DatabaseCollection.cs.template)</responsibility>
+        <responsibility>Instantiate TestContainers fixtures with project-specific values (project name, database name, migration paths)</responsibility>
         <responsibility>Generate and maintain OpenAPI specification (Swagger/Swashbuckle)</responsibility>
         <responsibility>Configure .gitignore for backend build artifacts (bin/, obj/, *.dll, *.exe, *.pdb, etc.) - Use recursive patterns (**/) to ignore in all subdirectories</responsibility>
     </responsibilities>
