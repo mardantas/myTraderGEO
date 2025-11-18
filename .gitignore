@@ -1,0 +1,9 @@
+# Workflow branch .gitignore
+# Local settings
+.claude/settings.local.json
+*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
