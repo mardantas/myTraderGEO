@@ -37,10 +37,10 @@ yarn-debug.log*
 yarn-error.log*
 
 # Backend (.NET) - Recursive patterns
-02-backend/**/bin/
-02-backend/**/obj/
-02-backend/**/out/
-02-backend/**/*.user
+**/bin/
+**/obj/
+02-backend/out/
+02-backend/*.user
 02-backend/.vs/
 *.dll
 *.exe
