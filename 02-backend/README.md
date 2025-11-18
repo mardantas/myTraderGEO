@@ -70,18 +70,25 @@ API RESTful desenvolvida em .NET 8 seguindo princípios de **Clean Architecture*
 
 ### Opção 1: Usando Docker Compose (Recomendado)
 
-1. **Inicie o banco de dados e a API:**
+> **Importante**: Todos os comandos docker compose devem ser executados a partir da **raiz do projeto** (`myTraderGEO/`).
+
+1. **Build da aplicação (primeiro uso ou após alterações):**
+   ```bash
+   dotnet build 02-backend/MyTraderGEO.sln
+   ```
+
+2. **Inicie o banco de dados e a API:**
    ```bash
    docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up -d
    ```
 
-2. **Acesse a aplicação:**
+3. **Acesse a aplicação:**
    - API: http://localhost:5000
    - Swagger UI: http://localhost:5000
    - Health Check: http://localhost:5000/health
    - PgAdmin: http://localhost:8080 (usuário: admin@mytrader.local, senha: admin123)
 
-3. **Para parar os serviços:**
+4. **Para parar os serviços:**
    ```bash
    docker compose -f 05-infra/docker/docker-compose.dev.yml down
    ```

@@ -15,7 +15,7 @@ public class SystemConfig
     public int Id { get; private set; }
 
     // Trading Fees
-    public TradingFees Fees { get; private set; }
+    public TradingFees Fees { get; private set; } = null!;
 
     // Global Limits
     public int MaxOpenStrategiesPerUser { get; private set; }

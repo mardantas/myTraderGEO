@@ -13,12 +13,12 @@ public class User
     public Guid Id { get; private set; }
 
     // Authentication
-    public Email Email { get; private set; }
-    public PasswordHash PasswordHash { get; private set; }
+    public Email Email { get; private set; } = null!;
+    public PasswordHash PasswordHash { get; private set; } = null!;
 
     // Profile
-    public string FullName { get; private set; }
-    public string DisplayName { get; private set; }
+    public string FullName { get; private set; } = null!;
+    public string DisplayName { get; private set; } = null!;
 
     // Phone (for WhatsApp, 2FA, recovery)
     public PhoneNumber? Phone { get; private set; }

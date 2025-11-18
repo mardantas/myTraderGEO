@@ -12,16 +12,16 @@ public class SubscriptionPlan
     public int Id { get; private set; }
 
     // Core Properties
-    public string Name { get; private set; }
-    public Money PriceMonthly { get; private set; }
-    public Money PriceAnnual { get; private set; }
+    public string Name { get; private set; } = null!;
+    public Money PriceMonthly { get; private set; } = null!;
+    public Money PriceAnnual { get; private set; } = null!;
     public decimal AnnualDiscountPercent { get; private set; }
 
     // Limits
     public int StrategyLimit { get; private set; }
 
     // Features
-    public PlanFeatures Features { get; private set; }
+    public PlanFeatures Features { get; private set; } = null!;
 
     // Status
     public bool IsActive { get; private set; }
