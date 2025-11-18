@@ -231,6 +231,18 @@ testing:
     severity: high
     blocking: true
 
+  - id: SE-TEST-05
+    check: "Integration test fixtures created from templates (TestContainers)"
+    validation: "Verify DatabaseFixture.cs and DatabaseCollection.cs exist in tests/IntegrationTests/Fixtures/"
+    severity: medium
+    blocking: false
+
+  - id: SE-TEST-06
+    check: "DatabaseFixture applies DBA migrations correctly"
+    validation: "Run integration tests to verify migrations are applied automatically"
+    severity: high
+    blocking: true
+
 # ========================================
 # CODE QUALITY CRITERIA
 # ========================================
