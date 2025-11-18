@@ -247,15 +247,49 @@ docker run -p 5000:8080 --env-file 05-infra/configs/.env {project}-api:latest
 {TEST_VERBOSE_COMMAND}  # e.g., dotnet test --verbosity detailed
 ```
 
-### Integration Tests
+### Integration Tests (TestContainers)
+
+**Purpose:** Run integration tests against REAL PostgreSQL (not in-memory SQLite).
+
+**Setup:** Use TestContainers fixtures from templates:
+1. Copy `.agents/templates/10-software-engineering/fixtures/DatabaseFixture.cs.template` to `tests/{ProjectName}.IntegrationTests/Fixtures/DatabaseFixture.cs`
+2. Copy `.agents/templates/10-software-engineering/fixtures/DatabaseCollection.cs.template` to `tests/{ProjectName}.IntegrationTests/Fixtures/DatabaseCollection.cs`
+3. Replace placeholders: `{PROJECT_NAME}`, `{DB_NAME}_test`, `{DB_USER}`, migration paths, seed paths
+
+**Usage:**
+
+```csharp
+// Single test class
+[Collection("Database")]
+public class UserRepositoryTests
+{
+    private readonly DatabaseFixture _fixture;
+    public UserRepositoryTests(DatabaseFixture fixture) => _fixture = fixture;
+
+    [Fact]
+    public async Task CreateUser_ShouldPersistToDatabase()
+    {
+        // Uses real PostgreSQL container with DBA migrations applied
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseNpgsql(_fixture.ConnectionString)
+            .Options;
+        // ...
+    }
+}
+```
+
+**Running:**
 
 ```bash
-# Run integration tests (requires test database)
+# Run integration tests (TestContainers starts PostgreSQL automatically)
 {TEST_INTEGRATION_COMMAND}  # e.g., dotnet test tests/integration
-
-# Setup test database
-docker compose -f 05-infra/docker/docker-compose.test.yml up -d database
 ```
+
+**Key Principles:**
+- ✅ Real PostgreSQL (same version as production)
+- ✅ Applies DBA migrations automatically (Database-First)
+- ✅ Isolated container (destroyed after tests)
+- ✅ Validates against actual SQL schema
 
 ### Manual Testing (Swagger)
 
