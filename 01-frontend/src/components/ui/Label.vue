@@ -10,8 +10,7 @@ interface Props {
   required?: boolean
 }
 
-// @ts-expect-error - Props used in template, not in script
-const _props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   required: false,
 })
 </script>
