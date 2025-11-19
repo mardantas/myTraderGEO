@@ -10,8 +10,7 @@ interface Props {
   noBorder?: boolean
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const _props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   noBorder: false,
 })
 </script>
