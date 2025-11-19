@@ -64,23 +64,14 @@ const onSubmit = handleSubmit(async (formValues) => {
 
   try {
     // Parse phone number (optional)
-    const phoneData = formValues.phoneNumber
-      ? {
-          countryCode: formValues.countryCode || '+55',
-          number: formValues.phoneNumber
-        }
-      : undefined
-
     await authStore.signUp({
       fullName: formValues.fullName,
       displayName: formValues.displayName,
       email: formValues.email,
       password: formValues.password,
-      phoneNumber: phoneData,
-      riskProfile: formValues.riskProfile,
+      riskProfile: formValues.riskProfile as unknown as number,
       subscriptionPlanId: formValues.subscriptionPlanId,
-      billingPeriod: formValues.billingPeriod,
-      termsAccepted: formValues.termsAccepted
+      billingPeriod: formValues.billingPeriod as unknown as number
     })
 
     // Redirect to dashboard with welcome message

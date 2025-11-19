@@ -5,9 +5,28 @@
 
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import type { User, LoginRequest, LoginResponse, SignUpRequest, SignUpResponse } from '@/types'
+import type { User } from '@/types'
+import * as authService from '@/services/auth.service'
+import type { RegisterRequest, LoginRequest as ApiLoginRequest } from '@/types/api'
+import { ApiError, getErrorMessage } from '@/services/api'
+import { mapRiskProfileToApi, mapBillingPeriodToApi } from '@/types/api'
 
-const API_URL = import.meta.env.VITE_API_URL
+// Frontend types
+export interface LoginCredentials {
+  email: string
+  password: string
+  rememberMe?: boolean
+}
+
+export interface SignUpData {
+  fullName: string
+  displayName: string
+  email: string
+  password: string
+  riskProfile: number
+  subscriptionPlanId: number
+  billingPeriod: number
+}
 
 export const useAuthStore = defineStore('auth', () => {
   // ===== State =====
@@ -25,37 +44,33 @@ export const useAuthStore = defineStore('auth', () => {
   /**
    * Login user
    */
-  async function login(credentials: LoginRequest): Promise<void> {
+  async function login(credentials: LoginCredentials): Promise<void> {
     isLoading.value = true
     error.value = null
 
     try {
-      const response = await fetch(`${API_URL}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(credentials)
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || 'Erro ao fazer login')
+      // Call backend login API
+      const loginRequest: ApiLoginRequest = {
+        email: credentials.email,
+        password: credentials.password
       }
 
-      const data: LoginResponse = await response.json()
+      const loginResponse = await authService.login(loginRequest)
 
-      // Store token in memory (NOT localStorage per SEC-00)
-      token.value = data.token
-      user.value = data.user
+      // Store token in memory
+      token.value = loginResponse.token
 
-      // Optionally store in sessionStorage for persistence across tabs (less secure but more UX)
-      if (credentials.rememberMe) {
-        sessionStorage.setItem('auth_token', data.token)
-        sessionStorage.setItem('user', JSON.stringify(data.user))
-      }
+      // Store in sessionStorage for persistence
+      sessionStorage.setItem('auth_token', loginResponse.token)
+
+      // Fetch full user profile
+      const userProfile = await authService.getCurrentUser()
+      user.value = authService.mapUserProfileToUser(userProfile)
+
+      // Store user in sessionStorage
+      sessionStorage.setItem('user', JSON.stringify(user.value))
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Erro ao fazer login'
+      error.value = getErrorMessage(err)
       throw err
     } finally {
       isLoading.value = false
@@ -65,35 +80,45 @@ export const useAuthStore = defineStore('auth', () => {
   /**
    * Sign up new user
    */
-  async function signUp(data: SignUpRequest): Promise<void> {
+  async function signUp(data: SignUpData): Promise<void> {
     isLoading.value = true
     error.value = null
 
     try {
-      const response = await fetch(`${API_URL}/auth/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || 'Erro ao criar conta')
+      // Prepare registration request for backend
+      const registerRequest: RegisterRequest = {
+        email: data.email,
+        password: data.password,
+        fullName: data.fullName,
+        displayName: data.displayName,
+        riskProfile: mapRiskProfileToApi(data.riskProfile),
+        subscriptionPlanId: data.subscriptionPlanId,
+        billingPeriod: mapBillingPeriodToApi(data.billingPeriod)
       }
 
-      const responseData: SignUpResponse = await response.json()
+      // Call backend register API
+      await authService.register(registerRequest)
 
-      // Store token in memory
-      token.value = responseData.token
-      user.value = responseData.user
+      // Backend doesn't return token on registration, so we need to login
+      const loginRequest: ApiLoginRequest = {
+        email: data.email,
+        password: data.password
+      }
 
-      // Store in sessionStorage for persistence
-      sessionStorage.setItem('auth_token', responseData.token)
-      sessionStorage.setItem('user', JSON.stringify(responseData.user))
+      const loginResponse = await authService.login(loginRequest)
+
+      // Store token
+      token.value = loginResponse.token
+      sessionStorage.setItem('auth_token', loginResponse.token)
+
+      // Fetch full user profile
+      const userProfile = await authService.getCurrentUser()
+      user.value = authService.mapUserProfileToUser(userProfile)
+
+      // Store user in sessionStorage
+      sessionStorage.setItem('user', JSON.stringify(user.value))
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Erro ao criar conta'
+      error.value = getErrorMessage(err)
       throw err
     } finally {
       isLoading.value = false
@@ -144,31 +169,19 @@ export const useAuthStore = defineStore('auth', () => {
     error.value = null
 
     try {
-      const response = await fetch(`${API_URL}/users/me`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token.value}`
-        }
-      })
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          // Token expired or invalid
-          logout()
-          throw new Error('Sessão expirada. Faça login novamente.')
-        }
-        const errorData = await response.json()
-        throw new Error(errorData.message || 'Erro ao buscar usuário')
-      }
-
-      const data = await response.json()
-      user.value = data.user
+      const userProfile = await authService.getCurrentUser()
+      user.value = authService.mapUserProfileToUser(userProfile)
 
       // Update sessionStorage
-      sessionStorage.setItem('user', JSON.stringify(data.user))
+      sessionStorage.setItem('user', JSON.stringify(user.value))
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Erro ao buscar usuário'
+      // Handle token expiration
+      if (err instanceof ApiError && err.status === 401) {
+        logout()
+        error.value = 'Sessão expirada. Faça login novamente.'
+      } else {
+        error.value = getErrorMessage(err)
+      }
       throw err
     } finally {
       isLoading.value = false
