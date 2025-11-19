@@ -10,7 +10,7 @@ interface Props {
   required?: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), {
+const _props = withDefaults(defineProps<Props>(), {
   required: false,
 })
 </script>
