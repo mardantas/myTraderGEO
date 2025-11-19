@@ -298,10 +298,18 @@ public class UserPlanOverrideTests
     {
         // Arrange
         var override1 = UserPlanOverride.CreateVip(_adminId, "VIP");
+        var sameReference = override1;
+        var override2 = UserPlanOverride.CreateVip(_adminId, "VIP");
         UserPlanOverride? nullOverride = null;
 
         // Assert
-        (override1 == override1).Should().BeTrue();
+        // Same reference should be equal
+        (override1 == sameReference).Should().BeTrue();
+
+        // Different instances are NOT equal (GrantedAt timestamps differ)
+        (override1 == override2).Should().BeFalse();
+
+        // Null comparisons
         (override1 != nullOverride).Should().BeTrue();
         (nullOverride == null).Should().BeTrue();
     }

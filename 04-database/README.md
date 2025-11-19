@@ -614,7 +614,7 @@ docker compose -f 05-infra/docker/docker-compose.dev.yml `
 docker compose exec database psql -U mytrader_app -d mytrader_staging `
   -f /db-scripts/migrations/001_create_user_management_schema.sql
 
-docker compose exec database psql -U $DB_APP_USER -d mytrader_staging `
+docker compose exec database psql -U mytrader_app -d mytrader_staging `
   -f /db-scripts/seeds/001_seed_user_management_defaults.sql
 ```
 
@@ -668,7 +668,7 @@ docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/con
 
 ```bash
 # Connect to database as application user
-docker compose exec database psql -U mytrader_app -d mytrader_dev
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev
 
 # Expected output: PostgreSQL prompt
 # mytrader_dev=>
@@ -692,7 +692,7 @@ SELECT current_user;  -- Should show: mytrader_app
 
 ```powershell
 # Execute migration (example for EPIC-01)
-docker compose exec database psql -U mytrader_app -d mytrader_dev `
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev `
   -f /db-scripts/migrations/001_create_user_management_schema.sql
 
 # Verify tables created
@@ -763,10 +763,10 @@ dotnet add package Testcontainers.PostgreSql --version 3.x
 docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up database -d
 
 # 2. Verify init-scripts executed (creates users)
-docker compose logs database | Select-String "Creating application users"
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev logs database | Select-String "Creating application users"
 
 # 3. Apply DBA migrations
-docker compose exec database psql -U mytrader_app -d mytrader_dev `
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev `
   -f /db-scripts/migrations/001_create_user_management_schema.sql
 
 # 4. Scaffold EF models
@@ -789,7 +789,7 @@ dotnet run --project src/Api
 ```powershell
 # 1. DBA creates new migration (e.g., 002_create_strategy_management_schema.sql)
 # 2. Apply new migration
-docker compose exec database psql -U mytrader_app -d mytrader_dev `
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev `
   -f /db-scripts/migrations/002_create_strategy_management_schema.sql
 
 # 3. Re-scaffold (updates existing + adds new entities)
@@ -815,7 +815,7 @@ git diff src/Infrastructure/Data/Models/
 # ⚠️ WARNING: This deletes all data!
 
 # 1. Stop containers
-docker compose down
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev down
 
 # 2. Remove database volume
 docker volume rm postgres-data
@@ -824,9 +824,9 @@ docker volume rm postgres-data
 docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up database -d
 
 # 4. Re-apply all migrations in order
-docker compose exec database psql -U mytrader_app -d mytrader_dev \
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev \
   -f /db-scripts/migrations/001_create_user_management_schema.sql
-docker compose exec database psql -U mytrader_app -d mytrader_dev \
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev \
   -f /db-scripts/migrations/002_create_strategy_management_schema.sql
 ```
 
@@ -867,10 +867,10 @@ docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/con
 **Solution:**
 ```bash
 # List tables
-docker compose exec database psql -U mytrader_app -d mytrader_dev -c "\dt"
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev -c "\dt"
 
 # If empty, apply migrations
-docker compose exec database psql -U mytrader_app -d mytrader_dev \
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev \
   -f /db-scripts/migrations/001_create_user_management_schema.sql
 ```
 
@@ -1204,8 +1204,8 @@ EPIC-02: Scaffold --force regenerates ALL files
 #### Step 1: DBA Executes Migrations (Already Done)
 
 ```bash
-psql -h localhost -U mytrader_app -d mytrader_dev \
-  -f 04-database/migrations/001_create_user_management_schema.sql
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev \
+  -f /db-scripts/migrations/001_create_user_management_schema.sql
 ```
 
 #### Step 2: SE Scaffolds from Database
@@ -1297,8 +1297,8 @@ public partial class ApplicationDbContext
 
 ```bash
 # DBA creates migrations for NEW tables
-psql -h localhost -U mytrader_app -d mytrader_dev \
-  -f 04-database/migrations/002_create_strategy_management_schema.sql
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev \
+  -f /db-scripts/migrations/002_create_strategy_management_schema.sql
 
 # Adds tables: Strategies, TradingRules, Backtests
 ```
