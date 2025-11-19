@@ -7,7 +7,7 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores'
-import { Badge, Button } from '@/components/ui'
+import { Badge } from '@/components/ui'
 import { BellIcon, UserCircleIcon, Cog6ToothIcon, ArrowRightOnRectangleIcon } from '@heroicons/vue/24/outline'
 import { getInitials } from '@/lib/utils'
 

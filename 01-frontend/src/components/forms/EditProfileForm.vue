@@ -10,7 +10,7 @@ import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import { editProfileSchema } from '@/lib/validations'
 import { useAuthStore } from '@/stores'
-import { RISK_PROFILE_LABELS } from '@/types'
+import { RISK_PROFILE_LABELS, RiskProfile } from '@/types'
 import { Button, Input, Label, Alert } from '@/components/ui'
 
 // Props
@@ -32,7 +32,7 @@ const { defineField, handleSubmit, errors } = useForm({
   validationSchema: toTypedSchema(editProfileSchema),
   initialValues: {
     displayName: currentUser?.displayName || '',
-    riskProfile: currentUser?.riskProfile || 'Moderate',
+    riskProfile: currentUser?.riskProfile || RiskProfile.Moderate,
   },
 })
 

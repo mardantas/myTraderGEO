@@ -191,5 +191,5 @@ export function calculatePasswordStrength(password: string): PasswordStrength {
     4: { label: 'Muito Forte', color: 'success' },
   }
 
-  return { score, ...labels[score] }
+  return { score, ...labels[score]! } as PasswordStrength
 }

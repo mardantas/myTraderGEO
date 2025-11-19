@@ -12,7 +12,7 @@ interface Props {
   noPadding?: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), {
+const _props = withDefaults(defineProps<Props>(), {
   hoverable: false,
   noPadding: false,
 })

@@ -4,7 +4,7 @@
  * Based on: UXD-01 > WF-02: Login
  */
 
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'

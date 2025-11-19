@@ -4,7 +4,7 @@
  * Based on: UXD-01 > WF-01: Sign Up
  */
 
-import { ref, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
@@ -66,7 +66,7 @@ const onSubmit = handleSubmit(async (formValues) => {
     // Parse phone number (optional)
     const phoneData = formValues.phoneNumber
       ? {
-          countryCode: formValues.countryCode,
+          countryCode: formValues.countryCode || '+55',
           number: formValues.phoneNumber,
         }
       : undefined

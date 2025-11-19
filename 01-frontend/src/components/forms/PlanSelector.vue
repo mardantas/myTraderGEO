@@ -4,7 +4,7 @@
  * Based on: UXD-01 > WF-01: Sign Up - Plan Selection
  */
 
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import { BillingPeriod, type Plan } from '@/types'
 import { formatCurrency } from '@/lib/utils'
 import { Badge } from '@/components/ui'

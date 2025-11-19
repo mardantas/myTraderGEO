@@ -7,7 +7,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores'
-import { Card, CardHeader, CardTitle, CardContent, Alert, Button, Badge } from '@/components/ui'
+import { Card, CardHeader, CardTitle, CardContent, Alert, Button } from '@/components/ui'
 import { PlusIcon } from '@heroicons/vue/24/outline'
 
 // Store & Route

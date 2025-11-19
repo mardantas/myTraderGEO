@@ -68,7 +68,7 @@ export function getInitials(name: string): string {
   return name
     .split(' ')
     .filter((word) => word.length > 0)
-    .map((word) => word[0].toUpperCase())
+    .map((word) => word[0]!.toUpperCase())
     .slice(0, 2)
     .join('')
 }
