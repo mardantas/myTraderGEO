@@ -47,6 +47,12 @@ yarn-error.log*
 *.pdb
 project.nuget.cache
 
+# Test coverage reports
+**/coverage/
+**/TestResults/
+*.coverage
+*.coveragexml
+
 # Frontend (Vue + Node)
 01-frontend/node_modules/
 01-frontend/dist/
