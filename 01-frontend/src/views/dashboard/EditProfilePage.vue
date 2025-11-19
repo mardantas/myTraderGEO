@@ -28,9 +28,7 @@ function handleSuccess() {
     <!-- Page Header -->
     <div>
       <h1 class="text-h1">Editar Perfil</h1>
-      <nav class="text-sm text-text-secondary mt-1">
-        Dashboard &gt; Perfil &gt; Editar
-      </nav>
+      <nav class="text-sm text-text-secondary mt-1">Dashboard &gt; Perfil &gt; Editar</nav>
     </div>
 
     <!-- Success Alert -->

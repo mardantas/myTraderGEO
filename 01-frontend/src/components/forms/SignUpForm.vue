@@ -32,8 +32,8 @@ const { defineField, handleSubmit, errors, values } = useForm({
     riskProfile: RiskProfile.Moderate,
     subscriptionPlanId: 2, // Pleno (default)
     billingPeriod: BillingPeriod.Monthly,
-    termsAccepted: false,
-  },
+    termsAccepted: false
+  }
 })
 
 const [fullName] = defineField('fullName')
@@ -67,7 +67,7 @@ const onSubmit = handleSubmit(async (formValues) => {
     const phoneData = formValues.phoneNumber
       ? {
           countryCode: formValues.countryCode || '+55',
-          number: formValues.phoneNumber,
+          number: formValues.phoneNumber
         }
       : undefined
 
@@ -80,7 +80,7 @@ const onSubmit = handleSubmit(async (formValues) => {
       riskProfile: formValues.riskProfile,
       subscriptionPlanId: formValues.subscriptionPlanId,
       billingPeriod: formValues.billingPeriod,
-      termsAccepted: formValues.termsAccepted,
+      termsAccepted: formValues.termsAccepted
     })
 
     // Redirect to dashboard with welcome message
@@ -202,7 +202,7 @@ const onSubmit = handleSubmit(async (formValues) => {
                   passwordStrength.score === 1 && 'w-1/4 bg-danger',
                   passwordStrength.score === 2 && 'w-2/4 bg-warning',
                   passwordStrength.score === 3 && 'w-3/4 bg-info',
-                  passwordStrength.score === 4 && 'w-full bg-success',
+                  passwordStrength.score === 4 && 'w-full bg-success'
                 ]"
               />
             </div>
@@ -212,7 +212,7 @@ const onSubmit = handleSubmit(async (formValues) => {
                 passwordStrength.color === 'danger' && 'text-danger',
                 passwordStrength.color === 'warning' && 'text-warning',
                 passwordStrength.color === 'info' && 'text-info',
-                passwordStrength.color === 'success' && 'text-success',
+                passwordStrength.color === 'success' && 'text-success'
               ]"
             >
               {{ passwordStrength.label }}
@@ -244,11 +244,7 @@ const onSubmit = handleSubmit(async (formValues) => {
         class="w-full px-3 py-2.5 border border-border rounded text-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
         :disabled="isLoading"
       >
-        <option
-          v-for="(data, key) in RISK_PROFILE_LABELS"
-          :key="key"
-          :value="key"
-        >
+        <option v-for="(data, key) in RISK_PROFILE_LABELS" :key="key" :value="key">
           {{ data.label }} - {{ data.description }}
         </option>
       </select>
@@ -262,9 +258,7 @@ const onSubmit = handleSubmit(async (formValues) => {
 
     <!-- Subscription Plan -->
     <div>
-      <h3 class="text-h4 font-semibold text-text-primary mb-4">
-        Escolha seu Plano
-      </h3>
+      <h3 class="text-h4 font-semibold text-text-primary mb-4">Escolha seu Plano</h3>
       <PlanSelector
         v-model:model-value-plan="subscriptionPlanId"
         v-model:model-value-billing="billingPeriod"

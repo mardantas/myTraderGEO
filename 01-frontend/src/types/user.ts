@@ -9,25 +9,25 @@ export enum UserRole {
   Trader = 'Trader',
   Consultant = 'Consultant',
   Moderator = 'Moderator',
-  Administrator = 'Administrator',
+  Administrator = 'Administrator'
 }
 
 export enum RiskProfile {
   Conservative = 'Conservative',
   Moderate = 'Moderate',
-  Aggressive = 'Aggressive',
+  Aggressive = 'Aggressive'
 }
 
 export enum UserStatus {
   Active = 'Active',
   Inactive = 'Inactive',
   Suspended = 'Suspended',
-  PendingVerification = 'PendingVerification',
+  PendingVerification = 'PendingVerification'
 }
 
 export enum BillingPeriod {
   Monthly = 'Monthly',
-  Annual = 'Annual',
+  Annual = 'Annual'
 }
 
 // ===== Value Objects =====
@@ -201,37 +201,40 @@ export const USER_ROLE_LABELS: Record<UserRole, { label: string; color: string }
   [UserRole.Trader]: { label: 'Trader', color: 'blue' },
   [UserRole.Consultant]: { label: 'Consultor', color: 'purple' },
   [UserRole.Moderator]: { label: 'Moderador', color: 'orange' },
-  [UserRole.Administrator]: { label: 'Administrador', color: 'red' },
+  [UserRole.Administrator]: { label: 'Administrador', color: 'red' }
 }
 
-export const RISK_PROFILE_LABELS: Record<RiskProfile, { label: string; description: string; color: string }> = {
+export const RISK_PROFILE_LABELS: Record<
+  RiskProfile,
+  { label: string; description: string; color: string }
+> = {
   [RiskProfile.Conservative]: {
     label: 'Conservador',
     description: 'Prefiro segurança e retornos estáveis',
-    color: 'green',
+    color: 'green'
   },
   [RiskProfile.Moderate]: {
     label: 'Moderado',
     description: 'Balanço entre risco e retorno',
-    color: 'yellow',
+    color: 'yellow'
   },
   [RiskProfile.Aggressive]: {
     label: 'Agressivo',
     description: 'Busco máximo retorno, aceito alto risco',
-    color: 'red',
-  },
+    color: 'red'
+  }
 }
 
 export const USER_STATUS_LABELS: Record<UserStatus, { label: string; color: string }> = {
   [UserStatus.Active]: { label: 'Ativo', color: 'green' },
   [UserStatus.Inactive]: { label: 'Inativo', color: 'gray' },
   [UserStatus.Suspended]: { label: 'Suspenso', color: 'red' },
-  [UserStatus.PendingVerification]: { label: 'Pendente de Verificação', color: 'orange' },
+  [UserStatus.PendingVerification]: { label: 'Pendente de Verificação', color: 'orange' }
 }
 
 export const BILLING_PERIOD_LABELS: Record<BillingPeriod, string> = {
   [BillingPeriod.Monthly]: 'Mensal',
-  [BillingPeriod.Annual]: 'Anual',
+  [BillingPeriod.Annual]: 'Anual'
 }
 
 // ===== Helper Types =====

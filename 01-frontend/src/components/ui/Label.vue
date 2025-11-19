@@ -6,20 +6,17 @@
 
 // Props
 interface Props {
-  for?: string
+  htmlFor?: string
   required?: boolean
 }
 
 withDefaults(defineProps<Props>(), {
-  required: false,
+  required: false
 })
 </script>
 
 <template>
-  <label
-    :for="for"
-    class="block text-sm font-medium text-text-primary mb-1"
-  >
+  <label :for="htmlFor" class="block text-sm font-medium text-text-primary mb-1">
     <slot />
     <span v-if="required" class="text-danger ml-1" aria-label="required">*</span>
   </label>

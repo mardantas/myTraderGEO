@@ -5,13 +5,7 @@
 
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import type {
-  User,
-  LoginRequest,
-  LoginResponse,
-  SignUpRequest,
-  SignUpResponse,
-} from '@/types'
+import type { User, LoginRequest, LoginResponse, SignUpRequest, SignUpResponse } from '@/types'
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -39,9 +33,9 @@ export const useAuthStore = defineStore('auth', () => {
       const response = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(credentials),
+        body: JSON.stringify(credentials)
       })
 
       if (!response.ok) {
@@ -79,9 +73,9 @@ export const useAuthStore = defineStore('auth', () => {
       const response = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(data)
       })
 
       if (!response.ok) {
@@ -154,8 +148,8 @@ export const useAuthStore = defineStore('auth', () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token.value}`,
-        },
+          Authorization: `Bearer ${token.value}`
+        }
       })
 
       if (!response.ok) {
@@ -205,6 +199,6 @@ export const useAuthStore = defineStore('auth', () => {
     logout,
     restoreSession,
     fetchCurrentUser,
-    updateUser,
+    updateUser
   }
 })

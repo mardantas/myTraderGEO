@@ -23,46 +23,39 @@ const props = withDefaults(defineProps<Props>(), {
   loading: false,
   disabled: false,
   type: 'button',
-  fullWidth: false,
+  fullWidth: false
 })
 
 // Computed classes
 const buttonClasses = computed(() => {
-  const baseClasses = 'inline-flex items-center justify-center gap-2 rounded font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
+  const baseClasses =
+    'inline-flex items-center justify-center gap-2 rounded font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
 
   const variantClasses = {
     primary: 'bg-primary text-white hover:bg-primary-dark active:bg-primary-dark',
-    secondary: 'border-2 border-primary text-primary bg-transparent hover:bg-primary/10 active:bg-primary/20',
+    secondary:
+      'border-2 border-primary text-primary bg-transparent hover:bg-primary/10 active:bg-primary/20',
     danger: 'bg-danger text-white hover:bg-red-600 active:bg-red-700',
     success: 'bg-success text-white hover:bg-green-600 active:bg-green-700',
     ghost: 'bg-transparent text-text-primary hover:bg-surface active:bg-border',
-    link: 'bg-transparent text-primary underline-offset-4 hover:underline p-0 h-auto',
+    link: 'bg-transparent text-primary underline-offset-4 hover:underline p-0 h-auto'
   }
 
   const sizeClasses = {
     sm: 'h-9 px-4 text-sm',
     md: 'h-11 px-5 text-button',
     lg: 'h-12 px-7 text-button',
-    icon: 'h-9 w-9 p-2',
+    icon: 'h-9 w-9 p-2'
   }
 
   const widthClass = props.fullWidth ? 'w-full' : ''
 
-  return cn(
-    baseClasses,
-    variantClasses[props.variant],
-    sizeClasses[props.size],
-    widthClass
-  )
+  return cn(baseClasses, variantClasses[props.variant], sizeClasses[props.size], widthClass)
 })
 </script>
 
 <template>
-  <button
-    :type="type"
-    :disabled="disabled || loading"
-    :class="buttonClasses"
-  >
+  <button :type="type" :disabled="disabled || loading" :class="buttonClasses">
     <!-- Loading Spinner -->
     <svg
       v-if="loading"

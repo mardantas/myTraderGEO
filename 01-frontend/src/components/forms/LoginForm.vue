@@ -22,8 +22,8 @@ const { defineField, handleSubmit, errors } = useForm({
   initialValues: {
     email: '',
     password: '',
-    rememberMe: false,
-  },
+    rememberMe: false
+  }
 })
 
 const [email] = defineField('email')
@@ -86,14 +86,9 @@ const onSubmit = handleSubmit(async (values) => {
 
     <!-- Remember Me & Forgot Password -->
     <div class="flex items-center justify-between">
-      <Checkbox id="rememberMe" v-model="rememberMe" :disabled="isLoading">
-        Lembrar-me
-      </Checkbox>
+      <Checkbox id="rememberMe" v-model="rememberMe" :disabled="isLoading"> Lembrar-me </Checkbox>
 
-      <a
-        href="#"
-        class="text-sm text-primary hover:text-primary-dark transition-colors"
-      >
+      <a href="#" class="text-sm text-primary hover:text-primary-dark transition-colors">
         Esqueci minha senha
       </a>
     </div>

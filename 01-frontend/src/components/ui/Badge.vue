@@ -36,7 +36,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   variant: 'default',
   size: 'md',
-  icon: false,
+  icon: false
 })
 
 // Computed classes
@@ -45,7 +45,7 @@ const badgeClasses = computed(() => {
 
   const sizeClasses = {
     sm: 'px-2 py-0.5 text-xs',
-    md: 'px-2.5 py-1 text-sm',
+    md: 'px-2.5 py-1 text-sm'
   }
 
   const variantClasses = {
@@ -75,7 +75,7 @@ const badgeClasses = computed(() => {
     // Risk
     riskLow: 'bg-success/10 text-success border border-success/20',
     riskMedium: 'bg-warning/10 text-warning border border-warning/20',
-    riskHigh: 'bg-danger/10 text-danger border border-danger/20',
+    riskHigh: 'bg-danger/10 text-danger border border-danger/20'
   }
 
   return cn(baseClasses, sizeClasses[props.size], variantClasses[props.variant])

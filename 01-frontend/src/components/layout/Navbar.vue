@@ -8,7 +8,12 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores'
 import { Badge } from '@/components/ui'
-import { BellIcon, UserCircleIcon, Cog6ToothIcon, ArrowRightOnRectangleIcon } from '@heroicons/vue/24/outline'
+import {
+  BellIcon,
+  UserCircleIcon,
+  Cog6ToothIcon,
+  ArrowRightOnRectangleIcon
+} from '@heroicons/vue/24/outline'
 import { getInitials } from '@/lib/utils'
 
 // Store
@@ -39,7 +44,7 @@ function logout() {
 // Market status (mock)
 const marketStatus = computed(() => ({
   label: 'Mercado Aberto',
-  color: 'success' as const,
+  color: 'success' as const
 }))
 </script>
 
@@ -54,9 +59,7 @@ const marketStatus = computed(() => ({
             <div class="w-8 h-8 bg-primary rounded flex items-center justify-center">
               <span class="text-white font-bold text-sm">GT</span>
             </div>
-            <span class="text-h4 font-bold text-text-primary hidden sm:block">
-              myTraderGEO
-            </span>
+            <span class="text-h4 font-bold text-text-primary hidden sm:block"> myTraderGEO </span>
           </router-link>
 
           <!-- Nav Links (Desktop) -->
@@ -179,10 +182,6 @@ const marketStatus = computed(() => ({
     </div>
 
     <!-- Click outside to close menu -->
-    <div
-      v-if="userMenuOpen"
-      class="fixed inset-0 z-40"
-      @click="closeUserMenu"
-    ></div>
+    <div v-if="userMenuOpen" class="fixed inset-0 z-40" @click="closeUserMenu"></div>
   </nav>
 </template>

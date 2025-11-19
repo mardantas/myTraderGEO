@@ -11,7 +11,7 @@ import {
   CheckCircleIcon,
   ExclamationTriangleIcon,
   XCircleIcon,
-  XMarkIcon,
+  XMarkIcon
 } from '@heroicons/vue/24/outline'
 
 // Props
@@ -22,7 +22,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   variant: 'info',
-  dismissible: false,
+  dismissible: false
 })
 
 // Emits
@@ -38,7 +38,7 @@ const alertClasses = computed(() => {
     info: 'bg-info/10 border-info/20 text-info',
     success: 'bg-success/10 border-success/20 text-success',
     warning: 'bg-warning/10 border-warning/20 text-warning',
-    error: 'bg-danger/10 border-danger/20 text-danger',
+    error: 'bg-danger/10 border-danger/20 text-danger'
   }
 
   return cn(baseClasses, variantClasses[props.variant])
@@ -49,7 +49,7 @@ const icon = computed(() => {
     info: InformationCircleIcon,
     success: CheckCircleIcon,
     warning: ExclamationTriangleIcon,
-    error: XCircleIcon,
+    error: XCircleIcon
   }
   return icons[props.variant]
 })

@@ -11,19 +11,19 @@ import { useAuthStore } from '@/stores'
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    redirect: '/login',
+    redirect: '/login'
   },
   {
     path: '/login',
     name: 'Login',
     component: () => import('@/views/auth/LoginPage.vue'),
-    meta: { requiresAuth: false },
+    meta: { requiresAuth: false }
   },
   {
     path: '/signup',
     name: 'SignUp',
     component: () => import('@/views/auth/SignUpPage.vue'),
-    meta: { requiresAuth: false },
+    meta: { requiresAuth: false }
   },
   {
     path: '/dashboard',
@@ -34,27 +34,27 @@ const routes: RouteRecordRaw[] = [
       {
         path: '',
         name: 'DashboardHome',
-        component: () => import('@/views/dashboard/DashboardHome.vue'),
+        component: () => import('@/views/dashboard/DashboardHome.vue')
       },
       {
         path: 'profile',
         name: 'Profile',
-        component: () => import('@/views/dashboard/ProfilePage.vue'),
+        component: () => import('@/views/dashboard/ProfilePage.vue')
       },
       {
         path: 'profile/edit',
         name: 'EditProfile',
-        component: () => import('@/views/dashboard/EditProfilePage.vue'),
-      },
-    ],
-  },
+        component: () => import('@/views/dashboard/EditProfilePage.vue')
+      }
+    ]
+  }
 ]
 
 // ===== Create Router =====
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes,
+  routes
 })
 
 // ===== Navigation Guards =====

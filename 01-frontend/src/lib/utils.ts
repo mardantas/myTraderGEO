@@ -18,7 +18,7 @@ export function cn(...inputs: ClassValue[]) {
 export function formatCurrency(value: number): string {
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
-    currency: 'BRL',
+    currency: 'BRL'
   }).format(value)
 }
 
@@ -34,10 +34,7 @@ export function formatPercentage(value: number, decimals: number = 2): string {
  * Format phone number to international format
  * Example: formatPhoneNumber('+55', '11987654321') => '+55 11 98765-4321'
  */
-export function formatPhoneNumber(
-  countryCode: string,
-  number: string
-): string {
+export function formatPhoneNumber(countryCode: string, number: string): string {
   // Brazilian format
   if (countryCode === '+55' && number.length === 11) {
     return `${countryCode} ${number.slice(0, 2)} ${number.slice(2, 7)}-${number.slice(7)}`
@@ -51,10 +48,7 @@ export function formatPhoneNumber(
  * Mask phone number for security (show only last 4 digits)
  * Example: maskPhoneNumber('+55', '11987654321') => '+55 ** ****-4321'
  */
-export function maskPhoneNumber(
-  countryCode: string,
-  number: string
-): string {
+export function maskPhoneNumber(countryCode: string, number: string): string {
   if (number.length < 4) return `${countryCode} ${number}`
   const lastFour = number.slice(-4)
   return `${countryCode} ** ****-${lastFour}`
@@ -88,7 +82,7 @@ export function formatDateTime(dateString: string): string {
   const date = new Date(dateString)
   return new Intl.DateTimeFormat('pt-BR', {
     dateStyle: 'short',
-    timeStyle: 'short',
+    timeStyle: 'short'
   }).format(date)
 }
 
@@ -107,7 +101,7 @@ export function timeAgo(dateString: string): string {
     semana: 604800,
     dia: 86400,
     hora: 3600,
-    minuto: 60,
+    minuto: 60
   }
 
   for (const [label, secondsInInterval] of Object.entries(intervals)) {
@@ -130,6 +124,7 @@ export function sleep(ms: number): Promise<void> {
 /**
  * Debounce utility
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function debounce<T extends (...args: any[]) => any>(
   func: T,
   wait: number

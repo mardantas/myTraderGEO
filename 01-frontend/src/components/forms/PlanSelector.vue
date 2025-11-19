@@ -18,7 +18,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   modelValuePlan: 2, // Pleno (default)
-  modelValueBilling: BillingPeriod.Monthly,
+  modelValueBilling: BillingPeriod.Monthly
 })
 
 // Emits
@@ -46,8 +46,8 @@ const plans: Plan[] = [
       realtimeData: false,
       advancedAlerts: false,
       consultingTools: false,
-      communityAccess: true,
-    },
+      communityAccess: true
+    }
   },
   {
     id: 2,
@@ -67,8 +67,8 @@ const plans: Plan[] = [
       realtimeData: true,
       advancedAlerts: true,
       consultingTools: false,
-      communityAccess: true,
-    },
+      communityAccess: true
+    }
   },
   {
     id: 3,
@@ -87,20 +87,20 @@ const plans: Plan[] = [
       realtimeData: true,
       advancedAlerts: true,
       consultingTools: true,
-      communityAccess: true,
-    },
-  },
+      communityAccess: true
+    }
+  }
 ]
 
 // Local state
 const selectedPlanId = computed({
   get: () => props.modelValuePlan,
-  set: (value) => emit('update:modelValuePlan', value),
+  set: (value) => emit('update:modelValuePlan', value)
 })
 
 const billingPeriod = computed({
   get: () => props.modelValueBilling,
-  set: (value) => emit('update:modelValueBilling', value),
+  set: (value) => emit('update:modelValueBilling', value)
 })
 
 // Computed
@@ -131,29 +131,25 @@ function toggleBillingPeriod() {
   <div class="space-y-4">
     <!-- Billing Period Toggle -->
     <div class="flex items-center justify-center gap-3 mb-6">
-      <span
-        :class="!isAnnual ? 'text-text-primary font-medium' : 'text-text-secondary'"
-      >
+      <span :class="!isAnnual ? 'text-text-primary font-medium' : 'text-text-secondary'">
         Mensal
       </span>
       <button
         type="button"
         :class="[
           'relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
-          isAnnual ? 'bg-primary' : 'bg-border',
+          isAnnual ? 'bg-primary' : 'bg-border'
         ]"
         @click="toggleBillingPeriod"
       >
         <span
           :class="[
             'inline-block h-4 w-4 transform rounded-full bg-white transition-transform',
-            isAnnual ? 'translate-x-6' : 'translate-x-1',
+            isAnnual ? 'translate-x-6' : 'translate-x-1'
           ]"
         />
       </button>
-      <span
-        :class="isAnnual ? 'text-text-primary font-medium' : 'text-text-secondary'"
-      >
+      <span :class="isAnnual ? 'text-text-primary font-medium' : 'text-text-secondary'">
         Anual
         <Badge variant="success" size="sm" class="ml-1">-20%</Badge>
       </span>
@@ -168,7 +164,7 @@ function toggleBillingPeriod() {
           'relative border-2 rounded-lg p-5 cursor-pointer transition-all',
           selectedPlanId === plan.id
             ? 'border-primary bg-primary/5'
-            : 'border-border hover:border-primary/50',
+            : 'border-border hover:border-primary/50'
         ]"
         @click="selectPlan(plan.id)"
       >
@@ -206,14 +202,15 @@ function toggleBillingPeriod() {
           <li class="flex items-center gap-2">
             <CheckIcon class="w-4 h-4 text-success flex-shrink-0" />
             <span>
-              {{ plan.strategyLimit === null ? 'Estratégias ilimitadas' : `${plan.strategyLimit} estratégia` }}
+              {{
+                plan.strategyLimit === null
+                  ? 'Estratégias ilimitadas'
+                  : `${plan.strategyLimit} estratégia`
+              }}
             </span>
           </li>
           <li :class="plan.features.realtimeData ? 'text-text-primary' : 'text-text-tertiary'">
-            <CheckIcon
-              v-if="plan.features.realtimeData"
-              class="w-4 h-4 text-success inline mr-2"
-            />
+            <CheckIcon v-if="plan.features.realtimeData" class="w-4 h-4 text-success inline mr-2" />
             <span v-else class="inline-block w-4 h-4 mr-2">×</span>
             Dados em tempo real
           </li>

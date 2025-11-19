@@ -22,7 +22,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   type: 'text',
-  disabled: false,
+  disabled: false
 })
 
 // Emits
@@ -34,7 +34,8 @@ const emit = defineEmits<{
 const hasError = computed(() => !!props.error)
 
 const inputClasses = computed(() => {
-  const baseClasses = 'w-full px-3 py-2.5 border rounded text-sm transition-colors focus:outline-none focus:ring-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface'
+  const baseClasses =
+    'w-full px-3 py-2.5 border rounded text-sm transition-colors focus:outline-none focus:ring-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface'
 
   const stateClasses = hasError.value
     ? 'border-danger focus:border-danger focus:ring-danger'
@@ -85,20 +86,12 @@ function handleInput(event: Event) {
     </span>
 
     <!-- Helper Text -->
-    <p
-      v-if="helperText && !error"
-      :id="`${id}-helper`"
-      class="mt-1 text-xs text-text-secondary"
-    >
+    <p v-if="helperText && !error" :id="`${id}-helper`" class="mt-1 text-xs text-text-secondary">
       {{ helperText }}
     </p>
 
     <!-- Error Message -->
-    <p
-      v-if="error"
-      :id="`${id}-error`"
-      class="mt-1 text-xs text-danger"
-    >
+    <p v-if="error" :id="`${id}-error`" class="mt-1 text-xs text-danger">
       {{ error }}
     </p>
   </div>

@@ -50,9 +50,7 @@ function dismissWelcome() {
     <!-- Page Header -->
     <div>
       <h1 class="text-h1">Dashboard</h1>
-      <p class="text-text-secondary mt-1">
-        Visão geral das suas estratégias e performance
-      </p>
+      <p class="text-text-secondary mt-1">Visão geral das suas estratégias e performance</p>
     </div>
 
     <!-- Quick Stats -->
@@ -62,9 +60,7 @@ function dismissWelcome() {
         <CardContent>
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-xs text-text-secondary uppercase tracking-wide">
-                Estratégias Ativas
-              </p>
+              <p class="text-xs text-text-secondary uppercase tracking-wide">Estratégias Ativas</p>
               <p class="text-h2 font-bold text-text-primary mt-1">0</p>
             </div>
             <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
@@ -79,9 +75,7 @@ function dismissWelcome() {
         <CardContent>
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-xs text-text-secondary uppercase tracking-wide">
-                P&L Total
-              </p>
+              <p class="text-xs text-text-secondary uppercase tracking-wide">P&L Total</p>
               <p class="text-h2 font-bold text-text-primary mt-1">R$ 0,00</p>
             </div>
             <div class="w-12 h-12 bg-success/10 rounded-full flex items-center justify-center">
@@ -96,9 +90,7 @@ function dismissWelcome() {
         <CardContent>
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-xs text-text-secondary uppercase tracking-wide">
-                Alertas Ativos
-              </p>
+              <p class="text-xs text-text-secondary uppercase tracking-wide">Alertas Ativos</p>
               <p class="text-h2 font-bold text-text-primary mt-1">0</p>
             </div>
             <div class="w-12 h-12 bg-warning/10 rounded-full flex items-center justify-center">
@@ -113,9 +105,7 @@ function dismissWelcome() {
         <CardContent>
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-xs text-text-secondary uppercase tracking-wide">
-                Ranking Comunidade
-              </p>
+              <p class="text-xs text-text-secondary uppercase tracking-wide">Ranking Comunidade</p>
               <p class="text-h2 font-bold text-text-primary mt-1">-</p>
             </div>
             <div class="w-12 h-12 bg-info/10 rounded-full flex items-center justify-center">
@@ -131,14 +121,14 @@ function dismissWelcome() {
       <CardContent>
         <div class="text-center py-12">
           <!-- Icon -->
-          <div class="w-20 h-20 bg-surface rounded-full flex items-center justify-center mx-auto mb-4">
+          <div
+            class="w-20 h-20 bg-surface rounded-full flex items-center justify-center mx-auto mb-4"
+          >
             <span class="text-4xl">📈</span>
           </div>
 
           <!-- Title -->
-          <h3 class="text-h3 font-semibold text-text-primary mb-2">
-            Nenhuma Estratégia Criada
-          </h3>
+          <h3 class="text-h3 font-semibold text-text-primary mb-2">Nenhuma Estratégia Criada</h3>
 
           <!-- Description -->
           <p class="text-text-secondary max-w-md mx-auto mb-6">
@@ -161,9 +151,7 @@ function dismissWelcome() {
         <CardTitle>Atividade Recente</CardTitle>
       </CardHeader>
       <CardContent>
-        <p class="text-text-secondary text-sm">
-          Suas atividades recentes aparecerão aqui.
-        </p>
+        <p class="text-text-secondary text-sm">Suas atividades recentes aparecerão aqui.</p>
       </CardContent>
     </Card>
   </div>

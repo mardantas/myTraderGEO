@@ -54,7 +54,7 @@ export const signUpSchema = z
       ),
 
     riskProfile: z.nativeEnum(RiskProfile, {
-      errorMap: () => ({ message: 'Selecione um perfil de risco válido' }),
+      errorMap: () => ({ message: 'Selecione um perfil de risco válido' })
     }),
 
     subscriptionPlanId: z
@@ -63,18 +63,16 @@ export const signUpSchema = z
       .positive('ID do plano deve ser positivo'),
 
     billingPeriod: z.nativeEnum(BillingPeriod, {
-      errorMap: () => ({ message: 'Selecione um período de cobrança válido' }),
+      errorMap: () => ({ message: 'Selecione um período de cobrança válido' })
     }),
 
-    termsAccepted: z
-      .boolean()
-      .refine((val) => val === true, {
-        message: 'Você deve aceitar os Termos & Condições',
-      }),
+    termsAccepted: z.boolean().refine((val) => val === true, {
+      message: 'Você deve aceitar os Termos & Condições'
+    })
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'As senhas não coincidem',
-    path: ['confirmPassword'],
+    path: ['confirmPassword']
   })
 
 export type SignUpFormData = z.infer<typeof signUpSchema>
@@ -82,16 +80,11 @@ export type SignUpFormData = z.infer<typeof signUpSchema>
 // ===== Login Schema =====
 
 export const loginSchema = z.object({
-  email: z
-    .string()
-    .email('Email inválido')
-    .toLowerCase(),
+  email: z.string().email('Email inválido').toLowerCase(),
 
-  password: z
-    .string()
-    .min(1, 'Senha é obrigatória'),
+  password: z.string().min(1, 'Senha é obrigatória'),
 
-  rememberMe: z.boolean().optional().default(false),
+  rememberMe: z.boolean().optional().default(false)
 })
 
 export type LoginFormData = z.infer<typeof loginSchema>
@@ -106,8 +99,8 @@ export const editProfileSchema = z.object({
     .regex(/^[a-zA-Z0-9À-ÿ\s_-]+$/, 'Nome de exibição contém caracteres inválidos'),
 
   riskProfile: z.nativeEnum(RiskProfile, {
-    errorMap: () => ({ message: 'Selecione um perfil de risco válido' }),
-  }),
+    errorMap: () => ({ message: 'Selecione um perfil de risco válido' })
+  })
 })
 
 export type EditProfileFormData = z.infer<typeof editProfileSchema>
@@ -115,13 +108,9 @@ export type EditProfileFormData = z.infer<typeof editProfileSchema>
 // ===== Add Phone Schema =====
 
 export const addPhoneSchema = z.object({
-  countryCode: z
-    .string()
-    .regex(/^\+\d{1,4}$/, 'Código de país inválido'),
+  countryCode: z.string().regex(/^\+\d{1,4}$/, 'Código de país inválido'),
 
-  phoneNumber: z
-    .string()
-    .regex(/^\d{10,15}$/, 'Telefone deve conter entre 10 e 15 dígitos'),
+  phoneNumber: z.string().regex(/^\d{10,15}$/, 'Telefone deve conter entre 10 e 15 dígitos')
 })
 
 export type AddPhoneFormData = z.infer<typeof addPhoneSchema>
@@ -132,7 +121,7 @@ export const verifyPhoneSchema = z.object({
   code: z
     .string()
     .length(6, 'Código deve ter 6 dígitos')
-    .regex(/^\d{6}$/, 'Código deve conter apenas números'),
+    .regex(/^\d{6}$/, 'Código deve conter apenas números')
 })
 
 export type VerifyPhoneFormData = z.infer<typeof verifyPhoneSchema>
@@ -140,18 +129,14 @@ export type VerifyPhoneFormData = z.infer<typeof verifyPhoneSchema>
 // ===== Change Phone Schema =====
 
 export const changePhoneSchema = z.object({
-  newCountryCode: z
-    .string()
-    .regex(/^\+\d{1,4}$/, 'Código de país inválido'),
+  newCountryCode: z.string().regex(/^\+\d{1,4}$/, 'Código de país inválido'),
 
-  newPhoneNumber: z
-    .string()
-    .regex(/^\d{10,15}$/, 'Telefone deve conter entre 10 e 15 dígitos'),
+  newPhoneNumber: z.string().regex(/^\d{10,15}$/, 'Telefone deve conter entre 10 e 15 dígitos'),
 
   verificationCode: z
     .string()
     .length(6, 'Código deve ter 6 dígitos')
-    .regex(/^\d{6}$/, 'Código deve conter apenas números'),
+    .regex(/^\d{6}$/, 'Código deve conter apenas números')
 })
 
 export type ChangePhoneFormData = z.infer<typeof changePhoneSchema>
@@ -188,7 +173,7 @@ export function calculatePasswordStrength(password: string): PasswordStrength {
     1: { label: 'Fraca', color: 'danger' },
     2: { label: 'Razoável', color: 'warning' },
     3: { label: 'Forte', color: 'info' },
-    4: { label: 'Muito Forte', color: 'success' },
+    4: { label: 'Muito Forte', color: 'success' }
   }
 
   return { score, ...labels[score]! } as PasswordStrength

@@ -32,8 +32,8 @@ const { defineField, handleSubmit, errors } = useForm({
   validationSchema: toTypedSchema(editProfileSchema),
   initialValues: {
     displayName: currentUser?.displayName || '',
-    riskProfile: currentUser?.riskProfile || RiskProfile.Moderate,
-  },
+    riskProfile: currentUser?.riskProfile || RiskProfile.Moderate
+  }
 })
 
 const [displayName] = defineField('displayName')
@@ -54,12 +54,12 @@ const onSubmit = handleSubmit(async (values) => {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${authStore.token}`,
+        Authorization: `Bearer ${authStore.token}`
       },
       body: JSON.stringify({
         displayName: values.displayName,
-        riskProfile: values.riskProfile,
-      }),
+        riskProfile: values.riskProfile
+      })
     })
 
     if (!response.ok) {
@@ -79,8 +79,7 @@ const onSubmit = handleSubmit(async (values) => {
       router.push('/dashboard/profile')
     }
   } catch (err) {
-    error.value =
-      err instanceof Error ? err.message : 'Erro ao atualizar perfil. Tente novamente.'
+    error.value = err instanceof Error ? err.message : 'Erro ao atualizar perfil. Tente novamente.'
   } finally {
     isLoading.value = false
   }
@@ -145,11 +144,7 @@ function handleCancel() {
         class="w-full px-3 py-2.5 border border-border rounded text-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
         :disabled="isLoading"
       >
-        <option
-          v-for="(data, key) in RISK_PROFILE_LABELS"
-          :key="key"
-          :value="key"
-        >
+        <option v-for="(data, key) in RISK_PROFILE_LABELS" :key="key" :value="key">
           {{ data.label }} - {{ data.description }}
         </option>
       </select>
@@ -166,9 +161,7 @@ function handleCancel() {
 
     <!-- Action Buttons -->
     <div class="flex items-center justify-end gap-3">
-      <Button type="button" variant="secondary" @click="handleCancel">
-        Cancelar
-      </Button>
+      <Button type="button" variant="secondary" @click="handleCancel"> Cancelar </Button>
       <Button type="submit" :loading="isLoading">
         {{ isLoading ? 'Salvando...' : 'Salvar Alterações' }}
       </Button>

@@ -14,17 +14,19 @@ interface Props {
 
 withDefaults(defineProps<Props>(), {
   hoverable: false,
-  noPadding: false,
+  noPadding: false
 })
 </script>
 
 <template>
   <div
-    :class="cn(
-      'bg-white border border-border rounded-lg shadow-md transition-shadow',
-      hoverable && 'hover:shadow-lg cursor-pointer',
-      !noPadding && 'p-6'
-    )"
+    :class="
+      cn(
+        'bg-white border border-border rounded-lg shadow-md transition-shadow',
+        hoverable && 'hover:shadow-lg cursor-pointer',
+        !noPadding && 'p-6'
+      )
+    "
   >
     <slot />
   </div>

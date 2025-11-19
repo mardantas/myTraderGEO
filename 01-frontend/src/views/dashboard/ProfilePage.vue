@@ -8,15 +8,7 @@ import { computed } from 'vue'
 import { useAuthStore } from '@/stores'
 import { formatPhoneNumber } from '@/lib/utils'
 import { RISK_PROFILE_LABELS, USER_STATUS_LABELS } from '@/types'
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  Button,
-  Badge,
-  Alert,
-} from '@/components/ui'
+import { Card, CardHeader, CardTitle, CardContent, Button, Badge, Alert } from '@/components/ui'
 import { CheckIcon, XMarkIcon, PencilIcon } from '@heroicons/vue/24/outline'
 
 // Store
@@ -27,10 +19,7 @@ const user = computed(() => authStore.currentUser)
 
 const formattedPhone = computed(() => {
   if (!user.value?.phoneNumber) return null
-  return formatPhoneNumber(
-    user.value.phoneNumber.countryCode,
-    user.value.phoneNumber.number
-  )
+  return formatPhoneNumber(user.value.phoneNumber.countryCode, user.value.phoneNumber.number)
 })
 
 const nextBillingDate = computed(() => {
@@ -45,9 +34,7 @@ const nextBillingDate = computed(() => {
     <div class="flex items-center justify-between">
       <div>
         <h1 class="text-h1">Meu Perfil</h1>
-        <nav class="text-sm text-text-secondary mt-1">
-          Dashboard &gt; Perfil
-        </nav>
+        <nav class="text-sm text-text-secondary mt-1">Dashboard &gt; Perfil</nav>
       </div>
     </div>
 
@@ -103,7 +90,12 @@ const nextBillingDate = computed(() => {
                   </template>
                   Verificado
                 </Badge>
-                <Button variant="link" size="sm" as="router-link" to="/dashboard/profile/phone/change">
+                <Button
+                  variant="link"
+                  size="sm"
+                  as="router-link"
+                  to="/dashboard/profile/phone/change"
+                >
                   Alterar
                 </Button>
               </template>
@@ -239,9 +231,7 @@ const nextBillingDate = computed(() => {
             <div class="text-sm text-text-secondary">Próxima Cobrança</div>
             <div class="text-base font-medium text-text-primary mt-1">
               {{ nextBillingDate }} - R$
-              {{
-                user.subscriptionPlan?.price.toFixed(2).replace('.', ',') || '0,00'
-              }}
+              {{ user.subscriptionPlan?.price.toFixed(2).replace('.', ',') || '0,00' }}
             </div>
           </div>
         </div>
@@ -252,9 +242,7 @@ const nextBillingDate = computed(() => {
     <Alert v-if="user.planOverride" variant="warning">
       <strong>⚠️ Acesso Especial Ativo</strong>
       <div class="mt-2 space-y-1">
-        <p class="text-sm">
-          <strong>Motivo:</strong> {{ user.planOverride.reason }}
-        </p>
+        <p class="text-sm"><strong>Motivo:</strong> {{ user.planOverride.reason }}</p>
         <p class="text-sm">
           <strong>Expira em:</strong>
           {{

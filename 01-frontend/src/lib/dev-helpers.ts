@@ -19,7 +19,7 @@ export const MOCK_USER: User = {
   passwordHash: '',
   phoneNumber: {
     countryCode: '+55',
-    number: '11987654321',
+    number: '11987654321'
   },
   isPhoneVerified: true,
   role: UserRole.Trader,
@@ -36,12 +36,12 @@ export const MOCK_USER: User = {
     hasAdvancedAlerts: true,
     hasConsultingTools: false,
     hasCommunityAccess: true,
-    isActive: true,
+    isActive: true
   },
   billingPeriod: BillingPeriod.Monthly,
   planOverride: null,
   createdAt: '2025-01-01T00:00:00Z',
-  lastLoginAt: '2025-11-15T10:00:00Z',
+  lastLoginAt: '2025-11-15T10:00:00Z'
 }
 
 /**
@@ -85,9 +85,12 @@ export function mockLogout() {
 // Expõe funções no window para facilitar testes (apenas em desenvolvimento)
 if (import.meta.env.DEV) {
   // Declara as funções no window
-  (window as any).mockLogin = mockLogin;
-  (window as any).mockLogout = mockLogout;
-  (window as any).MOCK_USER = MOCK_USER
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ;(window as any).mockLogin = mockLogin
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ;(window as any).mockLogout = mockLogout
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ;(window as any).MOCK_USER = MOCK_USER
 
   console.log('🔧 Dev Helpers disponíveis:')
   console.log('  window.mockLogin() - Simula login')

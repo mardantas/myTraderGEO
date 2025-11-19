@@ -11,17 +11,12 @@ interface Props {
 }
 
 withDefaults(defineProps<Props>(), {
-  noBorder: false,
+  noBorder: false
 })
 </script>
 
 <template>
-  <div
-    :class="cn(
-      'px-6 py-4',
-      !noBorder && 'border-t border-border'
-    )"
-  >
+  <div :class="cn('px-6 py-4', !noBorder && 'border-t border-border')">
     <slot />
   </div>
 </template>
