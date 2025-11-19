@@ -10,7 +10,7 @@ interface Props {
   required?: boolean
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// @ts-expect-error - Props used in template, not in script
 const _props = withDefaults(defineProps<Props>(), {
   required: false,
 })

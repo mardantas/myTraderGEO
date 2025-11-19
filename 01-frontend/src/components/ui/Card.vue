@@ -12,7 +12,7 @@ interface Props {
   noPadding?: boolean
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// @ts-expect-error - Props used in template, not in script
 const _props = withDefaults(defineProps<Props>(), {
   hoverable: false,
   noPadding: false,
