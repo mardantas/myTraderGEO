@@ -226,13 +226,13 @@ Use quando mudou apenas código C# ou Vue (hot reload já aplicou):
 cd C:\Users\Marco\Projetos\myTraderGEO
 
 # Restart apenas backend
-docker compose -f 05-infra/docker/docker-compose.dev.yml restart api
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev restart api
 
 # Restart apenas frontend
-docker compose -f 05-infra/docker/docker-compose.dev.yml restart frontend
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev restart frontend
 
 # Restart todos
-docker compose -f 05-infra/docker/docker-compose.dev.yml restart
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev restart
 ```
 
 #### 2. Rebuild Específico (recomendado)
@@ -257,7 +257,7 @@ Use quando quer recriar tudo ou resolver problemas de cache:
 cd C:\Users\Marco\Projetos\myTraderGEO
 
 # Parar e remover containers
-docker compose -f 05-infra/docker/docker-compose.dev.yml down
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev down
 
 # Rebuild tudo (com --no-cache se necessário)
 docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev build --no-cache
@@ -272,16 +272,16 @@ docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/con
 cd C:\Users\Marco\Projetos\myTraderGEO
 
 # Logs de todos os serviços
-docker compose -f 05-infra/docker/docker-compose.dev.yml logs -f
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev logs -f
 
 # Logs apenas do backend
-docker compose -f 05-infra/docker/docker-compose.dev.yml logs -f api
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev logs -f api
 
 # Logs apenas do frontend
-docker compose -f 05-infra/docker/docker-compose.dev.yml logs -f frontend
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev logs -f frontend
 
 # Últimas 100 linhas do backend
-docker compose -f 05-infra/docker/docker-compose.dev.yml logs --tail=100 api
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev logs --tail=100 api
 ```
 
 #### 5. Limpar Tudo (incluindo volumes)
@@ -292,7 +292,7 @@ docker compose -f 05-infra/docker/docker-compose.dev.yml logs --tail=100 api
 cd C:\Users\Marco\Projetos\myTraderGEO
 
 # Parar e remover tudo (incluindo volumes)
-docker compose -f 05-infra/docker/docker-compose.dev.yml down -v
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev down -v
 
 # Rebuild e subir novamente
 docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up -d --build
@@ -308,10 +308,10 @@ docker builder prune -a
 docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev build --no-cache api
 
 # 3. Verificar se está usando o Dockerfile correto
-docker compose -f 05-infra/docker/docker-compose.dev.yml config | grep dockerfile
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev config | grep dockerfile
 
 # 4. Ver containers ativos
-docker compose -f 05-infra/docker/docker-compose.dev.yml ps
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev ps
 ```
 
 ---
