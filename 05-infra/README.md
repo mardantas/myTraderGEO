@@ -248,6 +248,10 @@ docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/con
 # Rebuild apenas frontend
 docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev build frontend
 docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up -d frontend
+
+# Alternativa: Build + Force Recreate (garante uso da nova imagem)
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev build api
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up -d --force-recreate api
 ```
 
 #### 3. Rebuild Completo (do zero)
