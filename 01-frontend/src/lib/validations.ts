@@ -37,21 +37,9 @@ export const signUpSchema = z
 
     confirmPassword: z.string(),
 
-    countryCode: z
-      .string()
-      .optional()
-      .refine(
-        (val) => !val || /^\+\d{1,4}$/.test(val),
-        'Código deve iniciar com + seguido de 1-4 dígitos (ex: +55)'
-      ),
+    countryCode: z.string().default(''),
 
-    phoneNumber: z
-      .string()
-      .optional()
-      .refine(
-        (val) => !val || /^\d{10,15}$/.test(val),
-        'Telefone deve conter entre 10 e 15 dígitos'
-      ),
+    phoneNumber: z.string().default(''),
 
     riskProfile: z.nativeEnum(RiskProfile, {
       errorMap: () => ({ message: 'Selecione um perfil de risco válido' })
@@ -74,6 +62,28 @@ export const signUpSchema = z
     message: 'As senhas não coincidem',
     path: ['confirmPassword']
   })
+  .refine(
+    (data) => {
+      const hasCountry = data.countryCode && data.countryCode.length > 0
+      const hasPhone = data.phoneNumber && data.phoneNumber.length > 0
+      // Both empty or both filled
+      return (!hasCountry && !hasPhone) || (hasCountry && hasPhone)
+    },
+    {
+      message: 'Se preencher o telefone, deve selecionar o país',
+      path: ['phoneNumber']
+    }
+  )
+  .refine(
+    (data) => {
+      if (!data.phoneNumber || data.phoneNumber.length === 0) return true
+      return /^\d{10,15}$/.test(data.phoneNumber)
+    },
+    {
+      message: 'Telefone deve conter entre 10 e 15 dígitos',
+      path: ['phoneNumber']
+    }
+  )
 
 export type SignUpFormData = z.infer<typeof signUpSchema>
 

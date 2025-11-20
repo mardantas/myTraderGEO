@@ -27,7 +27,7 @@ const { defineField, handleSubmit, errors, values } = useForm({
     email: '',
     password: '',
     confirmPassword: '',
-    countryCode: '+55',
+    countryCode: '',
     phoneNumber: '',
     riskProfile: RiskProfile.Moderate,
     subscriptionPlanId: 2, // Pleno (default)
@@ -51,6 +51,21 @@ const [termsAccepted] = defineField('termsAccepted')
 // State
 const isLoading = ref(false)
 const error = ref<string | null>(null)
+
+// Common countries for phone selection
+const countries = [
+  { code: '', name: '(Nenhum)', flag: '' },
+  { code: '+55', name: 'Brasil', flag: '🇧🇷' },
+  { code: '+1', name: 'Estados Unidos / Canadá', flag: '🇺🇸' },
+  { code: '+351', name: 'Portugal', flag: '🇵🇹' },
+  { code: '+54', name: 'Argentina', flag: '🇦🇷' },
+  { code: '+52', name: 'México', flag: '🇲🇽' },
+  { code: '+34', name: 'Espanha', flag: '🇪🇸' },
+  { code: '+44', name: 'Reino Unido', flag: '🇬🇧' },
+  { code: '+49', name: 'Alemanha', flag: '🇩🇪' },
+  { code: '+33', name: 'França', flag: '🇫🇷' },
+  { code: '+39', name: 'Itália', flag: '🇮🇹' }
+]
 
 // Password strength
 const passwordStrength = computed(() => {
@@ -76,8 +91,25 @@ const onSubmit = handleSubmit(async (formValues) => {
 
     // Redirect to dashboard with welcome message
     router.push({ name: 'Dashboard', query: { welcome: 'true' } })
-  } catch (err) {
-    error.value = err instanceof Error ? err.message : 'Erro ao criar conta. Tente novamente.'
+  } catch (err: any) {
+    // Log full error details to console
+    console.error('Registration error details:', {
+      err,
+      problemDetails: err?.problemDetails,
+      errors: err?.problemDetails?.errors,
+      message: err?.message,
+      status: err?.status
+    })
+
+    // Show detailed validation errors if available
+    if (err?.problemDetails?.errors) {
+      const validationErrors = Object.entries(err.problemDetails.errors)
+        .map(([field, messages]) => `${field}: ${(messages as string[]).join(', ')}`)
+        .join('\n')
+      error.value = `Erros de validação:\n${validationErrors}`
+    } else {
+      error.value = err instanceof Error ? err.message : 'Erro ao criar conta. Tente novamente.'
+    }
   } finally {
     isLoading.value = false
   }
@@ -138,29 +170,35 @@ const onSubmit = handleSubmit(async (formValues) => {
       </div>
 
       <!-- Phone (Optional) -->
-      <div class="grid grid-cols-3 gap-2">
-        <div class="col-span-1">
-          <Label for="countryCode">Código</Label>
-          <Input
-            id="countryCode"
-            v-model="countryCode"
-            type="text"
-            placeholder="+55"
-            :error="errors.countryCode"
-            :disabled="isLoading"
-          />
-        </div>
-        <div class="col-span-2">
-          <Label for="phoneNumber">Telefone (Opcional)</Label>
-          <Input
-            id="phoneNumber"
-            v-model="phoneNumber"
-            type="tel"
-            placeholder="11987654321"
-            helper-text="Somente números"
-            :error="errors.phoneNumber"
-            :disabled="isLoading"
-          />
+      <div>
+        <Label for="countryCode">Telefone (Opcional)</Label>
+        <div class="grid grid-cols-5 gap-2">
+          <div class="col-span-2">
+            <select
+              id="countryCode"
+              v-model="countryCode"
+              class="w-full px-3 py-2.5 border border-border rounded text-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none disabled:bg-surface disabled:cursor-not-allowed"
+              :disabled="isLoading"
+            >
+              <option v-for="country in countries" :key="country.code" :value="country.code">
+                {{ country.flag }} {{ country.name }}
+              </option>
+            </select>
+            <p v-if="errors.countryCode" class="mt-1 text-xs text-danger">
+              {{ errors.countryCode }}
+            </p>
+          </div>
+          <div class="col-span-3">
+            <Input
+              id="phoneNumber"
+              v-model="phoneNumber"
+              type="tel"
+              placeholder="11987654321"
+              helper-text="Somente números (ex: 11987654321)"
+              :error="errors.phoneNumber"
+              :disabled="isLoading || !countryCode"
+            />
+          </div>
         </div>
       </div>
     </div>
