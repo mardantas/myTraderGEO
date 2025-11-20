@@ -84,9 +84,9 @@ const onSubmit = handleSubmit(async (formValues) => {
       displayName: formValues.displayName,
       email: formValues.email,
       password: formValues.password,
-      riskProfile: formValues.riskProfile as unknown as number,
+      riskProfile: formValues.riskProfile,
       subscriptionPlanId: formValues.subscriptionPlanId,
-      billingPeriod: formValues.billingPeriod as unknown as number
+      billingPeriod: formValues.billingPeriod
     })
 
     // Redirect to dashboard with welcome message

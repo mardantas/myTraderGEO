@@ -13,9 +13,9 @@ export enum UserRole {
 }
 
 export enum RiskProfile {
-  Conservative = 'Conservative',
-  Moderate = 'Moderate',
-  Aggressive = 'Aggressive'
+  Conservative = 0,
+  Moderate = 1,
+  Aggressive = 2
 }
 
 export enum UserStatus {
@@ -26,8 +26,8 @@ export enum UserStatus {
 }
 
 export enum BillingPeriod {
-  Monthly = 'Monthly',
-  Annual = 'Annual'
+  Monthly = 1,
+  Annual = 12
 }
 
 // ===== Value Objects =====
