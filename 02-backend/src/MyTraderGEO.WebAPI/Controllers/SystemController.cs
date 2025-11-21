@@ -40,7 +40,7 @@ public class SystemController : ControllerBase
 
         if (systemConfig == null)
         {
-            return NotFound(new { message = "System configuration not found. Please initialize the system first." });
+            return NotFound(new { message = "Configuração do sistema não encontrada. Por favor, inicialize o sistema primeiro." });
         }
 
         return Ok(new
@@ -75,7 +75,7 @@ public class SystemController : ControllerBase
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var administratorId))
         {
-            return Unauthorized(new { message = "Invalid or missing user ID in token" });
+            return Unauthorized(new { message = "ID de usuário inválido ou ausente no token" });
         }
 
         var command = new UpdateSystemParametersCommand

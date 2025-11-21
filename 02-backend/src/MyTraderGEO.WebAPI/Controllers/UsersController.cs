@@ -36,11 +36,11 @@ public class UsersController : ControllerBase
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
-            return Unauthorized(new { error = "Invalid user ID in token" });
+            return Unauthorized(new { error = "ID de usuário inválido no token" });
 
         var user = await _userRepository.GetByIdAsync(userId);
         if (user == null)
-            return NotFound(new { error = "User not found" });
+            return NotFound(new { error = "Usuário não encontrado" });
 
         return Ok(new
         {
@@ -72,7 +72,7 @@ public class UsersController : ControllerBase
     {
         var adminIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(adminIdClaim) || !Guid.TryParse(adminIdClaim, out var adminId))
-            return Unauthorized(new { error = "Invalid admin ID in token" });
+            return Unauthorized(new { error = "ID de administrador inválido no token" });
 
         var command = new GrantPlanOverrideCommand
         {

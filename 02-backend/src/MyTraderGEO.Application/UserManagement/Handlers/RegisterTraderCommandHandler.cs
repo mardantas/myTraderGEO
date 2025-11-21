@@ -41,15 +41,15 @@ public sealed class RegisterTraderCommandHandler
         // 2. Check if email already exists
         var emailExists = await _userRepository.ExistsByEmailAsync(email, cancellationToken);
         if (emailExists)
-            throw new InvalidOperationException($"Email {request.Email} is already registered");
+            throw new InvalidOperationException($"Email {request.Email} já está registrado");
 
         // 3. Validate subscription plan exists
         var plan = await _planRepository.GetByIdAsync(request.SubscriptionPlanId, cancellationToken);
         if (plan == null)
-            throw new InvalidOperationException($"Subscription plan {request.SubscriptionPlanId} not found");
+            throw new InvalidOperationException($"Plano de assinatura {request.SubscriptionPlanId} não encontrado");
 
         if (!plan.IsActive)
-            throw new InvalidOperationException($"Subscription plan {plan.Name} is not active");
+            throw new InvalidOperationException($"Plano de assinatura {plan.Name} não está ativo");
 
         // 4. Hash password
         var passwordHash = _passwordHasher.HashPassword(request.Password);
@@ -73,7 +73,7 @@ public sealed class RegisterTraderCommandHandler
         {
             UserId = user.Id,
             Email = user.Email,
-            Message = "Trader registered successfully"
+            Message = "Trader registrado com sucesso"
         };
     }
 }

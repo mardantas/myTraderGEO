@@ -92,6 +92,106 @@ export interface PlanPricing {
   currency: string
 }
 
+// ===== Admin - User Management DTOs =====
+
+/**
+ * Grant Plan Override Request (POST /api/Users/{id}/plan-override)
+ */
+export interface GrantPlanOverrideRequest {
+  reason: string
+  strategyLimitOverride?: number | null
+  featureRealtimeDataOverride?: boolean | null
+  featureAdvancedAlertsOverride?: boolean | null
+  featureConsultingToolsOverride?: boolean | null
+  featureCommunityAccessOverride?: boolean | null
+  expiresAt?: string | null // ISO date string
+}
+
+/**
+ * Grant Plan Override Response
+ */
+export interface GrantPlanOverrideResponse {
+  userId: string
+  message: string
+}
+
+/**
+ * Revoke Plan Override Response (DELETE /api/Users/{id}/plan-override)
+ */
+export interface RevokePlanOverrideResponse {
+  userId: string
+  message: string
+}
+
+// ===== Admin - System Configuration DTOs =====
+
+/**
+ * System Configuration Response (GET /api/System/config)
+ */
+export interface SystemConfigResponse {
+  id: number
+  fees: {
+    brokerCommissionRate: number
+    b3EmolumentRate: number
+    settlementFeeRate: number
+    incomeTaxRate: number
+    dayTradeIncomeTaxRate: number
+  }
+  maxOpenStrategiesPerUser: number
+  maxStrategiesInTemplate: number
+  updatedAt: string
+  updatedBy: string
+}
+
+/**
+ * Update System Configuration Request (PUT /api/System/config)
+ */
+export interface UpdateSystemConfigRequest {
+  brokerCommissionRate?: number | null
+  b3EmolumentRate?: number | null
+  settlementFeeRate?: number | null
+  incomeTaxRate?: number | null
+  dayTradeIncomeTaxRate?: number | null
+  maxOpenStrategiesPerUser?: number | null
+  maxStrategiesInTemplate?: number | null
+}
+
+/**
+ * Update System Configuration Response
+ */
+export interface UpdateSystemConfigResponse {
+  message: string
+  updatedAt: string
+}
+
+// ===== Admin - Plan Management DTOs =====
+
+/**
+ * Configure Subscription Plan Request (POST /api/Plans)
+ */
+export interface ConfigureSubscriptionPlanRequest {
+  planId?: number | null // null = create new, number = update existing
+  name: string
+  description: string
+  isActive: boolean
+  monthlyPrice: number
+  annualPrice: number
+  strategyLimit: number
+  hasRealtimeData: boolean
+  hasAdvancedAlerts: boolean
+  hasConsultingTools: boolean
+  hasCommunityAccess: boolean
+}
+
+/**
+ * Configure Subscription Plan Response
+ */
+export interface ConfigureSubscriptionPlanResponse {
+  planId: number
+  name: string
+  message: string
+}
+
 // ===== Mapping Helpers =====
 
 /**

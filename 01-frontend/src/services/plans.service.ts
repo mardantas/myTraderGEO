@@ -3,8 +3,12 @@
  * Handles subscription plan API calls
  */
 
-import { apiGet } from './api'
-import type { PlanResponse } from '@/types/api'
+import { apiGet, apiPost } from './api'
+import type {
+  PlanResponse,
+  ConfigureSubscriptionPlanRequest,
+  ConfigureSubscriptionPlanResponse
+} from '@/types/api'
 import type { SubscriptionPlan } from '@/types'
 import { BillingPeriod } from '@/types'
 
@@ -47,4 +51,17 @@ export function getPlanPrice(plan: PlanResponse, billingPeriod: BillingPeriod): 
   return billingPeriod === BillingPeriod.Annual
     ? plan.pricing.annualPrice
     : plan.pricing.monthlyPrice
+}
+
+/**
+ * Configure (create or update) a subscription plan (Admin only)
+ * @param data - Plan configuration data
+ */
+export async function configurePlan(
+  data: ConfigureSubscriptionPlanRequest
+): Promise<ConfigureSubscriptionPlanResponse> {
+  return apiPost<ConfigureSubscriptionPlanResponse, ConfigureSubscriptionPlanRequest>(
+    '/api/Plans',
+    data
+  )
 }

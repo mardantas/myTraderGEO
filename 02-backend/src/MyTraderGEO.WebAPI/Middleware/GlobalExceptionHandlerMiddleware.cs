@@ -41,9 +41,9 @@ public class GlobalExceptionHandlerMiddleware
             ValidationException validationException => new ProblemDetails
             {
                 Type = "https://api.mytrader.com/errors/validation-error",
-                Title = "Validation Error",
+                Title = "Erro de Validação",
                 Status = (int)HttpStatusCode.BadRequest,
-                Detail = "One or more validation errors occurred.",
+                Detail = "Ocorreram um ou mais erros de validação.",
                 Extensions =
                 {
                     ["errors"] = validationException.Errors
@@ -56,30 +56,30 @@ public class GlobalExceptionHandlerMiddleware
             InvalidOperationException => new ProblemDetails
             {
                 Type = "https://api.mytrader.com/errors/business-rule-violation",
-                Title = "Business Rule Violation",
+                Title = "Violação de Regra de Negócio",
                 Status = (int)HttpStatusCode.BadRequest,
                 Detail = exception.Message,
             },
             UnauthorizedAccessException => new ProblemDetails
             {
                 Type = "https://api.mytrader.com/errors/unauthorized",
-                Title = "Unauthorized",
+                Title = "Não Autorizado",
                 Status = (int)HttpStatusCode.Unauthorized,
                 Detail = exception.Message,
             },
             ArgumentException => new ProblemDetails
             {
                 Type = "https://api.mytrader.com/errors/invalid-argument",
-                Title = "Invalid Argument",
+                Title = "Argumento Inválido",
                 Status = (int)HttpStatusCode.BadRequest,
                 Detail = exception.Message,
             },
             _ => new ProblemDetails
             {
                 Type = "https://api.mytrader.com/errors/internal-server-error",
-                Title = "Internal Server Error",
+                Title = "Erro Interno do Servidor",
                 Status = (int)HttpStatusCode.InternalServerError,
-                Detail = "An unexpected error occurred. Please try again later.",
+                Detail = "Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.",
             }
         };
 

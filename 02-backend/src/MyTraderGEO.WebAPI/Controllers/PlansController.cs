@@ -48,7 +48,7 @@ public class PlansController : ControllerBase
     {
         var plan = await _planRepository.GetByIdAsync(id);
         if (plan == null)
-            return NotFound(new { error = "Subscription plan not found" });
+            return NotFound(new { error = "Plano de assinatura não encontrado" });
 
         return Ok(plan);
     }
