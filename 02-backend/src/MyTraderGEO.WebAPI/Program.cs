@@ -1,8 +1,13 @@
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MyTraderGEO.Application.Common.Behaviors;
 using MyTraderGEO.Application.UserManagement.Services;
 using MyTraderGEO.Domain.UserManagement.Interfaces;
 using MyTraderGEO.Infrastructure.Data;
@@ -24,8 +29,17 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
-// Add controllers
-builder.Services.AddControllers();
+// Add controllers with JSON configuration
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // Accept camelCase from frontend (converts to PascalCase for C# models)
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+
+        // Allow enums as numbers
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, allowIntegerValues: true));
+    });
 
 // Add CORS
 builder.Services.AddCors(options =>
@@ -46,10 +60,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 // Add MediatR
+var applicationAssembly = typeof(MyTraderGEO.Application.UserManagement.Commands.RegisterTraderCommand).Assembly;
 builder.Services.AddMediatR(cfg =>
 {
-    cfg.RegisterServicesFromAssembly(typeof(MyTraderGEO.Application.UserManagement.Commands.RegisterTraderCommand).Assembly);
+    cfg.RegisterServicesFromAssembly(applicationAssembly);
 });
+
+// Add FluentValidation
+builder.Services.AddValidatorsFromAssembly(applicationAssembly);
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
 // Add repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -153,6 +172,9 @@ if (app.Environment.IsDevelopment())
 app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
+
+// Global Exception Handler (MUST be before UseAuthentication)
+app.UseMiddleware<MyTraderGEO.WebAPI.Middleware.GlobalExceptionHandlerMiddleware>();
 
 app.UseCors("AllowAll");
 

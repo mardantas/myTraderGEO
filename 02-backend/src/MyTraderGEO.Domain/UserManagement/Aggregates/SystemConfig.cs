@@ -10,12 +10,12 @@ namespace MyTraderGEO.Domain.UserManagement.Aggregates;
 public class SystemConfig
 {
     // Singleton ID
-    public static readonly Guid SingletonId = new Guid("00000000-0000-0000-0000-000000000001");
+    public const int SingletonId = 1;
 
-    public Guid Id { get; private set; }
+    public int Id { get; private set; }
 
     // Trading Fees
-    public TradingFees Fees { get; private set; }
+    public TradingFees Fees { get; private set; } = null!;
 
     // Global Limits
     public int MaxOpenStrategiesPerUser { get; private set; }

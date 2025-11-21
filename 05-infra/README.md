@@ -177,13 +177,148 @@ docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/con
 docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev down
 ```
 
+**⚠️ Nota para Windows:** O Dockerfile.dev executa `dotnet restore` automaticamente ao iniciar para resolver incompatibilidades de NuGet packages entre Windows e Linux. O primeiro startup pode levar ~30 segundos.
+
 **Acessar:**
-- Frontend (Vue + Vite): http://localhost:5173
-- Backend API (.NET): http://localhost:5000
-- Database (PostgreSQL): localhost:5432
-- PgAdmin (opcional): http://localhost:8080
+- **Backend API (.NET):** http://localhost:5000
+  - Swagger UI: http://localhost:5000/swagger
+  - Health Check: http://localhost:5000/health
+- **Frontend (Vue + Vite):** http://localhost:5173
+- **Database (PostgreSQL):** localhost:5432
+- **PgAdmin (opcional):** http://localhost:8080
   - Email: `admin@mytrader.local`
   - Senha: `admin123`
+
+---
+
+## 🔄 Development Workflow - Rebuild & Hot Reload
+
+### Quando fazer rebuild?
+
+**Não precisa rebuild (hot reload automático):**
+- ✅ Mudanças em arquivos `.cs` (backend)
+- ✅ Mudanças em arquivos `.vue`, `.ts`, `.js` (frontend)
+- ✅ Mudanças em CSS/SCSS
+
+**Precisa rebuild:**
+- ⚠️ Mudanças em `Program.cs` (configurações de startup)
+- ⚠️ Mudanças em `Dockerfile` ou `docker-compose.yml`
+- ⚠️ Adicionar/remover pacotes NuGet ou npm
+- ⚠️ Mudanças em variáveis de ambiente (`.env`)
+
+### Comandos de Rebuild
+
+**Atalho:** Para facilitar, você pode definir um alias no seu shell:
+```bash
+# Adicione ao seu ~/.bashrc ou ~/.zshrc
+alias dcd='cd /c/Users/Marco/Projetos/myTraderGEO && docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev'
+
+# Uso:
+# dcd up -d
+# dcd logs -f api
+# dcd restart api
+```
+
+#### 1. Restart Rápido (sem rebuild)
+Use quando mudou apenas código C# ou Vue (hot reload já aplicou):
+
+```bash
+cd C:\Users\Marco\Projetos\myTraderGEO
+
+# Restart apenas backend
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev restart api
+
+# Restart apenas frontend
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev restart frontend
+
+# Restart todos
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev restart
+```
+
+#### 2. Rebuild Específico (recomendado)
+Use quando mudou `Program.cs`, Dockerfile ou adicionou pacotes:
+
+```bash
+cd C:\Users\Marco\Projetos\myTraderGEO
+
+# Rebuild apenas backend
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev build api
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up -d api
+
+# Rebuild apenas frontend
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev build frontend
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up -d frontend
+
+# Alternativa: Build + Force Recreate (garante uso da nova imagem)
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev build api
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up -d --force-recreate api
+```
+
+#### 3. Rebuild Completo (do zero)
+Use quando quer recriar tudo ou resolver problemas de cache:
+
+```bash
+cd C:\Users\Marco\Projetos\myTraderGEO
+
+# Parar e remover containers
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev down
+
+# Rebuild tudo (com --no-cache se necessário)
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev build --no-cache
+
+# Subir tudo
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up -d
+```
+
+#### 4. Ver Logs em Tempo Real
+
+```bash
+cd C:\Users\Marco\Projetos\myTraderGEO
+
+# Logs de todos os serviços
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev logs -f
+
+# Logs apenas do backend
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev logs -f api
+
+# Logs apenas do frontend
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev logs -f frontend
+
+# Últimas 100 linhas do backend
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev logs --tail=100 api
+```
+
+#### 5. Limpar Tudo (incluindo volumes)
+
+**⚠️ CUIDADO:** Isso vai apagar o banco de dados local!
+
+```bash
+cd C:\Users\Marco\Projetos\myTraderGEO
+
+# Parar e remover tudo (incluindo volumes)
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev down -v
+
+# Rebuild e subir novamente
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up -d --build
+```
+
+### Troubleshooting: Rebuild não resolveu?
+
+```bash
+# 1. Limpar cache do Docker
+docker builder prune -a
+
+# 2. Rebuild sem cache
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev build --no-cache api
+
+# 3. Verificar se está usando o Dockerfile correto
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev config | grep dockerfile
+
+# 4. Ver containers ativos
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev ps
+```
+
+---
 
 ### 3. Staging - Deploy para Staging
 

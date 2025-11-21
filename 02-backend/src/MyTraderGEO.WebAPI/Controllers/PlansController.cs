@@ -40,15 +40,15 @@ public class PlansController : ControllerBase
     /// <summary>
     /// Get subscription plan by ID
     /// </summary>
-    [HttpGet("{id:guid}")]
+    [HttpGet("{id:int}")]
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetPlanById(Guid id)
+    public async Task<IActionResult> GetPlanById(int id)
     {
         var plan = await _planRepository.GetByIdAsync(id);
         if (plan == null)
-            return NotFound(new { error = "Subscription plan not found" });
+            return NotFound(new { error = "Plano de assinatura não encontrado" });
 
         return Ok(plan);
     }

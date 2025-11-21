@@ -28,7 +28,7 @@ public sealed class RevokePlanOverrideCommandHandler
         // 1. Get user
         var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
         if (user == null)
-            throw new InvalidOperationException($"User {request.UserId} not found");
+            throw new InvalidOperationException($"Usuário {request.UserId} não encontrado");
 
         // 2. Revoke plan override
         user.RevokePlanOverride();
@@ -40,7 +40,7 @@ public sealed class RevokePlanOverrideCommandHandler
         return new RevokePlanOverrideCommandResult
         {
             UserId = user.Id,
-            Message = "Plan override revoked successfully"
+            Message = "Override de plano revogado com sucesso"
         };
     }
 }

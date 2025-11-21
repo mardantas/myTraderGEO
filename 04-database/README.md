@@ -614,7 +614,7 @@ docker compose -f 05-infra/docker/docker-compose.dev.yml `
 docker compose exec database psql -U mytrader_app -d mytrader_staging `
   -f /db-scripts/migrations/001_create_user_management_schema.sql
 
-docker compose exec database psql -U $DB_APP_USER -d mytrader_staging `
+docker compose exec database psql -U mytrader_app -d mytrader_staging `
   -f /db-scripts/seeds/001_seed_user_management_defaults.sql
 ```
 
@@ -668,7 +668,7 @@ docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/con
 
 ```bash
 # Connect to database as application user
-docker compose exec database psql -U mytrader_app -d mytrader_dev
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev
 
 # Expected output: PostgreSQL prompt
 # mytrader_dev=>
@@ -692,7 +692,7 @@ SELECT current_user;  -- Should show: mytrader_app
 
 ```powershell
 # Execute migration (example for EPIC-01)
-docker compose exec database psql -U mytrader_app -d mytrader_dev `
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev `
   -f /db-scripts/migrations/001_create_user_management_schema.sql
 
 # Verify tables created
@@ -763,10 +763,10 @@ dotnet add package Testcontainers.PostgreSql --version 3.x
 docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up database -d
 
 # 2. Verify init-scripts executed (creates users)
-docker compose logs database | Select-String "Creating application users"
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev logs database | Select-String "Creating application users"
 
 # 3. Apply DBA migrations
-docker compose exec database psql -U mytrader_app -d mytrader_dev `
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev `
   -f /db-scripts/migrations/001_create_user_management_schema.sql
 
 # 4. Scaffold EF models
@@ -789,7 +789,7 @@ dotnet run --project src/Api
 ```powershell
 # 1. DBA creates new migration (e.g., 002_create_strategy_management_schema.sql)
 # 2. Apply new migration
-docker compose exec database psql -U mytrader_app -d mytrader_dev `
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev `
   -f /db-scripts/migrations/002_create_strategy_management_schema.sql
 
 # 3. Re-scaffold (updates existing + adds new entities)
@@ -815,7 +815,7 @@ git diff src/Infrastructure/Data/Models/
 # ⚠️ WARNING: This deletes all data!
 
 # 1. Stop containers
-docker compose down
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev down
 
 # 2. Remove database volume
 docker volume rm postgres-data
@@ -824,9 +824,9 @@ docker volume rm postgres-data
 docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev up database -d
 
 # 4. Re-apply all migrations in order
-docker compose exec database psql -U mytrader_app -d mytrader_dev \
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev \
   -f /db-scripts/migrations/001_create_user_management_schema.sql
-docker compose exec database psql -U mytrader_app -d mytrader_dev \
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev \
   -f /db-scripts/migrations/002_create_strategy_management_schema.sql
 ```
 
@@ -867,10 +867,10 @@ docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/con
 **Solution:**
 ```bash
 # List tables
-docker compose exec database psql -U mytrader_app -d mytrader_dev -c "\dt"
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev -c "\dt"
 
 # If empty, apply migrations
-docker compose exec database psql -U mytrader_app -d mytrader_dev \
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev \
   -f /db-scripts/migrations/001_create_user_management_schema.sql
 ```
 
@@ -978,383 +978,16 @@ SELECT Name, PriceMonthlyAmount FROM SubscriptionPlans ORDER BY PriceMonthlyAmou
 
 ---
 
-## TestContainers Setup for Integration Tests
+## Integration Testing
 
-**Purpose:** Run integration tests against REAL PostgreSQL (not in-memory SQLite).
+**Note:** Integration test setup using TestContainers is an SE (Software Engineer) responsibility.
 
-**Philosophy:** Database-First approach means tests must validate against actual SQL schema created by DBA, not Code-First migrations.
+**See:**
+- SE templates: `.agents/templates/10-software-engineering/fixtures/`
+- SE README template for integration testing setup
+- Workflow Guide: Database Workflow section on TestContainers
 
-### Why TestContainers?
-
-**Problem with In-Memory Databases:**
-- ❌ SQLite in-memory has different SQL dialect than PostgreSQL
-- ❌ Missing PostgreSQL-specific features (JSONB, arrays, CTEs)
-- ❌ Different constraint behavior
-- ❌ False positives: tests pass with SQLite but fail in production
-
-**Solution: TestContainers**
-- ✅ Real PostgreSQL container (same as production)
-- ✅ Isolated tests (each test class gets fresh database)
-- ✅ Applies DBA migrations (SQL-First approach)
-- ✅ Automatic cleanup (container destroyed after tests)
-
-### NuGet Packages Required
-
-```bash
-# Navigate to integration tests project
-cd 02-backend/tests/{ProjectName}.IntegrationTests
-
-# Install TestContainers for PostgreSQL
-dotnet add package Testcontainers.PostgreSql --version 3.x
-
-# Install testing framework (if not already installed)
-dotnet add package xunit
-dotnet add package xunit.runner.visualstudio
-
-# Install Npgsql for direct SQL execution
-dotnet add package Npgsql
-```
-
-### Base Test Fixture (xUnit)
-
-Create a shared fixture that all integration tests will use:
-
-```csharp
-// tests/{ProjectName}.IntegrationTests/DatabaseFixture.cs
-using Npgsql;
-using Testcontainers.PostgreSql;
-using Xunit;
-
-namespace {ProjectName}.IntegrationTests;
-
-public class DatabaseFixture : IAsyncLifetime
-{
-    private readonly PostgreSqlContainer _container = new PostgreSqlBuilder()
-        .WithDatabase("mytrader_test")
-        .WithUsername("mytrader_app")
-        .WithPassword("test_password")
-        .WithImage("postgres:15-alpine")  // Same version as production
-        .WithCleanUp(true)  // Auto-cleanup after tests
-        .Build();
-
-    public string ConnectionString => _container.GetConnectionString();
-
-    public async Task InitializeAsync()
-    {
-        // 1. Start PostgreSQL container
-        await _container.StartAsync();
-
-        // 2. Apply DBA migrations (SQL-First approach)
-        await using var connection = new NpgsqlConnection(ConnectionString);
-        await connection.OpenAsync();
-
-        // Read and execute DBA migration scripts
-        var migrationFiles = new[]
-        {
-            "../../../../04-database/migrations/001_create_user_management_schema.sql",
-            "../../../../04-database/migrations/002_create_strategy_management_schema.sql"
-            // Add more migrations as needed
-        };
-
-        foreach (var file in migrationFiles)
-        {
-            if (!File.Exists(file)) continue;  // Skip if migration doesn't exist yet
-
-            var migrationScript = await File.ReadAllTextAsync(file);
-
-            await using var cmd = new NpgsqlCommand(migrationScript, connection);
-            await cmd.ExecuteNonQueryAsync();
-        }
-
-        // 3. Apply seed data (if needed for tests)
-        var seedFiles = new[]
-        {
-            "../../../../04-database/seeds/001_seed_user_management_defaults.sql"
-        };
-
-        foreach (var file in seedFiles)
-        {
-            if (!File.Exists(file)) continue;
-
-            var seedScript = await File.ReadAllTextAsync(file);
-            await using var cmd = new NpgsqlCommand(seedScript, connection);
-            await cmd.ExecuteNonQueryAsync();
-        }
-    }
-
-    public async Task DisposeAsync()
-    {
-        // Cleanup: Stop and remove container
-        await _container.DisposeAsync();
-    }
-}
-```
-
-### Example Integration Test
-
-```csharp
-// tests/{ProjectName}.IntegrationTests/UserRepositoryIntegrationTests.cs
-using Microsoft.EntityFrameworkCore;
-using Xunit;
-using {ProjectName}.Domain.Entities;
-using {ProjectName}.Infrastructure.Data;
-using {ProjectName}.Infrastructure.Repositories;
-
-namespace {ProjectName}.IntegrationTests;
-
-public class UserRepositoryIntegrationTests : IClassFixture<DatabaseFixture>
-{
-    private readonly DatabaseFixture _fixture;
-
-    public UserRepositoryIntegrationTests(DatabaseFixture fixture)
-    {
-        _fixture = fixture;
-    }
-
-    [Fact]
-    public async Task CreateUser_ShouldPersistToDatabase()
-    {
-        // Arrange
-        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseNpgsql(_fixture.ConnectionString)
-            .Options;
-
-        await using var context = new ApplicationDbContext(options);
-        var repository = new UserRepository(context);
-
-        var user = new User
-        {
-            Id = Guid.NewGuid(),
-            Email = "test@example.com",
-            Name = "Test User",
-            Role = UserRole.Trader,
-            Status = UserStatus.Active
-        };
-
-        // Act
-        await repository.AddAsync(user);
-        await context.SaveChangesAsync();
-
-        // Assert
-        var retrieved = await repository.GetByIdAsync(user.Id);
-        Assert.NotNull(retrieved);
-        Assert.Equal("test@example.com", retrieved.Email);
-    }
-
-    [Fact]
-    public async Task GetByEmail_ShouldReturnUser()
-    {
-        // Arrange
-        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseNpgsql(_fixture.ConnectionString)
-            .Options;
-
-        await using var context = new ApplicationDbContext(options);
-        var repository = new UserRepository(context);
-
-        var user = new User
-        {
-            Id = Guid.NewGuid(),
-            Email = "john@example.com",
-            Name = "John Doe"
-        };
-        await repository.AddAsync(user);
-        await context.SaveChangesAsync();
-
-        // Act
-        var result = await repository.GetByEmailAsync("john@example.com");
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Equal(user.Id, result.Id);
-    }
-
-    [Fact]
-    public async Task UpdateUser_ShouldPersistChanges()
-    {
-        // Arrange
-        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseNpgsql(_fixture.ConnectionString)
-            .Options;
-
-        await using var context = new ApplicationDbContext(options);
-        var repository = new UserRepository(context);
-
-        var user = new User
-        {
-            Id = Guid.NewGuid(),
-            Email = "update@example.com",
-            Name = "Original Name"
-        };
-        await repository.AddAsync(user);
-        await context.SaveChangesAsync();
-
-        // Act
-        user.Name = "Updated Name";
-        await repository.UpdateAsync(user);
-        await context.SaveChangesAsync();
-
-        // Assert (query fresh from DB)
-        var updated = await repository.GetByIdAsync(user.Id);
-        Assert.Equal("Updated Name", updated.Name);
-    }
-}
-```
-
-### Running Tests
-
-```bash
-# Run all integration tests
-dotnet test --filter "Category=Integration"
-
-# Run specific test class
-dotnet test --filter "FullyQualifiedName~UserRepositoryIntegrationTests"
-
-# Run with verbose output
-dotnet test --logger "console;verbosity=detailed"
-```
-
-**What happens:**
-1. xUnit detects `IClassFixture<DatabaseFixture>`
-2. Fixture starts PostgreSQL container ONCE for all tests in class
-3. Applies DBA migrations (SQL-First)
-4. Each test method runs with fresh DbContext
-5. After all tests, container is destroyed
-
-### Key Principles
-
-- ✅ **SQL migrations BEFORE tests** - Apply DBA scripts in fixture initialization
-- ✅ **Real PostgreSQL** - Not in-memory SQLite (same as production)
-- ✅ **Idempotent migrations** - Safe to re-execute (`CREATE TABLE IF NOT EXISTS`)
-- ✅ **Isolated tests** - Each test class gets fresh database instance
-- ✅ **Database-First** - Tests validate against actual SQL schema, not Code-First migrations
-
-### Best Practices
-
-#### 1. Use Collection Fixtures for Expensive Setup
-
-If fixture initialization is slow (many migrations), share container across multiple test classes:
-
-```csharp
-// DatabaseCollection.cs
-[CollectionDefinition("Database")]
-public class DatabaseCollection : ICollectionFixture<DatabaseFixture>
-{
-    // This class has no code - it's just a marker
-}
-
-// Use in test classes
-[Collection("Database")]
-public class UserRepositoryTests : IClassFixture<DatabaseFixture>
-{
-    // Tests...
-}
-
-[Collection("Database")]
-public class StrategyRepositoryTests : IClassFixture<DatabaseFixture>
-{
-    // Tests share same container/database
-}
-```
-
-#### 2. Reset Database State Between Tests (if needed)
-
-```csharp
-public class UserRepositoryTests : IClassFixture<DatabaseFixture>
-{
-    private readonly DatabaseFixture _fixture;
-
-    public UserRepositoryTests(DatabaseFixture fixture)
-    {
-        _fixture = fixture;
-        CleanDatabase().Wait();  // Reset before each test
-    }
-
-    private async Task CleanDatabase()
-    {
-        await using var connection = new NpgsqlConnection(_fixture.ConnectionString);
-        await connection.OpenAsync();
-
-        // Truncate tables (keeps schema)
-        var cmd = new NpgsqlCommand(@"
-            TRUNCATE TABLE Users, Strategies, TradingRules RESTART IDENTITY CASCADE;
-        ", connection);
-        await cmd.ExecuteNonQueryAsync();
-    }
-}
-```
-
-#### 3. Use Test Categories
-
-```csharp
-[Trait("Category", "Integration")]
-public class UserRepositoryTests
-{
-    // Tests...
-}
-
-// Run only integration tests
-// dotnet test --filter "Category=Integration"
-```
-
-### Troubleshooting
-
-#### Problem: "Docker daemon not running"
-
-**Symptom:** `Cannot connect to Docker daemon`
-
-**Solution:**
-```bash
-# Start Docker Desktop
-# Or on Linux:
-sudo systemctl start docker
-```
-
-#### Problem: "Tests timeout or hang"
-
-**Symptom:** Tests never complete
-
-**Cause:** Container takes time to start
-
-**Solution:**
-```csharp
-private readonly PostgreSqlContainer _container = new PostgreSqlBuilder()
-    .WithDatabase("mytrader_test")
-    .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(5432))  // Wait for port
-    .Build();
-```
-
-#### Problem: "Migration file not found"
-
-**Symptom:** `FileNotFoundException` when reading migration SQL
-
-**Solution:**
-```csharp
-// Use correct relative path from test project
-var file = "../../../../04-database/migrations/001_create_user_management_schema.sql";
-var fullPath = Path.GetFullPath(file);
-Console.WriteLine($"Looking for: {fullPath}");  // Debug
-```
-
-### Performance Tips
-
-**Fixture Initialization (~2-5 seconds):**
-- Container start: ~1-2s
-- Apply migrations: ~1-2s
-- Total: ~3-4s per test class
-
-**Optimization:**
-- ✅ Use `[Collection]` to share container across test classes
-- ✅ Keep migrations idempotent (safe to re-run)
-- ❌ Don't create/destroy container per test method (use fixture)
-
-### CI/CD Integration
-
-**For GitHub Actions setup, see:** [GM-00 - Database Migrations in CI/CD](../07-github-management/GM-00-GitHub-Setup.md#database-migrations-in-cicd-database-first-approach)
-
-**Local vs CI:**
-- **Local:** TestContainers starts PostgreSQL automatically
-- **CI:** GitHub Actions uses `services: postgres:` (see GM-00)
+DBA provides SQL migrations that SE's TestContainers fixtures apply automatically during tests.
 
 ---
 
@@ -1571,8 +1204,8 @@ EPIC-02: Scaffold --force regenerates ALL files
 #### Step 1: DBA Executes Migrations (Already Done)
 
 ```bash
-psql -h localhost -U mytrader_app -d mytrader_dev \
-  -f 04-database/migrations/001_create_user_management_schema.sql
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev \
+  -f /db-scripts/migrations/001_create_user_management_schema.sql
 ```
 
 #### Step 2: SE Scaffolds from Database
@@ -1664,8 +1297,8 @@ public partial class ApplicationDbContext
 
 ```bash
 # DBA creates migrations for NEW tables
-psql -h localhost -U mytrader_app -d mytrader_dev \
-  -f 04-database/migrations/002_create_strategy_management_schema.sql
+docker compose -f 05-infra/docker/docker-compose.dev.yml --env-file 05-infra/configs/.env.dev exec database psql -U mytrader_app -d mytrader_dev \
+  -f /db-scripts/migrations/002_create_strategy_management_schema.sql
 
 # Adds tables: Strategies, TradingRules, Backtests
 ```

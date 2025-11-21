@@ -8,22 +8,22 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS development
 WORKDIR /src
 
 # Copy solution file
-COPY ["MyTraderGEO.sln", "./"]
+COPY ["02-backend/MyTraderGEO.sln", "./"]
 
 # Copy csproj files and restore dependencies
-COPY ["src/MyTraderGEO.Domain/MyTraderGEO.Domain.csproj", "src/MyTraderGEO.Domain/"]
-COPY ["src/MyTraderGEO.Application/MyTraderGEO.Application.csproj", "src/MyTraderGEO.Application/"]
-COPY ["src/MyTraderGEO.Infrastructure/MyTraderGEO.Infrastructure.csproj", "src/MyTraderGEO.Infrastructure/"]
-COPY ["src/MyTraderGEO.WebAPI/MyTraderGEO.WebAPI.csproj", "src/MyTraderGEO.WebAPI/"]
-COPY ["tests/MyTraderGEO.Domain.UnitTests/MyTraderGEO.Domain.UnitTests.csproj", "tests/MyTraderGEO.Domain.UnitTests/"]
-COPY ["tests/MyTraderGEO.Application.UnitTests/MyTraderGEO.Application.UnitTests.csproj", "tests/MyTraderGEO.Application.UnitTests/"]
-COPY ["tests/MyTraderGEO.IntegrationTests/MyTraderGEO.IntegrationTests.csproj", "tests/MyTraderGEO.IntegrationTests/"]
+COPY ["02-backend/src/MyTraderGEO.Domain/MyTraderGEO.Domain.csproj", "src/MyTraderGEO.Domain/"]
+COPY ["02-backend/src/MyTraderGEO.Application/MyTraderGEO.Application.csproj", "src/MyTraderGEO.Application/"]
+COPY ["02-backend/src/MyTraderGEO.Infrastructure/MyTraderGEO.Infrastructure.csproj", "src/MyTraderGEO.Infrastructure/"]
+COPY ["02-backend/src/MyTraderGEO.WebAPI/MyTraderGEO.WebAPI.csproj", "src/MyTraderGEO.WebAPI/"]
+COPY ["02-backend/tests/MyTraderGEO.Domain.UnitTests/MyTraderGEO.Domain.UnitTests.csproj", "tests/MyTraderGEO.Domain.UnitTests/"]
+COPY ["02-backend/tests/MyTraderGEO.Application.UnitTests/MyTraderGEO.Application.UnitTests.csproj", "tests/MyTraderGEO.Application.UnitTests/"]
+COPY ["02-backend/tests/MyTraderGEO.IntegrationTests/MyTraderGEO.IntegrationTests.csproj", "tests/MyTraderGEO.IntegrationTests/"]
 
 # Restore dependencies
 RUN dotnet restore "MyTraderGEO.sln"
 
 # Copy all source code
-COPY . .
+COPY 02-backend/ .
 
 # Set working directory to WebAPI project
 WORKDIR /src/src/MyTraderGEO.WebAPI
@@ -31,5 +31,5 @@ WORKDIR /src/src/MyTraderGEO.WebAPI
 # Expose port
 EXPOSE 8080
 
-# Run with hot reload
-CMD ["dotnet", "watch", "run", "--urls", "http://0.0.0.0:8080", "--no-launch-profile"]
+# Use shell form to run restore then watch (fixes Windows volume mount NuGet issues)
+CMD sh -c "dotnet restore /src/MyTraderGEO.sln && dotnet watch run --urls http://0.0.0.0:8080 --no-launch-profile"

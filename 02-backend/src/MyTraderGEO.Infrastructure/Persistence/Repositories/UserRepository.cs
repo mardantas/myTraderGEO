@@ -134,8 +134,10 @@ public sealed class UserRepository : IUserRepository
         // Set private fields using reflection
         SetPrivateField(user, "Id", dataModel.Id);
         SetPrivateField(user, "Status", status);
-        SetPrivateField(user, "CreatedAt", dataModel.CreatedAt);
-        SetPrivateField(user, "LastLoginAt", dataModel.LastLoginAt);
+        SetPrivateField(user, "CreatedAt", DateTime.SpecifyKind(dataModel.CreatedAt, DateTimeKind.Utc));
+        SetPrivateField(user, "LastLoginAt", dataModel.LastLoginAt.HasValue
+            ? DateTime.SpecifyKind(dataModel.LastLoginAt.Value, DateTimeKind.Utc)
+            : (DateTime?)null);
 
         // Phone
         if (dataModel.PhoneCountryCode != null && dataModel.PhoneNumber != null)
@@ -143,10 +145,94 @@ public sealed class UserRepository : IUserRepository
             var phone = PhoneNumber.Create(dataModel.PhoneCountryCode, dataModel.PhoneNumber);
             SetPrivateField(user, "Phone", phone);
             SetPrivateField(user, "IsPhoneVerified", dataModel.IsPhoneVerified);
-            SetPrivateField(user, "PhoneVerifiedAt", dataModel.PhoneVerifiedAt);
+            SetPrivateField(user, "PhoneVerifiedAt", dataModel.PhoneVerifiedAt.HasValue
+                ? DateTime.SpecifyKind(dataModel.PhoneVerifiedAt.Value, DateTimeKind.Utc)
+                : (DateTime?)null);
         }
 
-        // TODO: Deserialize PlanOverride and CustomFees from JSONB
+        // Deserialize PlanOverride from JSONB
+        if (!string.IsNullOrEmpty(dataModel.PlanOverride))
+        {
+            try
+            {
+                var planOverrideData = System.Text.Json.JsonSerializer.Deserialize<System.Text.Json.JsonElement>(dataModel.PlanOverride);
+
+                var strategyLimit = planOverrideData.TryGetProperty("strategyLimitOverride", out var slProp) && slProp.ValueKind != System.Text.Json.JsonValueKind.Null
+                    ? slProp.GetInt32() : (int?)null;
+
+                var expiresAt = planOverrideData.TryGetProperty("expiresAt", out var expProp) && expProp.ValueKind != System.Text.Json.JsonValueKind.Null
+                    ? DateTime.SpecifyKind(expProp.GetDateTime(), DateTimeKind.Utc) : (DateTime?)null;
+
+                var reason = planOverrideData.TryGetProperty("reason", out var reasonProp) ? reasonProp.GetString() : string.Empty;
+                var grantedBy = planOverrideData.TryGetProperty("grantedBy", out var grantedByProp) ? grantedByProp.GetGuid() : Guid.Empty;
+                var grantedAt = planOverrideData.TryGetProperty("grantedAt", out var grantedAtProp)
+                    ? DateTime.SpecifyKind(grantedAtProp.GetDateTime(), DateTimeKind.Utc)
+                    : DateTime.UtcNow;
+
+                if (!string.IsNullOrEmpty(reason) && grantedBy != Guid.Empty)
+                {
+                    // Use reflection to create UserPlanOverride (constructor is private)
+                    var planOverride = typeof(UserPlanOverride)
+                        .GetConstructor(
+                            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance,
+                            null,
+                            new[] { typeof(int?), typeof(PlanFeatures), typeof(DateTime?), typeof(string), typeof(Guid), typeof(DateTime) },
+                            null)
+                        ?.Invoke(new object?[] { strategyLimit, null, expiresAt, reason, grantedBy, grantedAt }) as UserPlanOverride;
+
+                    if (planOverride != null)
+                    {
+                        SetPrivateField(user, "PlanOverride", planOverride);
+                    }
+                }
+            }
+            catch (System.Text.Json.JsonException ex)
+            {
+                // Log warning but don't fail - backwards compatibility
+                Console.WriteLine($"Warning: Failed to deserialize PlanOverride for user {dataModel.Id}: {ex.Message}");
+            }
+        }
+
+        // Deserialize CustomFees from JSONB
+        if (!string.IsNullOrEmpty(dataModel.CustomFees))
+        {
+            try
+            {
+                var feesData = System.Text.Json.JsonSerializer.Deserialize<System.Text.Json.JsonElement>(dataModel.CustomFees);
+
+                var brokerCommissionRate = feesData.TryGetProperty("brokerCommissionRate", out var bcProp) && bcProp.ValueKind != System.Text.Json.JsonValueKind.Null
+                    ? bcProp.GetDecimal() : (decimal?)null;
+
+                var b3EmolumentRate = feesData.TryGetProperty("b3EmolumentRate", out var b3Prop) && b3Prop.ValueKind != System.Text.Json.JsonValueKind.Null
+                    ? b3Prop.GetDecimal() : (decimal?)null;
+
+                var settlementFeeRate = feesData.TryGetProperty("settlementFeeRate", out var sfProp) && sfProp.ValueKind != System.Text.Json.JsonValueKind.Null
+                    ? sfProp.GetDecimal() : (decimal?)null;
+
+                var incomeTaxRate = feesData.TryGetProperty("incomeTaxRate", out var itProp) && itProp.ValueKind != System.Text.Json.JsonValueKind.Null
+                    ? itProp.GetDecimal() : (decimal?)null;
+
+                var dayTradeIncomeTaxRate = feesData.TryGetProperty("dayTradeIncomeTaxRate", out var dtProp) && dtProp.ValueKind != System.Text.Json.JsonValueKind.Null
+                    ? dtProp.GetDecimal() : (decimal?)null;
+
+                var customFees = TradingFees.Create(
+                    brokerCommissionRate: brokerCommissionRate,
+                    b3EmolumentRate: b3EmolumentRate,
+                    settlementFeeRate: settlementFeeRate,
+                    incomeTaxRate: incomeTaxRate,
+                    dayTradeIncomeTaxRate: dayTradeIncomeTaxRate);
+
+                if (customFees.HasCustomFees)
+                {
+                    SetPrivateField(user, "CustomFees", customFees);
+                }
+            }
+            catch (System.Text.Json.JsonException ex)
+            {
+                // Log warning but don't fail - backwards compatibility
+                Console.WriteLine($"Warning: Failed to deserialize CustomFees for user {dataModel.Id}: {ex.Message}");
+            }
+        }
 
         return user;
     }

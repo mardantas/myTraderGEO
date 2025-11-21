@@ -29,7 +29,7 @@ public sealed class GrantPlanOverrideCommandHandler
         // 1. Get user
         var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
         if (user == null)
-            throw new InvalidOperationException($"User {request.UserId} not found");
+            throw new InvalidOperationException($"Usuário {request.UserId} não encontrado");
 
         // 2. Create feature override if any features specified
         PlanFeatures? featuresOverride = null;
@@ -63,7 +63,7 @@ public sealed class GrantPlanOverrideCommandHandler
         return new GrantPlanOverrideCommandResult
         {
             UserId = user.Id,
-            Message = $"Plan override granted successfully. Reason: {request.Reason}"
+            Message = $"Override de plano concedido com sucesso. Motivo: {request.Reason}"
         };
     }
 }
